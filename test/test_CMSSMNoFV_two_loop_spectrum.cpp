@@ -29,16 +29,16 @@ BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
    const double mt_pole_input = qedqcd.displayPoleMt();
    const double vu = m.get_vu();
 
-   BOOST_MESSAGE("mt_pole(input) = " << mt_pole_input);
+   BOOST_TEST_MESSAGE("mt_pole(input) = " << mt_pole_input);
 
    // calculate DR-bar masses
    m.solve_ewsb_tree_level();
    m.calculate_DRbar_masses();
    m.solve_ewsb();
 
-   BOOST_MESSAGE("mt_drbar(guess) = " << m.get_MFt());
+   BOOST_TEST_MESSAGE("mt_drbar(guess) = " << m.get_MFt());
 
-   unsigned iterations = 100;
+   int iterations = 100;
 
    // calculate top DR-bar mass from top pole mass using two-loop
    // corrections
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
       m.solve_ewsb();
    } while (--iterations);
 
-   BOOST_MESSAGE("mt_drbar(2-loop) = " << m.get_MFt());
+   BOOST_TEST_MESSAGE("mt_drbar(2-loop) = " << m.get_MFt());
 
    m.set_pole_mass_loop_order(2);
    m.calculate_MFt_pole();
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSMNoFV_two_loop_top_pole_mass )
 
    const double mt_pole_2loop  = m.get_physical().MFt;
 
-   BOOST_MESSAGE("mt_pole(2-loop) = " << mt_pole_2loop);
+   BOOST_TEST_MESSAGE("mt_pole(2-loop) = " << mt_pole_2loop);
 
    BOOST_CHECK_CLOSE_FRACTION(mt_pole_input, mt_pole_2loop, 1.5e-3);
 }

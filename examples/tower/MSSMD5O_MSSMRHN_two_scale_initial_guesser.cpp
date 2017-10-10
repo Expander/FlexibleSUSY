@@ -42,16 +42,18 @@ MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::MSSMD5O_MSSMRHN_initial_guesser(
    const MSSMD5O_low_scale_constraint<Two_scale>& low_constraint_1_,
    const MSSMD5O_susy_scale_constraint<Two_scale>& susy_constraint_1_,
    const MSSMRHN_high_scale_constraint<Two_scale>& high_constraint_2_,
-   const MSSMD5O_MSSMRHN_matching<Two_scale>& matching_
+   const MSSMD5O_MSSMRHN_matching_up<Two_scale>& matching_up_,
+   const MSSMD5O_MSSMRHN_matching_down<Two_scale>& matching_down_
 )
-   : Initial_guesser<Two_scale>()
+   : Initial_guesser()
    , model_1(model_1_), model_2(model_2_)
    , input_pars(input_pars_)
    , qedqcd(qedqcd_)
    , low_constraint_1(low_constraint_1_)
    , susy_constraint_1(susy_constraint_1_)
    , high_constraint_2(high_constraint_2_)
-   , matching(matching_)
+   , matching_up(matching_up_)
+   , matching_down(matching_down_)
 {
    assert(model_1 && model_2 && "MSSMD5O_MSSMRHN_initial_guesser: Error: pointers to models must not be zero");
 }
@@ -71,17 +73,14 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_susy_parameters()
    using namespace softsusy;
 
    QedQcd leAtMt(qedqcd);
-   const double MZ = Electroweak_constants::MZ;
-   const double MW = Electroweak_constants::MW;
-   const double sinThetaW2 = 1.0 - Sqr(MW / MZ);
    const double mtpole = leAtMt.displayPoleMt();
 
    // guess gauge couplings at mt
-   const DoubleVector alpha_sm(leAtMt.getGaugeMu(mtpole, sinThetaW2));
+   const auto alpha_sm(leAtMt.guess_alpha_SM5(mtpole));
 
-   model_1->set_g1(sqrt(4.0 * M_PI * alpha_sm(1)));
-   model_1->set_g2(sqrt(4.0 * M_PI * alpha_sm(2)));
-   model_1->set_g3(sqrt(4.0 * M_PI * alpha_sm(3)));
+   model_1->set_g1(sqrt(4.0 * M_PI * alpha_sm(0)));
+   model_1->set_g2(sqrt(4.0 * M_PI * alpha_sm(1)));
+   model_1->set_g3(sqrt(4.0 * M_PI * alpha_sm(2)));
    model_1->set_scale(mtpole);
    model_1->set_loops(2);
 
@@ -172,11 +171,11 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
    const double low_scale_guess_1 = low_constraint_1.get_initial_scale_guess();
    const double high_scale_guess_2 =
       high_constraint_2.get_initial_scale_guess();
-   const double matching_scale_guess = matching.get_initial_scale_guess();
+   const double matching_scale_guess = matching_up.get_initial_scale_guess();
 
    model_1->run_to(matching_scale_guess);
-   matching.set_models(model_1, model_2);
-   matching.match_low_to_high_scale_model();
+   matching_up.set_models(model_1, model_2);
+   matching_up.match();
 
    model_2->run_to(high_scale_guess_2);
 
@@ -189,7 +188,8 @@ void MSSMD5O_MSSMRHN_initial_guesser<Two_scale>::guess_soft_parameters()
    model_2->set_BMu(0.);
 
    model_2->run_to(matching_scale_guess);
-   matching.match_high_to_low_scale_model();
+   matching_down.set_models(model_2, model_1);
+   matching_down.match();
 
    model_1->run_to(low_scale_guess_1);
 

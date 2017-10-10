@@ -29,7 +29,6 @@
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
 #include "config.h"
-#include "compare.hpp"
 
 namespace flexiblesusy {
 
@@ -65,9 +64,9 @@ void hermitian_eigen
 #ifdef ENABLE_LAPACK
 
 #   ifdef ENABLE_ILP64MKL_WORKAROUND
-typedef int64_t lapack_int;
+using lapack_int = int64_t;
 #   else
-typedef int lapack_int;
+using lapack_int = int;
 #   endif
 
 extern "C" void zgesvd_
@@ -1041,7 +1040,7 @@ void reorder_diagonalize_symmetric_errbd
     Eigen::PermutationMatrix<N> p;
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      Compare<Real, N>(s));
+              [&s] (int i, int j) { return s[i] < s[j]; });
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     s.matrix().transpose() *= p;
     if (u_errbd) u_errbd->matrix().transpose() *= p;
@@ -1503,7 +1502,7 @@ void fs_diagonalize_hermitian_errbd
     Eigen::PermutationMatrix<N> p;
     p.setIdentity();
     std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-	      CompareAbs<Real, N>(w));
+              [&w] (int i, int j) { return std::abs(w[i]) < std::abs(w[j]); });
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
     w.matrix().transpose() *= p;
     if (z_errbd) z_errbd->matrix().transpose() *= p;

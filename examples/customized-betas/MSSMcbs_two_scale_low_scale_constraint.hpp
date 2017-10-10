@@ -20,7 +20,7 @@
 #define MSSMCBS_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 
 #include "MSSMcbs_low_scale_constraint.hpp"
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "lowe.h"
 #include <Eigen/Core>
 
@@ -32,20 +32,21 @@ class MSSMcbs;
 class Two_scale;
 
 template<>
-class MSSMcbs_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
+class MSSMcbs_low_scale_constraint<Two_scale> : public Single_scale_constraint {
 public:
    MSSMcbs_low_scale_constraint();
    MSSMcbs_low_scale_constraint(MSSMcbs<Two_scale>*, const softsusy::QedQcd&);
    virtual ~MSSMcbs_low_scale_constraint();
-   virtual void apply();
-   virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   virtual void apply() override;
+   virtual double get_scale() const override;
+   virtual std::string name() const override { return "MSSMcbs low-scale constraint"; }
+   virtual void set_model(Model*) override;
 
    void clear();
    double get_initial_scale_guess() const;
    void initialize();
    void set_sm_parameters(const softsusy::QedQcd&);
-   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
+   void set_threshold_corrections_loop_order(int); ///< threshold corrections loop order
 
 private:
    double scale;
@@ -54,7 +55,7 @@ private:
    softsusy::QedQcd qedqcd;
    double MZDRbar;
    double new_g1, new_g2, new_g3;
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
+   int threshold_corrections_loop_order; ///< threshold corrections loop order
 
    void calculate_DRbar_gauge_couplings();
    void calculate_DRbar_yukawa_couplings();

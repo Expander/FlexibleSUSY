@@ -20,6 +20,7 @@
 #define MSSMCBS_SPECTRUM_GENERATOR_H
 
 #include "MSSMcbs_two_scale_model.hpp"
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_high_scale_constraint.hpp"
 #include "CMSSM_two_scale_susy_scale_constraint.hpp"
 #include "MSSMcbs_two_scale_low_scale_constraint.hpp"
@@ -58,18 +59,16 @@ public:
    double get_susy_scale() const { return susy_scale; }
    double get_low_scale()  const { return low_scale;  }
    const MSSMcbs<T>& get_model() const { return model; }
-   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& get_problems() const {
-      return model.get_problems();
-   }
+   const Problems& get_problems() const { return model.get_problems(); }
    int get_exit_code() const { return get_problems().have_problem(); };
    void set_parameter_output_scale(double s) { parameter_output_scale = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model.set_ewsb_loop_order(l); }
-   void set_beta_loop_order(unsigned l) { beta_loop_order = l; }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
+   void set_pole_mass_loop_order(int l) { model.set_pole_mass_loop_order(l); }
+   void set_ewsb_loop_order(int l) { model.set_ewsb_loop_order(l); }
+   void set_beta_loop_order(int l) { beta_loop_order = l; }
+   void set_max_iterations(int n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
-   void set_threshold_corrections_loop_order(unsigned t) { threshold_corrections_loop_order = t; }
+   void set_threshold_corrections_loop_order(int t) { threshold_corrections_loop_order = t; }
 
    void run(const softsusy::QedQcd& qedqcd, const CMSSM_input_parameters& input);
    void write_running_couplings(const std::string& filename = "CMSSM_rge_running.dat") const;
@@ -84,9 +83,9 @@ private:
    double high_scale, susy_scale, low_scale;
    double parameter_output_scale; ///< output scale for running parameters
    double precision_goal; ///< precision goal
-   unsigned max_iterations; ///< maximum number of iterations
-   unsigned beta_loop_order; ///< beta-function loop order
-   unsigned threshold_corrections_loop_order; ///< threshold corrections loop order
+   int max_iterations; ///< maximum number of iterations
+   int beta_loop_order; ///< beta-function loop order
+   int threshold_corrections_loop_order; ///< threshold corrections loop order
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 
@@ -111,6 +110,10 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    model.set_loops(beta_loop_order);
    model.set_thresholds(threshold_corrections_loop_order);
 
+   CMSSM_ewsb_solver<T> ewsb_solver;
+   model.set_ewsb_solver(
+      std::make_shared<CMSSM_ewsb_solver<T> >(ewsb_solver));
+
    high_scale_constraint.clear();
    susy_scale_constraint.clear();
    low_scale_constraint .clear();
@@ -121,17 +124,6 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    high_scale_constraint.initialize();
    susy_scale_constraint.initialize();
    low_scale_constraint .initialize();
-
-   std::vector<Constraint<T>*> upward_constraints {
-      &low_scale_constraint,
-      &high_scale_constraint
-   };
-
-   std::vector<Constraint<T>*> downward_constraints {
-      &high_scale_constraint,
-      &susy_scale_constraint,
-      &low_scale_constraint
-   };
 
    CMSSM_convergence_tester<T> convergence_tester(&model, precision_goal);
    if (max_iterations > 0)
@@ -148,7 +140,9 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model, upward_constraints, downward_constraints);
+   solver.add(&low_scale_constraint, &model);
+   solver.add(&high_scale_constraint, &model);
+   solver.add(&susy_scale_constraint, &model);
 
    high_scale = susy_scale = low_scale = 0.;
 
@@ -167,7 +161,7 @@ void MSSMcbs_spectrum_generator<T>::run(const softsusy::QedQcd& qedqcd,
          model.run_to(parameter_output_scale);
       }
    } catch (const NoConvergenceError&) {
-      model.get_problems().flag_no_convergence();
+      model.get_problems().flag_thrown("no convergence");
    } catch (const NonPerturbativeRunningError&) {
       model.get_problems().flag_no_perturbative();
    } catch (const Error& error) {

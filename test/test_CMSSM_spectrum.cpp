@@ -85,7 +85,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         BOOST_MESSAGE(ss.str());
+         BOOST_TEST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -114,10 +114,10 @@ public:
    double get_mx() const { return mx; }
    double get_msusy() const { return msusy; }
    CMSSM_physical get_physical() const { return mssm.get_physical(); }
-   const Problems<CMSSM_info::NUMBER_OF_PARTICLES>& get_problems() const { return mssm.get_problems(); }
+   const Problems& get_problems() const { return mssm.get_problems(); }
    CMSSM<Two_scale> get_model() const { return mssm; }
-   void set_ewsb_loop_order(unsigned l) { ewsb_loop_order = l; }
-   void set_pole_mass_loop_order(unsigned l) { pole_mass_loop_order = l; }
+   void set_ewsb_loop_order(int l) { ewsb_loop_order = l; }
+   void set_pole_mass_loop_order(int l) { pole_mass_loop_order = l; }
    void set_low_scale_constraint(CMSSM_low_scale_constraint<Two_scale>* c) { low_constraint = c; }
    void set_susy_scale_constraint(CMSSM_susy_scale_constraint<Two_scale>* c) { susy_constraint = c; }
    void set_high_scale_constraint(CMSSM_high_scale_constraint<Two_scale>* c) { high_constraint = c; }
@@ -160,21 +160,16 @@ public:
                                                       *high_constraint);
       Two_scale_increasing_precision precision(10.0, precision_goal);
 
-      std::vector<Constraint<Two_scale>*> upward_constraints;
-      upward_constraints.push_back(low_constraint);
-      upward_constraints.push_back(high_constraint);
-
-      std::vector<Constraint<Two_scale>*> downward_constraints;
-      downward_constraints.push_back(high_constraint);
-      downward_constraints.push_back(susy_constraint);
-      downward_constraints.push_back(low_constraint);
-
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&convergence_tester);
       solver.set_running_precision(&precision);
       solver.set_initial_guesser(&initial_guesser);
-      solver.add_model(&mssm, upward_constraints, downward_constraints);
+      solver.add(low_constraint, &mssm);
+      solver.add(high_constraint, &mssm);
+      solver.add(susy_constraint, &mssm);
       solver.solve();
+      mssm.run_to(low_constraint->get_scale());
+      low_constraint->apply();
       mssm.run_to(susy_constraint->get_scale());
       mssm.solve_ewsb();
       mssm.calculate_spectrum();
@@ -189,7 +184,7 @@ private:
    CMSSM_high_scale_constraint<Two_scale>* high_constraint;
    CMSSM_susy_scale_constraint<Two_scale>* susy_constraint;
    CMSSM_low_scale_constraint<Two_scale>*  low_constraint;
-   unsigned ewsb_loop_order, pole_mass_loop_order;
+   int ewsb_loop_order, pole_mass_loop_order;
 };
 
 BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
@@ -211,8 +206,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    SoftSusy_tester softSusy_tester;
    BOOST_REQUIRE_NO_THROW(softSusy_tester.test(pp, mxGuess));
 
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 6.2e-4);
-   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 1.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_mx(), softSusy_tester.get_mx(), 0.04);
+   BOOST_CHECK_CLOSE_FRACTION(mssm_tester.get_msusy(), softSusy_tester.get_msusy(), 0.0006);
 
    // compare model parameters
    const MssmSoftsusy ss(softSusy_tester.get_model());
@@ -221,9 +216,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_EQUAL(ss.displayLoops()     , fs.get_loops());
    BOOST_CHECK_EQUAL(ss.displayMu()        , fs.get_scale());
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.0000023);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0000066);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.0000010);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g1(), ss.displayGaugeCoupling(1), 0.0001);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g2(), ss.displayGaugeCoupling(2), 0.0003);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_g3(), ss.displayGaugeCoupling(3), 0.00002);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(0,0), ss.displayYukawaMatrix(YU)(1,1), 0.0093);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_Yu()(1,1), ss.displayYukawaMatrix(YU)(2,2), 0.0093);
@@ -241,10 +236,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassWB(), ss.displayGaugino(2), 0.0046);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MassG() , ss.displayGaugino(3), 0.0051);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.0012);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_Mu() , ss.displaySusyMu(), 0.002);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_BMu(), ss.displayM3Squared(), 0.0024);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mHd2(), ss.displayMh1Squared(), 0.0005);
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.0022);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_mHu2(), ss.displayMh2Squared(), 0.003);
 
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mq2()(0,0), ss.displaySoftMassSquared(mQl)(1,1), 0.012);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_mq2()(1,1), ss.displaySoftMassSquared(mQl)(2,2), 0.012);
@@ -312,13 +307,13 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi(4), mn(4), 0.0040);
 
    BOOST_CHECK_CLOSE_FRACTION(MHpm(1), MwRun, 1.0e-10); // for RXi(Wm) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 5.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm(2), mHpm , 0.0015);
 
    BOOST_CHECK_CLOSE_FRACTION(MAh(1), MzRun, 1.0e-10); // for RXi(VZ) == 1
-   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 5.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(MAh(2), mA0, 0.0015);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 5.e-6);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 5.5e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(1), mh0, 2.e-5);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh(2), mH0, 0.0015);
 
    // down-type squarks
    const DoubleVector Sd(ToDoubleVector(fs.get_MSd()));
@@ -368,7 +363,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_EQUAL(fs.get_MFv()(1), 0.0);
    BOOST_CHECK_EQUAL(fs.get_MFv()(2), 0.0);
 
-   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(2), ss.displayDrBarPars().mtau, 0.00044);
+   BOOST_CHECK_CLOSE_FRACTION(fs.get_MFe()(2), ss.displayDrBarPars().mtau, 0.0011);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFu()(2), ss.displayDrBarPars().mt  , 0.0097);
    BOOST_CHECK_CLOSE_FRACTION(fs.get_MFd()(2), ss.displayDrBarPars().mb  , 0.0027);
 
@@ -397,11 +392,11 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_spectrum )
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(3), mn_1l(3), 0.0043);
    BOOST_CHECK_CLOSE_FRACTION(MChi_1l(4), mn_1l(4), 0.0040);
 
-   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 5.5e-05);
-   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 5.5e-05);
+   BOOST_CHECK_CLOSE_FRACTION(MHpm_1l(2), mHpm_1l , 0.0015);
+   BOOST_CHECK_CLOSE_FRACTION(MAh_1l(2) , mA0_1l  , 0.0015);
 
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 7.5e-05);
-   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 6.0e-05);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(1), mh0_1l, 0.0002);
+   BOOST_CHECK_CLOSE_FRACTION(Mhh_1l(2), mH0_1l, 0.0015);
 
    // down-type squarks
    const DoubleVector Sd_1l(ToDoubleVector(fs.get_physical().MSd));
@@ -471,47 +466,41 @@ void CMSSM_iterative_low_scale_constraint::apply()
    calculate_DRbar_gauge_couplings();
    calculate_DRbar_yukawa_couplings();
 
-   struct Chi_sqr_mH_mZ {
-      static double func(const gsl_vector* x, void* params) {
-         if (!is_finite(x))
-            return std::numeric_limits<double>::max();
+   auto func = [this](const Eigen::Matrix<double,2,1>& x) {
+      const double vd = x(0);
+      const double vu = x(1);
 
-         CMSSM<Two_scale>* model = static_cast<CMSSM<Two_scale>*>(params);
+      if (vd < std::numeric_limits<double>::epsilon() ||
+          vu < std::numeric_limits<double>::epsilon())
+         return std::numeric_limits<double>::max();
 
-         const double vd = gsl_vector_get(x, 0);
-         const double vu = gsl_vector_get(x, 1);
+      model->set_vd(vd);
+      model->set_vu(vu);
 
-         if (vd < std::numeric_limits<double>::epsilon() ||
-             vu < std::numeric_limits<double>::epsilon())
-            return std::numeric_limits<double>::max();
+      model->calculate_DRbar_masses();
+      model->calculate_Mhh_pole();
+      model->calculate_MVZ_pole();
 
-         model->set_vd(vd);
-         model->set_vu(vu);
+      const double mH = model->get_physical().Mhh(0);
+      const double mZ = model->get_physical().MVZ;
 
-         model->calculate_DRbar_masses();
-         model->calculate_Mhh_pole();
-         model->calculate_MVZ_pole();
+      #define LowEnergyConstant(p) Electroweak_constants::p
+      #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
 
-         const double mH = model->get_physical().Mhh(0);
-         const double mZ = model->get_physical().MVZ;
-
-         #define LowEnergyConstant(p) Electroweak_constants::p
-         #define STANDARD_DEVIATION(p) Electroweak_constants::Error_##p
-
-         return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
-              + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
-      }
+      return Sqr(LowEnergyConstant(MZ) - mZ)/Sqr(STANDARD_DEVIATION(MZ))
+         + Sqr(LowEnergyConstant(MH) - mH)/Sqr(STANDARD_DEVIATION(MH)*10);
    };
 
-   Minimizer<2> minimizer(Chi_sqr_mH_mZ::func, model, 100, 1.0e-2);
-   const double start[2] = { model->get_vd(), model->get_vu() };
+   Minimizer<2> minimizer(func, 100, 1.0e-2);
+   Eigen::Matrix<double,2,1> start;
+   start << model->get_vd(), model->get_vu();
 
    const int status = minimizer.minimize(start);
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
-   BOOST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
-   BOOST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
-   BOOST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
+   BOOST_TEST_MESSAGE("chi^2 = " << minimizer.get_minimum_value());
+   BOOST_TEST_MESSAGE("New vd = " << model->get_vd() << ", vu = " << model->get_vu());
+   BOOST_TEST_MESSAGE("Predicted tan(beta) = " << model->get_vu() / model->get_vd());
 
    model->set_g1(new_g1);
    model->set_g2(new_g2);
@@ -556,6 +545,6 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_EWSB_problems )
 
    if (mssm_tester.get_problems().no_ewsb()) {
       BOOST_ERROR("no ewsb");
-      BOOST_MESSAGE("\tProblems: " << mssm_tester.get_problems());
+      BOOST_TEST_MESSAGE("\tProblems: " << mssm_tester.get_problems());
    }
 }

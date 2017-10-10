@@ -19,8 +19,9 @@
 #ifndef EIGEN_UTILS_H
 #define EIGEN_UTILS_H
 
-#include "compare.hpp"
 #include <Eigen/Core>
+#include <cassert>
+#include <complex>
 #include <iomanip>
 #include <sstream>
 #include <string>
@@ -29,9 +30,9 @@
 namespace flexiblesusy {
 
 template <typename Derived>
-unsigned closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
+int closest_index(double mass, const Eigen::ArrayBase<Derived>& v)
 {
-   unsigned pos;
+   int pos;
    typename Derived::PlainObject tmp;
    tmp.setConstant(mass);
 
@@ -67,13 +68,37 @@ template <class Derived>
 Derived div_safe(
    const Eigen::DenseBase<Derived>& a, const Eigen::DenseBase<Derived>& b)
 {
-   typedef typename Derived::Scalar Scalar;
+   using Scalar = typename Derived::Scalar;
 
    return binary_map(a, b, [](Scalar x, Scalar y){
          const Scalar q = x / y;
          return std::isfinite(q) ? q : Scalar{};
       });
 }
+
+/**
+ * Calls eval() on any Eigen expression.  If the argument is not an
+ * Eigen expression, the argument is returned.
+ *
+ * @param expr expression
+ *
+ * @return evaluated expression or argument
+ */
+template <class Derived>
+auto Eval(const Eigen::DenseBase<Derived>& expr) -> decltype(expr.eval())
+{
+   return expr.eval();
+}
+
+inline char                 Eval(char                        expr) { return expr; }
+inline short                Eval(short                       expr) { return expr; }
+inline int                  Eval(int                         expr) { return expr; }
+inline long                 Eval(long                        expr) { return expr; }
+inline unsigned short       Eval(unsigned short              expr) { return expr; }
+inline unsigned int         Eval(unsigned int                expr) { return expr; }
+inline unsigned long        Eval(unsigned long               expr) { return expr; }
+inline double               Eval(double                      expr) { return expr; }
+inline std::complex<double> Eval(const std::complex<double>& expr) { return expr; }
 
 /**
  * The element of v, which is closest to mass, is moved to the
@@ -103,6 +128,57 @@ void move_goldstone_to(int idx, double mass, Eigen::ArrayBase<DerivedArray>& v,
       pos = new_pos;
    }
 }
+
+/**
+ * Normalize each element of the given real matrix to be within the
+ * interval [min, max].  Values < min are set to min.  Values > max
+ * are set to max.
+ *
+ * @param m matrix
+ * @param min minimum
+ * @param max maximum
+ */
+template <int M, int N>
+void normalize_to_interval(Eigen::Matrix<double,M,N>& m, double min = -1., double max = 1.)
+{
+   auto data = m.data();
+   const auto size = m.size();
+
+   for (int i = 0; i < size; i++) {
+      if (data[i] < min)
+         data[i] = min;
+      else if (data[i] > max)
+         data[i] = max;
+   }
+}
+
+/**
+ * Normalize each element of the given complex matrix to have a
+ * magnitude within the interval [0, max].  If the magnitude of a
+ * matrix element is > max, then the magnitude is set to max.  The
+ * phase angles are not modified.
+ *
+ * @param m matrix
+ * @param max_mag maximum magnitude
+ */
+template <int M, int N>
+void normalize_to_interval(Eigen::Matrix<std::complex<double>,M,N>& m, double max_mag = 1.)
+{
+   auto data = m.data();
+   const auto size = m.size();
+
+   for (int i = 0; i < size; i++) {
+      if (std::abs(data[i]) > max_mag)
+         data[i] = std::polar(max_mag, std::arg(data[i]));
+   }
+}
+
+namespace {
+template <class T>
+struct Is_not_finite {
+   bool operator()(T x) const noexcept { return !std::isfinite(x); }
+};
+} // anonymous namespace
 
 /**
  * Returns all elements from src, which are not close to the elements
@@ -145,7 +221,7 @@ void reorder_vector(
    Eigen::PermutationMatrix<N> p;
    p.setIdentity();
    std::sort(p.indices().data(), p.indices().data() + p.indices().size(),
-             CompareAbs<Real, N>(v2));
+             [&v2] (int i, int j) { return v2[i] < v2[j]; });
 
 #if EIGEN_VERSION_AT_LEAST(3,1,4)
    v.matrix().transpose() *= p.inverse();
@@ -169,12 +245,12 @@ void reorder_vector(
 
 template<class Derived>
 std::string print_scientific(const Eigen::DenseBase<Derived>& v,
-                             unsigned number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
+                             int number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
 {
    std::ostringstream sstr;
 
-   for (std::size_t k = 0; k < v.cols(); k++) {
-      for (std::size_t i = 0; i < v.rows(); i++) {
+   for (int k = 0; k < v.cols(); k++) {
+      for (int i = 0; i < v.rows(); i++) {
          sstr << std::setprecision(number_of_digits)
               << std::scientific << v(i,k) << ' ';
       }

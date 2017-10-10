@@ -1,10 +1,33 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
 BeginPackage["Observables`", {"FlexibleSUSY`", "SARAH`", "BetaFunction`", "Parameters`", "TreeMasses`", "Utils`", "CConversion`", "TextFormatting`"}];
 
 (* observables *)
 Begin["FlexibleSUSYObservable`"];
-FSObservables = { aMuonGM2Calc, aMuonGM2CalcUncertainty,
+FSObservables = { aMuon, aMuonUncertainty, aMuonGM2Calc, aMuonGM2CalcUncertainty,
                   CpHiggsPhotonPhoton, CpHiggsGluonGluon,
-                  CpPseudoScalarPhotonPhoton, CpPseudoScalarGluonGluon };
+                  CpPseudoScalarPhotonPhoton, CpPseudoScalarGluonGluon,
+                  EDM };
 End[];
 
 GetRequestedObservables::usage="";
@@ -16,12 +39,18 @@ CreateClearObservablesFunction::usage="";
 CalculateObservables::usage="";
 GetObservableName::usage="returns name of observable in Observables struct";
 GetObservableType::usage="returns type of observable";
+GetObservableDescription::usage="returns description of observable.";
+IsObservable::usage = "Returns true if given symbol is an observable.";
 
 Begin["`Private`"];
 
+IsObservable[sym_] :=
+    MemberQ[FlexibleSUSYObservable`FSObservables, sym] || \
+    (Or @@ (MatchQ[sym, #[__]]& /@ FlexibleSUSYObservable`FSObservables));
+
 GetRequestedObservables[blocks_] :=
     Module[{observables, dim},
-           observables = DeleteDuplicates[Cases[blocks, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}]];
+           observables = DeleteDuplicates[Cases[blocks, a_?IsObservable :> a, {0, Infinity}]];
            If[MemberQ[observables, FlexibleSUSYObservable`CpHiggsPhotonPhoton] ||
               MemberQ[observables, FlexibleSUSYObservable`CpHiggsGluonGluon],
               dim = TreeMasses`GetDimensionWithoutGoldstones[SARAH`HiggsBoson]
@@ -48,22 +77,33 @@ GetRequestedObservables[blocks_] :=
            observables
           ];
 
+GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon";
+GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := "a_muon_uncertainty";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon_gm2calc";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "a_muon_gm2calc_uncertainty";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] := "eff_cp_higgs_photon_photon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon] := "eff_cp_higgs_gluon_gluon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] := "eff_cp_pseudoscalar_photon_photon";
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "eff_cp_pseudoscalar_gluon_gluon";
+GetObservableName[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableName[FlexibleSUSYObservable`EDM[p]] <> "_" <> ToString[idx];
+GetObservableName[FlexibleSUSYObservable`EDM[p_]]       := "edm_" <> CConversion`ToValidCSymbolString[p];
 
+GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
+GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := "uncertainty of a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := "a_muon = (g-2)/2 of the muon (calculated with GM2Calc)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := "uncertainty of (g-2)/2 of the muon (calculated with GM2Calc)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] := "effective H-Photon-Photon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpHiggsGluonGluon] := "effective H-Gluon-Gluon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton] := "effective A-Photon-Photon coupling";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "effective A-Gluon-Gluon coupling";
+GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> "(" <> ToString[idx] <> ") [1/GeV]";
+GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> " [1/GeV]";
 
+GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuon] := CConversion`ScalarType[CConversion`realScalarCType];
+GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
+GetObservableType[FlexibleSUSYObservable`EDM[p_]] := CConversion`ScalarType[CConversion`realScalarCType];
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] :=
     Module[{dim, type},
@@ -108,7 +148,7 @@ GetObservableType[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluo
 CountNumberOfObservables[observables_List] :=
     Module[{i, number = 0},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   number += BetaFunction`CountNumberOfParameters[GetObservableType[observables[[i]]]];,
                   Print["Warning: ignoring invalid observable ", observables[[i]]];
                  ];
@@ -119,7 +159,7 @@ CountNumberOfObservables[observables_List] :=
 CreateObservablesDefinitions[observables_List] :=
     Module[{i, type, name, description, definitions = ""},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   description = GetObservableDescription[observables[[i]]];
                   type = CConversion`CreateCType[GetObservableType[observables[[i]]]];
@@ -133,7 +173,7 @@ CreateObservablesDefinitions[observables_List] :=
 CreateObservablesInitialization[observables_List] :=
     Module[{i, name, type, init = ""},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   type = GetObservableType[observables[[i]]];
                   If[init == "",
@@ -159,7 +199,7 @@ CreateSetAndDisplayObservablesFunctions[observables_List] :=
               set = "assert(vec.rows() == " <> FlexibleSUSY`FSModelName
                     <> "_observables::NUMBER_OF_OBSERVABLES);\n\n";
               For[i = 1, i <= Length[observables], i++,
-                  If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+                  If[IsObservable[observables[[i]]],
                      name = GetObservableName[observables[[i]]];
                      type = GetObservableType[observables[[i]]];
                      {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type, "vec"];
@@ -183,7 +223,7 @@ CreateSetAndDisplayObservablesFunctions[observables_List] :=
 CreateClearObservablesFunction[observables_List] :=
     Module[{i, name, type, result = ""},
            For[i = 1, i <= Length[observables], i++,
-               If[MemberQ[FlexibleSUSYObservable`FSObservables, observables[[i]]],
+               If[IsObservable[observables[[i]]],
                   name = GetObservableName[observables[[i]]];
                   type = GetObservableType[observables[[i]]];
                   result = result <> CConversion`SetToDefault[name, type];,
@@ -192,6 +232,12 @@ CreateClearObservablesFunction[observables_List] :=
               ];
            result
           ];
+
+CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuon, structName_String] :=
+    structName <> ".AMU = " <> FlexibleSUSY`FSModelName <> "_a_muon::calculate_a_muon(MODEL);";
+
+CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty, structName_String] :=
+    structName <> ".AMUUNCERTAINTY = " <> FlexibleSUSY`FSModelName <> "_a_muon::calculate_a_muon_uncertainty(MODEL);";
 
 CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc, structName_String] :=
     structName <> ".AMUGM2CALC = gm2calc_calculate_amu(gm2calc_data);";
@@ -323,6 +369,19 @@ CalculateObservable[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGl
            result
           ];
 
+CalculateObservable[FlexibleSUSYObservable`EDM[p_], structName_String] :=
+    Module[{pStr = CConversion`ToValidCSymbolString[p]},
+           structName <> ".EDM0(" <> pStr <> ") = " <>
+           FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> pStr <> "(MODEL);"
+          ];
+
+CalculateObservable[FlexibleSUSYObservable`EDM[p_[idx_]], structName_String] :=
+    Module[{pStr = CConversion`ToValidCSymbolString[p],
+            idxStr = ToString[idx]},
+           structName <> ".EDM1(" <> pStr <> ", " <> idxStr <> ") = " <>
+           FlexibleSUSY`FSModelName <> "_edm::calculate_edm_" <> pStr <> "(" <> idxStr <> ", MODEL);"
+          ];
+
 FillGM2CalcInterfaceData[struct_String] :=
     Module[{filling, mwStr,
             w, pseudoscalar, smuon, muonsneutrino, chargino, neutralino,
@@ -416,7 +475,7 @@ FillInterfaceData[obs_List] :=
 
 CalculateObservables[something_, structName_String] :=
     Module[{observables},
-           observables = Cases[something, a_?(MemberQ[FlexibleSUSYObservable`FSObservables,#]&) :> a, {0, Infinity}];
+           observables = Cases[something, a_?IsObservable :> a, {0, Infinity}];
            FillInterfaceData[observables] <> "\n" <>
            Utils`StringJoinWithSeparator[CalculateObservable[#,structName]& /@ observables, "\n"]
           ];

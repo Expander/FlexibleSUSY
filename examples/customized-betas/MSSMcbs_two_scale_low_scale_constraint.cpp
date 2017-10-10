@@ -42,7 +42,7 @@ namespace flexiblesusy {
 #define MODELCLASSNAME CMSSM<Two_scale>
 
 MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , scale(0.)
    , initial_scale_guess(0.)
    , model(0)
@@ -57,7 +57,7 @@ MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint()
 
 MSSMcbs_low_scale_constraint<Two_scale>::MSSMcbs_low_scale_constraint(
    MSSMcbs<Two_scale>* model_, const softsusy::QedQcd& qedqcd_)
-   : Constraint<Two_scale>()
+   : Single_scale_constraint()
    , model(model_)
    , qedqcd(qedqcd_)
    , new_g1(0.)
@@ -108,7 +108,7 @@ double MSSMcbs_low_scale_constraint<Two_scale>::get_initial_scale_guess() const
    return initial_scale_guess;
 }
 
-void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Two_scale_model* model_)
+void MSSMcbs_low_scale_constraint<Two_scale>::set_model(Model* model_)
 {
    model = cast_model<MSSMcbs<Two_scale>*>(model_);
 }
@@ -151,7 +151,7 @@ void MSSMcbs_low_scale_constraint<Two_scale>::update_scale()
 
 void MSSMcbs_low_scale_constraint<Two_scale>::calculate_DRbar_gauge_couplings()
 {
-   assert(qedqcd.displayMu() == get_scale() && "Error: low-energy data"
+   assert(qedqcd.get_scale() == get_scale() && "Error: low-energy data"
           " set is not defined at the same scale as the low-energy"
           " constraint.  You need to run the low-energy data set to this"
           " scale!");

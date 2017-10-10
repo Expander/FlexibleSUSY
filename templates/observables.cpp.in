@@ -20,6 +20,8 @@
 
 #include "@ModelName@_observables.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
+#include "@ModelName@_a_muon.hpp"
+#include "@ModelName@_edm.hpp"
 #include "@ModelName@_effective_couplings.hpp"
 #include "gm2calc_interface.hpp"
 #include "eigen_utils.hpp"
@@ -29,8 +31,12 @@
 #include "physical_input.hpp"
 
 #define MODEL model
+#define AMU a_muon
+#define AMUUNCERTAINTY a_muon_uncertainty
 #define AMUGM2CALC a_muon_gm2calc
 #define AMUGM2CALCUNCERTAINTY a_muon_gm2calc_uncertainty
+#define EDM0(p) edm_ ## p
+#define EDM1(p,idx) edm_ ## p ## _ ## idx
 #define EFFCPHIGGSPHOTONPHOTON eff_cp_higgs_photon_photon
 #define EFFCPHIGGSGLUONGLUON eff_cp_higgs_gluon_gluon
 #define EFFCPPSEUDOSCALARPHOTONPHOTON eff_cp_pseudoscalar_photon_photon
@@ -46,7 +52,7 @@
 
 namespace flexiblesusy {
 
-const unsigned @ModelName@_observables::NUMBER_OF_OBSERVABLES;
+const int @ModelName@_observables::NUMBER_OF_OBSERVABLES;
 
 @ModelName@_observables::@ModelName@_observables()
 @observablesInit@
@@ -73,6 +79,19 @@ void @ModelName@_observables::clear()
 void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
 {
 @setObservables@
+}
+
+@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+                                              const softsusy::QedQcd& qedqcd,
+                                              const Physical_input& physical_input,
+                                              double scale)
+{
+   auto model_at_scale = model;
+
+   if (scale > 0.)
+      model_at_scale.run_to(scale);
+
+   return calculate_observables(model_at_scale, qedqcd, physical_input);
 }
 
 @ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,

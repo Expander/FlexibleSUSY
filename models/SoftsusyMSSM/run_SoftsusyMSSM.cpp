@@ -17,7 +17,7 @@
 #include "mycomplex.h"
 #include "def.h"
 #include "linalg.h"
-#include "lowe.h"
+#include "lowe_legacy.h"
 #include "rge.h"
 #include "softsusy.h"
 #include "softpars.h"
@@ -44,7 +44,7 @@ int main() {
   int sgnMu = 1;      ///< sign of mu parameter 
   int numPoints = 10; ///< number of scan points
 
-  QedQcd oneset;      ///< See "lowe.h" for default definitions parameters
+  QedQcd_legacy oneset; ///< See "lowe_legacy.h" for default definitions parameters
 
   /// most important Standard Model inputs: you may change these and recompile
   double alphasMZ = 0.1187, mtop = 173.4, mbmb = 4.2;

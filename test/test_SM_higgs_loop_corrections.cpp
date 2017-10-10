@@ -12,6 +12,7 @@
 
 using namespace flexiblesusy;
 using namespace passarino_veltman;
+using namespace flexiblesusy::sm_twoloophiggs;
 
 BOOST_AUTO_TEST_CASE( test_SM_1loop_alpha_t )
 {
@@ -83,8 +84,8 @@ BOOST_AUTO_TEST_CASE( test_SM_1loop_full )
 
    m.set_scale(scale);
 
-   const double se_fs = Re(m.self_energy_hh(p));
-   const double t_fs  = -Re(m.tadpole_hh() / v);
+   const double se_fs = Re(m.self_energy_hh_1loop(p));
+   const double t_fs  = -Re(m.tadpole_hh_1loop() / v);
 
    // BOOST_CHECK_CLOSE_FRACTION(se_smh, se_fs + t_fs, 1.0e-10);
 }

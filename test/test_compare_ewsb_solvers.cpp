@@ -15,7 +15,7 @@ struct Solvers {
    const std::string executable;
    double runtime;
    int status;
-   unsigned number_of_points;
+   int number_of_points;
    double runtime_sum;
 };
 
@@ -24,7 +24,7 @@ struct Point {
    int signMu;
 };
 
-int run_point(Solvers solvers[], unsigned number_of_solvers,
+int run_point(Solvers solvers[], int number_of_solvers,
               const std::string& slha_file, const std::string& output_file)
 {
    for (int i = 0; i < number_of_solvers; i++) {
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
       /* .signMu  = */ 1
    };
 
-   const unsigned num_points = 20;
+   const int num_points = 20;
    const double tanBeta_start = 2.;
    const double tanBeta_stop = 50.;
    const double tanBeta_step = (tanBeta_stop - tanBeta_start) / num_points;
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
       {"FPITadpole" , "./models/CMSSMFPITadpole/run_CMSSMFPITadpole.x"  , 0., 0},
    };
 
-   const unsigned number_of_solvers = sizeof(solvers)/sizeof(*solvers);
+   const int number_of_solvers = sizeof(solvers)/sizeof(*solvers);
 
    printf("m0 = %g, m12 = %g, signMu = %d, a0 = %g\n",
           point.m0, point.m12, point.signMu, point.a0);
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
       printf("%12s", solvers[i].name.c_str());
    printf("\n");
 
-   for (unsigned i = 0; i < num_points; i++) {
+   for (int i = 0; i < num_points; i++) {
       point.tanBeta = tanBeta_start + i * tanBeta_step;
       const SLHAea::Coll coll(create_point(point, "test/test_compare_ewsb_solvers.in.spc.in"));
       const std::string input_file("test/test_compare_ewsb_solvers.in.spc");
@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE( test_tanbeta_scan )
    // print average times
       printf("%12s", "average");
    for (int i = 0; i < number_of_solvers; i++) {
-      const unsigned number_of_points = solvers[i].number_of_points;
+      const int number_of_points = solvers[i].number_of_points;
       if (number_of_points > 0)
          printf("%12g", solvers[i].runtime_sum / number_of_points);
       else

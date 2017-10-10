@@ -209,12 +209,12 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_one_loop_tadpoles_real_limit )
 
    m.calculate_DRbar_masses();
 
-   BOOST_CHECK_GT(Abs(m.tadpole_hh(0)), 100);
-   BOOST_CHECK_GT(Abs(m.tadpole_hh(1)), 100);
-   BOOST_CHECK_GT(Abs(m.tadpole_hh(2)), 100);
-   BOOST_CHECK_SMALL(Abs(m.tadpole_hh(3)), 0.2);
-   BOOST_CHECK_SMALL(Abs(m.tadpole_hh(4)), 0.02);
-   BOOST_CHECK_SMALL(Abs(m.tadpole_hh(5)), 0.1);
+   BOOST_CHECK_GT(Abs(m.tadpole_hh_1loop(0)), 100);
+   BOOST_CHECK_GT(Abs(m.tadpole_hh_1loop(1)), 100);
+   BOOST_CHECK_GT(Abs(m.tadpole_hh_1loop(2)), 100);
+   BOOST_CHECK_SMALL(Abs(m.tadpole_hh_1loop(3)), 0.2);
+   BOOST_CHECK_SMALL(Abs(m.tadpole_hh_1loop(4)), 0.02);
+   BOOST_CHECK_SMALL(Abs(m.tadpole_hh_1loop(5)), 0.1);
 }
 
 BOOST_AUTO_TEST_CASE( test_NMSSMCPV_one_loop_tadpoles )
@@ -245,23 +245,23 @@ BOOST_AUTO_TEST_CASE( test_NMSSMCPV_one_loop_tadpoles )
 
    m.calculate_DRbar_masses();
 
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(0))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(1))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(2))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(3))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(4))), precision);
-   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh(5))), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(0)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(1)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(2)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(3)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(4)), precision);
-   BOOST_CHECK_SMALL(Im(m.tadpole_hh(5)), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(0))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(1))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(2))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(3))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(4))), precision);
+   BOOST_CHECK_GT(Abs(Re(m.tadpole_hh_1loop(5))), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(0)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(1)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(2)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(3)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(4)), precision);
+   BOOST_CHECK_SMALL(Im(m.tadpole_hh_1loop(5)), precision);
 
    const double vu = m.get_vu(), vd = m.get_vd();
 
    // check relation between one-loop tadpoles 3 and 4
-   BOOST_CHECK_CLOSE_FRACTION(Re(m.tadpole_hh(3)), (vu/vd) * Re(m.tadpole_hh(4)), 1e-10);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.tadpole_hh_1loop(3)), (vu/vd) * Re(m.tadpole_hh_1loop(4)), 1e-10);
 
    const int neq = NMSSMCPV<Two_scale>::number_of_ewsb_equations;
    double tadpole[neq] = { 0. };

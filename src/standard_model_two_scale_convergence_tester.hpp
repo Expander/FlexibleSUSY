@@ -22,8 +22,8 @@
 #define STANDARD_MODEL_TWO_SCALE_CONVERGENCE_TESTER_H
 
 #include "standard_model_convergence_tester.hpp"
+#include "convergence_tester_drbar.hpp"
 #include "standard_model_two_scale_model.hpp"
-#include "two_scale_convergence_tester_drbar.hpp"
 
 namespace flexiblesusy {
 
@@ -35,11 +35,13 @@ template<>
 class Standard_model_convergence_tester<Two_scale>
    : public Convergence_tester_DRbar<StandardModel<Two_scale> > {
 public:
-   Standard_model_convergence_tester(StandardModel<Two_scale>*, double);
-   virtual ~Standard_model_convergence_tester();
+   using Scale_getter = Convergence_tester_DRbar<StandardModel<Two_scale>>::Scale_getter;
+
+   Standard_model_convergence_tester(StandardModel<Two_scale>*, double, const Scale_getter& sg = Scale_getter());
+   virtual ~Standard_model_convergence_tester() = default;
 
 protected:
-   virtual double max_rel_diff() const;
+   virtual double max_rel_diff() const override;
 };
 
 } // namespace standard_model

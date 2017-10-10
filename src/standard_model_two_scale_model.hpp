@@ -29,8 +29,8 @@
 #ifndef STANDARD_MODEL_TWO_SCALE_MODEL_H
 #define STANDARD_MODEL_TWO_SCALE_MODEL_H
 
+#include "model.hpp"
 #include "standard_model.hpp"
-#include "two_scale_model.hpp"
 
 namespace flexiblesusy {
 
@@ -43,18 +43,18 @@ class Two_scale;
 namespace standard_model {
 
 template<>
-class StandardModel<Two_scale> : public Two_scale_model, public Standard_model {
+class StandardModel<Two_scale> : public Model, public Standard_model {
 public:
    StandardModel();
-   virtual ~StandardModel();
+   virtual ~StandardModel() = default;
 
    // interface functions
-   virtual void calculate_spectrum();
-   virtual void clear_problems();
-   virtual std::string name() const;
-   virtual void run_to(double scale, double eps = -1.0);
-   virtual void print(std::ostream&) const;
-   virtual void set_precision(double);
+   virtual void calculate_spectrum() override;
+   virtual void clear_problems() override;
+   virtual std::string name() const override;
+   virtual void run_to(double scale, double eps = -1.0) override;
+   virtual void print(std::ostream&) const override;
+   virtual void set_precision(double) override;
 };
 
 } // namespace standard_model

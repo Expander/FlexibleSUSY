@@ -1,3 +1,25 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
 BeginPackage["FSMathLink`", {"CConversion`", "Parameters`", "Observables`", "Utils`"}];
 
 GetNumberOfInputParameterRules::usage = "";
@@ -26,7 +48,8 @@ PutInputParameters[inputPars_List, linkName_String] :=
 CreateComponent[CConversion`realScalarCType | CConversion`integerScalarCType, pars_String:"pars", count_String:"c"] :=
     pars <> "[" <> count <> "++];\n";
 CreateComponent[CConversion`complexScalarCType, pars_String:"pars", count_String:"c"] :=
-    "std::complex<double>(" <> pars <> "[" <> count <> "], " <> pars <> "[" <> count <> "+1]); " <> count <> " += 2;\n";
+    CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+    "(" <> pars <> "[" <> count <> "], " <> pars <> "[" <> count <> "+1]); " <> count <> " += 2;\n";
 
 SetInputParameterFromArguments[{par_, CConversion`ScalarType[st_]}] :=
     Module[{parStr = CConversion`ToValidCSymbolString[par]},
@@ -163,9 +186,20 @@ PutParameter[par_, link_String] :=
 PutSpectrum[pars_List, link_String] :=
     StringJoin[PutParameter[#,link]& /@ pars];
 
-PutObservable[obs_, type_, link_String] :=
-    "MLPutRuleTo(" <> link <> ", OBSERVABLE(" <> Observables`GetObservableName[obs] <>
-    "), \"" <> ToString[obs] <> "\");\n";
+ObsToStr[obs_?NumericQ] := ToString[obs + 1]; (* +1 to convert to Mathematica's index convention *)
+ObsToStr[obs_] := "\"" <> ToString[obs] <> "\"";
+
+HeadToStr[sym_]    := "\"" <> ToString[sym] <> "\"";
+HeadsToStr[{}]     := "";
+HeadsToStr[l_List] := ", {" <> StringJoin[Riffle[HeadToStr /@ l, ", "]] <> "}";
+
+PutObservable[obs_[sub_], type_, link_String, heads_:{}] :=
+    PutObservable[sub, type, link, Join[heads, {obs}]];
+
+PutObservable[obs_, type_, link_String, heads_:{}] :=
+    "MLPutRuleTo(" <> link <> ", OBSERVABLE(" <>
+    Observables`GetObservableName[Composition[Sequence @@ heads][obs]] <>
+    "), " <> ObsToStr[obs] <> HeadsToStr[heads] <> ");\n";
 
 PutObservables[obs_List, link_String] :=
     StringJoin[PutObservable[#, Observables`GetObservableType[#], link]& /@ obs];

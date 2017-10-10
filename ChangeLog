@@ -1,3 +1,401 @@
+FlexibleSUSY 2.0.0 [not released yet]
+
+ * Feature: The weak mixing angle can now be calculated from the muon
+   decay constant at the full 1-loop level (including flavour mixing
+   effects) in a wide range of models.  2-loop corrections of the
+   order O(alpha_em*alpha_s + alpha_t^2) are taken into account, if
+   applicable.
+
+   The method to calculate the weak mixing angle can be chosen in the
+   model file by setting the variable FSWeakMixingAngleInput to either
+   Automatic, FSFermiConstant or FSMassW.  If FSWeakMixingAngleInput
+   == FSFermiConstant, then the muon decay constant will be used to
+   determine the weak mixing angle.  If FSWeakMixingAngleInput ==
+   FSMassW, then the W mass will be used.  If FSWeakMixingAngleInput
+   == Automatic (this is the default), then most precise applicable
+   method is chosen automatically.
+
+   Example:
+
+   FSWeakMixingAngleInput = Automatic; (* recommended *)
+
+   The variable FSWeakMixingAngleOptions has been removed and can no
+   longer be used.
+
+ * Feature: BSM contributions to the anomalous magnetic moment of the
+   muon, a_mu, at the 1L level in any given BSM model.  Note: Diagrams
+   with non-SM vector bosons are not taken into account.
+
+   In order to let FlexibleSUSY calculate a_mu, the symbol
+   FlexibleSUSYObservable`aMuon must be written into an SLHA output
+   block in the ExtraSLHAOutputBlocks variable in the FlexibleSUSY
+   model file.
+
+   Example:
+
+   ExtraSLHAOutputBlocks = {
+      {FlexibleSUSYLowEnergy,
+         {{21, FlexibleSUSYObservable`aMuon}}}
+   };
+
+   Thanks to Jobst Ziebell.
+
+ * Feature: BSM contributions to the electric dipole moment of
+   fermions at the 1L level in any given BSM model.  Note: Diagrams
+   with non-SM vector bosons are not taken into account.
+
+   In order to let FlexibleSUSY calculate the EDM of a fermion F, the
+   symbol FlexibleSUSYObservable`EDM[F] must be written into an SLHA
+   output block in the ExtraSLHAOutputBlocks variable in the
+   FlexibleSUSY model file.  If F is a multiplet, the field index must
+   be specified, for example FlexibleSUSYObservable`EDM[F[1]] for the
+   first field in the multiplet.
+
+   Example:
+
+   ExtraSLHAOutputBlocks = {
+      {FlexibleSUSYLowEnergy,
+         {{23, FlexibleSUSYObservable`EDM[Fe[1]]},
+          {24, FlexibleSUSYObservable`EDM[Fe[2]]},
+          {25, FlexibleSUSYObservable`EDM[Fe[3]]} } }
+   };
+
+   Thanks to Jobst Ziebell.
+
+ * Feature: New functions, FS<model>GetProblems[],
+   FS<model>GetWarnings[] and FS<model>ToSLHA[], have been added to
+   FlexibleSUSY's spectrum generator Mathematica interface.  The first
+   two functions return details about problems / warnings for the
+   given parameter point.  The third one formats the output according
+   to the SLHA standard.
+
+ * Feature: 3-loop beta functions (if available) are calculated in
+   parallel if multi-threading is enabled.  This leads to a ~25% speed
+   improvement in the MSSM when 3-loop RG running is used.
+
+ * Feature: Support for SLHA-2 input block IMEXTPAR.
+
+ * Feature: The full 2-loop O(alpha_s^2) corrections to the DR-bar top
+   and bottom Yukawa couplings [arxiv:hep-ph/0210258,
+   arxiv:hep-ph/0507139, arxiv:hep-ph/0707.0650] can be added by
+   setting
+
+     UseMSSMYukawa2Loop = True
+
+   in the model file.
+   Thanks to Alexander Bednyakov for providing the expressions.
+
+ * Feature: The full 2-loop O(alpha_s^2 + alpha_t*alpha_s +
+   alpha_b*alpha_s) corrections to the strong coupling
+   [hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455] can be added by
+   setting
+
+     UseMSSMAlphaS2Loop = True
+
+   in the model file.
+
+   Thanks to Ben Allanach for providing the expressions, which have
+   been extracted from SOFTSUSY 4.0.1.
+
+ * Feature: The 2- and 3-loop SM-QCD threshold corrections O(alpha_s^2
+   + alpha_s^3) corrections to the strong coupling [hep-ph/0004189]
+   can be added by setting
+
+     UseSMAlphaS3Loop = True
+
+   in the model file.
+
+ * Feature: The SQLite database output now contains the MS-bar/DR-bar
+   mass spectrum and mixing matrices, in addition to the pole mass
+   spectrum.
+
+ * Feature: The loop orders of the threshold corrections of the SM(5)
+   parameters to the BSM model can now be selected individually by
+   using the flag FlexibleSUSY[24] in the SLHA input file or the
+   thresholdCorrections variable in the Mathematica interface.  The
+   given value consists of 9 digits, each one representing the
+   threshold correction loop order of a parameter:
+
+     digit position n    | default value       | parameter
+                         | (prefactor of 10^n) |
+     -------------------:|---------------------|-------------------
+      0                  | 1 (1-loop)          | alpha_em
+      1                  | 2 (2-loop)          | sin(theta_W)
+      2                  | 3 (3-loop)          | alpha_s
+      3                  | 1 (1-loop)          | m_Z
+      4                  | 1 (1-loop)          | m_W
+      5                  | 1 (1-loop)          | m_h
+      6                  | 3 (3-loop)          | m_t
+      7                  | 2 (2-loop)          | m_b
+      8                  | 1 (1-loop)          | m_\tau
+
+   The default value is 123111321, which corresponds to the loop
+   orders given in the above table.
+
+ * Feature: An additional boundary value problem solution algorithm,
+   based on expanding the soft SUSY breaking or dimensionful
+   parameters in terms of semi-analytic solutions to the RGEs, can
+   now be used to calculate the spectrum in a model.
+
+   The boundary value solver algorithms to be used in a model can be
+   specified by setting the variable FSBVPSolvers to be a list
+   containing all of the desired solvers in the model file.  By
+   default, this is set to FSBVPSolvers = { TwoScaleSolver },
+   corresponding to only the two-scale solver being enabled.
+
+   Example: To enable only the semi-analytic solver instead, the
+   model file should contain the setting
+
+      FSBVPSolvers = { SemiAnalyticSolver };
+
+   Currently, the semi-analytic solver can be used in models where
+   all of the parameters to be expanded are fixed in the same
+   boundary condition, such as the CMSSM or CNMSSM.
+
+ * Feature: The 3-loop corrections to the Standard Model Higgs mass of
+   the order O(alpha_t^3 + alpha_t^2 alpha_s + alpha_t alpha_s^2) of
+   [arxiv:1407.4336] can be taken into account by setting
+
+      UseHiggs3LoopSM = True;
+
+   in the FlexibleSUSY model file.  In addition, the pole mass loop
+   order must be set to a value greater or equal to 3 to switch the
+   corrections on (SLHA input: FlexibleSUSY[4], Mathematica interface:
+   poleMassLoopOrder).  To switch on/off the individual 3-loop
+   contributions, the SLHA input flags FlexibleSUSY[26-29] or the
+   Mathematica symbols
+
+      higgs3loopCorrectionAtAsAs
+      higgs3loopCorrectionAbAsAs
+      higgs3loopCorrectionAtAtAs
+      higgs3loopCorrectionAtAtAt
+
+   can be used.
+
+ * Feature: In the MSSM, the 3-loop corrections O(alpha_t*alpha_s^2)
+   and O(alpha_b*alpha_s^2) to the Higgs pole mass from Ref.
+   [arxiv:hep-ph/1005.5709] can be taken into account.  The
+   corrections are taken from the Himalaya package [arxiv:XXXX.YYYY].
+   Himalaya can be downloaded from
+
+      https://github.com/jklappert/Himalaya
+
+   To build Himalaya, run
+
+      $ cd $HIMALAY_PATH
+      $ mkdir build
+      $ cd build
+      $ cmake ..
+      $ make
+
+   where $HIMALAY_PATH is the path to the Himalaya package.
+
+   To enable the 3-loop corrections in a FlexibleSUSY model, set the
+   following flag in the FlexibleSUSY model file:
+
+      UseHiggs3LoopMSSM = True;
+
+   In addition, we strongly recommend to set
+
+      UseHiggs2LoopMSSM = True;
+      EffectiveMu = \[Mu]; (* chose sign convention for mu parameter *)
+      UseMSSMYukawa2Loop = True;
+      UseMSSMAlphaS2Loop = True;
+      UseMSSM3LoopRGEs = True;
+
+   There are already three model files with all these corrections
+   enabled: MSSMNoFVatMGUTHimalaya, MSSMNoFVHimalaya,
+   NUHMSSMNoFVHimalaya.
+
+   To build the FlexibleSUSY spectrum generator with the 3-loop
+   corrections from Himalaya, the location of the Himalaya library and
+   the Himalaya header files must be passed to the configure script:
+
+     $ ./configure --with-models=[...] \
+       --enable-himalaya \
+       --with-himalaya-incdir=$HIMALAY_PATH/source/include \
+       --with-himalaya-libdir=$HIMALAY_PATH/build
+     $ make
+
+   To enable the 3-loop corrections at run-time, the following flags
+   should be set in the SLHA input:
+
+      Block FlexibleSUSY
+          4   3          # pole mass loop order
+          5   3          # EWSB loop order
+          6   3          # beta-functions loop order
+          7   2          # threshold corrections loop order
+          8   1          # Higgs 2-loop corrections O(alpha_t alpha_s)
+          9   1          # Higgs 2-loop corrections O(alpha_b alpha_s)
+         10   1          # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+         11   1          # Higgs 2-loop corrections O(alpha_tau^2)
+         24   123111221  # individual threshold correction loop orders
+         25   0          # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
+         26   1          # Higgs 3-loop corrections O(alpha_t alpha_s^2)
+         27   1          # Higgs 3-loop corrections O(alpha_b alpha_s^2)
+
+   In FlexibleSUSY's Mathematica interface, the following settings
+   should be used:
+
+      fsSettings -> {
+          poleMassLoopOrder -> 3,            (* FlexibleSUSY[4] *)
+          ewsbLoopOrder -> 3,                (* FlexibleSUSY[5] *)
+          betaFunctionLoopOrder -> 3,        (* FlexibleSUSY[6] *)
+          thresholdCorrectionsLoopOrder -> 2,(* FlexibleSUSY[7] *)
+          higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
+          higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
+          higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
+          higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
+          thresholdCorrections -> 123111221, (* FlexibleSUSY[24] *)
+          higgs3loopCorrectionRenScheme -> 0,(* FlexibleSUSY[25] *)
+          higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
+          higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
+      }
+
+ * Feature: Adding complete 1-loop O(alpha_tau + alpha_b) and complete
+   2-loop O((alpha_t + alpha_b)^2 + atau^2) threshold corrections for
+   lambda(MSUSY) to the HSSUSY model file from [arXiv:1703.08166].
+   Many thanks to Pietro Slavich and Emanuele Bagnaschi for providing
+   the expressions.
+
+   Note: 5 new flags are introduced to enable/disable the individual
+   2-loop corrections.  In the SLHA input the flags which control the
+   inclusion of 2-loop corrections are:
+
+      Block EXTPAR                 # Input parameters
+        100   2                    # LambdaLoopOrder
+        101   1                    # TwoLoopAtAs
+        102   1                    # TwoLoopAbAs
+        103   1                    # TwoLoopAtAb
+        104   1                    # TwoLoopAtauAtau
+        105   1                    # TwoLoopAtAt
+
+   In the Mathematica interface the flags which control the inclusion
+   of 2-loop corrections are:
+
+      handle = FSHSSUSYOpenHandle[
+         fsModelParameters -> {
+            ...
+            LambdaLoopOrder -> 2,
+            TwoLoopAtAs -> 1,
+            TwoLoopAbAs -> 1,
+            TwoLoopAtAb -> 1,
+            TwoLoopAtauAtau -> 1,
+            TwoLoopAtAt -> 1
+         }
+      ]
+
+ * Feature: Adding the new input parameter DeltaEFT to the HSSUSY
+   spectrum generator to allow the user to estimate the EFT
+   uncertainty.  Each 1-loop term in the threshold correction for
+   lambda(MS) is multiplied by the factor
+
+      (1 + DeltaEFT v^2/MS^2)
+
+   Thus, the standard calculation of HSSUSY is obtained by DeltaEFT =
+   0 (default).  Set DeltaEFT = 1 to obtain an alternative Higgs pole
+   mass with a shifted threshold correction to estimate the effect of
+   the missing terms of O(v^2/MS^2).
+
+ * Change: The interface for adding constraints and matching
+   conditions to the Two_scale_solver class has been simplified.
+   Constrains and matching conditions are now added using the add()
+   function.  The added constraints and matching conditions are
+   imposed in the given order.
+
+   Example: To first impose the low-scale, then the high-scale and
+   finally the susy-scale constraint call
+
+   solver.add(&low_scale_constraint, &model);
+   solver.add(&high_scale_constraint, &model);
+   solver.add(&susy_scale_constraint, &model);
+
+ * Change: The readability of the vertices and the self-energies has
+   been improved by using the SUM() and IF() macros.
+
+ * Change: In FlexibleEFTHiggs models, the Standard Model parameters
+   are written to the SLHA output in addition to the BSM parameters.
+
+ * Change: The return value of FS<model>CalculateSpectrum[] and
+   FS<model>CalculateObservables[] has been changed.  They have now
+   the structure
+
+      { <model> -> { model parameters ... } }
+
+   In FlexibleEFTHiggs models, the Standard Model parameters are
+   returned in addition and the output has the form
+
+      { <model> -> { model parameters ... },
+        StandardModel -> { ... } }
+
+ * Change: In multi-threading mode pole masses are calculated using a
+   thread pool instead of spawning threads manually.  This avoids over
+   subscription on machines with very few CPU cores.
+
+ * Change: The performance of FlexibleEFTHiggs has been improved by
+   around 20% by using a faster implementation of the B1 loop function
+   in the limit of vanishing momentum and non-zero masses.
+
+ * Change (commit b5cad9e): Automatically chose the maximum number of
+   EWSB and pole mass iterations based on the user-defined precision
+   goal.  This change leads to a performance improvement for some
+   parameter points where the EWSB equations cannot be fulfilled.
+
+ * Change: The legacy module and most SOFTSUSY components have been
+   removed.
+
+ * Change: All gauge couplings written to the GAUGE block in the SLHA
+   output are now unnormalized.  Before, only the hypercharge gauge
+   coupling was written as unnormalized in the GAUGE block.  Note:
+   Internally, FlexibleSUSY uses normalized gauge couplings only.  In
+   order to write the normalized gauge couplings to the SLHA output, a
+   separate output block should be created.
+
+   Example:
+
+      ExtraSLHAOutputBlocks = {
+         {GAUGENORM, (* contains normalized gauge couplings *)
+                 {{1, g1},
+                  {2, g2},
+                  {3, g3},
+                  {4, gN} } }
+      };
+
+ * Change (commit 9bfd5f1): tan(beta)-enhanced contributions to the
+   down-lepton Yukawa couplings are now resummed.
+
+ * Change (commit 52faaa7): The symbol SUSYScaleMatching has been
+   renamed to MatchingScaleInput, to express that it is imposed at the
+   matching scale, which is in general not equal to the SUSYScale.
+
+ * Change (commit d738afc): The W boson pole mass is calculated at the
+   same scale as the other pole masses.  By default this is the value
+   given by the SUSYScale model file variable.  At run-time the scale
+   can be changed using the SLHA input field FlexibleSUSY[17] or the
+   `poleMassScale' symbol in the Mathematica interface.  Note, that
+   the W pole mass is only written to the output if the SLHA input
+   field FlexibleSUSY[3] is non-zero or `calculateStandardModelMasses'
+   is non-zero in the Mathematica interface.
+
+ * Change: Update to GM2Calc 1.3.3.
+
+ * Bugfix (commits be8f35b, 3432967): Improve the stability of the
+   algorithm which solves the EWSB conditions.  The more stable
+   algorithm leads to a faster convergece of the overall iteration in
+   scenarios where the EWSB conditions don't have a solution or the
+   solution is hard to find.
+
+   Thanks to Peter Athron and Pat Scott.
+
+ * Bugfix (commit 0cb4042): Matrix products of the form A*B in the
+   boundary conditions are now interpreted as element-wise products
+   (as in Mathematica).  For genuine matrix products use MatMul[A,B]
+   or A.B.
+
+ * Bugfix (commits 9738ba1, 118a9a70): Catch potential numerical
+   instabilities during mass matrix diagonalization, which may result
+   in eigenvectors with magnitude larger than 1.
+
 FlexibleSUSY-1.7.5 [September, 05 2017]
 
  * Bugfix (commit 03e9265): Correcting wrong vertex between
@@ -157,10 +555,11 @@ FlexibleSUSY-1.7.0 [September, 19 2016]
  * Feature: FlexibleSUSY is now able to generate custom spectrum
    generators using the FlexibleEFTHiggs method described in
    [arXiv:1609.00371].  The following FlexibleEFTHiggs example models
-   are provided: CMSSMtower, MSSMtower, MSSMNoFVtower, NMSSMtower,
-   NUHMSSMalttower, MRSSMtower, E6SSMtower.  A documentation of the
-   new model file options to create a custom FlexibleEFTHiggs spectrum
-   generator can be found in doc/html/FlexibleEFTHiggs.html .
+   are provided: CMSSMEFTHiggs, MSSMEFTHiggs, MSSMNoFVEFTHiggs,
+   NMSSMEFTHiggs, NUHMSSMaltEFTHiggs, MRSSMEFTHiggs, E6SSMEFTHiggs.  A
+   documentation of the new model file options to create a custom
+   FlexibleEFTHiggs spectrum generator can be found in
+   doc/html/FlexibleEFTHiggs.html .
 
  * Feature: FlexibleSUSY now provides a Mathematica interface for the
    generated spectrum generators.  For each model, an example

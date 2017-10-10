@@ -17,12 +17,12 @@ void ensure_tree_level_ewsb(CMSSM<Two_scale>& m)
    // ensure that the EWSB eqs. are satisfied (Drees p.222)
    const double vu = m.get_vu();
    const double vd = m.get_vd();
-   const double gY = m.get_g1() * sqrt(0.6);
+   const double gY = m.get_g1() * Sqrt(0.6);
    const double g2 = m.get_g2();
    const double Mu = m.get_Mu();
    const double BMu = m.get_BMu();
-   const double mHd2 = BMu*vu/vd - (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
-   const double mHu2 = BMu*vd/vu + (sqr(gY) + sqr(g2))*(sqr(vd) - sqr(vu))/8. - sqr(Mu);
+   const double mHd2 = BMu*vu/vd - (Sqr(gY) + Sqr(g2))*(Sqr(vd) - Sqr(vu))/8. - Sqr(Mu);
+   const double mHu2 = BMu*vd/vu + (Sqr(gY) + Sqr(g2))*(Sqr(vd) - Sqr(vu))/8. - Sqr(Mu);
    m.set_mHd2(mHd2);
    m.set_mHu2(mHu2);
 }
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
    const double mt_pole_input = qedqcd.displayPoleMt();
    const double vu = m.get_vu();
 
-   BOOST_MESSAGE("mt_pole(input) = " << mt_pole_input);
+   BOOST_TEST_MESSAGE("mt_pole(input) = " << mt_pole_input);
 
    // calculate DR-bar masses
    m.solve_ewsb_tree_level();
@@ -121,9 +121,9 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
       BOOST_FAIL(ostr.str());
    }
 
-   BOOST_MESSAGE("mt_drbar(guess) = " << m.get_MFu(2));
+   BOOST_TEST_MESSAGE("mt_drbar(guess) = " << m.get_MFu(2));
 
-   unsigned iterations = 100;
+   int iterations = 100;
 
    // calculate top DR-bar mass from top pole mass using two-loop
    // corrections
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
       }
    } while (--iterations);
 
-   BOOST_MESSAGE("mt_drbar(2-loop) = " << m.get_MFu(2));
+   BOOST_TEST_MESSAGE("mt_drbar(2-loop) = " << m.get_MFu(2));
 
    m.set_pole_mass_loop_order(2);
    m.calculate_MFu_pole();
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_two_loop_top_pole_mass )
 
    const double mt_pole_2loop  = m.get_physical().MFu(2);
 
-   BOOST_MESSAGE("mt_pole(2-loop) = " << mt_pole_2loop);
+   BOOST_TEST_MESSAGE("mt_pole(2-loop) = " << mt_pole_2loop);
 
    BOOST_CHECK_CLOSE_FRACTION(mt_pole_input, mt_pole_2loop, 1.4e-3);
 }

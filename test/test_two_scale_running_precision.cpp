@@ -1,10 +1,14 @@
 
+#include "convergence_tester.hpp"
+#include "model.hpp"
+#include "single_scale_constraint.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_model.hpp"
-#include "two_scale_constraint.hpp"
-#include "two_scale_convergence_tester.hpp"
 #include "two_scale_running_precision.hpp"
 #include "error.hpp"
+
+#include "mock_convergence_testers.hpp"
+#include "mock_models.hpp"
+#include "mock_single_scale_constraints.hpp"
 
 #include <cmath>
 
@@ -47,48 +51,11 @@ BOOST_AUTO_TEST_CASE( test_increasing_running_precision )
    }
 }
 
-class Static_convergence_tester : public Convergence_tester<Two_scale> {
-public:
-   Static_convergence_tester(unsigned int max_iterations_)
-      : iteration(0), maximum_iterations(max_iterations_) {}
-   virtual ~Static_convergence_tester() {}
-   virtual bool accuracy_goal_reached() {
-      return false;
-   }
-   virtual unsigned int max_iterations() const {
-      return maximum_iterations;
-   }
-private:
-   unsigned int iteration, maximum_iterations;
-};
-
-class Static_model: public Two_scale_model {
-public:
-   Static_model() {}
-   virtual ~Static_model() {}
-   virtual void calculate_spectrum() {}
-   virtual std::string name() const { return "Static_model"; }
-   virtual void run_to(double, double) {}
-   virtual void set_precision(double) {}
-};
-
-class Static_constraint : public Constraint<Two_scale> {
-public:
-   Static_constraint(double scale_)
-      : scale(scale_) {}
-   virtual ~Static_constraint() {}
-   virtual void apply() {}
-   virtual double get_scale() const { return scale; }
-   virtual void set_model(Two_scale_model*) {}
-private:
-   double scale;
-};
-
 class Test_increasing_precision : public Two_scale_running_precision {
 public:
    Test_increasing_precision() : call(0) {}
    virtual ~Test_increasing_precision() {}
-   virtual double get_precision(unsigned it) {
+   virtual double get_precision(int it) {
       // Check that every time this function is called the argument is
       // increased by 1, beginning with 0.
       BOOST_CHECK_EQUAL(call, it);
@@ -96,7 +63,7 @@ public:
       return 1.0e-3;
    }
 private:
-   unsigned call; ///< stores number of calls of get_precision()
+   int call; ///< stores number of calls of get_precision()
 };
 
 BOOST_AUTO_TEST_CASE( test_increasing_iteration_number )
@@ -111,15 +78,12 @@ BOOST_AUTO_TEST_CASE( test_increasing_iteration_number )
    Static_model model;
 
    Static_constraint c1(100), c2(200);
-   std::vector<Constraint<Two_scale>*> constraints;
-   constraints.push_back(&c1);
-   constraints.push_back(&c2);
-
    Static_convergence_tester ccc(10);
    Test_increasing_precision incr_prec;
 
    RGFlow<Two_scale> solver;
-   solver.add_model(&model, constraints);
+   solver.add(&c1, &model);
+   solver.add(&c2, &model);
    solver.set_convergence_tester(&ccc);
    solver.set_running_precision(&incr_prec);
 

@@ -16,10 +16,19 @@ EXTPAR = {
     {22, mHu2IN}
 };
 
-FSExtraInputParameters = {
-    {Aeij, AeijIN, {3,3}}, (* 3x3 matrix *)
-    {Adij, AdijIN, {3,3}}, (* 3x3 matrix *)
-    {Auij, AuijIN, {3,3}}  (* 3x3 matrix *)
+FSAuxiliaryParameterInfo = {
+    {Aeij, { LesHouches -> AEIN,
+             ParameterDimensions -> {3,3}, (* 3x3 matrix *)
+             InputParameter -> True
+           } },
+    {Adij, { LesHouches -> ADIN,
+             ParameterDimensions -> {3,3}, (* 3x3 matrix *)
+             InputParameter -> True
+           } },
+    {Auij, { LesHouches -> AUIN,
+             ParameterDimensions -> {3,3}, (* 3x3 matrix *)
+             InputParameter -> True
+           } }
 };
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };

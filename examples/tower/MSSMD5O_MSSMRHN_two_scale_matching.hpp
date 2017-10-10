@@ -21,7 +21,7 @@
 
 #include "MSSMD5O_MSSMRHN_matching.hpp"
 #include "MSSMD5O_input_parameters.hpp"
-#include "two_scale_matching.hpp"
+#include "single_scale_matching.hpp"
 
 namespace flexiblesusy {
 
@@ -33,18 +33,17 @@ class MSSMRHN;
 
 class Two_scale;
 
-template<>
-class MSSMD5O_MSSMRHN_matching<Two_scale> : public Matching<Two_scale> {
+class MSSMD5O_MSSMRHN_matching {
 public:
     MSSMD5O_MSSMRHN_matching();
     MSSMD5O_MSSMRHN_matching(const MSSMD5O_input_parameters&);
     void match_low_to_high_scale_model();
     void match_high_to_low_scale_model();
     double get_scale() const;
-    void set_models(Two_scale_model *lower, Two_scale_model *upper);
+    void set_models(Model *lower, Model *upper);
     double get_initial_scale_guess() const;
     void set_lower_input_parameters(const MSSMD5O_input_parameters&);
-    void set_scale(double);
+    void set_scale(double) {}
     void reset();
 
 private:
@@ -60,6 +59,40 @@ private:
     void invert_seesaw_formula
     (const Eigen::Matrix3d& WOp, const Eigen::Vector3d& YvDiag,
      Eigen::Matrix3d& Yv, Eigen::Matrix3d& Mv);
+};
+
+template<>
+class MSSMD5O_MSSMRHN_matching_up<Two_scale> : public Single_scale_matching {
+public:
+    MSSMD5O_MSSMRHN_matching_up();
+    MSSMD5O_MSSMRHN_matching_up(const MSSMD5O_input_parameters&);
+    void match();
+    double get_scale() const;
+    void set_models(Model *lower, Model *upper);
+    double get_initial_scale_guess() const;
+    void set_lower_input_parameters(const MSSMD5O_input_parameters&);
+    void set_scale(double);
+    void reset();
+
+private:
+    MSSMD5O_MSSMRHN_matching matching;
+};
+
+template<>
+class MSSMD5O_MSSMRHN_matching_down<Two_scale> : public Single_scale_matching {
+public:
+    MSSMD5O_MSSMRHN_matching_down();
+    MSSMD5O_MSSMRHN_matching_down(const MSSMD5O_input_parameters&);
+    void match();
+    double get_scale() const;
+    void set_models(Model *upper, Model *lower);
+    double get_initial_scale_guess() const;
+    void set_lower_input_parameters(const MSSMD5O_input_parameters&);
+    void set_scale(double);
+    void reset();
+
+private:
+    MSSMD5O_MSSMRHN_matching matching;
 };
 
 }

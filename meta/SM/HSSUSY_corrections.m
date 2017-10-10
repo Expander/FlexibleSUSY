@@ -1,3 +1,25 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
 (*** High-scale MSSM boundary conditions to the MSSM ***)
 (* Taken from arXiv:1407.4081, arxiv:1504.05200, arxiv:1703.08166 *)
 
@@ -32,75 +54,79 @@ lambdaTree = 1/4 (g2^2 + 3/5 g1^2) Cos[2 ArcTan[TanBeta]]^2;
 
 (* arXiv:1407.4081, Eq. (9) *)
 lambda1LReg = 1/(4 Pi)^2 (
-    - 9/100 g1^4 - 0.3 g1^2 g2^2
+    - 9/100 g1^4 - 3/10 g1^2 g2^2
     - (3/4 - Cos[2 ArcTan[TanBeta]]^2/6) * g2^4
     );
 
 (* arXiv:1407.4081, Eq. (10) *)
 lambda1LPhi = 1/(4 Pi)^2 (
-    3 Yu[3,3]^2 (Yu[3,3]^2 + 1/2 (g2^2-g1^2/5) Cos[2 ArcTan[TanBeta]]) Log[msq2[3,3]/SCALE^2]
-    + 3 Yu[3,3]^2 (Yu[3,3]^2 + 2/5 g1^2 Cos[2 ArcTan[TanBeta]]) Log[msu2[3,3]/SCALE^2]
+    3 Yu[3,3]^2 (Yu[3,3]^2 + 1/2 (g2^2-g1^2/5) Cos[2 ArcTan[TanBeta]]) Log[msq2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[msq2[3,3]])
+    + 3 Yu[3,3]^2 (Yu[3,3]^2 + 2/5 g1^2 Cos[2 ArcTan[TanBeta]]) Log[msu2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[msu2[3,3]])
     + Cos[2 ArcTan[TanBeta]]^2/300 (
         3 (g1^4 + 25 g2^4) (
-            + Log[msq2[1,1]/SCALE^2]
-            + Log[msq2[2,2]/SCALE^2]
-            + Log[msq2[3,3]/SCALE^2]
+            + Log[msq2[1,1]/SCALE^2] (1 + DeltaEFT v^2/Abs[msq2[1,1]])
+            + Log[msq2[2,2]/SCALE^2] (1 + DeltaEFT v^2/Abs[msq2[2,2]])
+            + Log[msq2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[msq2[3,3]])
         )
         + 24 g1^4 (
-            + Log[msu2[1,1]/SCALE^2]
-            + Log[msu2[2,2]/SCALE^2]
-            + Log[msu2[3,3]/SCALE^2]
+            + Log[msu2[1,1]/SCALE^2] (1 + DeltaEFT v^2/Abs[msu2[1,1]])
+            + Log[msu2[2,2]/SCALE^2] (1 + DeltaEFT v^2/Abs[msu2[2,2]])
+            + Log[msu2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[msu2[3,3]])
         )
         + 6 g1^4 (
-            + Log[msd2[1,1]/SCALE^2]
-            + Log[msd2[2,2]/SCALE^2]
-            + Log[msd2[3,3]/SCALE^2]
+            + Log[msd2[1,1]/SCALE^2] (1 + DeltaEFT v^2/Abs[msd2[1,1]])
+            + Log[msd2[2,2]/SCALE^2] (1 + DeltaEFT v^2/Abs[msd2[2,2]])
+            + Log[msd2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[msd2[3,3]])
         )
         + (9 g1^4 + 25 g2^4) (
-            + Log[msl2[1,1]/SCALE^2]
-            + Log[msl2[2,2]/SCALE^2]
-            + Log[msl2[3,3]/SCALE^2]
+            + Log[msl2[1,1]/SCALE^2] (1 + DeltaEFT v^2/Abs[msl2[1,1]])
+            + Log[msl2[2,2]/SCALE^2] (1 + DeltaEFT v^2/Abs[msl2[2,2]])
+            + Log[msl2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[msl2[3,3]])
         )
         + 18 g1^4 (
-            + Log[mse2[1,1]/SCALE^2]
-            + Log[mse2[2,2]/SCALE^2]
-            + Log[mse2[3,3]/SCALE^2]
+            + Log[mse2[1,1]/SCALE^2] (1 + DeltaEFT v^2/Abs[mse2[1,1]])
+            + Log[mse2[2,2]/SCALE^2] (1 + DeltaEFT v^2/Abs[mse2[2,2]])
+            + Log[mse2[3,3]/SCALE^2] (1 + DeltaEFT v^2/Abs[mse2[3,3]])
         )
     )
-    + 1/4800 (261 g1^4 + 630 g1^2 g2^2 + 1325 g2^4
-              -4 Cos[4 ArcTan[TanBeta]] (9 g1^4 + 90 g1^2 g2^2 + 175 g2^4)
-              -9 Cos[8 ArcTan[TanBeta]] (3 g1^2 + 5 g2^2)^2) Log[mAInput^2/SCALE^2]
-    - 3/16 (3/5 g1^2 + g2^2)^2 Sin[4 ArcTan[TanBeta]]^2
-    + 6 Yu[3,3]^4 xtt (TCF[1][xQU] - xtt/12 TCF[2][xQU])
-    + 3/4 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]] (3/5 g1^2 TCF[3][xQU] + g2^2 TCF[4][xQU])
-    - 1/4 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]]^2 (3/5 g1^2 + g2^2) TCF[5][xQU]
+    + (
+       + 1/4800 (261 g1^4 + 630 g1^2 g2^2 + 1325 g2^4
+                 -4 Cos[4 ArcTan[TanBeta]] (9 g1^4 + 90 g1^2 g2^2 + 175 g2^4)
+                 -9 Cos[8 ArcTan[TanBeta]] (3 g1^2 + 5 g2^2)^2) Log[mAInput^2/SCALE^2]
+       - 3/16 (3/5 g1^2 + g2^2)^2 Sin[4 ArcTan[TanBeta]]^2
+    ) (1 + DeltaEFT v^2/mAInput^2)
+    + (
+       + 6 Yu[3,3]^4 xtt (TCF[1][xQU] - xtt/12 TCF[2][xQU])
+       + 3/4 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]] (3/5 g1^2 TCF[3][xQU] + g2^2 TCF[4][xQU])
+       - 1/4 Yu[3,3]^2 xtt Cos[2 ArcTan[TanBeta]]^2 (3/5 g1^2 + g2^2) TCF[5][xQU]
+    ) (1 + DeltaEFT v^2/Min[Abs[msq2[3,3]],Abs[msu2[3,3]]])
     );
 
 (* arXiv:1407.4081, Eq. (11) *)
 lambda1LChi1 = With[
     { r1 = M1Input / MuInput, r2 = M2Input / MuInput },
     1/(4 Pi)^2 (
-        1/2 betaLambda Log[MuInput^2/SCALE^2]
-        - 7/12 TCf[1][r1] (gYd^4 + gYu^4)
-        - 9/4 TCf[2][r2] (g2d^4 + g2u^4)
-        - 3/2 TCf[3][r1] gYd^2 gYu^2
-        - 7/2 TCf[4][r2] g2d^2 g2u^2
-        - 8/3 TCf[5][r1,r2] gYd gYu g2d g2u
-        - 7/6 TCf[6][r1,r2] (gYd^2 g2d^2 + gYu^2 g2u^2)
-        - 1/6 TCf[7][r1,r2] (gYd^2 g2u^2 + gYu^2 g2d^2)
-        - 4/3 TCf[8][r1,r2] (gYd g2u + gYu g2d) (gYd g2d + gYu g2u)
-        + 2/3 TCf0[r1] gYd gYu (lambdaTree - 2 (gYd^2 + gYu^2))
-        + 2 TCf0[r2] g2d g2u (lambdaTree - 2 (g2d^2 + g2u^2))
-        + 1/3 TCg0[r1] lambdaTree (gYd^2 + gYu^2)
-        + TCg0[r2] lambdaTree (g2d^2 + g2u^2)
+        1/2 betaLambda Log[MuInput^2/SCALE^2]                       (1 + DeltaEFT v^2/MuInput^2)
+        - 7/12 TCf[1][r1] (gYd^4 + gYu^4)                           (1 + DeltaEFT v^2/Min[M1Input^2,MuInput^2])
+        - 9/4 TCf[2][r2] (g2d^4 + g2u^4)                            (1 + DeltaEFT v^2/Min[M2Input^2,MuInput^2])
+        - 3/2 TCf[3][r1] gYd^2 gYu^2                                (1 + DeltaEFT v^2/Min[M1Input^2,MuInput^2])
+        - 7/2 TCf[4][r2] g2d^2 g2u^2                                (1 + DeltaEFT v^2/Min[M2Input^2,MuInput^2])
+        - 8/3 TCf[5][r1,r2] gYd gYu g2d g2u                         (1 + DeltaEFT v^2/Min[M1Input^2,M2Input^2,MuInput^2])
+        - 7/6 TCf[6][r1,r2] (gYd^2 g2d^2 + gYu^2 g2u^2)             (1 + DeltaEFT v^2/Min[M1Input^2,M2Input^2,MuInput^2])
+        - 1/6 TCf[7][r1,r2] (gYd^2 g2u^2 + gYu^2 g2d^2)             (1 + DeltaEFT v^2/Min[M1Input^2,M2Input^2,MuInput^2])
+        - 4/3 TCf[8][r1,r2] (gYd g2u + gYu g2d) (gYd g2d + gYu g2u) (1 + DeltaEFT v^2/Min[M1Input^2,M2Input^2,MuInput^2])
+        + 2/3 TCf0[r1] gYd gYu (lambdaTree - 2 (gYd^2 + gYu^2))     (1 + DeltaEFT v^2/Min[M1Input^2,MuInput^2])
+        + 2 TCf0[r2] g2d g2u (lambdaTree - 2 (g2d^2 + g2u^2))       (1 + DeltaEFT v^2/Min[M2Input^2,MuInput^2])
+        + 1/3 TCg0[r1] lambdaTree (gYd^2 + gYu^2)                   (1 + DeltaEFT v^2/Min[M1Input^2,MuInput^2])
+        + TCg0[r2] lambdaTree (g2d^2 + g2u^2)                       (1 + DeltaEFT v^2/Min[M2Input^2,MuInput^2])
     )
 ];
 
 (* arXiv:1407.4081, Eq. (13) *)
 lambda1LChi2 = 1/(4 Pi)^2 (
     -1/6 Cos[2 ArcTan[TanBeta]]^2 (
-        + 2 g2^4 Log[M2Input^2/SCALE^2]
-        + (9/25 g1^4 + g2^4) Log[MuInput^2/SCALE^2]
+        + 2 g2^4 Log[M2Input^2/SCALE^2]             (1 + DeltaEFT v^2/M2Input^2)
+        + (9/25 g1^4 + g2^4) Log[MuInput^2/SCALE^2] (1 + DeltaEFT v^2/MuInput^2)
     )
 );
 
@@ -110,7 +136,7 @@ lambda1LChi2 = 1/(4 Pi)^2 (
    We express the correction in terms of the bottom yukawa of the MSSM
    to resum tanb enhanced corrections
 *)
-lambda1LbottomMSSM = With[{
+lambda1Lbottom = With[{
     Nc = 3,
     mQ3  = Sqrt[msq2[3,3]],
     mQ32 = msq2[3,3],
@@ -134,7 +160,7 @@ lambda1LbottomMSSM = With[{
     k = 1/(4 Pi)^2,
     CF = 4/3
     },
-      ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+      ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
         deltagsb   = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
         deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
         deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -147,7 +173,7 @@ lambda1LbottomMSSM = With[{
       - 1/4 ((3 g1^2)/5 + g2^2) Xtildeb ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]^2 cos2beta^2 TCF[5][xQD]
       + 3*ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]^2*(ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]^2 - 1/2*(g2^2+g1^2/5)*cos2beta)*Log[mQ32/Q2]
       + 3 ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]^2 (ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]^2 - 1/5 g1^2 cos2beta) Log[mD32/Q2]
-      )
+      ) (1 + DeltaEFT v^2/Min[Abs[msq2[3,3]], Abs[msu2[3,3]], Abs[msd2[3,3]], M3Input^2, MuInput^2])
 ];
 
 (* lambda 1-loop threshold correction O(alpha_tau),
@@ -165,7 +191,7 @@ lambda1Ltau = With[{
      + (XtildeTau*gtau^2*cos2beta*((-9*g1^2*TCF[3][xLE])/10 + ((3*g1^2)/10 - g2^2)*TCF[4][xLE]))/4
      -  (((3*g1^2)/5 + g2^2)*XtildeTau*gtau^2*cos2beta^2*TCF[5][xLE])/12
      + gtau^2*(gtau^2 - (3*g1^2*cos2beta)/5)*Log[ME32/Q2] + gtau^2*(gtau^2 - 1/2*(g2^2 - 3/5*g1^2)*cos2beta)*Log[ML32/Q2]
-     )
+     ) (1 + DeltaEFT v^2/Min[Abs[msl2[3,3]], Abs[mse2[3,3]], MuInput^2])
     ];
 
 (* lambda 2-loop threshold correction O(alpha_s alpha_t^2),
@@ -839,7 +865,7 @@ lambda2LHSSAlphaTAlphaBAllDegenerate = With[{
     sinb = Sin[ArcTan[TanBeta]],
     MA = mAInput
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -899,50 +925,6 @@ lambda2LHSSAlphaTAlphaBAllDegenerate = With[{
      sbe^2))
 ];
 
-(* SM-like Bottom yukawa of the MSSM *)
-gbMSSMATMS = With[{
-    k = 1/(4*Pi)^2,
-    sbe = Sqrt[TanBeta^2/(1+TanBeta^2)],
-    cbe = Sqrt[1/(1+TanBeta^2)],
-    Nc = 3, (* number of colors *)
-    Q  = msq2[3,3],
-    U  = msu2[3,3],
-    mD  = msd2[3,3],
-    mu2 = MuInput^2,
-    mQ3 = Sqrt[msq2[3,3]],
-    mU3 = Sqrt[msu2[3,3]],
-    mD3 = Sqrt[msd2[3,3]],
-    M3 = M3Input,
-    Mu = MuInput,
-    sgn = MuInput/Abs[MuInput],      
-    q2 = SCALE^2, (* renormalization/matching scale *)
-    Q2 = SCALE^2,
-    Xtildet = xtt,
-    Xtildeb = xbb,
-    cosb = Cos[ArcTan[TanBeta]],
-    sinb = Sin[ArcTan[TanBeta]],
-    MA = mAInput,
-    CF = 4/3,
-    gt = Yu[3,3], (* SM Yukawa coupling *)
-    gb = Yd[3,3],
-    A0 = mAInput^2,
-    Xt = xt,
-    Yt = yt,
-    Xb = xb,
-    Yb = yb
-      },
-      ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
-        deltagsb   = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
-        deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
-        deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
-        deltagbyL3 = - gt^2/sinb^2*k*(1/2*TCF[6][mU3/Mu]+(Xt*TanBeta)/(2*Mu)*TCF[9][mQ3/Mu,mU3/Mu] );
-        deltagbyL4 = - 1/2*(-gt^2*Nc*k*Xtildet/6*TCF[5][xQU]-gb^2*Nc*k*Xtildeb/6*TCF[5][xQD]);
-        (gb/(1-deltagsb-(deltagbyL1+deltagbyL2+deltagbyL3+deltagbyL4)))
-       ];      
-      ybMSSM[mQ3,mU3,mD3,M3,Mu,TanBeta,Xt,Xb]
-];
-  
-
 (* Top and bottom Yukawa lambda 2-loop threshold correction, computation with general masses *)
 lambda2LHSSAlphaTAlphaBGeneric = With[{
     k = 1/(4*Pi)^2,
@@ -975,7 +957,7 @@ lambda2LHSSAlphaTAlphaBGeneric = With[{
     Xb = xb,
     Yb = yb
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2148,7 +2130,7 @@ lambda2LHSSTau = With[{
     MA = mAInput,
     CF = 4/3
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2465,7 +2447,7 @@ lambda2LPhiHSSAlphaBAlphaSFull = With[{
     MA = mAInput,
     CF = 4/3
     },
-    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+    ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2556,7 +2538,7 @@ lambda2LPhiHSSAlphaBAlphaSDegenerate = With[{
     MA = mAInput,
     CF = 4/3
   },
-  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));
@@ -2598,7 +2580,7 @@ lambda2LPhiHSSAlphaBAlphaSDegenerateSquark = With[{
     MA = mAInput,
     CF = 4/3
   },
-  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := With[{},
+  ybMSSM[mQ3_,mU3_,mD3_,M3_,Mu_,TanBeta_,Xt_,Xb_] := Module[{deltagsb, deltagbyL1, deltagbyL2, deltagbyL3, deltagbyL4},
           deltagsb = - g3^2*CF*k*(1+Log[M3^2/Q2]+TCF[6][mQ3/M3]+TCF[6][mD3/M3]-Xb/M3*TCF[9][mQ3/M3,mD3/M3]);
           deltagbyL1 = - gb^2/cosb^2*k*(3/4*Log[Mu^2/Q2]+3/8*sinb^2*(2*Log[MA^2/Q2]-1)+TCF[6][mQ3/Mu]+1/2*TCF[6][mD3/Mu]);
           deltagbyL2 = - gt^2/sinb^2*k*(1/4*Log[Mu^2/Q2]+1/8*cosb^2*(2*Log[MA^2/Q2]-1)+sinb^2*(Log[MA^2/Q2]-1));

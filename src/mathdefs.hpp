@@ -8,8 +8,8 @@
 
 namespace flexiblesusy {
 
-typedef double Real;
-typedef std::complex<Real> Comp;
+using Real = double;
+using Comp = std::complex<Real>;
 
 
 const double pi = M_PI;
@@ -68,6 +68,6 @@ template<class T> inline T sign(T x)
     else return -1;
 }
 
-}
+} // namespace flexiblesusy
 
 #endif // mathdefs_hpp

@@ -20,7 +20,9 @@
 #define BOOST_TEST_MODULE test_eigen_utils
 
 #include <boost/test/unit_test.hpp>
+#include <typeinfo>
 #include "eigen_utils.hpp"
+#include <complex>
 
 using namespace flexiblesusy;
 
@@ -61,6 +63,19 @@ BOOST_AUTO_TEST_CASE(test_reorder_vector)
    BOOST_CHECK_EQUAL(vec1(0), 3);
    BOOST_CHECK_EQUAL(vec1(1), 1);
    BOOST_CHECK_EQUAL(vec1(2), 2);
+}
+
+BOOST_AUTO_TEST_CASE(test_reorder_vector_abs)
+{
+   Eigen::Array<double,3,1> vec1, vec2;
+   vec1 << 1, 2, 3;
+   vec2 << 1, 2, -3;
+
+   reorder_vector(vec1, vec2);
+
+   BOOST_CHECK_EQUAL(vec1(0), 2);
+   BOOST_CHECK_EQUAL(vec1(1), 3);
+   BOOST_CHECK_EQUAL(vec1(2), 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_reorder_vector_with_matrix)
@@ -108,4 +123,70 @@ BOOST_AUTO_TEST_CASE(test_remove_if_equal_double_indices)
    BOOST_CHECK_EQUAL(dst(0), 1);
    BOOST_CHECK_EQUAL(dst(1), 4);
    BOOST_CHECK_EQUAL(dst(2), 5);
+}
+
+BOOST_AUTO_TEST_CASE(test_Eval)
+{
+   Eigen::Matrix<double,2,2> m1, m2;
+   Eigen::Matrix<double,2,1> v1, v2;
+   int i;
+   double d;
+   std::complex<double> c;
+
+   BOOST_CHECK_EQUAL(typeid(Eval(m1)).hash_code(), typeid(m1).hash_code());
+   BOOST_CHECK_EQUAL(typeid(Eval(m1*m2)).hash_code(), typeid(m1).hash_code());
+   BOOST_CHECK_EQUAL(typeid(Eval(m1*m2 + m1)).hash_code(), typeid(m1).hash_code());
+
+   BOOST_CHECK_EQUAL(typeid(Eval(v1)).hash_code(), typeid(v1).hash_code());
+   BOOST_CHECK_EQUAL(typeid(Eval(m1*v1)).hash_code(), typeid(v1).hash_code());
+   BOOST_CHECK_EQUAL(typeid(Eval(m1*v1 + v2)).hash_code(), typeid(v1).hash_code());
+
+   BOOST_CHECK_EQUAL(typeid(Eval(c)).hash_code(), typeid(c).hash_code());
+   BOOST_CHECK_EQUAL(typeid(Eval(d)).hash_code(), typeid(d).hash_code());
+   BOOST_CHECK_EQUAL(typeid(Eval(i)).hash_code(), typeid(i).hash_code());
+
+}
+
+BOOST_AUTO_TEST_CASE(test_normalize_to_interval_real)
+{
+   Eigen::Matrix<double,2,2> m;
+   m << -2., -1., 0., 2;
+
+   normalize_to_interval(m, -1., 1.);
+
+   BOOST_CHECK_EQUAL(m(0,0), -1.);
+   BOOST_CHECK_EQUAL(m(0,1), -1.);
+   BOOST_CHECK_EQUAL(m(1,0),  0.);
+   BOOST_CHECK_EQUAL(m(1,1),  1.);
+}
+
+BOOST_AUTO_TEST_CASE(test_normalize_to_interval_complex)
+{
+   Eigen::Matrix<std::complex<double>,2,2> m;
+   m << -2., -1., 0., 2.;
+
+   normalize_to_interval(m, 1.);
+
+   BOOST_CHECK_CLOSE(std::real(m(0,0)), -1., 1e-15);
+   BOOST_CHECK_CLOSE(std::real(m(0,1)), -1., 1e-15);
+   BOOST_CHECK_SMALL(std::real(m(1,0)), 1e-15);
+   BOOST_CHECK_CLOSE(std::real(m(1,1)),  1., 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(0,0)), 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(0,1)), 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(1,0)), 1e-15);
+   BOOST_CHECK_SMALL(std::imag(m(1,1)), 1e-15);
+
+   m << std::polar(2.,1.), std::polar(1.,1.),
+        std::polar(0.5,1.), std::polar(2.,-1.);
+
+   normalize_to_interval(m, 1.);
+
+   BOOST_CHECK_CLOSE(std::abs(m(0,0)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::abs(m(0,1)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::abs(m(1,0)), 0.5, 1e-15);
+   BOOST_CHECK_CLOSE(std::abs(m(1,1)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(0,0)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(0,1)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(1,0)),  1., 1e-15);
+   BOOST_CHECK_CLOSE(std::arg(m(1,1)), -1., 1e-15);
 }

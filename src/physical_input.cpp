@@ -17,8 +17,7 @@
 // ====================================================================
 
 #include "physical_input.hpp"
-
-#include <cassert>
+#include "error.hpp"
 
 namespace flexiblesusy {
 
@@ -47,11 +46,12 @@ Eigen::ArrayXd Physical_input::get() const
    return vec;
 }
 
-std::vector<std::string> Physical_input::get_names()
+const std::array<std::string, Physical_input::NUMBER_OF_INPUT_PARAMETERS>& Physical_input::get_names()
 {
-   std::vector<std::string> names(NUMBER_OF_INPUT_PARAMETERS);
-   names[0] = "alpha_em(0)";
-   names[1] = "mh_pole";
+   static const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> names = {
+      "alpha_em(0)",
+      "mh_pole"
+   };
    return names;
 }
 
@@ -62,7 +62,9 @@ void Physical_input::set(Input o, double value)
 
 void Physical_input::set(const Eigen::ArrayXd& vec)
 {
-   assert(vec.size() == values.size() && "Parameters array has wrong size");
+   if (vec.size() != static_cast<decltype(vec.size())>(values.size()))
+      throw SetupError("Parameters array has wrong size");
+
    std::copy(vec.data(), vec.data() + vec.size(), values.begin());
 }
 

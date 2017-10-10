@@ -21,7 +21,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
    SM_input_parameters input;
    input.LambdaIN = 0.25;
 
-   Two_loop_corrections tlc;
+   Loop_corrections tlc;
    tlc.top_qcd = 2;               // add 3L QCD correction
 
    SM<Two_scale> m;
@@ -29,23 +29,23 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
    m.set_thresholds(3);           // add 3L QCD correction
    m.set_ewsb_loop_order(3);      // add 3L QCD correction
    m.set_pole_mass_loop_order(3); // add 3L QCD correction
-   m.set_two_loop_corrections(tlc);
+   m.set_loop_corrections(tlc);
 
    setup_SM_const(m, input);
 
    const double mt_pole_input = qedqcd.displayPoleMt();
    const double v = m.get_v();
 
-   BOOST_MESSAGE("mt_pole(input) = " << mt_pole_input);
+   BOOST_TEST_MESSAGE("mt_pole(input) = " << mt_pole_input);
 
    // calculate DR-bar masses
    m.solve_ewsb_tree_level();
    m.calculate_DRbar_masses();
    m.solve_ewsb();
 
-   BOOST_MESSAGE("mt_drbar(guess) = " << m.get_MFu(2));
+   BOOST_TEST_MESSAGE("mt_drbar(guess) = " << m.get_MFu(2));
 
-   unsigned iterations = 100;
+   int iterations = 100;
 
    // calculate top DR-bar mass from top pole mass using three-loop
    // corrections
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
       m.solve_ewsb();
    } while (--iterations);
 
-   BOOST_MESSAGE("mt_drbar(3-loop) = " << m.get_MFu(2));
+   BOOST_TEST_MESSAGE("mt_drbar(3-loop) = " << m.get_MFu(2));
 
    m.calculate_pole_masses();
 
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_SM_two_loop_top_pole_mass )
 
    const double mt_pole_3loop  = m.get_physical().MFu(2);
 
-   BOOST_MESSAGE("mt_pole(3-loop) = " << mt_pole_3loop);
+   BOOST_TEST_MESSAGE("mt_pole(3-loop) = " << mt_pole_3loop);
 
    BOOST_CHECK_CLOSE_FRACTION(mt_pole_input, mt_pole_3loop, 2.0e-4);
 }

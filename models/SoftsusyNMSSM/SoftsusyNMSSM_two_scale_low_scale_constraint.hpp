@@ -19,7 +19,7 @@
 #ifndef SoftsusyNMSSM_MZ_CONSTRAINT_H
 #define SoftsusyNMSSM_MZ_CONSTRAINT_H
 
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "SoftsusyNMSSM_parameter_point.hpp"
 
 namespace flexiblesusy {
@@ -38,13 +38,13 @@ template<class T> class SoftsusyNMSSM;
  * SoftsusyNMSSMSoftsusy::setData).
  */
 
-class SoftsusyNMSSM_low_scale_constraint : public Constraint<Two_scale> {
+class SoftsusyNMSSM_low_scale_constraint : public Single_scale_constraint {
 public:
    SoftsusyNMSSM_low_scale_constraint(const SoftsusyNMSSM_parameter_point&);
    virtual ~SoftsusyNMSSM_low_scale_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   virtual void set_model(Model*);
 
 private:
    SoftsusyNMSSM<Two_scale>* mssm;

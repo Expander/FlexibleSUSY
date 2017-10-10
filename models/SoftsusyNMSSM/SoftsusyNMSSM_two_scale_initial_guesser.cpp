@@ -32,7 +32,7 @@ SoftsusyNMSSM_initial_guesser::SoftsusyNMSSM_initial_guesser(SoftsusyNMSSM<Two_s
                                                const SoftsusyNMSSM_low_scale_constraint&,
                                                const SoftsusyNMSSM_susy_scale_constraint&,
                                                const SoftsusyNMSSM_sugra_constraint&)
-   : Initial_guesser<Two_scale>()
+   : Initial_guesser()
    , nmssm(nmssm_)
    , oneset()
    , pp(pp_)

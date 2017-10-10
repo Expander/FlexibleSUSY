@@ -9,7 +9,7 @@
 #include "ew_input.hpp"
 #include "CMSSM_observables.hpp"
 #include "physical_input.hpp"
-#include "test.h"
+#include "test.hpp"
 #include "lowe.h"
 
 using namespace flexiblesusy;
@@ -179,6 +179,7 @@ void test_input_parameter_equality(const T& a, const P& b, double eps)
 BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 {
    CMSSM_observables obs1, obs2;
+   obs1.a_muon = 2e-9;
    obs1.eff_cp_higgs_photon_photon(0)     = std::complex<double>(1.,7.);
    obs1.eff_cp_higgs_photon_photon(1)     = std::complex<double>(2.,8.);
    obs1.eff_cp_higgs_gluon_gluon(0)       = std::complex<double>(3.,9.);
@@ -203,8 +204,10 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_read_write )
 
    const std::string db_file("test/test_CMSSM_database.db");
 
+   BOOST_TEST_MESSAGE("writing to database " << db_file);
    CMSSM_database::to_database(db_file, model, &qedqcd1, &physical_input1, &obs1);
 
+   BOOST_TEST_MESSAGE("reading from database " << db_file);
    const CMSSM_mass_eigenstates tmp(CMSSM_database::from_database(db_file, -1, &qedqcd2, &physical_input2, &obs2));
 
    const double eps = 1e-10;

@@ -33,8 +33,8 @@ doc/*.out
 doc/*.spl
 doc/*.bbl
 doc/*.blg
-doc/flexiblesusy.pdf
-doc/flexiblesusy-paper.pdf
+doc/flexiblesusy-1.0.pdf
+doc/flexiblesusy-2.0.pdf
 doc/version.tex
 doc/mainpage.dox
 doc/html/
@@ -57,10 +57,9 @@ models/fmssmn/fmssmn_lattice_rge.f
 models/fmssmn/fmssmn_lattice_translator.inc
 models/*/LesHouches.out.*
 models/**/
-!models/sm/
-!models/smcw/
 !models/SoftsusyMSSM/
 !models/SoftsusyNMSSM/
+!models/SoftsusyFlavourMSSM/
 
 model_files/*/LesHouches.out.*
 

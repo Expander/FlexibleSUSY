@@ -1,6 +1,6 @@
 
-#include "MSSM_two_scale_susy_parameters.hpp"
-#include "MSSM_two_scale_soft_parameters.hpp"
+#include "MSSM_susy_parameters.hpp"
+#include "MSSM_soft_parameters.hpp"
 #include "ew_input.hpp"
 #include "logger.hpp"
 #include "wrappers.hpp"

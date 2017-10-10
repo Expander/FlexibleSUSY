@@ -30,6 +30,7 @@ c
       
       subroutine DDSHiggs(t,b,A0,T1,T2,B1,B2,st,ct,sb,cb,q,mu,tanb,vv,
      $     S11,S12,S22) 
+     $ bind(C, name="ddshiggs_")
       
       implicit none
       
@@ -186,6 +187,7 @@ c     end of addition by ALEX
       
       subroutine DDSodd(t,b,A0,T1,T2,B1,B2,st,ct,sb,cb,q,mu,tanb,vv,
      $     DMA) 
+     $ bind(C, name="ddsodd_")
       
       implicit none
       
@@ -326,6 +328,7 @@ c     end of addition by ALEX
       
       subroutine DDStad(t,b,A0,T1,T2,B1,B2,st,ct,sb,cb,q,mu,tanb,vv,
      $     S1,S2) 
+     $ bind(C, name="ddstad_")
       
       implicit none
       
@@ -4217,6 +4220,7 @@ c     end of addition by ALEX
       
       subroutine DSZHiggs(t,mg,T1,T2,st,ct,q,mu,tanb,v2,gs,
      $     OS,S11,S22,S12)
+     $ bind(C, name="dszhiggs_")
       
 c     Two-loop O(a_t a_s) corrections to the CP-even Higgs mass matrix. 
 c     Routine written by P. Slavich (e-mail: slavich@mppmu.mpg.de).
@@ -4653,6 +4657,7 @@ c     residues of some singular functions for s2t=0 and for A=0
       
       
       subroutine DSZodd(t,mg,T1,T2,st,ct,q,mu,tanb,v2,gs,DMA)
+     $ bind(C, name="dszodd_")
       
 c     Two-loop O(a_t a_s) corrections to the CP-odd Higgs mass in the
 c     DRbar scheme. Written by P. Slavich (e-mail: slavich@mppmu.mpg.de)
@@ -4817,6 +4822,7 @@ c     residue of FA for A=0
       
       subroutine ewsb2loop(t,mg,T1,T2,st,ct,q,mu,tanb,vv,gs,
      $     S1,S2)
+     $ bind(C, name="ewsb2loop_")
       
 c     Two-loop O(a_t a_s) corrections to the Higgs tadpoles. 
 c     Written by P. Slavich (e-mail: slavich@mppmu.mpg.de).
@@ -5685,6 +5691,7 @@ c
       
       subroutine tausqHiggs(t,A0,BL,T1,T2,st,ct,q,mu,tb,v2,OS,
      $     S11,S22,S12)
+     $ bind(C, name="tausqhiggs_")
       
 c     Two-loop O(a_tau^2) corrections to the CP-even Higgs mass matrix. 
 c     Routine written by P. Slavich (e-mail: slavich@mppmu.mpg.de).
@@ -6473,6 +6480,7 @@ c     residues of some singular functions for s2t=0 and for A=0
       
       
       subroutine tausqodd(t,A0,BL,T1,T2,st,ct,q,mu,tb,v2,DMA)
+     $ bind(C, name="tausqodd_")
       
 c     Two-loop O(a_tau^2) corrections to the CP-odd Higgs mass in the
 c     DRbar scheme. Written by P. Slavich (e-mail: slavich@mppmu.mpg.de)
@@ -6713,6 +6721,7 @@ c     when necessary we consider the residues:
 
       subroutine tausqtad(t,A0,BL,T1,T2,st,ct,q,mu,tb,vv,
      $     S1,S2)
+     $ bind(C, name="tausqtad_")
 
 c     Two-loop O(a_t^2) corrections to the Higgs tadpoles. 
 c     Written by P. Slavich (e-mail: slavich@mppmu.mpg.de).

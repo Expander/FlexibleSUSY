@@ -21,7 +21,7 @@
 #define STANDARD_MODEL_TWO_SCALE_LOW_SCALE_CONSTRAINT_H
 
 #include "standard_model_low_scale_constraint.hpp"
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "lowe.h"
 #include <Eigen/Core>
 
@@ -35,25 +35,25 @@ template <class T>
 class StandardModel;
 
 template<>
-class Standard_model_low_scale_constraint<Two_scale> : public Constraint<Two_scale> {
+class Standard_model_low_scale_constraint<Two_scale> : public Single_scale_constraint {
 public:
-   Standard_model_low_scale_constraint();
+   Standard_model_low_scale_constraint() = default;
    Standard_model_low_scale_constraint(StandardModel<Two_scale>*, const softsusy::QedQcd&);
-   virtual ~Standard_model_low_scale_constraint();
-   virtual void apply();
-   virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   virtual ~Standard_model_low_scale_constraint() = default;
+   virtual void apply() override;
+   virtual double get_scale() const override;
+   virtual std::string name() const override { return "Standard model low-scale constraint"; }
+   virtual void set_model(Model*) override;
 
    void clear();
    void initialize();
    const softsusy::QedQcd& get_sm_parameters() const;
    void set_sm_parameters(const softsusy::QedQcd&);
-   void set_threshold_corrections_loop_order(unsigned); ///< threshold corrections loop order
 
 private:
-   double scale;
-   StandardModel<Two_scale>* model;
-   softsusy::QedQcd qedqcd;
+   double scale{0.};
+   StandardModel<Two_scale>* model{nullptr};
+   softsusy::QedQcd qedqcd{};
 };
 
 } // namespace standard_model

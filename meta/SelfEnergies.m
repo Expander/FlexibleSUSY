@@ -1,7 +1,30 @@
+(* :Copyright:
 
-BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`"}];
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
+BeginPackage["SelfEnergies`", {"SARAH`", "TextFormatting`", "CConversion`", "TreeMasses`", "Parameters`", "Vertices`", "Utils`"}];
 
 FSSelfEnergy::usage="self-energy head";
+FSHeavySelfEnergy::usage="head for self-energy w/o BSM particles";
+FSHeavyRotatedSelfEnergy::usage="head for self-energy w/o BSM particles in mass eigenstate basis";
 Tadpole::usage="tadpole head";
 
 GetField::usage="Returns field in self-energy or tadpole";
@@ -11,6 +34,9 @@ own format: SelfEnergies`FSSelfEnergy[particle, expression]";
 
 ConvertSarahTadpoles::usage="converts SARAH's tadpoles to our own
 format: SelfEnergies`Tadpole[particle, expression]";
+
+CreateVertexExpressions::usage="creates C/C++ functions for the
+given list of vertices";
 
 CreateNPointFunctions::usage="creates C/C++ functions for the
 given list of self-energies and tadpoles";
@@ -24,9 +50,11 @@ function name for a given field";
 CreateHeavyRotatedSelfEnergyFunctionName::usage="creates heavy rotated
 self-energy function name for a given field";
 
-FillArrayWithOneLoopTadpoles::usage="add one-loop tadpoles to array"
+FillArrayWithLoopTadpoles::usage="add loop tadpoles to array"
 
 FillArrayWithTwoLoopTadpoles::usage="add two-loop tadpoles to array"
+
+DivideTadpoleByVEV::usage="Divides each tadpole by corresponding VEV";
 
 CreateTwoLoopTadpolesMSSM::usage="Creates function prototypes and
 definitions for two-loop tadpoles in the MSSM";
@@ -37,14 +65,22 @@ definitions for two-loop tadpoles in the NMSSM";
 CreateTwoLoopSelfEnergiesSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the SM";
 
+CreateThreeLoopSelfEnergiesSM::usage="Creates function prototypes and
+definitions for three-loop Higgs self-energies in the SM";
+
 CreateTwoLoopSelfEnergiesMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the MSSM";
 
 CreateTwoLoopSelfEnergiesNMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the NMSSM";
 
+CreateThreeLoopSelfEnergiesMSSM::usage="Creates function prototypes
+and definitions for three-loop Higgs contribution in the MSSM";
+
 CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
 definitions for three-loop Higgs self-energies in split-SUSY";
+
+SelfEnergyIsSymmetric::usage = "";
 
 Begin["`Private`"];
 
@@ -79,6 +115,15 @@ GetField[sym_] :=
            Quit[1];
           ];
 
+SelfEnergyIsSymmetric[s_SelfEnergies`FSSelfEnergy] :=
+    SelfEnergyIsSymmetric[GetField[s]];
+
+SelfEnergyIsSymmetric[particle_] :=
+    Length[Flatten[{FindMixingMatrixSymbolFor[particle]}]] === 1;
+
+ExprContainsParticle[expr_, particle_List] :=
+    Or @@ (ExprContainsParticle[expr,#]& /@ particle);
+
 ExprContainsParticle[expr_, particle_] :=
     !FreeQ[expr,particle];
 
@@ -88,7 +133,7 @@ RemoveParticle[head_[p_,expr_], particle_] :=
                SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]][_] -> 0,
                SARAH`Cp[a__  /; ExprContainsParticle[{a},particle]] -> 0
                                    };
-           Return[head[p,strippedExpr]];
+           head[p,strippedExpr]
           ];
 
 RemoveSMParticles[SelfEnergies`FSSelfEnergy[p_,expr__], _] :=
@@ -123,59 +168,64 @@ RemoveSMParticles[head_[p_,expr_], removeGoldstones_:True, except_:{}] :=
                   SARAH`sum[idx_,_,endIdx_,expression_] /; !FreeQ[expression,g[{idx}]] :> SARAH`sum[idx,TreeMasses`GetDimensionStartSkippingSMGoldstones[g],endIdx,expression];
                  ];
              ];
-           Return[head[p,strippedExpr]];
+           head[p,strippedExpr]
           ];
 
-ReplaceUnrotatedFields[SelfEnergies`FSSelfEnergy[p_,expr_]] :=
+ReplaceUnrotatedFields[SelfEnergies`FSSelfEnergy[p_,expr__]] :=
     SelfEnergies`FSSelfEnergy[p,expr];
 
-ReplaceUnrotatedFields[SelfEnergies`FSHeavySelfEnergy[p_,expr_]] :=
+ReplaceUnrotatedFields[SelfEnergies`FSHeavySelfEnergy[p_,expr__]] :=
     SelfEnergies`FSHeavySelfEnergy[p,expr];
 
 ReplaceUnrotatedFields[SelfEnergies`FSHeavyRotatedSelfEnergy[p_,expr__]] :=
-    Module[{result},
-           result = expr /. {
-               SARAH`Cp[a__][l_] :> ReplaceUnrotatedFields[SARAH`Cp[a][l]],
-               SARAH`Cp[a__]     :> ReplaceUnrotatedFields[SARAH`Cp[a]]
-                            };
-           Return[SelfEnergies`FSHeavyRotatedSelfEnergy[p,result]]
-          ];
+    SelfEnergies`FSHeavyRotatedSelfEnergy[p, Sequence @@ (
+        { expr } /. {
+            SARAH`Cp[a__][l_] :> ReplaceUnrotatedFields[SARAH`Cp[a][l]],
+            SARAH`Cp[a__]     :> ReplaceUnrotatedFields[SARAH`Cp[a]]
+        }
+    )];
 
-ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
-    ConvertSarahTadpoles[tadpoles];
+CreateMassEigenstateReplacements[] :=
+    Cases[Join[
+             Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
+             Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]
+          ],
+          HoldPattern[Except[0] -> _]
+    ];
 
-ConvertSarahTadpoles[tadpoles_List] :=
-    Module[{result = {}, k, massESReplacements},
-           massESReplacements = Join[
-               Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
-               Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]];
-           massESReplacements = Cases[massESReplacements, HoldPattern[Except[0] -> _]];
-           result = (SelfEnergies`Tadpole @@ #)& /@ tadpoles /. massESReplacements;
-           (* append mass eigenstate indices *)
+AppendFieldIndices[lst_List, idx__] :=
+    Module[{k, field, result = lst},
            For[k = 1, k <= Length[result], k++,
                field = GetField[result[[k]]];
                If[GetDimension[field] > 1,
-                  result[[k,1]] = field[SARAH`gO1];
+                  result[[k,1]] = field[idx];
                  ];
               ];
-           Return[result /. SARAH`Mass -> FlexibleSUSY`M];
+           result
           ];
 
-ConvertSarahSelfEnergies[selfEnergies_List] :=
-    Module[{result = {}, k, field, fermionSE, left, right, scalar, expr,
-            massESReplacements, heavySE},
-           massESReplacements = Join[
-               Flatten[SARAH`diracSubBack1 /@ SARAH`NameOfStates],
-               Flatten[SARAH`diracSubBack2 /@ SARAH`NameOfStates]];
-           massESReplacements = Cases[massESReplacements, HoldPattern[Except[0] -> _]];
-           result = (SelfEnergies`FSSelfEnergy @@ #)& /@ selfEnergies /. massESReplacements;
-           (* append mass eigenstate indices *)
+(* If the external field has dimension 1, remove it's indices.  For
+   example in the Glu self-energy, terms appear of the form
+
+      Cp[Glu[{gO2}], conj[Sd[{gI1}]], Fd[{gI2}]]
+
+   Since Glu has dimension 1, the C variables Glu is a double and must
+   therefore not be accessed in the form Glu(gO2).
+ *)
+Remove1DimensionalFieldIndices[lst_List] :=
+    Module[{k, field, result = lst},
            For[k = 1, k <= Length[result], k++,
-               field = GetField[result[[k]]];
-               If[GetDimension[field] > 1,
-                  result[[k,1]] = field[SARAH`gO1, SARAH`gO2];
+               field = GetHead[GetField[result[[k]]]];
+               If[GetDimension[field] == 1,
+                  result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
                  ];
               ];
+           result
+          ];
+
+(* decompose fermionic self-energies into L,R,S parts *)
+SplitFermionSelfEnergies[lst_List] :=
+    Module[{result = lst, k, field, expr, fermionSE},
            (* filter out all fermionic self-energies *)
            fermionSE = Cases[result, SelfEnergies`FSSelfEnergy[_, List[__]]];
            result = Select[result, (Head[GetExpression[#]] =!= List)&];
@@ -191,45 +241,57 @@ ConvertSarahSelfEnergies[selfEnergies_List] :=
                AppendTo[result, SelfEnergies`FSSelfEnergy[field[SARAH`PR], expr[[2]]]];
                AppendTo[result, SelfEnergies`FSSelfEnergy[field[SARAH`PL], expr[[3]]]];
               ];
-           (* If the external field has dimension 1, remove it's
-              indices.  For example in the Glu self-energy, terms
-              appear of the form
+           result
+          ];
 
-                 Cp[Glu[{gO2}], conj[Sd[{gI1}]], Fd[{gI2}]]
+ConvertSarahTadpoles[DeleteLightFieldContrubtions[tadpoles_,_,_]] :=
+    ConvertSarahTadpoles[tadpoles];
 
-              Since Glu has dimension 1, the C variables Glu is a
-              double and must therefore not be accessed in the form
-              Glu(gO2).
-              *)
-           For[k = 1, k <= Length[result], k++,
-               field = GetHead[GetField[result[[k]]]];
-               If[GetDimension[field] == 1,
-                  result[[k,2]] = result[[k,2]] /. field[{__}] :> field;
-                 ];
-              ];
-           (* Create W, Z self-energy with only SUSY particles in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`VectorZ|SARAH`VectorW, expr__] :>
-                           SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveSMParticles /@ heavySE];
+ConvertSarahTadpoles[tadpoles_List] :=
+    Module[{result},
+           result = (SelfEnergies`Tadpole @@@ tadpoles) /. CreateMassEigenstateReplacements[];
+           result = AppendFieldIndices[result, SARAH`gO1];
+           result /. SARAH`Mass -> FlexibleSUSY`M
+          ];
+
+ConvertSarahSelfEnergies[selfEnergies_List] :=
+    Module[{result, heavySE,
+            tQuark = TreeMasses`GetSMTopQuarkMultiplet[],
+            bQuark = TreeMasses`GetSMBottomQuarkMultiplet[]
+           },
+           result = (SelfEnergies`FSSelfEnergy @@@ selfEnergies) /. CreateMassEigenstateReplacements[];
+           result = AppendFieldIndices[result, SARAH`gO1, SARAH`gO2];
+           result = SplitFermionSelfEnergies[result];
+           result = Remove1DimensionalFieldIndices[result];
            (* Create Bottom, Tau self-energy with only SUSY
               particles and W and Z bosons in the loop *)
            heavySE = Cases[result, SelfEnergies`FSSelfEnergy[
-               p:SARAH`BottomQuark[__][_]|SARAH`BottomQuark[_]|((particle_[__][_]|particle_[_]) /; TreeMasses`IsSMChargedLepton[particle]), expr__] :>
+               p:bQuark[__][_]|bQuark[_]|((particle_[__][_]|particle_[_]) /; TreeMasses`IsSMChargedLepton[particle]), expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
                          ReplaceUnrotatedFields /@ (RemoveSMParticles[#,False,{SARAH`VectorZ,SARAH`VectorW,SARAH`HiggsBoson}]& /@ heavySE)];
            (* Create rotated Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavyRotatedSelfEnergy[p, expr]];
            result = Join[result,
-                         ReplaceUnrotatedFields /@ (RemoveParticle[#,SARAH`VectorG]& /@ heavySE)];
+                         ReplaceUnrotatedFields /@ (RemoveParticle[#,
+                                                                   If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
+                                                                      {SARAH`VectorG,SARAH`Gluino},
+                                                                      SARAH`VectorG
+                                                                     ]
+                                                                  ]& /@ heavySE)];
            (* Create unrotated Top self-energy with only SUSY
               particles and W, Z and photon bosons in the loop *)
-           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:SARAH`TopQuark[__][_]|SARAH`TopQuark[_], expr__] :>
+           heavySE = Cases[result, SelfEnergies`FSSelfEnergy[p:tQuark[__][_]|tQuark[_], expr__] :>
                            SelfEnergies`FSHeavySelfEnergy[p, expr]];
-           result = Join[result, RemoveParticle[#,SARAH`VectorG]& /@ heavySE];
-           Return[result /. SARAH`Mass -> FlexibleSUSY`M];
+           result = Join[result, RemoveParticle[#,
+                                                If[FlexibleSUSY`UseMSSMYukawa2Loop === True,
+                                                   {SARAH`VectorG,SARAH`Gluino},
+                                                   SARAH`VectorG
+                                                  ]
+                                               ]& /@ heavySE];
+           result /. SARAH`Mass -> FlexibleSUSY`M
           ];
 
 GetParticleIndicesInCoupling[Cp[a__]] := Flatten[Cases[{a}, List[__], Infinity]];
@@ -261,17 +323,17 @@ MakeUniqueIdx[] :=
  *   ...
  * }
  *)
-CreateCouplingFunction[coupling_, expr_] :=
+CreateCouplingFunction[coupling_, expr_, inModelClass_] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, body = "", cFunctionName = "", i,
-            type, typeStr, initalValue},
+            type, typeStr},
            indices = GetParticleIndicesInCoupling[coupling];
            symbol = CreateCouplingSymbol[coupling];
            cFunctionName = ToValidCSymbolString[GetHead[symbol]];
            cFunctionName = cFunctionName <> "(";
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, cFunctionName = cFunctionName <> ", ";];
-               cFunctionName = cFunctionName <> "unsigned ";
+               cFunctionName = cFunctionName <> "int ";
                (* variable names must not be integers *)
                If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
                   cFunctionName = cFunctionName <> ToValidCSymbolString[indices[[i]]];
@@ -279,26 +341,30 @@ CreateCouplingFunction[coupling_, expr_] :=
               ];
            cFunctionName = cFunctionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`ScalarType[CConversion`realScalarCType];    initalValue = " = 0.0";,
-              type = CConversion`ScalarType[CConversion`complexScalarCType]; initalValue = "";];
+              type = CConversion`ScalarType[CConversion`realScalarCType];,
+              type = CConversion`ScalarType[CConversion`complexScalarCType];];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> cFunctionName <> " const;\n";
            definition = typeStr <> " CLASSNAME::" <> cFunctionName <> " const\n{\n";
-           body = Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"] <> "\n" <>
-                  typeStr <> " result" <> initalValue <> ";\n\n";
-           body = body <> TreeMasses`ExpressionToString[expr, "result"];
-           body = body <> "\nreturn result;\n";
+           body = If[inModelClass,
+                     Parameters`CreateLocalConstRefsForInputParameters[expr, "LOCALINPUT"],
+                     Parameters`CreateLocalConstRefs[expr]
+                    ] <> "\n" <>
+                  "const " <> typeStr <> " result = " <>
+                  Parameters`ExpressionToString[expr] <> ";\n\n" <>
+                  "return result;\n";
+
            body = IndentText[WrapLines[body]];
            definition = definition <> body <> "}\n";
-           Return[{prototype, definition,
-                   RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}];
+           {prototype, definition,
+            RuleDelayed @@ {Vertices`ToCpPattern[coupling], symbol}}
           ];
 
 GetParticleList[Cp[a__]] := {a};
 
 GetParticleList[Cp[a__][_]] := {a};
 
-IsUnrotated[bar[field_]] := IsUnrotated[field];
+IsUnrotated[SARAH`bar[field_]] := IsUnrotated[field];
 
 IsUnrotated[Susyno`LieGroups`conj[field_]] := IsUnrotated[field];
 
@@ -325,25 +391,24 @@ ReplaceUnrotatedFields[SARAH`Cp[p__]] :=
 ReplaceUnrotatedFields[SARAH`Cp[p__][lorentz_]] :=
     ReplaceUnrotatedFields[Cp[p]][lorentz];
 
-CreateVertexExpressions[vertexRules_List] :=
+CreateVertexExpressions[vertexRules_List, inModelClass_:True] :=
     Module[{k, prototypes = "", defs = "", rules, coupling, expr,
             p, d, r, MakeIndex},
            MakeIndex[i_Integer] := MakeUniqueIdx[];
            MakeIndex[i_] := i;
            rules = Table[0, {Length[vertexRules]}];
+           Utils`StartProgressBar[Dynamic[k], Length[vertexRules]];
            For[k = 1, k <= Length[vertexRules], k++,
                coupling = Vertices`ToCp[vertexRules[[k,1]]] /. p_[{idx__}] :> p[MakeIndex /@ {idx}];
                expr = vertexRules[[k,2]];
-               WriteString["stdout", "."];
-               If[Mod[k, 50] == 0, WriteString["stdout","\n"]];
-               {p,d,r} = CreateCouplingFunction[coupling, expr];
+               Utils`UpdateProgressBar[k, Length[vertexRules]];
+               {p,d,r} = CreateCouplingFunction[coupling, expr, inModelClass];
                prototypes = prototypes <> p;
                defs = defs <> d <> "\n";
                rules[[k]] = r;
               ];
-           WriteString["stdout","\n"];
-           Print["All vertices finished."];
-           Return[{prototypes, defs, Flatten[rules]}];
+           Utils`StopProgressBar[Length[vertexRules]];
+           {prototypes, defs, Flatten[rules]}
           ];
 
 ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
@@ -363,116 +428,156 @@ ReplaceGhosts[states_:FlexibleSUSY`FSEigenstates] :=
 DeclareFieldIndices[field_Symbol] := "";
 
 DeclareFieldIndices[field_[ind1_, ind2_]] :=
-    ", unsigned " <> ToValidCSymbolString[ind1] <>
-    ", unsigned " <> ToValidCSymbolString[ind2];
+    ", int " <> ToValidCSymbolString[ind1] <>
+    ", int " <> ToValidCSymbolString[ind2];
 
 DeclareFieldIndices[field_[PL]] := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[PR]] := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[1]]  := DeclareFieldIndices[field];
 DeclareFieldIndices[field_[ind_]] :=
-    "unsigned " <> ToValidCSymbolString[ind];
+    "int " <> ToValidCSymbolString[ind];
 
-CreateFunctionNamePrefix[field_[idx1_,idx2_]] := CreateFunctionNamePrefix[field];
-CreateFunctionNamePrefix[field_[PL]]          := CreateFunctionNamePrefix[field] <> "_PL";
-CreateFunctionNamePrefix[field_[PR]]          := CreateFunctionNamePrefix[field] <> "_PR";
-CreateFunctionNamePrefix[field_[1]]           := CreateFunctionNamePrefix[field] <> "_1";
-CreateFunctionNamePrefix[field_[idx_]]        := CreateFunctionNamePrefix[field];
-CreateFunctionNamePrefix[field_]              := ToValidCSymbolString[field];
+ExtractChiraility[field_[idx1_,idx2_]] := ExtractChiraility[field];
+ExtractChiraility[field_[PL]]          := "_PL";
+ExtractChiraility[field_[PR]]          := "_PR";
+ExtractChiraility[field_[1]]           := "_1";
+ExtractChiraility[field_[idx_]]        := ExtractChiraility[field];
+ExtractChiraility[field_]              := "";
 
-CreateSelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field];
+ExtractFieldName[field_[idx1_,idx2_]] := ExtractFieldName[field];
+ExtractFieldName[field_[PL]]          := ExtractFieldName[field];
+ExtractFieldName[field_[PR]]          := ExtractFieldName[field];
+ExtractFieldName[field_[1]]           := ExtractFieldName[field];
+ExtractFieldName[field_[idx_]]        := ExtractFieldName[field];
+ExtractFieldName[field_]              := ToValidCSymbolString[field];
 
-CreateHeavySelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy";
+CreateSelfEnergyFunctionName[field_, loops_] :=
+    "self_energy_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field];
 
-CreateHeavyRotatedSelfEnergyFunctionName[field_] :=
-    "self_energy_" <> CreateFunctionNamePrefix[field] <> "_heavy_rotated";
+CreateHeavySelfEnergyFunctionName[field_, loops_] :=
+    "self_energy_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field] <> "_heavy";
 
-CreateTadpoleFunctionName[field_] :=
-    "tadpole_" <> CreateFunctionNamePrefix[field];
+CreateHeavyRotatedSelfEnergyFunctionName[field_, loops_] :=
+    "self_energy_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field] <> "_heavy_rotated";
 
-CreateNLoopTadpoleFunctionName[field_, loop_] :=
-    CreateTadpoleFunctionName[field] <> "_" <> ToString[loop] <> "loop";
+CreateTadpoleFunctionName[field_, loops_] :=
+    "tadpole_" <> ExtractFieldName[field] <> "_" <> ToString[loops] <> "loop" <> ExtractChiraility[field];
 
-CreateNLoopSelfEnergyFunctionName[field_, loop_] :=
-    CreateSelfEnergyFunctionName[field] <> "_" <> ToString[loop] <> "loop";
+CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy, loops_] :=
+    CreateSelfEnergyFunctionName[GetField[selfEnergy], loops];
 
-CreateFunctionName[selfEnergy_SelfEnergies`FSSelfEnergy] :=
-    CreateSelfEnergyFunctionName[GetField[selfEnergy]];
+CreateFunctionName[selfEnergy_SelfEnergies`FSHeavySelfEnergy, loops_] :=
+    CreateHeavySelfEnergyFunctionName[GetField[selfEnergy], loops];
 
-CreateFunctionName[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
-    CreateHeavySelfEnergyFunctionName[GetField[selfEnergy]];
+CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy, loops_] :=
+    CreateHeavyRotatedSelfEnergyFunctionName[GetField[selfEnergy], loops];
 
-CreateFunctionName[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
-    CreateHeavyRotatedSelfEnergyFunctionName[GetField[selfEnergy]];
+CreateFunctionName[tadpole_SelfEnergies`Tadpole, loops_] :=
+    CreateTadpoleFunctionName[GetField[tadpole], loops];
 
-CreateFunctionName[tadpole_SelfEnergies`Tadpole] :=
-    CreateTadpoleFunctionName[GetField[tadpole]];
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSSelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavySelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[selfEnergy_SelfEnergies`FSHeavyRotatedSelfEnergy] :=
-    CreateFunctionName[selfEnergy] <>
-    "(double p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
-
-CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole] :=
-    CreateFunctionName[tadpole] <>
+CreateFunctionPrototype[tadpole_SelfEnergies`Tadpole, loops_] :=
+    CreateFunctionName[tadpole, loops] <>
     "(" <> DeclareFieldIndices[GetField[tadpole]] <> ") const";
 
+CreateFunctionPrototype[selfEnergy_, loops_] :=
+    CreateFunctionName[selfEnergy, loops] <>
+    "(" <> CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <> " p " <> DeclareFieldIndices[GetField[selfEnergy]] <> ") const";
+
+CreateFunctionPrototypeMatrix[s_, loops_] :=
+    CreateFunctionName[s, loops] <> "(double p) const";
+
+ExpressionToStringSequentially[expr_Plus, heads_, result_String] :=
+    StringJoin[(result <> " += " <> ExpressionToString[#,heads] <> ";\n")& /@ (List @@ expr)];
+
+ExpressionToStringSequentially[expr_, heads_, result_String] :=
+    result <> " = " <> ExpressionToString[expr, heads] <> ";\n";
+
+(* decreases literal indices in SARAH couplings *)
+DecreaseLiteralCouplingIndices[expr_, num_:1] :=
+    Module[{DecIdxLit},
+           DecIdxLit[p_[idx_Integer]]   := p[idx - num];
+           DecIdxLit[p_[{idx_Integer}]] := p[{idx - num}];
+           DecIdxLit[p_]                := p;
+           expr /. {
+               SARAH`Cp[a__][b_] :> SARAH`Cp[Sequence @@ (DecIdxLit /@ {a})][b],
+               SARAH`Cp[a__]     :> SARAH`Cp[Sequence @@ (DecIdxLit /@ {a})]
+           }
+          ];
+
 CreateNPointFunction[nPointFunction_, vertexRules_List] :=
-    Module[{decl, expr, field, prototype, body, functionName},
+    Module[{decl, expr, prototype, body, functionName},
            expr = GetExpression[nPointFunction];
-           field = GetField[nPointFunction];
-           functionName = CreateFunctionPrototype[nPointFunction];
+           functionName = CreateFunctionPrototype[nPointFunction, 1];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
            decl = "\n" <> type <> " CLASSNAME::" <> functionName <> "\n{\n";
            body = type <> " result;\n\n" <>
-                  ExpandSums[DecreaseIndexLiterals[DecreaseSumIndices[expr], TreeMasses`GetParticles[]] /.
-                             vertexRules /.
-                             a_[List[i__]] :> a[i] /.
-                             ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
-                             C -> 1
-                             ,"result"] <>
+                  ExpressionToStringSequentially[
+                                     DecreaseLiteralCouplingIndices[expr] /.
+                                     vertexRules /.
+                                     a_[List[i__]] :> a[i] /.
+                                     ReplaceGhosts[FlexibleSUSY`FSEigenstates] /.
+                                     C -> 1,
+                                     TreeMasses`GetParticles[], "result"]  <>
                   "\nreturn result * oneOver16PiSqr;";
            body = IndentText[WrapLines[body]];
            decl = decl <> body <> "\n}\n";
            Return[{prototype, decl}];
           ];
 
-PrintNPointFunctionName[SelfEnergies`FSHeavySelfEnergy[field_,expr__]] :=
-    "heavy " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
+CreateNPointFunctionMatrix[_SelfEnergies`Tadpole] := { "", "" };
 
-PrintNPointFunctionName[SelfEnergies`FSHeavyRotatedSelfEnergy[field_,expr__]] :=
-    "heavy, rotated " <> PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field,expr]];
+FillHermitianSelfEnergyMatrix[nPointFunction_, sym_String] :=
+    Module[{field = GetField[nPointFunction], dim, name},
+           dim = GetDimension[field];
+           name = CreateFunctionName[nPointFunction, 1];
+           "\
+for (int i = 0; i < " <> ToString[dim] <> "; i++)
+   for (int k = i; k < " <> ToString[dim] <> "; k++)
+      " <> sym <> "(i, k) = " <> name <> "(p, i, k);
 
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_][projector:(1|SARAH`PL|SARAH`PR)],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
-    RValueToCFormString[projector] <> "}_{" <>
-    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
+Hermitianize(" <> sym <> ");
+"
+          ];
 
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[projector:(1|SARAH`PL|SARAH`PR)],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "," <>
-    RValueToCFormString[projector] <> "}";
+FillGeneralSelfEnergyFunction[nPointFunction_, sym_String] :=
+    Module[{field = GetField[nPointFunction], dim, name},
+           dim = GetDimension[field];
+           name = CreateFunctionName[nPointFunction, 1];
+           "\
+for (int i = 0; i < " <> ToString[dim] <> "; i++)
+   for (int k = 0; k < " <> ToString[dim] <> "; k++)
+      " <> sym <> "(i, k) = " <> name <> "(p, i, k);
+"
+          ];
 
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_[idx1_,idx2_],__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}_{" <>
-    RValueToCFormString[idx1] <> "," <> RValueToCFormString[idx1] <> "}";
+FillSelfEnergyMatrix[nPointFunction_, sym_String] :=
+    Module[{particle = GetField[nPointFunction]},
+           Which[(IsScalar[particle] || IsVector[particle]) && SelfEnergyIsSymmetric[particle],
+                 FillHermitianSelfEnergyMatrix[nPointFunction, sym],
+                 True,
+                 FillGeneralSelfEnergyFunction[nPointFunction, sym]
+                ]
+          ];
 
-PrintNPointFunctionName[SelfEnergies`FSSelfEnergy[field_,__]] :=
-    "self-energy Sigma^{" <> RValueToCFormString[field] <> "}";
+CreateNPointFunctionMatrix[nPointFunction_] :=
+    Module[{dim, functionName, type, prototype, def},
+           dim = GetDimension[GetField[nPointFunction]];
+           If[dim == 1, Return[{ "", "" }]];
+           functionName = CreateFunctionPrototypeMatrix[nPointFunction, 1];
+           type = CConversion`CreateCType[CConversion`MatrixType[CConversion`complexScalarCType, dim, dim]];
+           prototype = type <> " " <> functionName <> ";\n";
+           def = "
+" <> type <> " CLASSNAME::" <> functionName <> "
+{
+   " <> type <> " self_energy;
 
-PrintNPointFunctionName[SelfEnergies`Tadpole[field_[idx_],__]] :=
-    "tadpole T^{" <> RValueToCFormString[field] <> "}_{" <> RValueToCFormString[idx] <> "}";
-
-PrintNPointFunctionName[SelfEnergies`Tadpole[field_,__]] :=
-    "tadpole T^{" <> RValueToCFormString[field] <> "}";
+" <> IndentText[FillSelfEnergyMatrix[nPointFunction, "self_energy"]] <> "
+   return self_energy;
+}
+";
+           { prototype, def }
+          ];
 
 CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
     Module[{prototypes = "", defs = "", vertexFunctionNames = {}, p, d,
@@ -483,23 +588,28 @@ CreateNPointFunctions[nPointFunctions_List, vertexRules_List] :=
            relevantVertexRules = Cases[vertexRules, r:(Rule[a_,b_] /; !FreeQ[nPointFunctions,a]) :> r];
            {prototypes, defs, vertexFunctionNames} = CreateVertexExpressions[relevantVertexRules];
            (* creating n-point functions *)
-           Print["Generating C++ code for ..."];
+           Print["Converting self energies ..."];
+           Utils`StartProgressBar[Dynamic[k], Length[nPointFunctions]];
            For[k = 1, k <= Length[nPointFunctions], k++,
-               Print["   ", PrintNPointFunctionName[nPointFunctions[[k]]]];
+               Utils`UpdateProgressBar[k, Length[nPointFunctions]];
                {p,d} = CreateNPointFunction[nPointFunctions[[k]], vertexFunctionNames];
                prototypes = prototypes <> p;
                defs = defs <> d;
+               {p,d} = CreateNPointFunctionMatrix[nPointFunctions[[k]]];
+               prototypes = prototypes <> p;
+               defs = defs <> d;
               ];
-           Return[{prototypes, defs}];
+           Utils`StopProgressBar[Length[nPointFunctions]];
+           {prototypes, defs}
           ];
 
-FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
+FillArrayWithLoopTadpoles[loopLevel_, higgsAndIdx_List, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body = "", v, field, idx, head, functionName},
            For[v = 1, v <= Length[higgsAndIdx], v++,
                field = higgsAndIdx[[v,1]];
                idx = higgsAndIdx[[v,2]];
                head = CConversion`ToValidCSymbolString[higgsAndIdx[[v,3]]];
-               functionName = CreateTadpoleFunctionName[field];
+               functionName = CreateTadpoleFunctionName[field, loopLevel];
                If[TreeMasses`GetDimension[field] == 1,
                   body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                          head <> "(" <> struct <> functionName <> "());\n";
@@ -509,12 +619,12 @@ FillArrayWithOneLoopTadpoles[higgsAndIdx_List, arrayName_String, sign_String:"-"
                          "(" <> ToString[idx - 1] <> "));\n";
                  ];
               ];
-           Return[IndentText[body]];
+           body
           ];
 
 FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", struct_String:""] :=
     Module[{body, v, field, functionName, dim, dimStr},
-           functionName = CreateNLoopTadpoleFunctionName[higgsBoson,2];
+           functionName = CreateTadpoleFunctionName[higgsBoson,2];
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
            body = "const auto tadpole_2l(" <> struct <> functionName <> "());\n";
@@ -522,7 +632,20 @@ FillArrayWithTwoLoopTadpoles[higgsBoson_, arrayName_String, sign_String:"-", str
                body = body <> arrayName <> "[" <> ToString[v-1] <> "] " <> sign <> "= " <>
                       "tadpole_2l(" <> ToString[v-1] <> ");\n";
               ];
-           Return[IndentText[IndentText[body]]];
+           body
+          ];
+
+DivideTadpoleByVEV[higgsAndVEV_List, arrayName_String] :=
+    Module[{body = "", v, vev},
+           For[v = 1, v <= Length[higgsAndVEV], v++,
+               vev = higgsAndVEV[[v,3]];
+               If[vev === 0,
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] = 0.;\n";,
+                  vev = CConversion`RValueToCFormString[vev];
+                  body = body <> arrayName <> "[" <> ToString[v-1] <> "] /= " <> vev <> ";\n";
+                 ];
+              ];
+           body
           ];
 
 AssertFieldDimension[field_, dim_, model_] :=
@@ -562,13 +685,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -651,13 +774,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -730,7 +853,7 @@ CreateTwoLoopTadpoles[higgsBoson_, model_String] :=
     Module[{prototype, function, functionName, dim, dimStr, cType},
            dim = GetDimension[higgsBoson];
            dimStr = ToString[dim];
-           functionName = CreateNLoopTadpoleFunctionName[higgsBoson,2];
+           functionName = CreateTadpoleFunctionName[higgsBoson,2];
            cType = GetTadpoleVectorCType[dim];
            prototype = cType <> " " <> functionName <> "() const;\n";
            body = GetTwoLoopTadpoleCorrections[model];
@@ -755,6 +878,9 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            ytStr   = CConversion`RValueToCFormString[yt];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
 "\
+using namespace flexiblesusy::sm_twoloophiggs;
+
+const double p2 = Sqr(p);
 const double mt = " <> mtStr <> ";
 const double yt = " <> ytStr <> ";
 const double gs = " <> g3Str <> ";
@@ -762,11 +888,47 @@ const double scale = get_scale();
 double self_energy = 0.;
 
 if (HIGGS_2LOOP_CORRECTION_AT_AT) {
-   self_energy += self_energy_higgs_2loop_at_at_sm(scale, mt, yt);
+   self_energy -= delta_mh_2loop_at_at_sm(p2, scale, mt, yt);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
-   self_energy += self_energy_higgs_2loop_at_as_sm(scale, mt, yt, gs);
+   self_energy -= delta_mh_2loop_at_as_sm(p2, scale, mt, yt, gs);
+}
+
+return self_energy;"
+          ];
+
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "SM", 3] :=
+    Module[{mTop, mtStr, yt, ytStr, g3Str, mHiggs, mhStr},
+           AssertFieldDimension[particle, 1, model];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           yt      = Parameters`GetThirdGeneration[SARAH`UpYukawa];
+           ytStr   = CConversion`RValueToCFormString[yt];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           mHiggs  = TreeMasses`GetMass[particle];
+           mhStr   = CConversion`RValueToCFormString[mHiggs];
+"\
+using namespace flexiblesusy::sm_threeloophiggs;
+
+const double mt = " <> mtStr <> ";
+const double yt = " <> ytStr <> ";
+const double gs = " <> g3Str <> ";
+const double mh = " <> mhStr <> ";
+const double scale = get_scale();
+double self_energy = 0.;
+
+if (HIGGS_3LOOP_CORRECTION_AT_AT_AT) {
+   self_energy -= delta_mh_3loop_at_at_at_sm(scale, mt, yt, mh);
+}
+
+if (HIGGS_3LOOP_CORRECTION_AT_AT_AS) {
+   self_energy -= delta_mh_3loop_at_at_as_sm(scale, mt, yt, gs);
+}
+
+if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
+   self_energy -= delta_mh_3loop_at_as_as_sm(scale, mt, yt, gs);
 }
 
 return self_energy;"
@@ -784,6 +946,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            ytStr   = CConversion`RValueToCFormString[yt];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
 "\
+using namespace flexiblesusy::splitmssm_threeloophiggs;
+
 const double mt = " <> mtStr <> ";
 const double mg = " <> mgStr <> ";
 const double yt = " <> ytStr <> ";
@@ -792,7 +956,7 @@ const double scale = get_scale();
 double self_energy = 0.;
 
 if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
-   self_energy += self_energy_higgs_3loop_gluino_split(scale, mt, yt, gs, mg);
+   self_energy -= delta_mh_3loop_gluino_split(scale, mt, yt, gs, mg);
 }
 
 return self_energy;"
@@ -827,13 +991,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -913,13 +1077,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -1003,13 +1167,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -1101,13 +1265,13 @@ double msb_1, msb_2, theta_b;
 double mstau_1, mstau_2, theta_tau;
 double msnu_1, msnu_2, theta_nu;
 
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Selectron, "mstau_1", "mstau_2", "theta_tau"] <>
 ";
-" <> TreeMasses`CallThirdGenerationHelperFunctionName[SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`Sneutrino, "msnu_1", "msnu_2", "theta_nu"] <>
 ";
 
 const double mst1sq = Sqr(mst_1), mst2sq = Sqr(mst_2);
@@ -1166,6 +1330,123 @@ if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
 return self_energy_2l;"
           ];
 
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "MSSM", 3] :=
+    Module[{g3Str, mtStr, mbStr, mTop, mBot,
+            vuStr, vdStr, muStr, m3Str, mA0Str,
+            AtStr, AbStr, mWStr, mZStr, mq2Str, md2Str, mu2Str},
+           AssertFieldDimension[particle, 2, model];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           mbStr   = CConversion`RValueToCFormString[mBot];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
+           vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
+           muStr   = CConversion`RValueToCFormString[Parameters`GetEffectiveMu[]];
+           m3Str   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`Gluino]];
+           mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
+           AtStr   = CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2] / SARAH`UpYukawa[2,2]];
+           AbStr   = CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2] / SARAH`DownYukawa[2,2]];
+           mWStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorW]];
+           mZStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorZ]];
+           mq2Str  = CConversion`RValueToCFormString[SARAH`SoftSquark];
+           mu2Str  = CConversion`RValueToCFormString[SARAH`SoftUp];
+           md2Str  = CConversion`RValueToCFormString[SARAH`SoftDown];
+CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
+
+#ifdef ENABLE_HIMALAYA
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+";
+
+himalaya::Parameters pars;
+pars.scale = get_scale();
+pars.mu = Re(" <> muStr <> ");
+pars.g3 = " <> g3Str <> ";
+pars.vd = " <> vdStr <> ";
+pars.vu = " <> vuStr <> ";
+pars.mq2 = Re(" <> mq2Str <> ");
+pars.md2 = Re(" <> md2Str <> ");
+pars.mu2 = Re(" <> mu2Str <> ");
+pars.At = Re(" <> AtStr <> ");
+pars.Ab = Re(" <> AbStr <> ");
+pars.MG = " <> m3Str <> ";
+pars.MW = " <> mWStr <> ";
+pars.MZ = " <> mZStr <> ";
+pars.Mt = " <> mtStr <> ";
+pars.Mb = " <> mbStr <> ";
+pars.MA = " <> mA0Str <> ";
+pars.MSt << mst_1, mst_2;
+pars.MSb << msb_1, msb_2;
+pars.s2t = Sin(2*theta_t);
+pars.s2b = Sin(2*theta_b);
+
+if (pars.MSt(0) > pars.MSt(1)) {
+   std::swap(pars.MSt(0), pars.MSt(1));
+   pars.s2t *= -1;
+}
+
+if (pars.MSb(0) > pars.MSb(1)) {
+   std::swap(pars.MSb(0), pars.MSb(1));
+   pars.s2b *= -1;
+}
+
+try {
+   const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
+   const bool verbose = false;
+   himalaya::HierarchyCalculator hc(pars, verbose);
+
+   if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
+      const auto hier = hc.calculateDMh3L(false, mdrScheme);
+
+      VERBOSE_MSG(\"Himalaya top (hierarchy, uncertainties) = (\"
+                  << hier.getSuitableHierarchy() << \", {\"
+                  << hier.getExpUncertainty(1) << \", \"
+                  << hier.getExpUncertainty(2) << \", \"
+                  << hier.getExpUncertainty(3) << \"})\");
+
+      // calculate the 3-loop corrections
+      self_energy_3l += - hier.getDMh(3);
+
+      if (mdrScheme) {
+         // calculate the 1- and 2-loop shift DR -> MDR
+         self_energy_3l += - hier.getDRToMDRShift();
+      }
+   }
+
+   if (HIGGS_3LOOP_CORRECTION_AB_AS_AS) {
+      const auto hier = hc.calculateDMh3L(true, mdrScheme);
+
+      VERBOSE_MSG(\"Himalaya bottom (hierarchy, uncertainties) = (\"
+                  << hier.getSuitableHierarchy() << \", {\"
+                  << hier.getExpUncertainty(1) << \", \"
+                  << hier.getExpUncertainty(2) << \", \"
+                  << hier.getExpUncertainty(3) << \"})\");
+
+      // calculate the 3-loop corrections
+      self_energy_3l += - hier.getDMh(3);
+
+      if (mdrScheme) {
+         // calculate the 1- and 2-loop shift DR -> MDR
+         self_energy_3l += - hier.getDRToMDRShift();
+      }
+   }
+} catch (const std::exception& e) {
+   VERBOSE_MSG(e.what());
+   VERBOSE_MSG(pars);
+   throw HimalayaError(e.what());
+}
+#endif // ENABLE_HIMALAYA
+
+return self_energy_3l;"
+          ];
+
 GetNLoopSelfEnergyCorrections[particle_, model_, loop_] :=
     Module[{},
            Print["Error: ", loop,"-loop self-energy corrections not available for ",
@@ -1173,23 +1454,23 @@ GetNLoopSelfEnergyCorrections[particle_, model_, loop_] :=
            ""
           ];
 
-CreateNLoopSelfEnergy[particle_, model_String, loop_] :=
+CreateNLoopSelfEnergy[particle_, model_String, loop_, args_String] :=
     Module[{prototype, function, functionName, dim, dimStr, cType},
            dim = Parameters`NumberOfIndependentEntriesOfSymmetricMatrix[GetDimension[particle]];
            dimStr = ToString[dim];
-           functionName = CreateNLoopSelfEnergyFunctionName[particle,loop];
+           functionName = CreateSelfEnergyFunctionName[particle,loop];
            cType = CConversion`CreateCType[TreeMasses`GetMassMatrixType[particle]];
-           prototype = cType <> " " <> functionName <> "() const;\n";
+           prototype = cType <> " " <> functionName <> "(" <> args <> ") const;\n";
            body = GetNLoopSelfEnergyCorrections[particle, model, loop];
-           function = cType <> " CLASSNAME::" <> functionName <> "() const\n{\n" <>
+           function = cType <> " CLASSNAME::" <> functionName <> "(" <> args <> ") const\n{\n" <>
                       IndentText[body] <> "\n}\n";
            Return[{prototype, function}];
           ];
 
-CreateNLoopSelfEnergies[particles_List, model_String, loop_] :=
+CreateNLoopSelfEnergies[particles_List, model_String, loop_, args_String:""] :=
     Module[{prototype = "", function = "", i, p, f},
            For[i = 1, i <= Length[particles], i++,
-               {p, f} = CreateNLoopSelfEnergy[particles[[i]], model, loop];
+               {p, f} = CreateNLoopSelfEnergy[particles[[i]], model, loop, args];
                prototype = prototype <> p;
                function = function <> f <> "\n";
               ];
@@ -1197,13 +1478,19 @@ CreateNLoopSelfEnergies[particles_List, model_String, loop_] :=
           ];
 
 CreateTwoLoopSelfEnergiesSM[particles_List] :=
-    CreateNLoopSelfEnergies[particles, "SM", 2];
+    CreateNLoopSelfEnergies[particles, "SM", 2, "double p"];
+
+CreateThreeLoopSelfEnergiesSM[particles_List] :=
+    CreateNLoopSelfEnergies[particles, "SM", 3];
 
 CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "MSSM", 2];
 
 CreateTwoLoopSelfEnergiesNMSSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "NMSSM", 2];
+
+CreateThreeLoopSelfEnergiesMSSM[particles_List] :=
+    CreateNLoopSelfEnergies[particles, "MSSM", 3];
 
 CreateThreeLoopSelfEnergiesSplit[particles_List] :=
     CreateNLoopSelfEnergies[particles, "Split", 3];

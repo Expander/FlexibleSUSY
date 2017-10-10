@@ -22,17 +22,19 @@
 
 #include <Eigen/Dense>
 #include "constraint.hpp"
-#include "matching.hpp"
 #include "lattice_solver.hpp"
 
 namespace flexiblesusy {
+
+template <class T>
+class Matching;
 
 class Lattice;
 
 class Lattice_constraint {
 public:
     // Lattice_constraint() {}
-    virtual ~Lattice_constraint() {}
+    virtual ~Lattice_constraint() = default;
     virtual void init(RGFlow<Lattice> *flow) { f = flow; activate(); }
     virtual void deactivate();
     virtual void alloc_rows() = 0;
@@ -56,7 +58,7 @@ private:
     std::vector<RGFlow<Lattice>::EqRow *> rows;
 };
 
-typedef Matching<Lattice> InterTheoryConstraint;
+using InterTheoryConstraint = Matching<Lattice>;
 
 template<>
 class Matching<Lattice> : public Lattice_constraint {
@@ -116,7 +118,7 @@ protected:
 private:
 };
 
-typedef Constraint<Lattice> SingleSiteConstraint;
+using SingleSiteConstraint = Constraint<Lattice>;
 
 template<>
 class Constraint<Lattice> : public IntraTheoryConstraint {
@@ -210,9 +212,9 @@ public:
 	A *v;
     };
 
-    typedef Adapter_<Eigen::ArrayXd, Eigen::VectorXd, Eigen::MatrixXd> Adapter;
-    typedef Adapter_<const Eigen::ArrayXd, const Eigen::VectorXd,
-		     const Eigen::MatrixXd> const_Adapter;
+    using Adapter = Adapter_<Eigen::ArrayXd, Eigen::VectorXd, Eigen::MatrixXd>;
+    using const_Adapter = Adapter_<const Eigen::ArrayXd, const Eigen::VectorXd,
+                                   const Eigen::MatrixXd>;
 
     // Lattice_RKRGE() {}
     void init(RGFlow<Lattice> *flow, size_t theory, size_t site, size_t span) {
@@ -306,6 +308,6 @@ public:
 	{}
 };
 
-}
+} // namespace flexiblesusy
 
 #endif // lattice_constraint_hpp

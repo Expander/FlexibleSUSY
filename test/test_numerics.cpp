@@ -3,43 +3,12 @@
 #define BOOST_TEST_MODULE test_numerics
 
 #include <boost/test/unit_test.hpp>
-#include "numerics.h"
 #include "numerics2.hpp"
+#include "stopwatch.hpp"
+#include <complex>
+#include <cstdlib>
 
 using namespace flexiblesusy;
-
-BOOST_AUTO_TEST_CASE( test_bIntegral )
-{
-   struct Parameters {
-      int n;
-      double p, m1, m2, mt;
-   };
-
-   Parameters parameters[] = {
-      {1, 100., 0.  , 0.  , 100.},
-      {1, 100., 0.  , 0.  , 100.},
-      {1, 100., 0.  , 100., 100.},
-      {1, 100., 100., 0.  , 100.},
-      {1, 100., 0.  , 100., 100.},
-      {1, 100., 100., 100., 100.},
-      {1, 100., 10. , 20. , 100.},
-      {1, 100., 10. , 200., 100.},
-      {1, 100., 10. , 200., 200.}
-   };
-
-   for (unsigned i = 0; i < sizeof(parameters)/sizeof(parameters[0]); i++) {
-      const double n  = parameters[i].n;
-      const double p  = parameters[i].p;
-      const double m1 = parameters[i].m1;
-      const double m2 = parameters[i].m2;
-      const double mt = parameters[i].mt;
-
-      const double b_ss = bIntegral(n, p, m1, m2, mt);
-      const double b_fs = bIntegral_threadsave(n, p, m1, m2, mt);
-
-      BOOST_CHECK_EQUAL(b_ss, b_fs);
-   }
-}
 
 BOOST_AUTO_TEST_CASE(test_is_equal)
 {
@@ -69,4 +38,58 @@ BOOST_AUTO_TEST_CASE(test_is_equal)
    BOOST_CHECK(is_equal(ui, 0U));
    BOOST_CHECK(is_equal(ul, 0UL));
    BOOST_CHECK(is_equal(ull, 0ULL));
+
+   // BOOST_CHECK(is_equal_rel(s, (short)0));
+   BOOST_CHECK(is_equal_rel(i, 0));
+   BOOST_CHECK(is_equal_rel(l, 0L));
+   BOOST_CHECK(is_equal_rel(ll, 0LL));
+   // BOOST_CHECK(is_equal_rel(us, (unsigned short)0));
+   BOOST_CHECK(is_equal_rel(ui, 0U));
+   BOOST_CHECK(is_equal_rel(ul, 0UL));
+   BOOST_CHECK(is_equal_rel(ull, 0ULL));
+}
+
+template <long N>
+std::array<std::complex<double>, N> make_logs()
+{
+   std::array<std::complex<double>, N> vals;
+
+   for (auto& v: vals)
+      v = std::complex<double>(1.*std::rand()/RAND_MAX, 1.*std::rand()/RAND_MAX);
+
+   return vals;
+}
+
+BOOST_AUTO_TEST_CASE(test_complex_log)
+{
+   const auto vals = make_logs<100000>();
+
+   for (auto v: vals) {
+      BOOST_CHECK_CLOSE_FRACTION(std::real(std::log(v)), std::real(fast_log(v)), 1e-9);
+      BOOST_CHECK_CLOSE_FRACTION(std::imag(std::log(v)), std::imag(fast_log(v)), 1e-9);
+   }
+}
+
+BOOST_AUTO_TEST_CASE(test_complex_log_bench)
+{
+   const auto vals = make_logs<100000>();
+
+   Stopwatch sw;
+
+   sw.start();
+   for (auto v: vals)
+      volatile auto res = std::log(v);
+   sw.stop();
+   const double t_log = sw.get_time_in_seconds();
+
+   sw.start();
+   for (auto v: vals)
+      volatile auto res = fast_log(v);
+   sw.stop();
+   const double t_fslog = sw.get_time_in_seconds();
+
+   BOOST_TEST_MESSAGE("time for log     : " << t_log);
+   BOOST_TEST_MESSAGE("time for fast_log: " << t_fslog);
+
+   BOOST_CHECK_LT(t_fslog, t_log);
 }

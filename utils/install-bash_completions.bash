@@ -116,13 +116,17 @@ _configure()
 --enable-compile
 --enable-compiler-warnings
 --enable-debug
---enable-mass-error-check
 --enable-fflite
+--enable-himalaya
+--enable-lapack
+--enable-librarylink
 --enable-looptools
+--enable-mass-error-check
 --enable-meta
+--enable-shared-libs
 --enable-silent
 --enable-sqlite
---enable-static-libs
+--enable-static
 --enable-threads
 --enable-tsil
 --enable-verbose
@@ -131,19 +135,22 @@ _configure()
 --disable-compile
 --disable-compiler-warnings
 --disable-debug
---disable-mass-error-check
 --disable-fflite
+--disable-himalaya
+--disable-lapack
+--disable-librarylink
 --disable-looptools
+--disable-mass-error-check
 --disable-meta
+--disable-shared-libs
 --disable-silent
 --disable-sqlite
---disable-static-libs
+--disable-static
 --disable-threads
 --disable-tsil
 --disable-verbose
 
 --with-addons=
---with-algorithms=
 --with-blas-libdir=
 --with-blas-libs=
 --with-boost-libdir=
@@ -155,21 +162,28 @@ _configure()
 --with-fflags=
 --with-flibs=
 --with-gsl-config=
+--with-himalaya-libdir=
+--with-himalaya-incdir=
 --with-install-dir=
 --with-lapack-libdir=
 --with-lapack-libs=
---with-ldflags=
---with-ldlibs=
---with-lib-ext=
 --with-looptools-libdir=
 --with-looptools-incdir=
---with-make-lib-cmd=
 --with-math-cmd=
 --with-models=
 --with-optional-modules=
 --with-pthread-libdir=
+--with-shared-ldflags=
+--with-shared-ldlibs=
+--with-shared-lib-cmd=
+--with-shared-lib-ext=
+--with-solvers=
 --with-sqlite-libdir=
 --with-sqlite-incdir=
+--with-static-ldflags=
+--with-static-ldlibs=
+--with-static-lib-cmd=
+--with-static-lib-ext=
 --with-tsil-libdir=
 --with-tsil-incdir=
 
@@ -184,9 +198,9 @@ _configure()
         return 0
     fi
 
-    # handle --with-algorithms=
-    if [[ ${prev}${cur} == "--with-algorithms=" || ${pprev}${prev} == "--with-algorithms=" ]] ; then
-        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-algorithms=" "two_scale lattice") )
+    # handle --with-solvers=
+    if [[ ${prev}${cur} == "--with-solvers=" || ${pprev}${prev} == "--with-solvers=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-solvers=" "two_scale lattice") )
         return 0
     fi
 
@@ -220,24 +234,6 @@ _configure()
         return 0
     fi
 
-    # handle --with-ldflags=
-    if [[ ${prev}${cur} == "--with-ldflags=" || ${pprev}${prev} == "--with-ldflags=" ]] ; then
-        COMPREPLY=()
-        return 0
-    fi
-
-    # handle --with-libext=
-    if [[ ${prev}${cur} == "--with-libext=" || ${pprev}${prev} == "--with-libext=" ]] ; then
-        COMPREPLY=()
-        return 0
-    fi
-
-    # handle --with-make-lib-cmd=
-    if [[ ${prev}${cur} == "--with-make-lib-cmd=" || ${pprev}${prev} == "--with-make-lib-cmd=" ]] ; then
-        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-make-lib-cmd=" $(compgen -c)) )
-        return 0
-    fi
-
     # handle --with-math-cmd=
     if [[ ${prev}${cur} == "--with-math-cmd=" || ${pprev}${prev} == "--with-math-cmd=" ]] ; then
         COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-math-cmd=" $(compgen -c)) )
@@ -254,6 +250,42 @@ _configure()
     # handle --with-optional-modules=
     if [[ ${prev}${cur} == "--with-optional-modules=" || ${pprev}${prev} == "--with-optional-modules=" ]] ; then
         COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-optional-modules=" "examples test") )
+        return 0
+    fi
+
+    # handle --with-shared-ldflags
+    if [[ ${prev}${cur} == "--with-shared-ldflags=" || ${pprev}${prev} == "--with-shared-ldflags=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-shared-lib-ext=
+    if [[ ${prev}${cur} == "--with-shared-lib-ext=" || ${pprev}${prev} == "--with-shared-lib-ext=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-shared-lib-cmd=
+    if [[ ${prev}${cur} == "--with-shared-lib-cmd=" || ${pprev}${prev} == "--with-shared-lib-cmd=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-shared-lib-cmd=" $(compgen -c)) )
+        return 0
+    fi
+
+    # handle --with-static-ldflags
+    if [[ ${prev}${cur} == "--with-static-ldflags=" || ${pprev}${prev} == "--with-static-ldflags=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-static-lib-ext=
+    if [[ ${prev}${cur} == "--with-static-lib-ext=" || ${pprev}${prev} == "--with-static-lib-ext=" ]] ; then
+        COMPREPLY=()
+        return 0
+    fi
+
+    # handle --with-static-lib-cmd=
+    if [[ ${prev}${cur} == "--with-static-lib-cmd=" || ${pprev}${prev} == "--with-static-lib-cmd=" ]] ; then
+        COMPREPLY=( $(__select_from_list "${pprev}" "${prev}" "${cur}" "--with-static-lib-cmd=" $(compgen -c)) )
         return 0
     fi
 
@@ -335,4 +367,5 @@ for sg in ${spectrum_generators}
 do
     echo "installing bash completion for ${sg}"
     complete -o nospace -F _run_spectrum_generator "${sg}"
+    complete -o nospace -F _run_spectrum_generator "./${sg}"
 done

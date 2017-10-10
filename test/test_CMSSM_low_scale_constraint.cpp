@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 3.0e-15);
-   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 6.0e-7);
+   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 9.0e-4); // no tan(beta) resummation in SOFTSUSY
    BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 4.5e-10);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
@@ -145,12 +145,12 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), s.displayGaugeCoupling(3), 1.0e-10);
 
    // test off-diagonal elements
-   BOOST_MESSAGE("testing off-diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing off-diagonal yukawa elements");
    for (int i = 1; i <= 3; i++) {
       for (int k = 1; k <= 3; k++) {
          if (i == k)
             continue;
-         BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
+         BOOST_TEST_MESSAGE("testing yukawa elements " << i << ", " << k);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(i-1,k-1), s.displayYukawaMatrix(YU)(i,k), 0.00001);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(i-1,k-1), s.displayYukawaMatrix(YD)(i,k), 0.00001);
          BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(i-1,k-1), s.displayYukawaMatrix(YE)(i,k), 0.00001);
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
    // Yukawa couplings.  We use the old vev (= combination of vu, vd
    // from the last run) to calculate the Yukawa couplings.
 
-   BOOST_MESSAGE("testing diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing diagonal yukawa elements");
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(0,0), s.displayYukawaMatrix(YU)(1,1), 0.011);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(0,0), s.displayYukawaMatrix(YD)(1,1), 0.011);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(0,0), s.displayYukawaMatrix(YE)(1,1), 0.011);
@@ -174,9 +174,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint )
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yu()(2,2), s.displayYukawaMatrix(YU)(3,3), 0.011);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Yd()(2,2), s.displayYukawaMatrix(YD)(3,3), 0.011);
-   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.011);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Ye()(2,2), s.displayYukawaMatrix(YE)(3,3), 0.012);
 
-   BOOST_MESSAGE("testing running VEV");
+   BOOST_TEST_MESSAGE("testing running VEV");
    const double running_vev = Sqrt(Sqr(m.get_vu()) +  Sqr(m.get_vd()));
    BOOST_CHECK_CLOSE_FRACTION(running_vev, s.displayHvev(), 1.0e-9);
 }

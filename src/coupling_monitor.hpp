@@ -59,7 +59,7 @@ namespace flexiblesusy {
  *
  * const double start_scale = 100.;
  * const double stop_scale = 1.0e12;
- * const unsigned number_of_points = 50;
+ * const int number_of_points = 50;
  * const bool include_endpoint = true;
  *
  * cm.run(start_scale, stop_scale, number_of_points, include_endpoint);
@@ -69,12 +69,12 @@ namespace flexiblesusy {
 template <class Model, class DataGetter>
 class Coupling_monitor {
 public:
-   typedef std::pair<double, Eigen::ArrayXd> TTouple;///< touple of scale and couplings
+   using TTouple = std::pair<double, Eigen::ArrayXd>;///< touple of scale and couplings
 
    Coupling_monitor(const Model&, const DataGetter&);
 
    /// get couplings at all scales
-   void run(double, double, unsigned int number_of_steps = 20, bool include_endpoint = false);
+   void run(double, double, int number_of_steps = 20, bool include_endpoint = false);
    /// get maximum scale
    TTouple get_max_scale() const;
    /// delete all saved couplings
@@ -83,17 +83,17 @@ public:
    void write_to_file(const std::string&, bool overwrite = true) const;
 
 private:
-   typedef std::vector<TTouple> TData; ///< container for the scales and couplings
+   using TData = std::vector<TTouple>; ///< container for the scales and couplings
    struct TScaleComp {
       bool operator() (const TData::value_type& i,const TData::value_type& j) const {
          return i.first < j.first;
       }
    };
 
-   TData couplings;        ///< all couplings at all scales
+   TData couplings{};      ///< all couplings at all scales
    Model model;            ///< the model
    DataGetter data_getter; ///< hepler class which extracts the model parameters
-   unsigned width;         ///< width of columns in output table
+   int width{16};          ///< width of columns in output table
 
    /// write line with parameter names
    void write_parameter_names_line(std::ofstream&) const;
@@ -103,10 +103,8 @@ private:
 
 template <class Model, class DataGetter>
 Coupling_monitor<Model,DataGetter>::Coupling_monitor(const Model& model_, const DataGetter& data_getter_)
-   : couplings(TData())
-   , model(model_)
+   : model(model_)
    , data_getter(data_getter_)
-   , width(16)
 {
 }
 
@@ -125,7 +123,7 @@ typename Coupling_monitor<Model,DataGetter>::TTouple Coupling_monitor<Model,Data
    }
 
    // find gauge couplings at the greatest scale
-   TData::const_iterator maxScale
+   auto maxScale
       = max_element(couplings.begin(), couplings.end(), TScaleComp());
 
    return *maxScale;
@@ -151,17 +149,12 @@ void Coupling_monitor<Model,DataGetter>::write_parameter_names_line(std::ofstrea
    if (!fout.good() || couplings.empty())
       return;
 
-   const std::size_t number_of_couplings = couplings.front().second.size();
-   const std::vector<std::string> parameter_names(data_getter.get_parameter_names());
-
-   if (number_of_couplings != parameter_names.size()) {
-      ERROR("number of couplings != length of list of parameter names");
-   }
+   const auto parameter_names(data_getter.get_parameter_names());
 
    fout << std::left << std::setw(width) << "scale";
 
-   for (std::size_t i = 0; i < number_of_couplings; ++i)
-      fout << std::left << std::setw(width) << parameter_names[i];
+   for (const auto& p: parameter_names)
+      fout << std::left << std::setw(width) << p;
 
    fout << '\n';
 }
@@ -177,20 +170,13 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ofstream& fout)
    if (!fout.good() || couplings.empty())
       return;
 
-   const std::size_t number_of_couplings = couplings.front().second.size();
-   const std::vector<std::string> parameter_names(data_getter.get_parameter_names());
-
-   if (number_of_couplings != parameter_names.size()) {
-      ERROR("number of couplings != length of list of parameter names");
-   }
+   const auto parameter_names(data_getter.get_parameter_names());
 
    fout << std::left << std::setw(width) << "# [1] scale";
 
-   for (std::size_t i = 0; i < number_of_couplings; ++i) {
-      std::ostringstream parameter;
-      parameter << '[' << (i+2) << "] " << parameter_names[i];
-
-      fout << std::left << std::setw(width) << parameter.str();
+   for (std::size_t i = 0; i < parameter_names.size(); ++i) {
+      fout << std::left << std::setw(width)
+           << '[' + std::to_string(i+2) + "] " + parameter_names[i];
    }
 
    fout << '\n';
@@ -256,7 +242,7 @@ void Coupling_monitor<Model,DataGetter>::write_to_file(const std::string& file_n
  */
 template <class Model, class DataGetter>
 void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
-                                             unsigned int number_of_steps, bool include_endpoint)
+                                             int number_of_steps, bool include_endpoint)
 {
    if (q1 <= 0.0 || q2 <= 0.0) {
       ERROR("negative scales are not allowed: q1=" << q1 << ", q2=" << q2);
@@ -269,11 +255,11 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
    // if the endpoint should be included, the scale loop must run from
    // (n == 0) to (n == number_of_steps); otherwise it runs from (n == 0) to (n
    // == number_of_steps - 1)
-   const unsigned int endpoint_offset = include_endpoint ? 1 : 0;
+   const int endpoint_offset = include_endpoint ? 1 : 0;
 
    // run from q1 to q2
-   for (unsigned int n = 0; n < number_of_steps + endpoint_offset; ++n) {
-      const double scale = exp(log(q1) + n * (log(q2) - log(q1)) / number_of_steps);
+   for (int n = 0; n < number_of_steps + endpoint_offset; ++n) {
+      const double scale = std::exp(std::log(q1) + n * (std::log(q2) - std::log(q1)) / number_of_steps);
       try {
          model.run_to(scale);
       } catch (const Error&) {
@@ -281,12 +267,12 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
                << scale << " failed");
          break;
       }
-      couplings.push_back(TData::value_type(scale, data_getter.get_parameters(model)));
+      couplings.emplace_back(scale, data_getter.get_parameters(model));
    }
 
    std::sort(couplings.begin(), couplings.end(), TScaleComp());
 }
 
-}
+} // namespace flexiblesusy
 
 #endif

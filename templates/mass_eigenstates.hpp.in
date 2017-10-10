@@ -32,23 +32,24 @@
 #ifndef @ModelName@_MASS_EIGENSTATES_H
 #define @ModelName@_MASS_EIGENSTATES_H
 
-#include "@ModelName@_two_scale_soft_parameters.hpp"
-#include "@ModelName@_physical.hpp"
 #include "@ModelName@_info.hpp"
-#include "two_loop_corrections.hpp"
+#include "@ModelName@_physical.hpp"
+#include "@ModelName@_soft_parameters.hpp"
+#include "loop_corrections.hpp"
+#include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
 
 #include <iosfwd>
+#include <memory>
 #include <string>
 
-#include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
 namespace flexiblesusy {
 
-class EWSB_solver;
+class @ModelName@_ewsb_solver_interface;
 /**
  * @class @ModelName@_mass_eigenstates
  * @brief model class with routines for determing masses and mixinga and EWSB
@@ -56,18 +57,23 @@ class EWSB_solver;
 class @ModelName@_mass_eigenstates : public @ModelName@_soft_parameters {
 public:
    explicit @ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
-   virtual ~@ModelName@_mass_eigenstates();
+   @ModelName@_mass_eigenstates(const @ModelName@_mass_eigenstates&) = default;
+   @ModelName@_mass_eigenstates(@ModelName@_mass_eigenstates&&) = default;
+   virtual ~@ModelName@_mass_eigenstates() = default;
+   @ModelName@_mass_eigenstates& operator=(const @ModelName@_mass_eigenstates&) = default;
+   @ModelName@_mass_eigenstates& operator=(@ModelName@_mass_eigenstates&&) = default;
 
    /// number of EWSB equations
-   static const std::size_t number_of_ewsb_equations = @numberOfEWSBEquations@;
+   static const int number_of_ewsb_equations = @numberOfEWSBEquations@;
 
    void calculate_DRbar_masses();
-   void calculate_DRbar_parameters();
    void calculate_pole_masses();
    void check_pole_masses_for_tachyons();
-   virtual void clear();
+   virtual void clear() override;
    void clear_DRbar_parameters();
    Eigen::ArrayXd get_DRbar_masses() const;
+   Eigen::ArrayXd get_DRbar_masses_and_mixings() const;
+   Eigen::ArrayXd get_extra_parameters() const;
    void do_calculate_sm_pole_masses(bool);
    bool do_calculate_sm_pole_masses() const;
    void do_calculate_bsm_pole_masses(bool);
@@ -77,23 +83,24 @@ public:
    void reorder_DRbar_masses();
    void reorder_pole_masses();
    void set_ewsb_iteration_precision(double);
-   void set_ewsb_loop_order(unsigned);
-   void set_two_loop_corrections(const Two_loop_corrections&);
-   const Two_loop_corrections& get_two_loop_corrections() const;
+   void set_ewsb_loop_order(int);
+   void set_loop_corrections(const Loop_corrections&);
+   const Loop_corrections& get_loop_corrections() const;
+   void set_threshold_corrections(const Threshold_corrections&);
+   const Threshold_corrections& get_threshold_corrections() const;
    void set_DRbar_masses(const Eigen::ArrayXd&);
-   void set_number_of_ewsb_iterations(std::size_t);
-   void set_number_of_mass_iterations(std::size_t);
-   std::size_t get_number_of_ewsb_iterations() const;
-   std::size_t get_number_of_mass_iterations() const;
-   void set_pole_mass_loop_order(unsigned);
-   unsigned get_pole_mass_loop_order() const;
+   void set_DRbar_masses_and_mixings(const Eigen::ArrayXd&);
+   void set_extra_parameters(const Eigen::ArrayXd&);
+   void set_pole_mass_loop_order(int);
+   int get_pole_mass_loop_order() const;
    void set_physical(const @ModelName@_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
    const @ModelName@_physical& get_physical() const;
    @ModelName@_physical& get_physical();
-   const Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems() const;
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES>& get_problems();
+   const Problems& get_problems() const;
+   Problems& get_problems();
+   void set_ewsb_solver(const std::shared_ptr<@ModelName@_ewsb_solver_interface>&);
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
@@ -101,8 +108,8 @@ public:
    void calculate_spectrum();
    void clear_problems();
    std::string name() const;
-   void run_to(double scale, double eps = -1.0);
-   void print(std::ostream& out = std::cout) const;
+   void run_to(double scale, double eps = -1.0) override;
+   void print(std::ostream& out = std::cerr) const override;
    void set_precision(double);
    double get_precision() const;
 
@@ -111,6 +118,8 @@ public:
 @higgsMassGetterPrototypes@
 @mixingMatrixGetters@
 @phasesGetterSetters@
+@extraParameterSetters@
+@extraParameterGetters@
 @massCalculationPrototypes@
 @tadpoleEqPrototypes@
 @selfEnergyPrototypes@
@@ -118,8 +127,11 @@ public:
    /// calculates the tadpoles at current loop order
    void tadpole_equations(double[number_of_ewsb_equations]) const;
    /// calculates the tadpoles at current loop order
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
+   Eigen::Matrix<double,number_of_ewsb_equations,1> tadpole_equations() const;
+   /// calculates the tadpoles divided by VEVs at current loop order
+   Eigen::Matrix<double,number_of_ewsb_equations,1> tadpole_equations_over_vevs() const;
 
+@secondGenerationHelperPrototypes@
 @thirdGenerationHelperPrototypes@
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@
@@ -129,49 +141,35 @@ public:
 @dependencePrototypes@
 
 private:
-   struct EWSB_args {
-      @ModelName@_mass_eigenstates* model;
-      unsigned ewsb_loop_order;
-   };
+   int ewsb_loop_order{2};           ///< loop order for EWSB
+   int pole_mass_loop_order{2};      ///< loop order for pole masses
+   bool calculate_sm_pole_masses{false};  ///< switch to calculate the pole masses of the Standard Model particles
+   bool calculate_bsm_pole_masses{true};  ///< switch to calculate the pole masses of the BSM particles
+   bool force_output{false};              ///< switch to force output of pole masses
+   double precision{1.e-3};               ///< RG running precision
+   double ewsb_iteration_precision{1.e-5};///< precision goal of EWSB solution
+   @ModelName@_physical physical{}; ///< contains the pole masses and mixings
+   Problems problems{@ModelName@_info::model_name,
+                     &@ModelName@_info::particle_names_getter,
+                     &@ModelName@_info::parameter_names_getter}; ///< problems
+   Loop_corrections loop_corrections{}; ///< used pole mass corrections
+   std::shared_ptr<@ModelName@_ewsb_solver_interface> ewsb_solver{};
+   Threshold_corrections threshold_corrections{}; ///< used threshold corrections
 
-   class EEWSBStepFailed : public Error {
-   public:
-      virtual ~EEWSBStepFailed() {}
-      virtual std::string what() const { return "Could not perform EWSB step."; }
-   };
-
-   std::size_t number_of_ewsb_iterations;
-   std::size_t number_of_mass_iterations;
-   unsigned ewsb_loop_order;
-   unsigned pole_mass_loop_order;
-   bool calculate_sm_pole_masses; ///< switch to calculate the pole masses of the Standard Model particles
-   bool calculate_bsm_pole_masses;///< switch to calculate the pole masses of the BSM particles
-   bool force_output;             ///< switch to force output of pole masses
-   double precision;              ///< RG running precision
-   double ewsb_iteration_precision;
-   @ModelName@_physical physical; ///< contains the pole masses and mixings
-   Problems<@ModelName@_info::NUMBER_OF_PARTICLES> problems;
-   Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-
-   int solve_ewsb_iteratively();
-   int solve_ewsb_iteratively(unsigned);
-   int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
+   int get_number_of_ewsb_iterations() const;
+   int get_number_of_mass_iterations() const;
    int solve_ewsb_tree_level_custom();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
-   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
-   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
    void copy_DRbar_masses_to_pole_masses();
 
    // Passarino-Veltman loop functions
-   double A0(double) const;
-   double B0(double, double, double) const;
-   double B1(double, double, double) const;
-   double B00(double, double, double) const;
-   double B22(double, double, double) const;
-   double H0(double, double, double) const;
-   double F0(double, double, double) const;
-   double G0(double, double, double) const;
+   double A0(double) const noexcept;
+   double B0(double, double, double) const noexcept;
+   double B1(double, double, double) const noexcept;
+   double B00(double, double, double) const noexcept;
+   double B22(double, double, double) const noexcept;
+   double H0(double, double, double) const noexcept;
+   double F0(double, double, double) const noexcept;
+   double G0(double, double, double) const noexcept;
 
    // DR-bar masses
 @physicalMassesDef@
@@ -179,6 +177,8 @@ private:
 @mixingMatricesDef@
    // phases
 @phasesDefinition@
+   // extra parameters
+@extraParameterDefs@
 };
 
 std::ostream& operator<<(std::ostream&, const @ModelName@_mass_eigenstates&);

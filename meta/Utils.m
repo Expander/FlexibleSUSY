@@ -1,5 +1,29 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
 
 BeginPackage["Utils`"];
+
+AppendOrReplaceInList::usage="Replaces existing element in list,
+or appends it if not already present.";
 
 ApplyAndConcatenate::usage = "Applies a function to a list and
 concatenates the resulting list.";
@@ -86,7 +110,40 @@ FSImportString::usage = "Returns the content of a file in form of a string.  If 
 
 FSStringPadLeft::usage = "StringPadLeft[] for Mathematica 9 and below.";
 
+StartProgressBar::usage = "Starts progress indicator.
+
+Example:
+
+   StartProgressBar[Dynamic[k], 100];
+   For[k = 1, k <= 100, k++,
+       UpdateProgressBar[k, 100];
+       DoSomething[];
+      ];
+   StopProgressBar[100];
+";
+
+UpdateProgressBar::usage = "updates progress indicator.";
+
+StopProgressBar::usage = "stops progress bar.";
+
+FSColor::usage = "Default FlexibleSUSY color";
+
+FSFancyPrint::usage = "Print text in fancy headline style";
+
+FSFancyLine::usage = "Print separator line in command line mode";
+
 Begin["`Private`"];
+
+AppendOrReplaceInList[values_List, elem_, test_:SameQ] :=
+    Module[{matches, result},
+           matches = test[elem, #]& /@ values;
+           matches = (If[# =!= True && # =!= False, False, #])& /@ matches;
+           If[!Or @@ matches,
+              result = Append[values, elem];,
+              result = ReplacePart[values, Position[matches, True] -> elem];
+             ];
+           result
+          ];
 
 ApplyAndConcatenate[Func_, l_List] :=
     Module[{result = ""},
@@ -173,6 +230,36 @@ MaxRelDiff[{a_, b_}, underflow_:10^(-16)] :=
 
 MaxRelDiff[numbers_List, underflow_:10^(-16)] :=
     Max[MaxRelDiff[#,underflow]& /@ Tuples[numbers, 2]];
+
+StartProgressBar[dyn:Dynamic[x_], total_, len_:50] :=
+    If[$Notebooks,
+       PrintTemporary @ Row[{ProgressIndicator[dyn, {0, total}], " Total: ", total}]
+      ];
+
+UpdateProgressBar[x_, total_, len_:50] :=
+    Module[{i},
+           If[!$Notebooks,
+              WriteString["stdout", "[" <> StringJoin[
+                  Join[Table[".",{i,Round[len*x/total]}],
+                       Table[" ",{i,Round[len*(1-x/total)]}]]
+                 ] <> "] " <> ToString[x] <> "/" <> ToString[total] <> "\r"];
+             ];
+          ];
+
+StopProgressBar[total_, len_:50] :=
+    If[!$Notebooks,
+       WriteString["stdout", "[" <> StringJoin[
+           Table[".",{i,Round[len]}]
+       ] <> "] " <> ToString[total] <> "/" <> ToString[total] <> "\n"];
+      ];
+
+FSColor = Blue;
+
+FSFancyPrint[text_, level_:1] :=
+    Print[Style[text, "Section", FontSize->14 - 2 level, FSColor]]
+
+FSFancyLine[type_:"-", style__:Bold] :=
+    If[!$Notebooks, Print[Style[StringJoin[Array[type&, 70]], style]]];
 
 End[];
 

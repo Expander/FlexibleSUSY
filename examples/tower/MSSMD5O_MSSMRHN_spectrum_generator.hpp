@@ -19,6 +19,7 @@
 #ifndef MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 #define MSSMD5O_MSSMRHN_SPECTRUM_GENERATOR_H
 
+#include "MSSMD5O_two_scale_ewsb_solver.hpp"
 #include "MSSMD5O_two_scale_model.hpp"
 #include "MSSMD5O_two_scale_susy_scale_constraint.hpp"
 #include "MSSMD5O_two_scale_low_scale_constraint.hpp"
@@ -27,6 +28,7 @@
 
 #include "MSSMD5O_MSSMRHN_two_scale_matching.hpp"
 
+#include "MSSMRHN_two_scale_ewsb_solver.hpp"
 #include "MSSMRHN_two_scale_model.hpp"
 #include "MSSMRHN_two_scale_high_scale_constraint.hpp"
 #include "MSSMRHN_two_scale_convergence_tester.hpp"
@@ -34,12 +36,12 @@
 
 #include "MSSMD5O_MSSMRHN_two_scale_initial_guesser.hpp"
 
+#include "composite_convergence_tester.hpp"
 #include "coupling_monitor.hpp"
 #include "error.hpp"
 #include "numerics2.hpp"
 #include "two_scale_running_precision.hpp"
 #include "two_scale_solver.hpp"
-#include "two_scale_composite_convergence_tester.hpp"
 
 namespace flexiblesusy {
 
@@ -52,7 +54,8 @@ public:
       , high_scale_constraint_2()
       , susy_scale_constraint_1()
       , low_scale_constraint_1()
-      , matching()
+      , matching_up()
+      , matching_down()
       , high_scale_2(0.), susy_scale_1(0.), low_scale_1(0.)
       , matching_scale(0)
       , parameter_output_scale_1(0.)
@@ -67,15 +70,13 @@ public:
    double get_matching_scale() const { return matching_scale; }
    const MSSMD5O<T>& get_model_1() const { return model_1; }
    const MSSMRHN<T>& get_model_2() const { return model_2; }
-   const Problems<MSSMD5O_info::NUMBER_OF_PARTICLES>& get_problems() const {
-      return model_1.get_problems();
-   }
+   const Problems& get_problems() const { return model_1.get_problems(); }
    int get_exit_code() const { return get_problems().have_problem(); };
    void set_parameter_output_scale_1(double s) { parameter_output_scale_1 = s; }
    void set_precision_goal(double precision_goal_) { precision_goal = precision_goal_; }
-   void set_pole_mass_loop_order(unsigned l) { model_1.set_pole_mass_loop_order(l); }
-   void set_ewsb_loop_order(unsigned l) { model_1.set_ewsb_loop_order(l); }
-   void set_max_iterations(unsigned n) { max_iterations = n; }
+   void set_pole_mass_loop_order(int l) { model_1.set_pole_mass_loop_order(l); }
+   void set_ewsb_loop_order(int l) { model_1.set_ewsb_loop_order(l); }
+   void set_max_iterations(int n) { max_iterations = n; }
    void set_calculate_sm_masses(bool flag) { calculate_sm_masses = flag; }
 
    void run(const softsusy::QedQcd& qedqcd, const MSSMD5O_input_parameters& input_1, const MSSMRHN_input_parameters& input_2);
@@ -89,12 +90,13 @@ private:
    MSSMRHN_high_scale_constraint<T> high_scale_constraint_2;
    MSSMD5O_susy_scale_constraint<T> susy_scale_constraint_1;
    MSSMD5O_low_scale_constraint<T> low_scale_constraint_1;
-   MSSMD5O_MSSMRHN_matching<T> matching;
+   MSSMD5O_MSSMRHN_matching_up<T> matching_up;
+   MSSMD5O_MSSMRHN_matching_down<T> matching_down;
    double high_scale_2, susy_scale_1, low_scale_1;
    double matching_scale;
    double parameter_output_scale_1; ///< output scale for running parameters
    double precision_goal; ///< precision goal
-   unsigned max_iterations; ///< maximum number of iterations
+   int max_iterations; ///< maximum number of iterations
    bool calculate_sm_masses; ///< calculate SM pole masses
 };
 
@@ -118,16 +120,25 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    susy_scale_constraint_1.clear();
    low_scale_constraint_1.clear();
 
-   matching.reset();
+   matching_up.reset();
+   matching_down.reset();
 
    model_1.clear();
    model_1.set_input_parameters(input_1);
    model_1.do_calculate_sm_pole_masses(calculate_sm_masses);
    model_1.set_loops(2);
 
+   MSSMD5O_ewsb_solver<T> ewsb_solver_1;
+   model_1.set_ewsb_solver(
+      std::make_shared<MSSMD5O_ewsb_solver<T> >(ewsb_solver_1));
+
    model_2.clear();
    model_2.set_input_parameters(input_2);
    model_2.set_loops(2);
+
+   MSSMRHN_ewsb_solver<T> ewsb_solver_2;
+   model_2.set_ewsb_solver(
+      std::make_shared<MSSMRHN_ewsb_solver<T> >(ewsb_solver_2));
 
    // needed for constraint::initialize()
    high_scale_constraint_2.set_model(&model_2);
@@ -135,23 +146,11 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
    low_scale_constraint_1 .set_model(&model_1);
 
    low_scale_constraint_1.set_sm_parameters(qedqcd);
-   matching.set_lower_input_parameters(input_1);
+   matching_up.set_lower_input_parameters(input_1);
+   matching_down.set_lower_input_parameters(input_1);
    high_scale_constraint_2.initialize();
    susy_scale_constraint_1.initialize();
    low_scale_constraint_1.initialize();
-
-   std::vector<Constraint<T>*> upward_constraints_1;
-   upward_constraints_1.push_back(&low_scale_constraint_1);
-
-   std::vector<Constraint<T>*> downward_constraints_1;
-   downward_constraints_1.push_back(&susy_scale_constraint_1);
-   downward_constraints_1.push_back(&low_scale_constraint_1);
-
-   std::vector<Constraint<T>*> upward_constraints_2;
-   upward_constraints_2.push_back(&high_scale_constraint_2);
-
-   std::vector<Constraint<T>*> downward_constraints_2;
-   downward_constraints_2.push_back(&high_scale_constraint_2);
 
    MSSMD5O_convergence_tester<T> convergence_tester_1(&model_1, precision_goal);
    MSSMRHN_convergence_tester<T> convergence_tester_2(&model_2, precision_goal);
@@ -159,7 +158,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
       convergence_tester_1.set_max_iterations(max_iterations);
       convergence_tester_2.set_max_iterations(max_iterations);
    }
-   Composite_convergence_tester<T> convergence_tester;
+   Composite_convergence_tester convergence_tester;
    convergence_tester.add_convergence_tester(&convergence_tester_1);
    convergence_tester.add_convergence_tester(&convergence_tester_2);
 
@@ -168,15 +167,18 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
 	low_scale_constraint_1,
 	susy_scale_constraint_1,
 	high_scale_constraint_2,
-	matching);
+	matching_up, matching_down);
    Two_scale_increasing_precision precision(10.0, precision_goal);
 
    solver.reset();
    solver.set_convergence_tester(&convergence_tester);
    solver.set_running_precision(&precision);
    solver.set_initial_guesser(&initial_guesser);
-   solver.add_model(&model_1, &matching, upward_constraints_1, downward_constraints_1);
-   solver.add_model(&model_2, upward_constraints_2, downward_constraints_2);
+   solver.add(&low_scale_constraint_1, &model_1);
+   solver.add(&matching_up, &model_1, &model_2);
+   solver.add(&high_scale_constraint_2, &model_2);
+   solver.add(&matching_down, &model_2, &model_1);
+   solver.add(&susy_scale_constraint_1, &model_1);
 
    high_scale_2 = susy_scale_1 = low_scale_1 = 0.;
    matching_scale = 0;
@@ -186,7 +188,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
       high_scale_2 = high_scale_constraint_2.get_scale();
       susy_scale_1 = susy_scale_constraint_1.get_scale();
       low_scale_1 = low_scale_constraint_1.get_scale();
-      matching_scale = matching.get_scale();
+      matching_scale = matching_down.get_scale();
 
       model_1.run_to(susy_scale_1);
       model_1.calculate_spectrum();
@@ -196,7 +198,7 @@ void MSSMD5O_MSSMRHN_spectrum_generator<T>::run
          model_1.run_to(parameter_output_scale_1);
       }
    } catch (const NoConvergenceError&) {
-      model_1.get_problems().flag_no_convergence();
+      model_1.get_problems().flag_thrown("no convergence");
    } catch (const NonPerturbativeRunningError&) {
       model_1.get_problems().flag_no_perturbative();
    } catch (const Error& error) {

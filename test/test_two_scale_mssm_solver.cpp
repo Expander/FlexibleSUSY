@@ -161,7 +161,7 @@ public:
       if (softSusy.displayProblem().test()) {
          std::stringstream ss;
          ss << "SoftSusy problem: " << softSusy.displayProblem();
-         BOOST_MESSAGE(ss.str());
+         BOOST_TEST_MESSAGE(ss.str());
          if (softSusy.displayProblem().noConvergence)
             throw SoftSusy_NoConvergence_error(ss.str());
          else if (softSusy.displayProblem().nonperturbative)
@@ -195,20 +195,17 @@ public:
       initial_guesser.set_QedQcd(qedqcd);
       Two_scale_increasing_precision two_scale_increasing_precision(10.0, 1.0e-5);
 
-      std::vector<Constraint<Two_scale>*> mssm_upward_constraints;
-      mssm_upward_constraints.push_back(&mssm_mz_constraint);
-      mssm_upward_constraints.push_back(&mssm_sugra_constraint);
-
-      std::vector<Constraint<Two_scale>*> mssm_downward_constraints;
-      mssm_downward_constraints.push_back(&mssm_sugra_constraint);
-      mssm_downward_constraints.push_back(&mssm_msusy_constraint);
-      mssm_downward_constraints.push_back(&mssm_mz_constraint);
+      mssm_sugra_constraint.set_model(&mssm);
+      mssm_msusy_constraint.set_model(&mssm);
+      mssm_mz_constraint.set_model(&mssm);
 
       RGFlow<Two_scale> solver;
       solver.set_convergence_tester(&mssm_convergence_tester);
       solver.set_running_precision(&two_scale_increasing_precision);
       solver.set_initial_guesser(&initial_guesser);
-      solver.add_model(&mssm, mssm_upward_constraints, mssm_downward_constraints);
+      solver.add(&mssm_mz_constraint, &mssm);
+      solver.add(&mssm_sugra_constraint, &mssm);
+      solver.add(&mssm_msusy_constraint, &mssm);
       solver.solve();
       mssm.calculate_spectrum();
 
@@ -245,7 +242,7 @@ void test_point(const SoftsusyMSSM_parameter_point& pp)
 BOOST_AUTO_TEST_CASE( test_default_cmssm_parameter_point )
 {
    SoftsusyMSSM_parameter_point pp;
-   BOOST_MESSAGE("testing " << pp);
+   BOOST_TEST_MESSAGE("testing " << pp);
    test_point(pp);
 }
 
@@ -255,7 +252,7 @@ BOOST_AUTO_TEST_CASE( test_cmssm_tanb_scan )
    SoftsusyMSSM_parameter_point pp;
    for (double tanb = 3.0; tanb <= 44.; tanb += 3.0) {
       pp.tanBeta = tanb;
-      BOOST_MESSAGE("testing " << pp);
+      BOOST_TEST_MESSAGE("testing " << pp);
       BOOST_CHECK_NO_THROW(test_point(pp));
    }
 }
@@ -275,7 +272,7 @@ BOOST_AUTO_TEST_CASE( test_slow_convergence_point )
    qedqcd.setMass(mBottom, mbmb);
    qedqcd.toMz();
 
-   BOOST_MESSAGE("testing slow convergent " << pp);
+   BOOST_TEST_MESSAGE("testing slow convergent " << pp);
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), NoConvergenceError);
    SoftSusy_tester softSusy_tester;
@@ -304,7 +301,7 @@ BOOST_AUTO_TEST_CASE( test_non_perturbative_point )
    QedQcd qedqcd;
    qedqcd.setPoleMt(173.5);
 
-   BOOST_MESSAGE("testing non-perturbative " << pp);
+   BOOST_TEST_MESSAGE("testing non-perturbative " << pp);
    Two_scale_tester two_scale_tester;
    BOOST_CHECK_THROW(two_scale_tester.test(pp, qedqcd), flexiblesusy::Error);
    SoftSusy_tester softSusy_tester;

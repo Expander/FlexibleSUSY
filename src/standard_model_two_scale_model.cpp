@@ -18,11 +18,11 @@
 
 
 /**
- * @file Standard_model_two_scale_model.cpp
+ * @file standard_model_two_scale_model.cpp
  * @brief implementation of the SM model class
  *
  * Contains the definition of the SM model class methods
- * which solve EWSB and calculate pole masses and mixings from DRbar
+ * which solve EWSB and calculate pole masses and mixings from MSbar
  * parameters.
  *
  */
@@ -37,12 +37,8 @@ using namespace standard_model_info;
 
 
 StandardModel<Two_scale>::StandardModel()
-   : Two_scale_model()
+   : Model()
    , Standard_model()
-{
-}
-
-StandardModel<Two_scale>::~StandardModel()
 {
 }
 

@@ -1,3 +1,24 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
 
 BeginPackage["ConvergenceTester`", {"CConversion`", "TextFormatting`", "TreeMasses`", "Parameters`", "Utils`"}];
 
@@ -34,8 +55,8 @@ CalcDifference[FlexibleSUSY`M[particle_], offset_Integer, diff_String] :=
                        "MaxRelDiff(OLD(" <> esStr <> "),NEW(" <> esStr <> "));\n";
               ,
               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle] - 1;
-              result = "for (unsigned i = " <> ToString[dimStart] <>
-                       "; i < " <> ToString[dim] <> "; i++) {\n";
+              result = "for (int i = " <> ToString[dimStart] <>
+                       "; i < " <> ToString[dim] <> "; ++i) {\n";
               body = diff <> "[i + " <> ToString[offset] <> "] = " <>
                      "MaxRelDiff(OLD1(" <> esStr <> ",i),NEW1(" <> esStr <> ",i));";
               result = result <> IndentText[body] <> "\n}\n";
@@ -81,7 +102,7 @@ CalcDifference[parameter_, offset_Integer, diff_String, {idx_List, pos_Integer, 
            dim = Length[idx];
            dimStr = ToString[dim];
            i = idxPool[[pos]];
-           result = "for (unsigned " <> i <> " = 0; " <> i <> " < " <> ToString[idx[[pos]]] <> "; " <> i <> "++) {\n" <>
+           result = "for (int " <> i <> " = 0; " <> i <> " < " <> ToString[idx[[pos]]] <> "; ++" <> i <> ") {\n" <>
                     IndentText[
                         CalcDifference[parameter, offset, diff, {idx, pos+1, idxPool}]
                     ] <>
@@ -115,7 +136,8 @@ CreateCompareFunction[parameters_List] :=
               Print["Error: no parameters specified for the convergence test!"];
               Return["return 0.;"];
              ];
-           result = "double diff[" <> ToString[numberOfParameters] <> "] = { 0 };\n\n";
+           ctype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
+           result = "std::array<" <> ctype <> ", " <> ToString[numberOfParameters] <> "> diff{};\n\n";
            For[i = 1, i <= Length[parameters], i++,
                result = result <> CalcDifference[parameters[[i]], offset, "diff"];
                offset += CountNumberOfParameters[parameters[[i]]];
@@ -125,8 +147,7 @@ CreateCompareFunction[parameters_List] :=
               Print["  numberOfParameters = ", numberOfParameters, ", offset = ", offset];
              ];
            result = result <>
-                    "\nreturn *std::max_element(diff, diff + " <>
-                    ToString[numberOfParameters] <> ");\n";
+                    "\nreturn *std::max_element(diff.cbegin(), diff.cend());\n";
            Return[result];
           ];
 

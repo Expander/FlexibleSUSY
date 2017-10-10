@@ -28,17 +28,22 @@
 
 /********************* put types *********************/
 
-void MLPut(MLINK link, int c)
+inline void MLPut(MLINK link, const std::string& s)
+{
+   MLPutSymbol(link, s.c_str());
+}
+
+inline void MLPut(MLINK link, int c)
 {
    MLPutInteger(link, c);
 }
 
-void MLPut(MLINK link, double c)
+inline void MLPut(MLINK link, double c)
 {
    MLPutReal(link, c);
 }
 
-void MLPut(MLINK link, std::complex<double> c)
+inline void MLPut(MLINK link, std::complex<double> c)
 {
    if (std::imag(c) == 0.) {
       MLPutReal(link, std::real(c));
@@ -53,7 +58,7 @@ template <int M>
 void MLPut(MLINK link, const Eigen::Array<double,M,1>& a)
 {
    double v[M];
-   for (unsigned i = 0; i < M; i++)
+   for (int i = 0; i < M; i++)
       v[i] = a(i);
    MLPutRealList(link, v, M);
 }
@@ -69,8 +74,8 @@ template <int M, int N>
 void MLPut(MLINK link, const Eigen::Matrix<double,M,N>& m)
 {
    double mat[M][N];
-   for (unsigned i = 0; i < M; i++)
-      for (unsigned k = 0; k < N; k++)
+   for (int i = 0; i < M; i++)
+      for (int k = 0; k < N; k++)
          mat[i][k] = m(i, k);
 
    long dims[] = { M, N };
@@ -81,7 +86,7 @@ template <int M>
 void MLPut(MLINK link, const Eigen::Array<std::complex<double>,M,1>& a)
 {
    MLPutFunction(link, "List", M);
-   for (unsigned i = 0; i < M; i++)
+   for (int i = 0; i < M; i++)
       MLPut(link, a(i));
 }
 
@@ -96,25 +101,46 @@ template <int M, int N>
 void MLPut(MLINK link, const Eigen::Matrix<std::complex<double>,M,N>& m)
 {
    MLPutFunction(link, "List", M);
-   for (unsigned i = 0; i < M; i++) {
+   for (int i = 0; i < M; i++) {
       MLPutFunction(link, "List", N);
-      for (unsigned k = 0; k < N; k++)
+      for (int k = 0; k < N; k++)
          MLPut(link, m(i,k));
    }
 }
 
-/********************* put rules to types *********************/
+/********************* put single heads *********************/
 
-void MLPutRule(MLINK link, const std::string& name, const std::vector<std::string>& heads = {})
+inline void MLPutHeads(MLINK link, const std::vector<std::string>& heads)
 {
-   MLPutFunction(link, "Rule", 2);
-   for (std::size_t i = 0; i < heads.size(); i++)
-      MLPutFunction(link, heads[i].c_str(), 1);
-   MLPutUTF8Symbol(link, (const unsigned char*)(name.c_str()), name.size());
+   for (const auto& h: heads)
+      MLPutFunction(link, h.c_str(), 1);
 }
 
-template <class T>
-void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std::string>& heads = {})
+/********************* put rules to types *********************/
+
+inline void MLPutRule(MLINK link, const std::string& name, const std::vector<std::string>& heads = {})
+{
+   MLPutFunction(link, "Rule", 2);
+   MLPutHeads(link, heads);
+   MLPutUTF8Symbol(link, reinterpret_cast<const unsigned char*>(name.c_str()), name.size());
+}
+
+inline void MLPutRule(MLINK link, int number, const std::vector<std::string>& heads = {})
+{
+   MLPutFunction(link, "Rule", 2);
+   MLPutHeads(link, heads);
+   MLPutInteger(link, number);
+}
+
+inline void MLPutRule(MLINK link, long number, const std::vector<std::string>& heads = {})
+{
+   MLPutFunction(link, "Rule", 2);
+   MLPutHeads(link, heads);
+   MLPutLongInteger(link, number);
+}
+
+template <class T1, class T2>
+void MLPutRuleTo(MLINK link, T1 t, const T2& name, const std::vector<std::string>& heads = {})
 {
    MLPutRule(link, name, heads);
    MLPut(link, t);
@@ -122,19 +148,19 @@ void MLPutRuleTo(MLINK link, T t, const std::string& name, const std::vector<std
 
 /********************* get types *********************/
 
-void MLGet(MLINK link, int *c)
+inline void MLGet(MLINK link, int *c)
 {
    MLGetInteger(link, c);
 }
 
-void MLGet(MLINK link, long *c)
+inline void MLGet(MLINK link, long *c)
 {
    MLGetLongInteger(link, c);
 }
 
-void MLGet(MLINK link, short *c)
+inline void MLGet(MLINK link, short *c)
 {
    MLGetShortInteger(link, c);
 }
 
-#endif // MATHLINK_MACROS_H
+#endif // MATHLINK_UTILS_H

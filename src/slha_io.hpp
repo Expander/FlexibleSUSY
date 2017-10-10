@@ -19,8 +19,8 @@
 #ifndef SLHA_IO_H
 #define SLHA_IO_H
 
-#include <cassert>
 #include <string>
+#include <sstream>
 #include <iosfwd>
 #include <vector>
 #include <Eigen/Core>
@@ -33,12 +33,11 @@
 #include "wrappers.hpp"
 #include "numerics2.hpp"
 #include "pmns.hpp"
+#include "standard_model_two_scale_model.hpp"
 
 namespace softsusy {
    class QedQcd;
-   class DoubleMatrix;
-   class ComplexMatrix;
-}
+} // namespace softsusy
 
 namespace flexiblesusy {
 
@@ -62,7 +61,7 @@ namespace flexiblesusy {
       const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
       /// SLHA line formatter for the SPINFO block entries
       const boost::format spinfo_formatter(" %5d   %s\n");
-   }
+   } // namespace
 
 #define FORMAT_MASS(pdg,mass,name)                                      \
    boost::format(mass_formatter) % (pdg) % (mass) % (name)
@@ -101,8 +100,9 @@ void read_file() {
    SLHA_io reader;
    reader.read_from_file("file.slha");
 
-   SLHA_io::Tuple_processor processor
-      = boost::bind(&process_tuple, array, _1, _2);
+   SLHA_io::Tuple_processor processor = [&array] (int key, double value) {
+      return process_tuple(array, key, value);
+   };
 
    reader.read_block("MyBlock", processor);
 }
@@ -124,36 +124,19 @@ void read_file() {
  */
 class SLHA_io {
 public:
-   typedef boost::function<void(int, double)> Tuple_processor;
+   using Tuple_processor = std::function<void(int, double)>;
    enum Position { front, back };
    struct Modsel {
-      bool quark_flavour_violated;   ///< MODSEL[6]
-      bool lepton_flavour_violated;  ///< MODSEL[6]
-      double parameter_output_scale; ///< MODSEL[12]
-      Modsel()
-         : quark_flavour_violated(false)
-         , lepton_flavour_violated(false)
-         , parameter_output_scale(0.)
-         {}
-      void clear() {
-         quark_flavour_violated = false;
-         lepton_flavour_violated = false;
-         parameter_output_scale = 0.;
-      }
+      bool quark_flavour_violated{false};   ///< MODSEL[6]
+      bool lepton_flavour_violated{false};  ///< MODSEL[6]
+      double parameter_output_scale{0.};    ///< MODSEL[12]
+      void clear() { *this = Modsel(); }
    };
 
    struct CKM_wolfenstein {
-      double lambdaW, aCkm, rhobar, etabar;
-      CKM_wolfenstein() : lambdaW(0.), aCkm(0.), rhobar(0.), etabar(0.) {}
-      void clear() {
-         lambdaW = 0.;
-         aCkm    = 0.;
-         rhobar  = 0.;
-         etabar  = 0.;
-      }
+      double lambdaW{0.}, aCkm{0.}, rhobar{0.}, etabar{0.};
+      void clear() { *this = CKM_wolfenstein(); }
    };
-
-   SLHA_io();
 
    void clear();
 
@@ -172,7 +155,6 @@ public:
    double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
    double read_block(const std::string&, double&) const;
    double read_entry(const std::string&, int) const;
-   void read_modsel();
    double read_scale(const std::string&) const;
 
    // writing functions
@@ -193,11 +175,18 @@ public:
    void set_block(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
    template <class Derived>
    void set_block_imag(const std::string&, const Eigen::MatrixBase<Derived>&, const std::string&, double scale = 0.);
-   void set_block(const std::string&, const softsusy::DoubleMatrix&, const std::string&, double scale = 0.);
-   void set_block(const std::string&, const softsusy::ComplexMatrix&, const std::string&, double scale = 0.);
+   void set_modsel(const Modsel&);
+   void set_physical_input(const Physical_input&);
+   void set_settings(const Spectrum_generator_settings&);
    void set_sminputs(const softsusy::QedQcd&);
-   void write_to_file(const std::string&);
-   void write_to_stream(std::ostream& = std::cout);
+   void write_to_file(const std::string&) const;
+   void write_to_stream(std::ostream& = std::cerr) const;
+
+   // Standard_model class interface
+   void set_mass(const standard_model::Standard_model_physical&);
+   void set_mixing_matrices(const standard_model::Standard_model_physical&);
+   void set_model_parameters(const standard_model::Standard_model&);
+   void set_spectrum(const standard_model::Standard_model&);
 
    template<int N>
    static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,
@@ -228,8 +217,8 @@ public:
                                                        Eigen::Matrix<std::complex<double>, 1, 1>&);
 
 private:
-   SLHAea::Coll data;          ///< SHLA data
-   Modsel modsel;              ///< data from block MODSEL
+   SLHAea::Coll data{};        ///< SHLA data
+   Modsel modsel{};            ///< data from block MODSEL
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
    static std::string to_lower(const std::string&); ///< string to lower case
@@ -239,10 +228,19 @@ private:
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
    static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
    static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
+   void read_modsel();
    template <class Derived>
    double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
    template <class Derived>
    double read_vector(const std::string&, Eigen::MatrixBase<Derived>&) const;
+};
+
+template<class S>
+struct Set_spectrum {
+   S* slha_io;
+   Set_spectrum(S* slha_io_) : slha_io(slha_io_) {}
+   template<typename T>
+   void operator()(const T& model) const { slha_io->set_spectrum(model); }
 };
 
 template <class Scalar>
@@ -252,7 +250,7 @@ Scalar SLHA_io::convert_to(const std::string& str)
    try {
       value = SLHAea::to<Scalar>(str);
    }  catch (const boost::bad_lexical_cast& error) {
-      const std::string msg("cannot convert string \"" + str + "\" to "
+      const std::string msg(R"(cannot convert string ")" + str + R"(" to )"
                             + typeid(Scalar).name());
       throw ReadError(msg);
    }
@@ -263,17 +261,16 @@ Scalar SLHA_io::convert_to(const std::string& str)
  * Fills a matrix from a SLHA block
  *
  * @param block_name block name
- * @param dense matrix to be filled
+ * @param matrix matrix to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */
 template <class Derived>
 double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   assert(matrix.cols() > 1 && "Matrix has not more than 1 column");
+   if (matrix.cols() <= 1) throw SetupError("Matrix has less than 2 columns");
 
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
 
    const int cols = matrix.cols(), rows = matrix.rows();
    double scale = 0.;
@@ -309,17 +306,16 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
  * Fills a vector from a SLHA block
  *
  * @param block_name block name
- * @param dense vector to be filled
+ * @param vector vector to be filled
  *
  * @return scale (or 0 if no scale is defined)
  */
 template <class Derived>
 double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Derived>& vector) const
 {
-   assert(vector.cols() == 1 && "Vector has more than 1 columns");
+   if (vector.cols() != 1) throw SetupError("Vector has more than 1 column");
 
-   SLHAea::Coll::const_iterator block =
-      data.find(data.cbegin(), data.cend(), block_name);
+   auto block = data.find(data.cbegin(), data.cend(), block_name);
 
    const int rows = vector.rows();
    double scale = 0.;

@@ -30,7 +30,16 @@ META_MSSM_SRC:= \
 		$(DIR)/MSSM/gamma_SHu.m \
 		$(DIR)/MSSM/gamma_SlL.m \
 		$(DIR)/MSSM/gamma_SqL.m \
-		$(DIR)/MSSM/gamma_SuR.m
+		$(DIR)/MSSM/gamma_SuR.m \
+		$(DIR)/MSSM/das2.m \
+		$(DIR)/MSSM/dmtauas2.m \
+		$(DIR)/MSSM/bquark_2loop_sqcd_decoupling.m \
+		$(DIR)/MSSM/bquark_2loop_sqcd_pole.m \
+		$(DIR)/MSSM/tquark_1loop_qcd.m \
+		$(DIR)/MSSM/tquark_1loop_strong.m \
+		$(DIR)/MSSM/tquark_2loop_qcd.m \
+		$(DIR)/MSSM/tquark_2loop_strong.m \
+		$(DIR)/MSSM/twoloopbubble.m
 
 META_SM_SRC  := \
 		$(DIR)/SM/beta_g1.m \
@@ -40,21 +49,26 @@ META_SM_SRC  := \
 		$(DIR)/SM/beta_gtau.m \
 		$(DIR)/SM/beta_gt.m \
 		$(DIR)/SM/beta_lambda.m \
-		$(DIR)/SM/beta_m2.m
+		$(DIR)/SM/beta_m2.m \
+		$(DIR)/SM/HSSUSY_corrections.m
 
 META_THDM_SRC:= \
 		$(DIR)/THDM/Thresholds_1L_full.m
 
 META_SRC     := \
+		$(DIR)/AMuon.m \
 		$(DIR)/AnomalousDimension.m \
 		$(DIR)/BetaFunction.m \
 		$(DIR)/CConversion.m \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
+		$(DIR)/CXXDiagrams.m \
+		$(DIR)/EDM.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \
 		$(DIR)/FlexibleSUSY.m \
+		$(DIR)/FlexibleTower.m \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
 		$(DIR)/LatticeUtils.m \
@@ -66,16 +80,19 @@ META_SRC     := \
 		$(DIR)/ReadSLHA.m \
 		$(DIR)/RGIntegrator.m \
 		$(DIR)/SelfEnergies.m \
+		$(DIR)/SemiAnalytic.m \
 		$(DIR)/TestSuite.m \
 		$(DIR)/TextFormatting.m \
 		$(DIR)/ThreeLoopMSSM.m \
 		$(DIR)/ThreeLoopQCD.m \
 		$(DIR)/ThreeLoopSM.m \
 		$(DIR)/ThresholdCorrections.m \
+		$(DIR)/ThresholdCorrectionLoopFunctions.m \
 		$(DIR)/Traces.m \
 		$(DIR)/TreeMasses.m \
 		$(DIR)/TwoLoopMSSM.m \
 		$(DIR)/TwoLoopQCD.m \
+		$(DIR)/TwoLoopSM.m \
 		$(DIR)/Utils.m \
 		$(DIR)/Vertices.m \
 		$(DIR)/WeinbergAngle.m \

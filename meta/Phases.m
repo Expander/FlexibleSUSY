@@ -1,3 +1,24 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
 
 BeginPackage["Phases`", {"TextFormatting`", "CConversion`"}];
 
@@ -7,9 +28,6 @@ CreatePhasesDefinition::usage="creates definitions of the phases";
 
 CreatePhasesGetterSetters::usage="creates function definitions
 for phase getters and setters";
-
-CreatePhasesInitialization::usage="creates initialization list of
-phases"
 
 CreatePhaseName::usage = "creates the name of a SARAH phase";
 
@@ -32,21 +50,17 @@ ConvertSarahPhases[phases_List] :=
 GetPhaseType[Exp[_]] := CConversion`ScalarType[CConversion`realScalarCType];
 GetPhaseType[_]      := CConversion`ScalarType[CConversion`complexScalarCType];
 
-CreatePhaseInit[type_ /; type === CConversion`ScalarType[CConversion`realScalarCType]] :=
-    "(0)";
+CreatePhasesDefinition[name_String, CConversion`ScalarType[CConversion`complexScalarCType]] :=
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]] <> " " <>
+    name <> "{1.,0.};\n";
 
-CreatePhaseInit[type_ /; type === CConversion`ScalarType[CConversion`complexScalarCType]] :=
-    "(1,0)";
+CreatePhasesDefinition[name_String, type_] :=
+    Parameters`CreateParameterDefinitionAndDefaultInitialize[{ name, type }];
 
 CreatePhasesDefinition[phases_List] :=
-    Module[{result = "", k},
-           For[k = 1, k <= Length[phases], k++,
-               result = result <> CConversion`CreateCType[
-                            GetPhaseType[phases[[k]]]] <> " " <>
-                        CreatePhaseName[phases[[k]]] <> ";\n";
-              ];
-           Return[result];
-          ];
+    StringJoin[
+       CreatePhasesDefinition[CreatePhaseName[#], GetPhaseType[#]]& /@ phases
+    ];
 
 CreatePhasesGetterSetters[phases_List] :=
     Module[{result = "", k, phaseName, type},
@@ -56,16 +70,6 @@ CreatePhasesGetterSetters[phases_List] :=
                result = result <>
                         CConversion`CreateInlineSetter[phaseName, type] <>
                         CConversion`CreateInlineGetter[phaseName, type];
-              ];
-           Return[result];
-          ];
-
-CreatePhasesInitialization[phases_List] :=
-    Module[{result = "", k, phaseName, type},
-           For[k = 1, k <= Length[phases], k++,
-               phaseName = CreatePhaseName[phases[[k]]];
-               type = GetPhaseType[phases[[k]]];
-               result = result <> ", " <> phaseName <> CreatePhaseInit[type];
               ];
            Return[result];
           ];

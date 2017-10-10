@@ -20,7 +20,7 @@
 #define SoftsusyNMSSM_TWO_SCALE_H
 
 #include "SoftsusyNMSSM.hpp"
-#include "two_scale_model.hpp"
+#include "model.hpp"
 #include "nmssmsoftsusy.h"
 
 namespace flexiblesusy {
@@ -28,17 +28,19 @@ namespace flexiblesusy {
 class Two_scale;
 
 template<>
-class SoftsusyNMSSM<Two_scale>: public Two_scale_model, public softsusy::NmssmSoftsusy {
+class SoftsusyNMSSM<Two_scale>: public Model, public softsusy::NmssmSoftsusy {
 public:
    SoftsusyNMSSM();
    virtual ~SoftsusyNMSSM();
 
    virtual void calculate_spectrum();
+   virtual void clear_problems() {}
    virtual std::string name() const { return "SoftsusyNMSSM"; }
    virtual void run_to(double, double eps = -1.0);
    virtual void print(std::ostream& s) const { s << static_cast<softsusy::NmssmSoftsusy>(*this); }
    virtual void set_precision(double p) { precision = p; }
 
+   void calculate_DRbar_masses() { calcDrBarPars(); }
    void set_scale(double scale) { setMu(scale); }
    double get_scale() const { return displayMu(); }
    SoftsusyNMSSM calc_beta() const { return beta2(); }

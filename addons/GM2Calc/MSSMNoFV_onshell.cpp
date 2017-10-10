@@ -27,6 +27,7 @@
 #include <complex>
 #include <iostream>
 #include <algorithm>
+#include <limits>
 
 #include <boost/math/tools/roots.hpp>
 
@@ -43,10 +44,12 @@ namespace {
       ALPHA_EM_THOMPSON / (1. - DELTA_ALPHA_EM_MZ);
 
    double calculate_e(double alpha) {
-      return std::sqrt(4. * M_PI * alpha);
+      using gm2calc::Pi;
+      return std::sqrt(4. * Pi * alpha);
    }
    double calculate_alpha(double e) {
-      return e * e / (4. * M_PI);
+      using gm2calc::Pi;
+      return e * e / (4. * Pi);
    }
 }
 
@@ -522,12 +525,22 @@ void MSSMNoFV_onshell::convert_ml2()
    const double g12 = sqr(get_g1());
    const double g22 = sqr(get_g2());
 
+   if (verbose_output) {
+      std::cout << "Converting msl(2,2) to on-shell scheme ...\n"
+         "   Using MSvm_pole = " << MSvmL_pole << '\n';
+   }
+
    // calculate ml2(1,1) from muon sneutrino pole mass
    const double ml211
       = sqr(MSvmL_pole) + 0.125*(0.6*g12*(vu2 - vd2) + g22*(vu2 - vd2));
 
    set_ml2(1,1,ml211);
    calculate_MSvmL();
+
+   if (verbose_output) {
+      std::cout << "   New msl(2,2) = " << ml211
+                << ", new MSvmL = " << get_MSvmL() << '\n';
+   }
 }
 
 /**
@@ -561,7 +574,7 @@ void MSSMNoFV_onshell::convert_me2(
  * @param max_iterations maximum number of iterations
  * @return achieved precision
  */
-double MSSMNoFV_onshell::convert_me2_root(
+double MSSMNoFV_onshell::convert_me2_root_modify(
    double precision_goal,
    unsigned max_iterations)
 {
@@ -633,13 +646,47 @@ double MSSMNoFV_onshell::convert_me2_root(
 
 /**
  * Determines soft-breaking right-handed smuon mass parameter from one
+ * smuon pole mass.  The function uses a one-dimensional root-finding
+ * algorithm.
+ *
+ * If a NaN appears during the FPI, the function resets the
+ * soft-breaking right-handed smuon mass parameter to the initial
+ * value and returns the maximum double.
+ *
+ * @param precision_goal precision goal for the root finding algorithm
+ * @param max_iterations maximum number of iterations
+ * @return achieved precision
+ */
+double MSSMNoFV_onshell::convert_me2_root(
+   double precision_goal,
+   unsigned max_iterations)
+{
+   const double me2_save = get_me2(1,1);
+   const double precision = convert_me2_root_modify(precision_goal, max_iterations);
+
+   if (!std::isfinite(precision) ||
+       !std::isfinite(get_me2(1,1)) ||
+       !get_MSm().allFinite() ||
+       !get_ZM().allFinite()) {
+      // reset
+      set_me2(1,1,me2_save);
+      calculate_MSm();
+
+      return std::numeric_limits<double>::max();
+   }
+
+   return precision;
+}
+
+/**
+ * Determines soft-breaking right-handed smuon mass parameter from one
  * smuon pole mass.  The function uses a fixed-point iteration.
  *
  * @param precision_goal precision goal of iteration
  * @param max_iterations maximum number of iterations
  * @return achieved precision
  */
-double MSSMNoFV_onshell::convert_me2_fpi(
+double MSSMNoFV_onshell::convert_me2_fpi_modify(
    double precision_goal,
    unsigned max_iterations)
 {
@@ -679,6 +726,17 @@ double MSSMNoFV_onshell::convert_me2_fpi(
       set_me2(1,1,me211);
       calculate_MSm();
 
+      if (!std::isfinite(me211) || !get_MSm().allFinite() || !get_ZM().allFinite()) {
+         if (verbose_output) {
+            std::cout << "   NaN appearing in DR-bar to on-shell conversion"
+               " for mse with FPI:\n"
+               "      mse2(2,2) = " << me211 <<
+               ", MSm = " << get_MSm().transpose() <<
+               ", ZM = " << get_ZM().row(0) << ' ' << get_ZM().row(1) << '\n';
+         }
+         return std::numeric_limits<double>::max();
+      }
+
       right_index = find_right_like_smuon(get_ZM());
 
       MSm_goal = get_MSm();
@@ -710,6 +768,39 @@ double MSSMNoFV_onshell::convert_me2_fpi(
       }
       std::cout << "   Achieved absolute accuracy: "
                 << precision << " GeV\n";
+   }
+
+   return precision;
+}
+
+/**
+ * Determines soft-breaking right-handed smuon mass parameter from one
+ * smuon pole mass.  The function uses a fixed-point iteration.
+ *
+ * If a NaN appears during the FPI, the function resets the
+ * soft-breaking right-handed smuon mass parameter to the initial
+ * value and returns the maximum double.
+ *
+ * @param precision_goal precision goal of iteration
+ * @param max_iterations maximum number of iterations
+ * @return achieved precision
+ */
+double MSSMNoFV_onshell::convert_me2_fpi(
+   double precision_goal,
+   unsigned max_iterations)
+{
+   const double me2_save = get_me2(1,1);
+   const double precision = convert_me2_fpi_modify(precision_goal, max_iterations);
+
+   if (!std::isfinite(precision) ||
+       !std::isfinite(get_me2(1,1)) ||
+       !get_MSm().allFinite() ||
+       !get_ZM().allFinite()) {
+      // reset
+      set_me2(1,1,me2_save);
+      calculate_MSm();
+
+      return std::numeric_limits<double>::max();
    }
 
    return precision;

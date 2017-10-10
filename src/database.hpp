@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "error.hpp"
+#include <cstddef>
 #include <string>
 #include <vector>
 #include <Eigen/Core>
@@ -40,13 +41,22 @@ public:
    Eigen::ArrayXd extract(const std::string&, long long);
 
 private:
-   typedef int (*TCallback)(void*, int, char**, char**);
+   using TCallback = int (*)(void*, int, char**, char**);
 
    class DisabledSQLiteError : Error {
    public:
-      explicit DisabledSQLiteError(std::string msg_) : msg(msg_) {}
-      virtual ~DisabledSQLiteError() {}
-      virtual std::string what() const { return msg; }
+      explicit DisabledSQLiteError(const std::string& msg_) : msg(msg_) {}
+      virtual ~DisabledSQLiteError() = default;
+      std::string what() const override { return msg; }
+   private:
+      std::string msg;
+   };
+
+   class SQLiteReadError : Error {
+   public:
+      explicit SQLiteReadError(const std::string& msg_) : msg(msg_) {}
+      virtual ~SQLiteReadError() = default;
+      std::string what() const override { return msg; }
    private:
       std::string msg;
    };

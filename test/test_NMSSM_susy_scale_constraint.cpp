@@ -48,9 +48,9 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 
    double tadpole[3];
 
-   tadpole[0] = m.get_ewsb_eq_hh_1() - Re(m.tadpole_hh(0));
-   tadpole[1] = m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh(1));
-   tadpole[2] = m.get_ewsb_eq_hh_3() - Re(m.tadpole_hh(2));
+   tadpole[0] = m.get_ewsb_eq_hh_1() - Re(m.tadpole_hh_1loop(0));
+   tadpole[1] = m.get_ewsb_eq_hh_2() - Re(m.tadpole_hh_1loop(1));
+   tadpole[2] = m.get_ewsb_eq_hh_3() - Re(m.tadpole_hh_1loop(2));
 
    if (m.get_ewsb_loop_order() > 1) {
       const auto two_loop_tadpole(m.tadpole_hh_2loop());
@@ -61,6 +61,6 @@ BOOST_AUTO_TEST_CASE( test_susy_scale_constraint )
 
    // check that tree-level EWSB eqs. are fulfilled
    BOOST_CHECK_LT(std::fabs(tadpole[0]), 0.66);
-   BOOST_CHECK_LT(std::fabs(tadpole[1]), 0.03);
+   BOOST_CHECK_LT(std::fabs(tadpole[1]), 0.3);
    BOOST_CHECK_LT(std::fabs(tadpole[2]), 23.0);
 }

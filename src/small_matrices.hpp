@@ -10,19 +10,19 @@ namespace flexiblesusy {
 // NOTE: the following matrices are under column-major storage scheme
 // see http://eigen.tuxfamily.org/dox/TopicStorageOrders.html
 
-typedef Eigen::Matrix<Real, 2, 2> RM22;
-typedef Eigen::Matrix<Real, 3, 3> RM33;
-typedef Eigen::Matrix<Real, 4, 4> RM44;
-typedef Eigen::Matrix<Real, 6, 6> RM66;
-typedef Eigen::Matrix<Comp, 2, 2> CM22;
-typedef Eigen::Matrix<Comp, 3, 3> CM33;
-typedef Eigen::Matrix<Comp, 4, 4> CM44;
-typedef Eigen::Matrix<Comp, 6, 6> CM66;
-typedef Eigen::Matrix<Real, 2, 1> RVe2;
-typedef Eigen::Matrix<Real, 3, 1> RVe3;
-typedef Eigen::Matrix<Real, 4, 1> RVe4;
-typedef Eigen::Matrix<Real, 6, 1> RVe6;
+using RM22 = Eigen::Matrix<Real, 2, 2>;
+using RM33 = Eigen::Matrix<Real, 3, 3>;
+using RM44 = Eigen::Matrix<Real, 4, 4>;
+using RM66 = Eigen::Matrix<Real, 6, 6>;
+using CM22 = Eigen::Matrix<Comp, 2, 2>;
+using CM33 = Eigen::Matrix<Comp, 3, 3>;
+using CM44 = Eigen::Matrix<Comp, 4, 4>;
+using CM66 = Eigen::Matrix<Comp, 6, 6>;
+using RVe2 = Eigen::Matrix<Real, 2, 1>;
+using RVe3 = Eigen::Matrix<Real, 3, 1>;
+using RVe4 = Eigen::Matrix<Real, 4, 1>;
+using RVe6 = Eigen::Matrix<Real, 6, 1>;
 
-}
+} // namespace flexiblesusy
 
 #endif // small_matrices_hpp

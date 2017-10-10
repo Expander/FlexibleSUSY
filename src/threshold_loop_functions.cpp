@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "threshold_loop_functions.hpp"
+#include "dilog.hpp"
 #include "pv.hpp"
 #include "logger.hpp"
 #include "numerics.h"
@@ -28,6 +29,8 @@ namespace flexiblesusy {
 namespace threshold_loop_functions {
 
 namespace {
+   const double Pi = 3.1415926535897932384626433832795;
+
    template <typename T> T sqr(T x) { return x*x; }
    template <typename T> T cube(T x) { return x*x*x; }
    template <typename T> T quad(T x) { return x*x*x*x; }
@@ -60,10 +63,6 @@ namespace {
          return is_equal(a, b, prec);
 
       return std::fabs((a - b)/a) < prec;
-   }
-
-   std::complex<double> complex_sqrt(double x) {
-      return std::sqrt(std::complex<double>(x, 0));
    }
 
 } // anonymous namespace
@@ -1131,229 +1130,84 @@ double Iabc(double a, double b, double c) {
 }
 
 /// Delta function from hep-ph/0907.47682v1
-double deltaxyz(double x, double y, double z) {
+double delta_xyz(double x, double y, double z)
+{
    return sqr(x)+sqr(y)+sqr(z)-2*(x*y+x*z+y*z);
 }
 
-/// \f$phi_{xyz}(x,y,z)\f$ function (Author: Emanuele Bagnaschi)
-double phixyz(double x, double y, double z)
+namespace {
+   /// lambda^2(u,v)
+   double lambda_2(double u, double v)
+   {
+      return sqr(1 - u - v) - 4*u*v;
+   }
+
+   /// u < 1 && v < 1, lambda^2(u,v) > 0
+   double phi_pos(double u, double v)
+   {
+      using std::log;
+      using gm2calc::dilog;
+      const auto lambda = std::sqrt(lambda_2(u,v));
+
+      return (-(log(u)*log(v))
+              + 2*log((1 - lambda + u - v)/2.)*log((1 - lambda - u + v)/2.)
+              - 2*dilog((1 - lambda + u - v)/2.)
+              - 2*dilog((1 - lambda - u + v)/2.)
+              + sqr(Pi)/3.)/lambda;
+   }
+
+   /// lambda^2(u,v) < 0
+   double phi_neg(double u, double v)
+   {
+      using std::acos;
+      using std::sqrt;
+      using gm2calc::clausen_2;
+      const auto lambda = std::sqrt(-lambda_2(u,v));
+
+      return 2*(+ clausen_2(2*acos((1 + u - v)/(2.*sqrt(u))))
+                + clausen_2(2*acos((1 - u + v)/(2.*sqrt(v))))
+                + clausen_2(2*acos((-1 + u + v)/(2.*sqrt(u*v)))))/lambda;
+   }
+
+   /**
+    * Phi(u,v) with u = x/z, v = y/z.
+    *
+    * The following identities hold:
+    * Phi(u,v) = Phi(v,u) = Phi(1/u,v/u)/u = Phi(1/v,u/v)/v
+    */
+   double phi_uv(double u, double v)
+   {
+      const auto lambda = lambda_2(u,v);
+
+      if (lambda > 0.) {
+         if (u <= 1 && v <= 1)
+            return phi_pos(u,v);
+         if (u >= 1 && v/u <= 1)
+            return phi_pos(1./u,v/u)/u;
+         // v >= 1 && u/v <= 1
+         return phi_pos(1./v,u/v)/v;
+      }
+
+      return phi_neg(u,v);
+   }
+} // anonymous namespace
+
+/**
+ * \f$\Phi(x,y,z)\f$ function.  The arguments x, y and z are
+ * interpreted as squared masses.
+ *
+ * Davydychev and Tausk, Nucl. Phys. B397 (1993) 23
+ *
+ * @param x squared mass
+ * @param y squared mass
+ * @param z squared mass
+ *
+ * @return \f$\Phi(x,y,z)\f$
+ */
+double phi_xyz(double x, double y, double z)
 {
-   double u = x/z, v = y/z, m = x/y;
-   std::complex<double> xminus_c, xplus_c, lambda_c;
-   double fac = 0., my_x = 0., my_y = 0., my_z = 0.;
-   const double devu = std::fabs(u-1), devv = std::fabs(v-1), devm = std::fabs(m-1);
-   const double eps = 0.000001;
-   const double PI = M_PI;
-
-   // The defintion that we implement is valid when x/z < 1 and y/z < 1.
-   // We have to reshuffle the arguments to obtain the other branches
-   // u > 1 && v < 1 --> x > z && z > y -> y < z < x -> we want x as
-   // the third argument x * phi(x,y,z) = z*phi(z,y,x) -> phi(z,y,x) =
-   // x/z*phi(x,y,z)
-
-   if (devu >= eps && devv >= eps && devm >= eps) {
-      if (u > 1 && v < 1) {
-         fac = z/x;
-         my_x = z;
-         my_y = y;
-         my_z = x;
-      }
-      // u > 1 && v > 1 --> x > z && y > z -> z < y/x -> we want
-      // max(x,y) as the third argument
-      else if (u > 1 && v > 1) {
-         // x as a third argument
-         if (x > y) {
-            fac = z/x;
-            my_x = z;
-            my_y = y;
-            my_z = x;
-         }
-         // y as a third argument
-         else {
-            fac = z/y;
-            my_x = z;
-            my_y = x;
-            my_z = y;
-         }
-      }
-      // u < 1 && v > 1 --> x < z < y --> we want y as the third
-      // argument
-      else if (u < 1 && v > 1) {
-         fac = z/y;
-         my_x = z;
-         my_y = x;
-         my_z = y;
-      }
-      else if (u < 1 && v < 1) {
-         fac = 1.;
-         my_x = x;
-         my_y = y;
-         my_z = z;
-      }
-      else {
-         ERROR("unhandled case in phixyz function!");
-      }
-
-      u = my_x/my_z;
-      v = my_y/my_z;
-      lambda_c = complex_sqrt(sqr(1-u-v)-4*u*v);
-      xminus_c = 0.5*(1-(u-v)-lambda_c);
-      xplus_c  = 0.5*(1+(u-v)-lambda_c);
-
-      return std::real(fac * 1. / lambda_c *
-                       (2. * std::log(xplus_c) * std::log(xminus_c) -
-                        std::log(u) * std::log(v) -
-                        2. * (dilog(xplus_c) + dilog(xminus_c)) +
-                        sqr(PI) / 3.));
-   }
-
-   // u and v is equal to one -> all arguments are the same
-   if (devu < eps && devv < eps)
-      return 2.34391; // from Mathematica
-
-   // u = 1
-   if (devu < eps) {
-      // if v > 1 then y> z (= x) we have again to reshuffle the
-      // argument: here we have phi(z,y,z) with z < y and we want
-      // phi(z,z,y)
-      if (v > 1) {
-         fac = z/y;
-         my_x = z;
-         my_y = x; // should be equal to
-         my_z = y;
-
-         return std::real(
-             fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
-             (sqr(PI) / 3. +
-              2. * sqr(std::log(0.5 -
-                                0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
-              sqr(std::log(my_x / my_z)) -
-              4. * dilog(0.5 *
-                         (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
-                                            4. * sqr(my_x) / (sqr(my_z)))))));
-      }
-      // phi(z,y,z) with z > y, just need to reshufle to phi(y,z,z),
-      // i.e. do nothing since they are the same
-      else {
-        fac = 1.;
-        my_x = y;
-        my_y = x;
-        my_z = z; // should be equl to my_y
-
-        return std::real(
-            fac * 1. /
-            (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
-            (sqr(PI) +
-             6. * std::log((my_x -
-                            my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
-                                                sqr(my_z))) /
-                           (2. * my_z)) *
-                 std::log(1. - my_x / (2. * my_z) -
-                          0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
-                                             sqr(my_z))) -
-             6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
-                                                 4. * my_x / my_z) -
-                               my_x / my_z)) -
-             6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
-                                             4. * my_x / my_z) +
-                               my_x / my_z))));
-      }
-   }
-
-   // v = 1
-   if (devv < eps) {
-      // if u > 1 we have again to reshuffle the arguments: here we
-      // start with phi(x,z,z) with z < x and we want phi(z,z,x)
-      if (u > 1) {
-         fac = z/x;
-         my_x = z;
-         my_y = y;
-         my_z = x;
-
-         return std::real(
-             fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
-             (sqr(PI) / 3. +
-              2. * sqr(std::log(0.5 -
-                                0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
-              sqr(std::log(my_x / my_z)) -
-              4. * dilog(0.5 *
-                         (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
-                                            4. * sqr(my_x) / (sqr(my_z)))))));
-      }
-      // phi(x,z,z) with z > x, ok as it is
-      else {
-        fac = 1.;
-        my_x = x;
-        my_y = y;
-        my_z = z; // should be equal to y
-
-        return std::real(
-            fac * 1. /
-            (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
-            (sqr(PI) +
-             6. * std::log((my_x -
-                            my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
-                                                sqr(my_z))) /
-                           (2. * my_z)) *
-                 std::log(1. - my_x / (2. * my_z) -
-                          0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
-                                             sqr(my_z))) -
-             6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
-                                                 4. * my_x / my_z) -
-                               my_x / my_z)) -
-             6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
-                                             4. * my_x / my_z) +
-                               my_x / my_z))));
-      }
-   }
-
-   if (devm < eps) {
-      // if (v = ) u > 1, we are in the case phi(x,x,z) with x > z. We
-      // have to reshufle to phi(z,x,x)
-      if (u > 1) {
-         fac = z/x;
-         my_x = z;
-         my_y = y;
-         my_z = x;
-
-         return std::real(
-             fac * 1. /
-             (3. * complex_sqrt(my_x * (my_x - 4 * my_z) / (sqr(my_z)))) *
-             (sqr(PI) +
-              6. * std::log((my_x -
-                             my_z * complex_sqrt(my_x * (my_x - 4. * my_z) /
-                                                 sqr(my_z))) /
-                            (2. * my_z)) *
-                  std::log(1. - my_x / (2. * my_z) -
-                           0.5 * complex_sqrt((sqr(my_x) - 4. * my_x * my_z) /
-                                              sqr(my_z))) -
-              6. * dilog(0.5 * (2. - complex_sqrt(sqr(my_x) / sqr(my_z) -
-                                                  4. * my_x / my_z) -
-                                my_x / my_z)) -
-              6. * dilog(0.5 * (-complex_sqrt(sqr(my_x) / sqr(my_z) -
-                                              4. * my_x / my_z) +
-                                my_x / my_z))));
-      }
-      // if (v = u) < 1 we can directly use phi(x,x,z)
-      else {
-        fac = 1.;
-        my_x = x;
-        my_y = y;
-        my_z = z;
-
-        return std::real(
-            fac * 1. / complex_sqrt(1. - 4. * my_x / my_z) *
-            (sqr(PI) / 3. +
-             2. * sqr(std::log(0.5 -
-                               0.5 * complex_sqrt(1. - 4. * my_x / my_z))) -
-             sqr(std::log(my_x / my_z)) -
-             4. * dilog(0.5 *
-                        (1. - complex_sqrt(sqr(1 - 2. * my_x / my_z) -
-                                           4. * sqr(my_x) / (sqr(my_z)))))));
-      }
-   }
-
-   FATAL("unhandled case in phixyz function!");
+   const auto u = x/z, v = y/z;
+   return phi_uv(u,v);
 }
 
 /**
@@ -1408,12 +1262,12 @@ double DB0(double m1, double m2)
  */
 double C0(double m1, double m2, double m3)
 {
-   return c0(m1, m2, m3);
+   return softsusy::c0(m1, m2, m3);
 }
 
 double D0(double m1, double m2, double m3, double m4)
 {
-   return d0(m1,m2,m3,m4);
+   return softsusy::d0(m1,m2,m3,m4);
 }
 
 /**

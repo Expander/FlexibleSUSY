@@ -19,20 +19,20 @@
 #ifndef SoftsusyMSSM_SUGRA_CONSTRAINT_H
 #define SoftsusyMSSM_SUGRA_CONSTRAINT_H
 
-#include "two_scale_constraint.hpp"
+#include "single_scale_constraint.hpp"
 #include "SoftsusyMSSM_two_scale.hpp"
 #include "SoftsusyMSSM_parameter_point.hpp"
 #include "gut_scale_calculator.hpp"
 
 namespace flexiblesusy {
 
-class SoftsusyMSSM_sugra_constraint : public Constraint<Two_scale> {
+class SoftsusyMSSM_sugra_constraint : public Single_scale_constraint {
 public:
    SoftsusyMSSM_sugra_constraint(const SoftsusyMSSM_parameter_point&);
    virtual ~SoftsusyMSSM_sugra_constraint();
    virtual void apply();
    virtual double get_scale() const;
-   virtual void set_model(Two_scale_model*);
+   virtual void set_model(Model*);
 
 private:
    double mx_guess;

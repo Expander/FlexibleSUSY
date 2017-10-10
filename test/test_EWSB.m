@@ -1,3 +1,25 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
 Needs["TestSuite`", "TestSuite.m"];
 Needs["EWSB`", "EWSB.m"];
 Needs["Parameters`", "Parameters.m"];
@@ -17,7 +39,7 @@ Parameters`SetRealParameters[mssmEwsbOutputParameters];
 
 {mssmSolution, mssmFreePhases} = EWSB`FindSolutionAndFreePhases[mssmEwsbEqs, mssmEwsbOutputParameters];
 
-TestEquality[mssmFreePhases, {FlexibleSUSY`Sign[mu]}];
+TestEquality[mssmFreePhases, {Sign[mu]}];
 
 mssmFullSolution = EWSB`Private`FindSolution[mssmEwsbEqs, mssmEwsbOutputParameters];
 
@@ -28,7 +50,7 @@ TestEquality[Sort /@ mssmFullSolution,
 
 TestEquality[Sort[mssmSolution],
              Sort[{ B[mu] -> -5 + x^2 - x*y - z,
-                    mu -> FlexibleSUSY`Sign[mu] Sqrt[-5 - x^2 - x*y - z]
+                    mu -> Sign[mu] Sqrt[-5 - x^2 - x*y - z]
                   }]];
 
 Print["testing NMSSM-like EWSB for Kappa, vS and mS2 ..."];
@@ -49,7 +71,7 @@ Parameters`SetRealParameters[nmssmEwsbOutputParameters];
 
 {nmssmSolution, nmssmFreePhases} = EWSB`FindSolutionAndFreePhases[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
-TestEquality[nmssmFreePhases, {FlexibleSUSY`Sign[s]}];
+TestEquality[nmssmFreePhases, {Sign[s]}];
 
 nmssmFullSolution = EWSB`Private`FindSolution[nmssmEwsbEqs, nmssmEwsbOutputParameters];
 
@@ -70,7 +92,7 @@ TestEquality[Sort[nmssmSolution],
                               g^2*vd^2*vu + lambda^2*vd^2*vu + g^2*vu^3)/(lambda*s^2*vd),
                     mS2 -> (-(Akappa*kappa*s^2) - kappa^2*s^3 - s*X - Y)/s,
                     s -> (Sqrt[-(mHd2*vd^2) - g^2*vd^4 + mHu2*vu^2 + g^2*vu^4]*
-                          FlexibleSUSY`Sign[s])/Sqrt[lambda^2*vd^2 - lambda^2*vu^2]
+                          Sign[s])/Sqrt[lambda^2*vd^2 - lambda^2*vu^2]
                   }]];
 
 Print["testing UMSSM-like EWSB for mHu2, mHd2 and mS2 ..."];
@@ -256,7 +278,7 @@ TestEquality[Sort[solution],
 Print["testing MSSM/CPV EWSB for mHu2, mHd2"];
 
 solution = EWSB`Private`TimeConstrainedSolve[
-    Parameters`FilterOutIndependentEqs[
+    EWSB`FilterOutIndependentEqs[
         {mHd2*vd + x - (E^(I*eta)*vu*B[Mu])/2 - (vu*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
          mHu2*vu - y - (E^(I*eta)*vd*B[Mu])/2 - (vd*Susyno`LieGroups`conj[B[Mu]])/(2*E^(I*eta)) == 0,
          -I/2*E^(I*eta)*vd*B[Mu] + (I/2*vd*Susyno`LieGroups`conj[B[Mu]])/E^(I*eta) == 0},
@@ -332,12 +354,72 @@ nmssmcpvEWSBOutputParameters = { mHd2, mHu2, ms2, Im[T[\[Kappa]]], Im[T[\[Lambda
 
 Parameters`AddRealParameter[{mHd2, mHu2, ms2}];
 
-nmssmcpvEWSBEqs = Parameters`FilterOutLinearDependentEqs[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
+nmssmcpvEWSBEqs = EWSB`FilterOutLinearDependentEqs[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
 solution = EWSB`Private`FindSolution[nmssmcpvEWSBEqs, nmssmcpvEWSBOutputParameters];
 
 TestNonEquality[solution, {}];
 TestNonEquality[solution, {{}}];
 TestEquality[Length[solution], 1];
 TestEquality[Length[solution[[1]]], 5];
+
+Print["testing EWSB substitutions ..."];
+
+Parameters`SetModelParameters[{\[Mu], B[\[Mu]], mHd2, mHu2}];
+
+subEwsbEqs = {
+    \[Mu]^2 + x^2 + x y + z + 5,
+    B[\[Mu]] - x^2 + x y + z + 5
+};
+
+ewsbSubs = {
+   Rule[\[Mu], Sign[\[Mu]] Sqrt[MuSqr]]
+};
+
+subEwsbOutputParameters = { MuSqr, B[\[Mu]] };
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, "", ewsbSubs];
+
+TestEquality[subFreePhases, {}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {MuSqr -> -(x^2 + x y + z + 5) / Sign[\[Mu]]^2,
+                                                   B[\[Mu]] -> x^2 - x y - z - 5}]];
+
+ewsbSubs = {
+   Rule[\[Mu], Sign[\[Mu]] Sqrt[MuSqr]],
+   Rule[B[\[Mu]], BMu0]
+};
+
+subEwsbOutputParameters = { MuSqr, BMu0 };
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, "", ewsbSubs];
+
+TestEquality[subFreePhases, {}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {MuSqr -> -(x^2 + x y + z + 5) / Sign[\[Mu]]^2,
+                                                   BMu0 -> x^2 - x y - z - 5}]];
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
+subEwsbEqs = {
+   mHd2 + x,
+   mHu2 + y
+};
+
+ewsbSubs = {
+   Rule[mHd2, m0^2 + m12^2],
+   Rule[mHu2, m0^2 + AzeroSqr]
+};
+
+subEwsbOutputParameters = {m12, AzeroSqr};
+
+Parameters`SetRealParameters[subEwsbOutputParameters];
+
+{subSolution, subFreePhases} = EWSB`FindSolutionAndFreePhases[subEwsbEqs, subEwsbOutputParameters, "", ewsbSubs];
+
+TestEquality[subFreePhases, {Sign[m12]}];
+TestEquality[Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ subSolution],
+             Sort[Rule[#[[1]],Expand[#[[2]]]]& /@ {m12 -> Sign[m12] Sqrt[-(m0^2 + x)], AzeroSqr -> -(m0^2 + y)}]];
 
 PrintTestSummary[];

@@ -1,3 +1,24 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
 
 BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "Traces`", "Utils`"}];
 
@@ -12,7 +33,6 @@ CreateSetFunction::usage="";
 CreateSetters::usage="";
 CreateGetters::usage="";
 CreateParameterDefinitions::usage="";
-CreateParameterDefaultInitialization::usage="";
 CreateCCtorInitialization::usage="";
 CreateCCtorParameterList::usage="";
 CreateParameterList::usage="";
@@ -44,10 +64,16 @@ GetBeta[BetaFunction[name_, type_, beta_List], loopOrder_Integer] :=
 
 GetAllBetaFunctions[BetaFunction[name_, type_, beta_List]] := beta;
 
-GuessType[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
+betaIndices = {
+    Susyno`LieGroups`i1 , SARAH`i2 , SARAH`i3 , SARAH`i4
+};
+
+IsBetaIdx[i_] := MemberQ[betaIndices, i];
+
+GuessType[sym_[_?IsBetaIdx, _?IsBetaIdx]] :=
     Parameters`GetType[sym];
 
-GuessType[sym_[Susyno`LieGroups`i1]] :=
+GuessType[sym_[_?IsBetaIdx]] :=
     Parameters`GetType[sym];
 
 GuessType[sym_] :=
@@ -57,13 +83,13 @@ CreateSingleBetaFunctionDecl[betaFun_List] :=
     Module[{result = ""},
            (result = result <> CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_one_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
+                     "_1_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
                      CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_two_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
+                     "_2_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
                      CConversion`CreateCType[GetType[#]] <>
                      " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_three_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
+                     "_3_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
            Return[result];
           ];
 
@@ -215,59 +241,91 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             Return[{localDecl, betaStr}];
            ];
 
-CreateBetaFunctionCall[betaFunction_BetaFunction] :=
-     Module[{beta1L, beta2L = "", beta3L = "", betaName = "", name = "",
-             oneLoopBetaStr, cType, localDecl = "",
-             twoLoopBetaStr, threeLoopBetaStr, type = ErrorType},
-            name          = ToValidCSymbolString[GetName[betaFunction]];
-            type          = GetType[betaFunction];
-            ctype         = CConversion`CreateCType[type];
-            betaName      = "beta_" <> name;
-            localDecl     = ctype <> " " <> CConversion`SetToDefault[betaName, type];
-           If[Length[GetAllBetaFunctions[betaFunction]] > 0,
-              oneLoopBetaStr = "calc_beta_" <> name <> "_one_loop(TRACE_STRUCT)";
-              beta1L = betaName <> " += " <> oneLoopBetaStr <> ";\n";
-             ];
-           If[Length[GetAllBetaFunctions[betaFunction]] > 1,
-              twoLoopBetaStr = "calc_beta_" <> name <> "_two_loop(TRACE_STRUCT)";
-              beta2L = betaName <> " += " <> twoLoopBetaStr <> ";\n";
-             ];
-           If[Length[GetAllBetaFunctions[betaFunction]] > 2,
-              threeLoopBetaStr = "calc_beta_" <> name <> "_three_loop(TRACE_STRUCT)";
-              beta3L = betaName <> " += " <> threeLoopBetaStr <> ";\n";
-             ];
-            Return[{localDecl, beta1L, beta2L, beta3L}];
+DeclareBetaFunction[betaFunction_BetaFunction] :=
+    Module[{name, betaName, type, ctype},
+           name = ToValidCSymbolString[GetName[betaFunction]];
+           betaName = "beta_" <> name;
+           type = GetType[betaFunction];
+           ctype = CConversion`CreateCType[type];
+           ctype <> " " <> CConversion`SetToDefault[betaName, type]
           ];
 
+CreateBetaFunctionCallSequential[betaFunction_BetaFunction, loopOrder_Integer] :=
+    Module[{name, betaName, result = ""},
+           If[Length[GetAllBetaFunctions[betaFunction]] >= loopOrder,
+              name = ToValidCSymbolString[GetName[betaFunction]];
+              betaName = "beta_" <> name;
+              result = betaName <> " += " <>
+                       "calc_" <> betaName <> "_" <> ToString[loopOrder] <> "_loop(TRACE_STRUCT);\n";
+             ];
+           result
+          ];
+
+CreateBetaFunctionCallsSequential[betaFunctions_List, loopOrder_Integer] :=
+    StringJoin[CreateBetaFunctionCallSequential[#,loopOrder]& /@ betaFunctions];
+
+CreateBetaFunctionCallParallel[betaFunction_BetaFunction, loopOrder_Integer] :=
+    Module[{name, betaName, result = ""},
+           If[Length[GetAllBetaFunctions[betaFunction]] >= loopOrder,
+              name = ToValidCSymbolString[GetName[betaFunction]];
+              betaName = "beta_" <> name;
+              result = "auto fut_" <> name <>
+                       " = global_thread_pool().run_packaged_task([this, &TRACE_STRUCT](){ return calc_" <>
+                       betaName <> "_" <> ToString[loopOrder] <> "_loop(TRACE_STRUCT); });\n";
+             ];
+           result
+          ];
+
+CollectBetaFunctionFutures[betaFunction_BetaFunction, loopOrder_Integer] :=
+    Module[{name, betaName, result = ""},
+           If[Length[GetAllBetaFunctions[betaFunction]] >= loopOrder,
+              name = ToValidCSymbolString[GetName[betaFunction]];
+              betaName = "beta_" <> name;
+              result = betaName <> " += fut_" <> name <> ".get();\n";
+             ];
+           result
+          ];
+
+CreateBetaFunctionCallsParallel[betaFunctions_List, loopOrder_Integer] :=
+    "{\n" <>
+    TextFormatting`IndentText[
+        StringJoin[CreateBetaFunctionCallParallel[#,loopOrder]& /@ betaFunctions] <> "\n" <>
+        StringJoin[CollectBetaFunctionFutures[#,loopOrder]& /@ betaFunctions]
+    ] <>
+    "\n}\n";
+
+CreateBetaFunctionCalls[betaFunctions_List, loopOrder_Integer, parallel_:False] :=
+    If[parallel,
+       CreateBetaFunctionCallsParallel[betaFunctions, loopOrder],
+       CreateBetaFunctionCallsSequential[betaFunctions, loopOrder]
+      ];
+
 CreateBetaFunction[betaFunctions_List] :=
-    Module[{def = "",
-            localDecl = "", beta1L = "", beta2L = "", beta3L = "",
-            allDecl = "", allBeta = "",
-            allBeta1L = "", allBeta2L = "", allBeta3L = "", i, inputParsDecl},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               {localDecl, beta1L, beta2L, beta3L} = CreateBetaFunctionCall[betaFunctions[[i]]];
-               allDecl = allDecl <> localDecl;
-               allBeta1L = allBeta1L <> beta1L;
-               allBeta2L = allBeta2L <> TextFormatting`IndentText[beta2L];
-               allBeta3L = allBeta3L <> TextFormatting`IndentText[beta3L];
-              ];
-           allBeta = allDecl <> "\n" <>
-                     "if (get_loops() > 0) {\n" <>
-                     TextFormatting`IndentText[
-                         "TRACE_STRUCT_TYPE TRACE_STRUCT;\n" <>
-                         "CALCULATE_TRACES();\n\n" <>
-                         allBeta1L <> "\n" <>
-                         "if (get_loops() > 1) {\n" <>
-                         allBeta2L <> "\n" <>
-                         TextFormatting`IndentText[
-                             "if (get_loops() > 2) {\n" <>
-                             allBeta3L <>
-                             "\n}"
-                         ] <>
-                         "\n}"
-                     ] <>
-                     "\n}\n";
-           Return[allBeta];
+    Module[{allBeta1L, allBeta2L, allBeta3L, allBeta3LParallel},
+           allBeta1L = CreateBetaFunctionCalls[betaFunctions,1];
+           allBeta2L = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,2];
+           allBeta3L = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,3];
+           (* only parallelization of 3L betas leads to a speed-up *)
+           allBeta3LParallel = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,3,True];
+           StringJoin[DeclareBetaFunction /@ betaFunctions] <> "\n" <>
+           "if (loops > 0) {\n" <>
+           TextFormatting`IndentText[
+               "const auto TRACE_STRUCT = CALCULATE_TRACES(loops);\n\n" <>
+               allBeta1L <> "\n" <>
+               "if (loops > 1) {\n" <>
+               allBeta2L <> "\n" <>
+               TextFormatting`IndentText[
+                   "if (loops > 2) {\n" <>
+                   "#ifdef ENABLE_THREADS\n" <>
+                   allBeta3LParallel <>
+                   "#else\n" <>
+                   allBeta3L <>
+                   "#endif\n" <>
+                   "\n}"
+               ] <>
+               "\n}"
+           ] <>
+           "\n}\n"
           ];
 
 (* Converts SARAH beta functions to our own format.
@@ -349,7 +407,7 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
            For[i = 1, i <= Length[betaFunctions], i++,
                beta = GetAllBetaFunctions[betaFunctions[[i]]];
                type = GetType[betaFunctions[[i]]];
-               name = ToValidCSymbolString[GetName[betaFunctions[[i]]]];
+               name = GetName[betaFunctions[[i]]];
                {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
                display = display <> assignment;
                paramCount += nAssignments;
@@ -362,34 +420,19 @@ CreateDisplayFunction[betaFunctions_List, parameterNumberOffset_:0] :=
           ];
 
 CreateParameterNames[betaFunctions_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               par = GetName[betaFunctions[[i]]];
-               type = GetType[betaFunctions[[i]]];
-               name = Parameters`CreateParameterNamesStr[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
-           result = "const char* parameter_names[NUMBER_OF_PARAMETERS] = {" <>
-                    result <> "};\n";
-           Return[result];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[
+               Parameters`CreateParameterSARAHNames[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
+           "const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names = {" <>
+           result <> "};\n"
           ];
 
 CreateParameterEnum[betaFunctions_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               par = GetName[betaFunctions[[i]]];
-               type = GetType[betaFunctions[[i]]];
-               name = Parameters`CreateParameterEnums[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
-           (* append enum state for the number of betaFunctions *)
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[
+               Parameters`CreateParameterEnums[GetName[#],GetType[#]]& /@ betaFunctions, ", "];
            If[Length[betaFunctions] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_PARAMETERS";
-           result = "enum Parameters : unsigned {" <>
-                    result <> "};\n";
-           Return[result];
+           "enum Parameters : int { " <> result <> "NUMBER_OF_PARAMETERS };\n"
           ];
 
 (* create setters *)
@@ -436,33 +479,10 @@ CreateGetters[betaFunctions_List] :=
 
 (* create parameter definition in C++ class *)
 CreateParameterDefinitions[betaFunction_BetaFunction] :=
-    Module[{def = "", name = "", dataType = ""},
-           dataType = CConversion`CreateCType[GetType[betaFunction]];
-           name = ToValidCSymbolString[GetName[betaFunction]];
-           def  = def <> dataType <> " " <> name <> ";\n";
-           Return[def];
-          ];
+    Parameters`CreateParameterDefinitionAndDefaultInitialize[{GetName[betaFunction], GetType[betaFunction]}];
 
 CreateParameterDefinitions[betaFunctions_List] :=
-    Module[{def = ""},
-           (def = def <> CreateParameterDefinitions[#])& /@ betaFunctions;
-           Return[def];
-          ];
-
-(* create parameter default initialization list *)
-CreateParameterDefaultInitialization[betaFunction_BetaFunction] :=
-    Module[{def = "", name = "", dataType = ""},
-           dataType = CConversion`CreateCType[GetType[betaFunction]];
-           name = ToValidCSymbolString[GetName[betaFunction]];
-           def  = def <> ", " <> CreateDefaultConstructor[name, GetType[betaFunction]];
-           Return[def];
-          ];
-
-CreateParameterDefaultInitialization[betaFunctions_List] :=
-    Module[{def = ""},
-           (def = def <> CreateParameterDefaultInitialization[#])& /@ betaFunctions;
-           Return[def];
-          ];
+    StringJoin[CreateParameterDefinitions /@ betaFunctions];
 
 (* create copy constructor initialization list *)
 CreateCCtorInitialization[betaFunction_BetaFunction] :=

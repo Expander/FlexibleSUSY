@@ -25,7 +25,7 @@
 #include "MSSMD5O_two_scale_susy_scale_constraint.hpp"
 #include "MSSMRHN_two_scale_high_scale_constraint.hpp"
 #include "MSSMD5O_MSSMRHN_two_scale_matching.hpp"
-#include "two_scale_initial_guesser.hpp"
+#include "initial_guesser.hpp"
 
 #include <sstream>
 
@@ -40,7 +40,7 @@ class MSSMRHN;
 class Two_scale;
 
 template<>
-class MSSMD5O_MSSMRHN_initial_guesser<Two_scale> : public Initial_guesser<Two_scale> {
+class MSSMD5O_MSSMRHN_initial_guesser<Two_scale> : public Initial_guesser {
 public:
    MSSMD5O_MSSMRHN_initial_guesser(MSSMD5O<Two_scale>*, MSSMRHN<Two_scale>*,
 				const MSSMD5O_input_parameters&,
@@ -48,7 +48,8 @@ public:
 				const MSSMD5O_low_scale_constraint<Two_scale>&,
 				const MSSMD5O_susy_scale_constraint<Two_scale>&,
 				const MSSMRHN_high_scale_constraint<Two_scale>&,
-				const MSSMD5O_MSSMRHN_matching<Two_scale>&);
+				const MSSMD5O_MSSMRHN_matching_up<Two_scale>&,
+                                const MSSMD5O_MSSMRHN_matching_down<Two_scale>&);
    virtual ~MSSMD5O_MSSMRHN_initial_guesser();
    virtual void guess();
 
@@ -60,7 +61,8 @@ private:
    MSSMD5O_low_scale_constraint<Two_scale> low_constraint_1;
    MSSMD5O_susy_scale_constraint<Two_scale> susy_constraint_1;
    MSSMRHN_high_scale_constraint<Two_scale> high_constraint_2;
-   MSSMD5O_MSSMRHN_matching<Two_scale> matching;
+   MSSMD5O_MSSMRHN_matching_up<Two_scale> matching_up;
+   MSSMD5O_MSSMRHN_matching_down<Two_scale> matching_down;
 
    void guess_susy_parameters();
    void guess_soft_parameters();

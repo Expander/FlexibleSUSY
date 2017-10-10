@@ -17,7 +17,6 @@ MODEL1DIR       := $(ABSBASEDIR)/models/$(MODEL1)
 MODEL2DIR       := $(ABSBASEDIR)/models/$(MODEL2)
 CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
-LEGACYDIR       := $(ABSBASEDIR)/legacy
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
 
@@ -25,18 +24,16 @@ INCMODEL1       := -I$(MODEL1DIR)
 INCMODEL2       := -I$(MODEL2DIR)
 INCCONFIG       := -I$(CONFIGDIR)
 INCFLEXI        := -I$(FLEXIDIR)
-INCLEGACY       := -I$(LEGACYDIR)
 INCFFLITE       := -I$(FFLITEDIR)
 INCSLHAEA       := -I$(SLHAEADIR)
 LIBMODEL1       := $(MODEL1DIR)/lib$(MODEL1)$(MODULE_LIBEXT)
 LIBMODEL2       := $(MODEL2DIR)/lib$(MODEL2)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
-LIBLEGACY       := $(LEGACYDIR)/liblegacy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
-CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) $(INCLEGACY) \
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) \
                    $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := $(CXX)
@@ -101,7 +98,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -135,11 +132,9 @@ showbuild:
 	@echo "MODEL1DIR          = $(MODEL1DIR)"
 	@echo "MODEL2DIR          = $(MODEL2DIR)"
 	@echo "FLEXIDIR           = $(FLEXIDIR)"
-	@echo "LEGACYDIR          = $(LEGACYDIR)"
 	@echo "LIBMODEL1          = $(LIBMODEL1)"
 	@echo "LIBMODEL2          = $(LIBMODEL2)"
 	@echo "LIBFLEXI           = $(LIBFLEXI)"
-	@echo "LIBLEGACY          = $(LIBLEGACY)"
 	@echo ""
 	@echo "# compilation information"
 	@echo "CXX                = $(CXX)"

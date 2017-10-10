@@ -23,55 +23,45 @@
 #include "@ModelName@_two_scale_model.hpp"
 #include "standard_model_two_scale_model.hpp"
 #include "error.hpp"
-#include "two_scale_constraint.hpp"
-
-#define CLASSNAME @ModelName@_standard_model_Matching<Two_scale>
+#include "single_scale_constraint.hpp"
 
 namespace flexiblesusy {
 
-CLASSNAME::@ModelName@_standard_model_Matching()
-   : model(0), eft(0), constraint(nullptr), scale(0.)
-   , loop_order_up(0), loop_order_down(0)
-   , higgs_idx(0)
-{}
+#define CLASSNAME @ModelName@_standard_model_matching_up<Two_scale>
 
-CLASSNAME::@ModelName@_standard_model_Matching(
+CLASSNAME::@ModelName@_standard_model_matching_up(
    standard_model::StandardModel<Two_scale>* low_,
    @ModelName@<Two_scale>* high_,
-   Constraint<Two_scale>* constraint_,
-   unsigned loop_order_up_, unsigned loop_order_down_,
-   unsigned higgs_idx_)
+   const Scale_getter& scale_getter_,
+   int loop_order_,
+   int higgs_idx_)
    : model(high_)
    , eft(low_)
-   , constraint(constraint_)
+   , scale_getter(scale_getter_)
    , scale(0.)
    , higgs_idx(higgs_idx_)
 {
-   set_loop_order_up(loop_order_up_);
-   set_loop_order_down(loop_order_down_);
+   set_loop_order(loop_order_);
 }
-
-CLASSNAME::~@ModelName@_standard_model_Matching()
-{}
 
 double CLASSNAME::get_scale() const
 {
    if (scale != 0.)
       return scale;
 
-   if (!constraint)
-      throw SetupError("Constraint pointer in matching class is NULL!");
+   if (!scale_getter)
+      throw SetupError("Scale getter is not set!");
 
-   return constraint->get_scale();
+   return scale_getter();
 }
 
-void CLASSNAME::set_models(Two_scale_model* low, Two_scale_model* high)
+void CLASSNAME::set_models(Model* low, Model* high)
 {
    eft = cast_model<standard_model::StandardModel<Two_scale>*>(low);
    model = cast_model<@ModelName@<Two_scale>*>(high);
 }
 
-void CLASSNAME::match_high_to_low_scale_model()
+void CLASSNAME::match()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
@@ -79,38 +69,13 @@ void CLASSNAME::match_high_to_low_scale_model()
    eft->run_to(get_scale());
    model->run_to(get_scale());
 
-   if (model->get_thresholds() && loop_order_down)
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order_down, higgs_idx);
-   else
-      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
-}
-
-void CLASSNAME::match_low_to_high_scale_model()
-{
-   if (!model || !eft)
-      throw SetupError("Model pointer in matching class is NULL!");
-
-   eft->run_to(get_scale());
-   model->run_to(get_scale());
-
-   if (model->get_thresholds() && loop_order_up)
-      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order_up);
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_low_to_high_scale_model(*model, *eft, loop_order, higgs_idx);
    else
       @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
 
-void CLASSNAME::match_high_to_low_scale_model_tree_level()
-{
-   if (!model || !eft)
-      throw SetupError("Model pointer in matching class is NULL!");
-
-   eft->run_to(get_scale());
-   model->run_to(get_scale());
-
-   @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
-}
-
-void CLASSNAME::match_low_to_high_scale_model_tree_level()
+void CLASSNAME::match_tree_level()
 {
    if (!model || !eft)
       throw SetupError("Model pointer in matching class is NULL!");
@@ -121,46 +86,132 @@ void CLASSNAME::match_low_to_high_scale_model_tree_level()
    @ModelName@_standard_model_matching::match_low_to_high_scale_model_tree_level(*model, *eft);
 }
 
-unsigned CLASSNAME::get_higgs_index() const
+int CLASSNAME::get_higgs_index() const
 {
    return higgs_idx;
 }
 
-unsigned CLASSNAME::get_loop_order_up() const
+int CLASSNAME::get_loop_order() const
 {
-   return loop_order_up;
+   return loop_order;
 }
 
-unsigned CLASSNAME::get_loop_order_down() const
-{
-   return loop_order_down;
-}
-
-void CLASSNAME::set_higgs_index(unsigned idx)
+void CLASSNAME::set_higgs_index(int idx)
 {
    higgs_idx = idx;
 }
 
-void CLASSNAME::set_loop_order_up(unsigned loop_order_up_)
+void CLASSNAME::set_loop_order(int loop_order_)
 {
-   loop_order_up = loop_order_up_;
+   loop_order = loop_order_;
 }
 
-void CLASSNAME::set_loop_order_down(unsigned loop_order_down_)
+void CLASSNAME::set_scale(const Scale_getter& scale_getter_)
 {
-   if (loop_order_down_ > 1) {
-      WARNING("Matching loop order " << loop_order_down_
-              << " for downwards matching currently not"
-              " supported!  I'm using 1-loop matching.");
-      loop_order_down_ = 1;
-   }
-
-   loop_order_down = loop_order_down_;
+   scale_getter = scale_getter_;
 }
 
-void CLASSNAME::set_constraint(Constraint<Two_scale>* constraint_)
+void CLASSNAME::set_scale(Scale_getter&& scale_getter_)
 {
-   constraint = constraint_;
+   scale_getter = std::move(scale_getter_);
+}
+
+void CLASSNAME::set_scale(double scale_)
+{
+   scale = scale_;
+}
+
+#ifdef CLASSNAME
+#undef CLASSNAME
+#endif
+
+#define CLASSNAME @ModelName@_standard_model_matching_down<Two_scale>
+
+CLASSNAME::@ModelName@_standard_model_matching_down(
+   standard_model::StandardModel<Two_scale>* low_,
+   @ModelName@<Two_scale>* high_,
+   const Scale_getter& scale_getter_,
+   int loop_order_,
+   int higgs_idx_)
+   : model(high_)
+   , eft(low_)
+   , scale_getter(scale_getter_)
+   , scale(0.)
+   , higgs_idx(higgs_idx_)
+{
+   set_loop_order(loop_order_);
+}
+
+double CLASSNAME::get_scale() const
+{
+   if (scale != 0.)
+      return scale;
+
+   if (!scale_getter)
+      throw SetupError("Scale getter is not set!");
+
+   return scale_getter();
+}
+
+void CLASSNAME::set_models(Model* high, Model* low)
+{
+   eft = cast_model<standard_model::StandardModel<Two_scale>*>(low);
+   model = cast_model<@ModelName@<Two_scale>*>(high);
+}
+
+void CLASSNAME::match()
+{
+   if (!model || !eft)
+      throw SetupError("Model pointer in matching class is NULL!");
+
+   eft->run_to(get_scale());
+   model->run_to(get_scale());
+
+   if (model->get_thresholds() && loop_order)
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model(*eft, *model, loop_order, higgs_idx);
+   else
+      @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
+}
+
+void CLASSNAME::match_tree_level()
+{
+   if (!model || !eft)
+      throw SetupError("Model pointer in matching class is NULL!");
+
+   eft->run_to(get_scale());
+   model->run_to(get_scale());
+
+   @ModelName@_standard_model_matching::match_high_to_low_scale_model_tree_level(*eft, *model, higgs_idx);
+}
+
+int CLASSNAME::get_higgs_index() const
+{
+   return higgs_idx;
+}
+
+int CLASSNAME::get_loop_order() const
+{
+   return loop_order;
+}
+
+void CLASSNAME::set_higgs_index(int idx)
+{
+   higgs_idx = idx;
+}
+
+void CLASSNAME::set_loop_order(int loop_order_)
+{
+   loop_order = loop_order_;
+}
+
+void CLASSNAME::set_scale(const Scale_getter& scale_getter_)
+{
+   scale_getter = scale_getter_;
+}
+
+void CLASSNAME::set_scale(Scale_getter&& scale_getter_)
+{
+   scale_getter = std::move(scale_getter_);
 }
 
 void CLASSNAME::set_scale(double scale_)

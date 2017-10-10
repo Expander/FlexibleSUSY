@@ -15,7 +15,7 @@
 #include "ew_input.hpp"
 #include "ckm.hpp"
 #include "conversion.hpp"
-#include "test.h"
+#include "test_legacy.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 
    BOOST_CHECK_CLOSE_FRACTION(fs_mt, ss_mt, 9.5e-5);
    BOOST_CHECK_CLOSE_FRACTION(fs_mb, ss_mb, 9.0e-15);
-   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 6.0e-7);
+   BOOST_CHECK_CLOSE_FRACTION(fs_me, ss_me, 7.0e-4);
    BOOST_CHECK_CLOSE_FRACTION(fs_MZ, ss_MZ, 5.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_new_vev, ss_new_vev, 5.0e-7);
    BOOST_CHECK_CLOSE_FRACTION(fs_old_vu / fs_old_vd, s.displayTanb(), 1.0e-10);
@@ -300,12 +300,12 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
    }
 
    // test off-diagonal elements
-   BOOST_MESSAGE("testing off-diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing off-diagonal yukawa elements");
    for (int i = 1; i <= 3; i++) {
       for (int k = 1; k <= 3; k++) {
          if (i == k)
             continue;
-         BOOST_MESSAGE("testing yukawa elements " << i << ", " << k);
+         BOOST_TEST_MESSAGE("testing yukawa elements " << i << ", " << k);
          BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(i-1,k-1)), s.displayYukawaMatrix(YU)(i,k), 0.0001);
          BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(i-1,k-1)), s.displayYukawaMatrix(YD)(i,k), 0.00001);
          BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(i-1,k-1)), s.displayYukawaMatrix(YE)(i,k), 0.00001);
@@ -315,7 +315,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
       }
    }
 
-   BOOST_MESSAGE("testing diagonal yukawa elements");
+   BOOST_TEST_MESSAGE("testing diagonal yukawa elements");
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(0,0)), s.displayYukawaMatrix(YU)(1,1), 0.00001);
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(0,0)), s.displayYukawaMatrix(YD)(1,1), 0.00001);
    // BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(0,0)), s.displayYukawaMatrix(YE)(1,1), 0.00001);
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
 
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(2,2)), s.displayYukawaMatrix(YU)(3,3), 0.0001);
    BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(2,2)), s.displayYukawaMatrix(YD)(3,3), 0.00014);
-   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(2,2)), s.displayYukawaMatrix(YE)(3,3), 0.00001);
+   BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(2,2)), s.displayYukawaMatrix(YE)(3,3), 0.0007);
 
    BOOST_CHECK_SMALL(Im(m.get_Yu()(0,0)), 1e-10);
    BOOST_CHECK_SMALL(Im(m.get_Yd()(0,0)), 1e-10);

@@ -1,0 +1,205 @@
+FSModelName = "@CLASSNAME@";
+FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = MSSM/CPV;
+OnlyLowEnergyFlexibleSUSY = True;
+UseHiggs2LoopMSSM = False;
+
+MINPAR = {
+    {3, TanBeta}
+};
+
+EXTPAR = {
+    {0, MSUSY},
+    {1, ReM1Input},
+    {2, ReM2Input},
+    {3, ReM3Input},
+    {23, ReMuInput},
+    {24, mA2Input},
+    {100, etaInput}
+};
+
+IMEXTPAR = {
+    {1, ImM1Input},
+    {2, ImM2Input},
+    {3, ImM3Input},
+    {23, ImMuInput}
+};
+
+FSAuxiliaryParameterInfo = {
+    {mq2Input,  { LesHouches -> MSQ2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {mu2Input,  { LesHouches -> MSU2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {md2Input,  { LesHouches -> MSD2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ml2Input,  { LesHouches -> MSL2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {me2Input,  { LesHouches -> MSE2IN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ReAuInput, { LesHouches -> AUIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ReAdInput, { LesHouches -> ADIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ReAeInput, { LesHouches -> AEIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ImAuInput, { LesHouches -> IMAUIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ImAdInput, { LesHouches -> IMADIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } },
+    {ImAeInput, { LesHouches -> IMAEIN,
+                  ParameterDimensions -> {3,3},
+                  InputParameter -> True
+                } }
+};
+
+RealParameters = {};
+
+EWSBOutputParameters = { mHu2, mHd2, Im[B[\[Mu]]] };
+FSSolveEWSBTreeLevelFor = EWSBOutputParameters;
+
+SUSYScale = MSUSY;
+
+SUSYScaleFirstGuess = MSUSY;
+
+SUSYScaleInput = {
+    {T[Ye], ReAeInput Ye + I ImAeInput Ye},
+    {T[Yd], ReAdInput Yd + I ImAdInput Yd},
+    {T[Yu], ReAuInput Yu + I ImAuInput Yu},
+    {mq2, mq2Input},
+    {ml2, ml2Input},
+    {md2, md2Input},
+    {mu2, mu2Input},
+    {me2, me2Input},
+    {MassB, ReM1Input + I ImM1Input},
+    {MassWB, ReM2Input + I ImM2Input},
+    {MassG, ReM3Input + I ImM3Input},
+    {\[Mu], ReMuInput + I ImMuInput},
+    {B[\[Mu]], mA2Input/(vu/vd + vd/vu) + I Im[B[\[Mu]]]},
+    {eta, etaInput}
+};
+
+LowScale = LowEnergyConstant[MZ];
+
+LowScaleFirstGuess = LowEnergyConstant[MZ];
+
+LowScaleInput = {
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic},
+   {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
+   {vu, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Sin[ArcTan[TanBeta]]}
+};
+
+InitialGuessAtLowScale = {
+   {vd, LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]},
+   {vu, LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]},
+   {\[Mu]   , LowEnergyConstant[MZ]},
+   {B[\[Mu]], LowEnergyConstant[MZ]^2},
+   {Yu, Automatic},
+   {Yd, Automatic},
+   {Ye, Automatic}
+};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYOutput, NoScale,
+           {{0, Hold[HighScale]},
+            {1, Hold[SUSYScale]},
+            {2, Hold[LowScale]} } },
+   {FlexibleSUSYLowEnergy,
+           {{21, FlexibleSUSYObservable`aMuon},
+            {23, FlexibleSUSYObservable`EDM[Fe[1]]},
+            {24, FlexibleSUSYObservable`EDM[Fe[2]]},
+            {25, FlexibleSUSYObservable`EDM[Fe[3]]} } },
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } },
+   {ALPHA, NoScale,
+           {{ArcSin[Pole[ZH[2,2]]]}}},
+   {HMIX , {{1, Re[\[Mu]]},
+            {2, vu / vd},
+            {3, Sqrt[vu^2 + vd^2]},
+            {101, Re[B[\[Mu]]]},
+            {102, vd},
+            {103, vu} } },
+   {ImHMIX,{{1, Im[\[Mu]]},
+            {101, Im[B[\[Mu]]]} } },
+   {Au,    {{1, 1, Re[T[Yu][1,1] / Yu[1,1]]},
+            {2, 2, Re[T[Yu][2,2] / Yu[2,2]]},
+            {3, 3, Re[T[Yu][3,3] / Yu[3,3]]} } },
+   {Ad,    {{1, 1, Re[T[Yd][1,1] / Yd[1,1]]},
+            {2, 2, Re[T[Yd][2,2] / Yd[2,2]]},
+            {3, 3, Re[T[Yd][3,3] / Yd[3,3]]} } },
+   {Ae,    {{1, 1, Re[T[Ye][1,1] / Ye[1,1]]},
+            {2, 2, Re[T[Ye][2,2] / Ye[2,2]]},
+            {3, 3, Re[T[Ye][3,3] / Ye[3,3]]} } },
+   {ImAu,  {{1, 1, Im[T[Yu][1,1] / Yu[1,1]]},
+            {2, 2, Im[T[Yu][2,2] / Yu[2,2]]},
+            {3, 3, Im[T[Yu][3,3] / Yu[3,3]]} } },
+   {ImAd,  {{1, 1, Im[T[Yd][1,1] / Yd[1,1]]},
+            {2, 2, Im[T[Yd][2,2] / Yd[2,2]]},
+            {3, 3, Im[T[Yd][3,3] / Yd[3,3]]} } },
+   {ImAe,  {{1, 1, Im[T[Ye][1,1] / Ye[1,1]]},
+            {2, 2, Im[T[Ye][2,2] / Ye[2,2]]},
+            {3, 3, Im[T[Ye][3,3] / Ye[3,3]]} } },
+   {MSOFT, {{1, Re[MassB]},
+            {2, Re[MassWB]},
+            {3, Re[MassG]},
+            {21, mHd2},
+            {22, mHu2},
+            {31, SignedAbsSqrt[Re[ml2[1,1]]]},
+            {32, SignedAbsSqrt[Re[ml2[2,2]]]},
+            {33, SignedAbsSqrt[Re[ml2[3,3]]]},
+            {34, SignedAbsSqrt[Re[me2[1,1]]]},
+            {35, SignedAbsSqrt[Re[me2[2,2]]]},
+            {36, SignedAbsSqrt[Re[me2[3,3]]]},
+            {41, SignedAbsSqrt[Re[mq2[1,1]]]},
+            {42, SignedAbsSqrt[Re[mq2[2,2]]]},
+            {43, SignedAbsSqrt[Re[mq2[3,3]]]},
+            {44, SignedAbsSqrt[Re[mu2[1,1]]]},
+            {45, SignedAbsSqrt[Re[mu2[2,2]]]},
+            {46, SignedAbsSqrt[Re[mu2[3,3]]]},
+            {47, SignedAbsSqrt[Re[md2[1,1]]]},
+            {48, SignedAbsSqrt[Re[md2[2,2]]]},
+            {49, SignedAbsSqrt[Re[md2[3,3]]]} } },
+   {ImMSOFT,
+           {{1, Im[MassB]},
+            {2, Im[MassWB]},
+            {3, Im[MassG]},
+            {31, SignedAbsSqrt[Im[ml2[1,1]]]},
+            {32, SignedAbsSqrt[Im[ml2[2,2]]]},
+            {33, SignedAbsSqrt[Im[ml2[3,3]]]},
+            {34, SignedAbsSqrt[Im[me2[1,1]]]},
+            {35, SignedAbsSqrt[Im[me2[2,2]]]},
+            {36, SignedAbsSqrt[Im[me2[3,3]]]},
+            {41, SignedAbsSqrt[Im[mq2[1,1]]]},
+            {42, SignedAbsSqrt[Im[mq2[2,2]]]},
+            {43, SignedAbsSqrt[Im[mq2[3,3]]]},
+            {44, SignedAbsSqrt[Im[mu2[1,1]]]},
+            {45, SignedAbsSqrt[Im[mu2[2,2]]]},
+            {46, SignedAbsSqrt[Im[mu2[3,3]]]},
+            {47, SignedAbsSqrt[Im[md2[1,1]]]},
+            {48, SignedAbsSqrt[Im[md2[2,2]]]},
+            {49, SignedAbsSqrt[Im[md2[3,3]]]} } }
+};

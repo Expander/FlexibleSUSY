@@ -14,7 +14,7 @@
 #include "mycomplex.h"
 #include "def.h"
 #include "linalg.h"
-#include "lowe.h"
+#include "lowe_legacy.h"
 #include "rge.h"
 #include "softsusy.h"
 #include "nmssmsoftsusy.h"

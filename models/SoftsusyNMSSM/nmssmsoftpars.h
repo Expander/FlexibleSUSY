@@ -136,15 +136,10 @@ public:
   void universalTrilinears(double a0);
   /// Sets singlet trilinears to ak  and al and all SUSY breaking trilinear couplings to a0
   void semiuniversalTrilinears(double a0, double al, double ak);
-
-  /// Reads in soft SUSY breaking parameters from a file
-  void inputSoftParsOnly();
 };
 
 /// Formatted ouput of whole object
 ostream & operator <<(ostream &left, const SoftParsNmssm &s);
-/// Formatted input of whole object
-istream & operator >>(istream &left, SoftParsNmssm &s);
 
 inline SoftParsNmssm::SoftParsNmssm()
   : SoftPars<NmssmSusy, nmsBrevity>(), alambda(0.0), akappa(0.0),

@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE( test_to )
 
    BOOST_CHECK_CLOSE(lowe_Mz.displayPoleMb(), lowe_Mz_new.displayPoleMb(), 0.5);
 
-   BOOST_MESSAGE(lowe_Mz);
-   BOOST_MESSAGE(lowe_Mz_new);
+   BOOST_TEST_MESSAGE(lowe_Mz);
+   BOOST_TEST_MESSAGE(lowe_Mz_new);
 }
 
 BOOST_AUTO_TEST_CASE( test_to_recall )
@@ -43,17 +43,16 @@ BOOST_AUTO_TEST_CASE( test_to_recall )
    QedQcd lowe_Mz;
    lowe_Mz.setPoleMt(173.5);
    lowe_Mz.setAlpha(ALPHAS, 0.118);
-   lowe_Mz.setMu(lowe_Mz.displayPoleMZ());
+   lowe_Mz.set_scale(lowe_Mz.displayPoleMZ());
    lowe_Mz.to(100.);
 
    QedQcd lowe_Mz_new(lowe_Mz);
-   lowe_Mz.setMu(100.);
+   lowe_Mz.set_scale(100.);
    lowe_Mz_new.to(100.);
 
    BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(lowe_Mz.display_input(), lowe_Mz_new.display_input()), 1e-10);
-   BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(flexiblesusy::ToEigenArray(lowe_Mz.display()),
-                                           flexiblesusy::ToEigenArray(lowe_Mz_new.display())), 1e-10);
+   BOOST_CHECK_LT(flexiblesusy::MaxRelDiff(lowe_Mz.get(), lowe_Mz_new.get()), 1e-10);
 
-   BOOST_MESSAGE(lowe_Mz);
-   BOOST_MESSAGE(lowe_Mz_new);
+   BOOST_TEST_MESSAGE(lowe_Mz);
+   BOOST_TEST_MESSAGE(lowe_Mz_new);
 }

@@ -1,26 +1,67 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
 
 BeginPackage["Parameters`", {"SARAH`", "CConversion`", "Utils`", "Phases`"}];
 
 { FSModelParameters, FSInputParameters, FSOutputParameters,
-  FSPhysicalOutputParameters, FSPhases, FSDerivedParameters };
+  FSPhysicalOutputParameters, FSPhases, FSDerivedParameters,
+  FSExtraParameters };
+
+ParameterDimensions::usage="option flag for setting the dimensions of an
+input or extra parameter";
+MassDimension::usage="option flag for setting the mass dimension of an
+input or extra parameter";
+InputParameter::usage="option flag for indicating parameter should be
+treated as an input parameter";
 
 FindSymbolDef::usage="";
 
+CreateParameterDefinition::usage="";
+CreateParameterDefinitionAndDefaultInitialize::usage="";
 CreateSetAssignment::usage="";
 CreateDisplayAssignment::usage="";
-CreateParameterNamesStr::usage="";
+CreateParameterSARAHNames::usage="";
 CreateParameterEnums::usage="";
 CreateInputParameterEnum::usage="";
 CreateInputParameterNames::usage="";
+CreateExtraParameterEnum::usage="";
+CreateExtraParameterNames::usage="";
 CreateStdVectorNamesAssignment::usage="";
 
+CreateExtraParameterArrayGetter::usage="";
+CreateExtraParameterArraySetter::usage="";
 CreateInputParameterArrayGetter::usage="";
 CreateInputParameterArraySetter::usage="";
+
+CreateEnumName::usage="Creates enum symbol for given parameter";
+DecomposeParameter::usage="decomposes parameter into its real components";
 
 SetParameter::usage="set model parameter";
 SetSMParameter::usage="sets a SM input parameter in the QedQcd class";
 SetInputParameter::usage="set input parameter to value";
 AddInputParameters::usage="add an input parameter";
+AddExtraParameters::usage="add an extra parameter";
+RemoveExtraParameters::usage="removes a parameter from the list of
+known extra parameters";
 SetPhases::usage="sets field phases";
 GetPhases::usage="returns field phases";
 SetPhase::usage="sets a phase to a value";
@@ -38,26 +79,33 @@ AddRealParameter::usage="";
 SetRealParameters::usage="";
 
 SaveParameterLocally::usage="Save parameters in local variables";
-RestoreParameter::usage="Restore parameters from local variables";
 
 GetType::usage="";
 GetPhase::usage="";
 HasPhase::usage="";
+GetIntegerTypeFromDimension::usage="";
 GetRealTypeFromDimension::usage="";
+GetComplexTypeFromDimension::usage="";
 GetParameterDimensions::usage="";
 GetThirdGeneration::usage="returns parameter with third generation index";
+
+GuessInputParameterType::usage="returns a guess for the type of the parameter";
+GuessExtraParameterType::usage="returns a guess for the type of the parameter";
 
 IsRealParameter::usage="";
 IsComplexParameter::usage="";
 IsRealExpression::usage="";
-IsMatrix::usage="returns true if parameter is a matrix";
-IsSymmetricMatrixParameter::usage="returns true if parameter is a matrix";
-IsTensor::usage="returns true if parameter is a matrix";
+IsMatrix::usage="returns True if parameter is a matrix";
+IsSymmetricMatrixParameter::usage="returns True if parameter is a matrix";
+IsTensor::usage="returns True if parameter is a matrix";
+IsParameter::usage="returns True if symbol is a model/input/output/phase parameter";
 IsModelParameter::usage="returns True if parameter is a model parameter";
-IsInputParameter::usage="returns False if parameter is an input parameter";
+IsInputParameter::usage="returns True if parameter is an input parameter";
 IsOutputParameter::usage="returns True if parameter is a defined output parameter";
-IsIndex::usage="returns true if given symbol is an index";
+IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
+IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
+IsGaugeCoupling::usage="returns True if parameter is a gauge coupling.";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -67,12 +115,28 @@ are real, False otherwise";
 SetInputParameters::usage="";
 SetModelParameters::usage="";
 SetOutputParameters::usage="";
+SetExtraParameters::usage="";
+
+ApplyAuxiliaryParameterInfo::usage="Saves input and extra parameter properties"
+
+CheckInputParameterDefinitions::usage="";
 
 GetInputParameters::usage="";
+GetInputParametersAndTypes::usage="";
 GetModelParameters::usage="";
 GetOutputParameters::usage="";
+GetExtraParameters::usage="";
+GetExtraParametersAndTypes::usage="";
 GetModelParametersWithMassDimension::usage="Returns model parameters
 with given mass dimension";
+GetParametersWithMassDimension::usage="Returns model, input and extra
+parameters with given mass dimension";
+GetModelParameterMassDimension::usage="Returns mass dimension for given
+model parameter";
+
+FindMacro::usage="Returns preprocessor macro for parameter";
+WrapPreprocessorMacroAround::usage="Applies preprocessor symbols
+to parameters";
 
 GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
  DependenceSPheno rule is defined";
@@ -105,6 +169,9 @@ IncreaseIndexLiterals::usage="";
 
 DecreaseSumIndices::usage="";
 
+ExpressionToString::usage="Converts an expression to a valid C++
+string.";
+
 GetEffectiveMu::usage="";
 GetEffectiveMASqr::usage="";
 
@@ -121,16 +188,14 @@ ExpandExpressions::usage="";
 AppendGenerationIndices::usage="";
 
 StripIndices::usage="removes indices from model parameter";
+CreateIndices::usage="creates indices in C++ expression for parameter";
 
 StripIndicesRules::usage="removes given indices from a symbol";
 
 StripSARAHIndicesRules::usage="removes SARAH-specific indices from a symbol";
 
-FilterOutLinearDependentEqs::usage="returns linear independent equations";
-
-FilterOutIndependentEqs::usage = "returns equations that depend on the
-given list of parameters.  I.e. equations, that do not depend on the
-given list of parameters are omitted from the output.";
+ReplaceAllRespectingSARAHHeads::usage="applies given rules, respecting
+SARAH heads SARAH`B, SARAH`L, SARAH`T and SARAH`Q";
 
 FindAllParameters::usage = "returns list of all parameters contained
 in the given expression";
@@ -144,20 +209,292 @@ FindSLHABlock::usage = "returns SLHA input block name for given
 Begin["`Private`"];
 
 allInputParameters = {};
+allExtraParameters = {};
 allModelParameters = {};
 allOutputParameters = {};
 allPhases = {};
 
-SetInputParameters[pars_List] := allInputParameters = DeleteDuplicates[pars];
-AddInputParameters[pars_List] := allInputParameters = DeleteDuplicates[Utils`ForceJoin[allInputParameters, pars]];
+(* list storing mass dimensions for input and extra parameters,    *)
+(* in the form {{0, {parameters ...}}, {1, {parameters ...}}, ...} *)
+extraMassDimensions = {};
+
+AddMassDimensionInfo[par_, dim_?IntegerQ] :=
+    Module[{massDimensions, pos, known},
+           massDimensions = #[[1]]& /@ extraMassDimensions;
+           If[!MemberQ[massDimensions, dim],
+              extraMassDimensions = Utils`ForceJoin[extraMassDimensions, {{dim, {par}}}];,
+              pos = Position[massDimensions, dim];
+              known = First[Extract[extraMassDimensions, pos]][[2]];
+              extraMassDimensions = ReplacePart[extraMassDimensions,
+                                                pos -> {dim, DeleteDuplicates[Join[known, {par}]]}];
+             ];
+          ];
+
+AddMassDimensionInfo[par_, dim_] :=
+    Print["Error: mass dimension for parameter ", par,
+          " must be a number"];
+
+GuessInputParameterType[Sign[par_]] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+GuessInputParameterType[FlexibleSUSY`Phase[par_]] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+GuessInputParameterType[par_] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
+
+GuessExtraParameterType[Sign[par_]] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+GuessExtraParameterType[FlexibleSUSY`Phase[par_]] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+GuessExtraParameterType[par_] :=
+    CConversion`ScalarType[CConversion`realScalarCType];
+
+UpdateParameterInfo[currentPars_List, {par_, block_, type_}] :=
+    Module[{parNames, pos, updatedPars},
+           parNames = #[[1]]& /@ currentPars;
+           If[!MemberQ[parNames, par],
+              updatedPars = Utils`ForceJoin[currentPars, {{par, block, type}}];,
+              pos = Position[parNames, par, 1];
+              updatedPars = ReplacePart[currentPars, pos -> {par, block, type}];
+             ];
+           If[CConversion`GetElementType[type] === CConversion`realScalarCType ||
+              CConversion`GetElementType[type] === CConversion`integerScalarCType,
+              AddRealParameter[par];
+             ];
+           Return[updatedPars];
+          ];
+
+UpdateParameterInfo[currentPars_List, {par_, type_}] :=
+    Module[{parNames, pos, updatedPars},
+           parNames = #[[1]]& /@ currentPars;
+           If[!MemberQ[parNames, par],
+              updatedPars = Utils`ForceJoin[currentPars, {{par, type}}];,
+              pos = Position[parNames, par, 1];
+              updatedPars = ReplacePart[currentPars, pos -> {par, type}];
+             ];
+           If[CConversion`GetElementType[type] === CConversion`realScalarCType ||
+              CConversion`GetElementType[type] === CConversion`integerScalarCType,
+              AddRealParameter[par];
+             ];
+           Return[updatedPars];
+          ];
+
+SetStoredParameterSLHABlock[storedPars_List, par_, block_] :=
+    Module[{pos, updated, updatedPars},
+           pos = Position[storedPars, {par, __}];
+           updated = Extract[storedPars, pos];
+           If[MatchQ[block, {_, _}],
+              updated = ({#[[1]], {ToString[block[[1]]], block[[2]]}, #[[3]]})& /@ updated,
+              updated = ({#[[1]], ToString[block], #[[3]]})& /@ updated
+             ];
+           ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
+          ];
+
+SetStoredParameterType[storedPars_List, par_, type_] :=
+    Module[{pos, updated},
+           pos = Position[storedPars, {par, __}];
+           updated = Extract[storedPars, pos] /. {par, block_, oldType_} :> {par, block, type};
+           ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
+          ];
+
+SetStoredParameterDimensions[storedPars_List, par_, dims_] :=
+    Module[{pos, updated},
+           pos = Position[storedPars, {par, __}];
+           updated = Extract[storedPars, pos];
+           updated = ({#[[1]], #[[2]], If[CConversion`IsRealType[#[[3]]],
+                                          If[CConversion`IsIntegerType[#[[3]]],
+                                             GetIntegerTypeFromDimension[dims],
+                                             GetRealTypeFromDimension[dims]
+                                            ],
+                                          GetComplexTypeFromDimension[dims]]})& /@ updated;
+           ReplacePart[storedPars, MapThread[Rule, {pos, updated}]]
+          ];
+
+AddInputParameterInfo[{par_, block_, type_}] :=
+    allInputParameters = UpdateParameterInfo[allInputParameters, {par, block, type}];
+
+AddInputParameterInfo[{par_, type_}] :=
+    allInputParameters = UpdateParameterInfo[allInputParameters, {par, {}, type}];
+
+AddInputParameterInfo[par_] :=
+    AddInputParameterInfo[{par, {}, GuessInputParameterType[par]}];
+
+SetInputParameters[pars_List] :=
+    (
+     allInputParameters = {};
+     AddInputParameterInfo /@ pars;
+    )
+
+AddInputParameters[pars_List] := AddInputParameterInfo /@ pars;
+
+AddExtraParameterInfo[{par_, block_, type_}] :=
+    allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, block, type}];
+
+AddExtraParameterInfo[{par_, type_}] :=
+    allExtraParameters = UpdateParameterInfo[allExtraParameters, {par, {}, type}];
+
+AddExtraParameterInfo[par_] :=
+    AddExtraParameterInfo[{par, {}, GuessExtraParameterType[par]}];
+
+SetExtraParameters[pars_List] :=
+    (
+     allExtraParameters = {};
+     AddExtraParameterInfo /@ pars;
+    )
+
+AddExtraParameters[pars_List] := AddExtraParameterInfo /@ pars;
+
+RemoveExtraParameters[par_] :=
+    allExtraParameters = DeleteCases[allExtraParameters, {par, __}];
+
+RemoveExtraParameters[pars_List] := RemoveExtraParameters /@ pars;
+
+SetInputParameterType[par_?IsInputParameter, type_] :=
+    allInputParameters = SetStoredParameterType[allInputParameters, par, type];
+
+SetInputParameterType[par_, type_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
+SetInputParameterDimensions[par_?IsInputParameter, dims_] :=
+    allInputParameters = SetStoredParameterDimensions[allInputParameters, par, dims];
+
+SetInputParameterDimensions[par_, dims_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
+SetInputParameterSLHABlock[par_?IsInputParameter, block_] :=
+    allInputParameters = SetStoredParameterSLHABlock[allInputParameters, par, block];
+
+SetInputParameterSLHABlock[par_, block_] :=
+    Print["Error: ", par, " is not an input parameter!"];
+
+SetExtraParameterType[par_?IsExtraParameter, type_] :=
+    allExtraParameters = SetStoredParameterType[allExtraParameters, par, type];
+
+SetExtraParameterType[par_, type_] :=
+    Print["Error: ", par, " is not a defined parameter!"];
+
+SetExtraParameterDimensions[par_?IsExtraParameter, dims_] :=
+    allExtraParameters = SetStoredParameterDimensions[allExtraParameters, par, dims];
+
+SetExtraParameterDimensions[par_, dims_] :=
+    Print["Error: ", par, " is not a defined parameter!"];
+
+SetExtraParameterSLHABlock[par_?IsExtraParameter, block_] :=
+    allExtraParameters = SetStoredParameterSLHABlock[allExtraParameters, par, block];
+
+SetExtraParameterSLHABlock[par_, block_] :=
+    Print["Error: ", par, " is not a defined parameter!"];
+
+ProcessParameterInfo[{parameter_ /; (IsModelParameter[parameter] || IsOutputParameter[parameter]), {__}}] :=
+    Block[{},
+          Print["Warning: the properties of ", parameter, " are set"];
+          Print["   in the SARAH model files and cannot be overridden."];
+          Print["   Ignoring property settings for ", parameter];
+         ];
+
+ProcessParameterInfo[{parameter_?IsInputParameter, properties_List}] :=
+    Module[{i, inputBlock, ignored = {}, validProperties = properties, property, setting},
+           validProperties = Select[properties, (First[#] =!= InputParameter)&];
+           For[i = 1, i <= Length[validProperties], i++,
+               property = validProperties[[i, 1]];
+               setting = validProperties[[i, 2]];
+               Which[property === ParameterDimensions,
+                     SetInputParameterDimensions[parameter, setting],
+                     property === MassDimension,
+                     AddMassDimensionInfo[parameter, setting],
+                     property === SARAH`LesHouches,
+                     SetInputParameterSLHABlock[parameter, setting],
+                     True, Print["Warning: unrecognized property for parameter ", parameter, ": ", property]
+                    ];
+              ];
+          ];
+
+ProcessParameterInfo[{parameter_?IsExtraParameter, properties_List}] :=
+    Module[{i, property, setting},
+           For[i = 1, i <= Length[properties], i++,
+               property = properties[[i, 1]];
+               setting = properties[[i, 2]];
+               Which[property === ParameterDimensions,
+                     SetExtraParameterDimensions[parameter, setting],
+                     property === MassDimension,
+                     AddMassDimensionInfo[parameter, setting],
+                     property === SARAH`LesHouches,
+                     SetExtraParameterSLHABlock[parameter, setting],
+                     property === InputParameter,
+                     Print["Error: ", parameter, " is defined as an input parameter"];
+                     Print["   but is being treated as an extra parameter."];
+                     Quit[1];,
+                     True, Print["Warning: unrecognized property for parameter ", parameter, ": ", property]
+                    ];
+              ];
+          ];
+
+ProcessParameterInfo[{parameter_, properties_List}] :=
+    Block[{inputOptions, isInput = False},
+          inputOptions = Select[properties, (First[#] === InputParameter)&];
+          If[inputOptions =!= {},
+             isInput = Last[Last[inputOptions]];
+            ];
+          If[isInput,
+             AddInputParameterInfo[parameter],
+             AddExtraParameterInfo[parameter]
+            ];
+          ProcessParameterInfo[{parameter, properties}];
+         ];
+
+ApplyAuxiliaryParameterInfo[properties_List] :=
+    ProcessParameterInfo /@ properties;
+
+CheckInputParameterDefinitions[] :=
+    Module[{i, par, blockName, type},
+           For[i = 1, i <= Length[allInputParameters], i++,
+               par = allInputParameters[[i,1]];
+               type = allInputParameters[[i,3]];
+               (* with the exception of phases, complex input parameters are not currently supported *)
+               If[!CConversion`IsRealType[type] && !MatchQ[par, FlexibleSUSY`Phase[_]],
+                  Print["Error: ", par, " is defined to be complex,"];
+                  Print["   but input parameters must be real."];
+                  Print["   Please define ", par, " to be a real parameter."];
+                  Quit[1];
+                 ];
+               If[MatchQ[allInputParameters[[i,2]], {_, _}],
+                  blockName = allInputParameters[[i,2,1]],
+                  blockName = allInputParameters[[i,2]]
+                 ];
+               blockName = ToString[blockName];
+               If[blockName === "MINPAR" || blockName === "EXTPAR" || blockName === "IMEXTPAR",
+                  If[!MatchQ[type, CConversion`ScalarType[_]],
+                     Print["Error: ", par, " must be defined as a scalar"];
+                     Print["   since it is defined in an SLHA1 input block."];
+                     Quit[1];
+                    ];
+                  If[MatchQ[par, FlexibleSUSY`Phase[_]],
+                     If[type =!= CConversion`ScalarType[CConversion`complexScalarCType],
+                        Print["Error: ", par, " must be defined as a complex scalar"];
+                        Print["   since it is defined in an SLHA1 input block."];
+                        Quit[1];
+                       ];,
+                     If[type =!= CConversion`ScalarType[CConversion`realScalarCType] &&
+                        type =!= CConversion`ScalarType[CConversion`integerScalarCType],
+                        Print["Error: ", par, " must be defined as a real scalar"];
+                        Print["   since it is defined in an SLHA1 input block."];
+                        Quit[1];
+                       ];
+                    ];
+                 ];
+              ];
+          ];
+
 SetModelParameters[pars_List] := allModelParameters = DeleteDuplicates[pars];
 SetOutputParameters[pars_List] := allOutputParameters = DeleteDuplicates[pars];
 SetPhases[phases_List]        := allPhases = DeleteDuplicates[phases];
 
-GetInputParameters[] := allInputParameters;
+GetInputParameters[] := First /@ allInputParameters;
+GetInputParametersAndTypes[] := allInputParameters;
 GetModelParameters[] := allModelParameters;
 GetOutputParameters[] := allOutputParameters;
 GetPhases[] := allPhases;
+GetExtraParameters[] := First /@ allExtraParameters;
+GetExtraParametersAndTypes[] := allExtraParameters;
 
 additionalRealParameters = {};
 
@@ -186,13 +523,38 @@ FindSymbolDef[sym_, opt_:DependenceNum] :=
            If[Length[symDef] > 1,
               Print["Warning: ", sym, " defined multiple times"];
              ];
-           symDef = symDef[[1]];
-           Return[symDef];
+           symDef[[1]]
+          ];
+
+FindAllParametersFromList[expr_, parameters_List] :=
+    Module[{symbols, compactExpr},
+           compactExpr = RemoveProtectedHeads[expr];
+           (* find all parameters with SARAH head *)
+           symbols = DeleteDuplicates[Flatten[
+               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[parameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[parameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[parameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[parameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[parameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[parameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[parameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
+                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[parameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}]
+               }]];
+           (* remove parameters found from compactExpr *)
+           compactExpr = compactExpr /. (RuleDelayed[#, Evaluate[CConversion`ToValidCSymbolString[#]]]& /@ symbols);
+           (* find all parameters without SARAH head in compactExpr *)
+           symbols = Join[symbols,
+               { Cases[compactExpr, a_Symbol /; MemberQ[parameters,a], {0,Infinity}],
+                 Cases[compactExpr, a_[__] /; MemberQ[parameters,a] :> a, {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[parameters,FlexibleSUSY`M[a]], {0,Infinity}],
+                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[parameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+               }];
+           DeleteDuplicates[Flatten[symbols]]
           ];
 
 (* Returns all parameters within an expression *)
-FindAllParameters[expr_] :=
-    Module[{symbols, compactExpr, allParameters, allOutPars},
+FindAllParameters[expr_, exceptions_:{}] :=
+    Module[{allParameters, allOutPars},
            allOutPars = DeleteDuplicates[Flatten[
                Join[allOutputParameters,
                     allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
@@ -200,40 +562,84 @@ FindAllParameters[expr_] :=
                    ]]];
            allParameters = DeleteDuplicates[
                Join[allModelParameters, allOutPars,
-                    allInputParameters, Phases`GetArg /@ allPhases,
-                    GetDependenceSPhenoSymbols[]]];
-           compactExpr = RemoveProtectedHeads[expr];
-           (* find all model parameters with SARAH head *)
-           symbols = DeleteDuplicates[Flatten[
-               { Cases[compactExpr, SARAH`L[a_][__] /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`B[a_][__] /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`T[a_][__] /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`Q[a_][__] /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`L[a_]     /; MemberQ[allParameters,SARAH`L[a]] :> SARAH`L[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`B[a_]     /; MemberQ[allParameters,SARAH`B[a]] :> SARAH`B[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`T[a_]     /; MemberQ[allParameters,SARAH`T[a]] :> SARAH`T[a], {0,Infinity}],
-                 Cases[compactExpr, SARAH`Q[a_]     /; MemberQ[allParameters,SARAH`Q[a]] :> SARAH`Q[a], {0,Infinity}]
-               }]];
-           (* remove parameters found from compactExpr *)
-           compactExpr = compactExpr /. (RuleDelayed[#, CConversion`ToValidCSymbolString[#]]& /@ symbols);
-           (* find all model parameters without SARAH head in compactExpr *)
-           symbols = Join[symbols,
-               { Cases[compactExpr, a_Symbol /; MemberQ[allParameters,a], {0,Infinity}],
-                 Cases[compactExpr, a_[__] /; MemberQ[allParameters,a] :> a, {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_]     /; MemberQ[allOutPars,FlexibleSUSY`M[a]], {0,Infinity}],
-                 Cases[compactExpr, FlexibleSUSY`M[a_[__]] /; MemberQ[allOutPars,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
-               }];
-           DeleteDuplicates[Flatten[symbols]]
+                    GetInputParameters[], Phases`GetArg /@ allPhases,
+                    GetDependenceSPhenoSymbols[], GetExtraParameters[]]];
+           allParameters = DeleteCases[allParameters, p_ /; MemberQ[exceptions, p]];
+           FindAllParametersFromList[expr, allParameters]
+          ];
+
+FindAllParametersClassified[expr_, exceptions_:{}] :=
+    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr, exceptions]]],
+            inputPars, modelPars, outputPars, extraPars,
+            poleMasses, phases, depNum, allOutPars},
+           allOutPars = DeleteDuplicates[Flatten[
+               Join[allOutputParameters,
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
+                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
+                   ]]];
+           poleMasses = {
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
+               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
+                        };
+           poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
+           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetInputParameters[],#])&]];
+           modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
+           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
+           phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
+           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
+           extraPars    = DeleteDuplicates[Select[symbols, (MemberQ[GetExtraParameters[],#])&]];
+           {
+               FSModelParameters -> modelPars,
+               FSInputParameters -> inputPars,
+               FSOutputParameters -> outputPars,
+               FSPhysicalOutputParameters -> poleMasses,
+               FSPhases -> phases,
+               FSDerivedParameters -> depNum,
+               FSExtraParameters -> extraPars
+           }
+          ];
+
+ReplaceAllRespectingSARAHHeads[expr_, rules_] :=
+    Module[{pars, parsWithoutHeads, removeHeadsRules,
+            uniqueRules, uniqueExpr, uniqueSubs},
+           pars = Parameters`FindAllParameters[(#[[1]])& /@ rules];
+           removeHeadsRules = { SARAH`L[p_][__] :> p, SARAH`L[p_] :> p,
+                                SARAH`B[p_][__] :> p, SARAH`B[p_] :> p,
+                                SARAH`T[p_][__] :> p, SARAH`T[p_] :> p,
+                                SARAH`Q[p_][__] :> p, SARAH`Q[p_] :> p
+                              };
+           parsWithoutHeads = DeleteDuplicates[pars /. removeHeadsRules];
+           uniqueRules = DeleteDuplicates @ Flatten[{
+               Rule[SARAH`L[#], CConversion`ToValidCSymbol[SARAH`L[#]]],
+               Rule[SARAH`B[#], CConversion`ToValidCSymbol[SARAH`B[#]]],
+               Rule[SARAH`T[#], CConversion`ToValidCSymbol[SARAH`T[#]]],
+               Rule[SARAH`Q[#], CConversion`ToValidCSymbol[SARAH`Q[#]]]
+           }& /@ parsWithoutHeads];
+           uniqueExpr = expr /. uniqueRules;
+           uniqueSubs = rules /. uniqueRules;
+           (uniqueExpr /. uniqueSubs) /. (Reverse /@ uniqueRules)
           ];
 
 IsScalar[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 1 || Length[SARAH`getDimParameters[sym]] == 0;
+
+IsScalar[sym_?IsInputParameter] :=
+    MatchQ[GetType[sym], CConversion`ScalarType[_]];
+
+IsScalar[sym_?IsExtraParameter] :=
+    MatchQ[GetType[sym], CConversion`ScalarType[_]];
 
 IsMatrix[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsMatrix[sym];
 
 IsMatrix[sym_] :=
     Length[SARAH`getDimParameters[sym]] === 2;
+
+IsMatrix[sym_?IsInputParameter] :=
+    MatchQ[GetType[sym], CConversion`MatrixType[__]];
+
+IsMatrix[sym_?IsExtraParameter] :=
+    MatchQ[GetType[sym], CConversion`MatrixType[__]];
 
 IsSymmetricMatrixParameter[sym_[Susyno`LieGroups`i1, SARAH`i2]] :=
     IsSymmetricMatrixParameter[sym];
@@ -243,6 +649,12 @@ IsSymmetricMatrixParameter[sym_] :=
 
 IsTensor[sym_[Susyno`LieGroups`i1, SARAH`i2, SARAH`i3]] :=
     IsTensor[sym];
+
+IsTensor[sym_?IsInputParameter] :=
+    MatchQ[GetType[sym], CConversion`TensorType[__]];
+
+IsTensor[sym_?IsExtraParameter] :=
+    MatchQ[GetType[sym], CConversion`TensorType[__]];
 
 IsTensor[sym_] :=
     Length[SARAH`getDimParameters[sym]] > 2;
@@ -273,10 +685,24 @@ IsModelParameter[FlexibleSUSY`Temporary[parameter_]] := IsModelParameter[paramet
 IsModelParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
     IsModelParameter[parameter];
 
-IsInputParameter[parameter_] := MemberQ[allInputParameters, parameter];
+IsInputParameter[parameter_] := MemberQ[GetInputParameters[], parameter];
+
+IsInputParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    IsInputParameter[parameter];
 
 IsOutputParameter[lst_List] := And @@ (IsOutputParameter /@ lst);
 IsOutputParameter[sym_]     := MemberQ[GetOutputParameters[],sym];
+
+IsExtraParameter[parameter_] := MemberQ[GetExtraParameters[], parameter];
+
+IsExtraParameter[parameter_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    IsExtraParameter[parameter];
+
+IsParameter[sym_] :=
+    IsModelParameter[sym] ||
+    IsInputParameter[sym] ||
+    IsExtraParameter[sym] ||
+    IsPhase[sym];
 
 IsRealParameter[Re[sym_]] := True;
 IsRealParameter[Im[sym_]] := True;
@@ -284,12 +710,22 @@ IsRealParameter[FlexibleSUSY`M[_]] := True;
 
 IsRealParameter[sym_] :=
     (IsModelParameter[sym] && AllModelParametersAreReal[]) ||
+    (IsInputParameter[sym] && CConversion`IsRealType[GetType[sym]]) ||
+    (IsExtraParameter[sym] && CConversion`IsRealType[GetType[sym]]) ||
     MemberQ[Utils`ForceJoin[SARAH`realVar, additionalRealParameters, SARAH`RealParameters], sym];
+
+IsRealParameter[sym_[indices__?IsIndex]] := IsRealParameter[sym];
 
 IsComplexParameter[sym_] :=
     !IsRealParameter[sym];
 
-IsRealExpression[parameter_ /; IsModelParameter[parameter]] :=
+IsRealExpression[parameter_?IsModelParameter] :=
+    IsRealParameter[parameter];
+
+IsRealExpression[parameter_?IsInputParameter] :=
+    IsRealParameter[parameter];
+
+IsRealExpression[parameter_?IsExtraParameter] :=
     IsRealParameter[parameter];
 
 IsRealExpression[expr_?NumericQ] :=
@@ -317,7 +753,7 @@ IsRealExpression[Conjugate[expr_]]  := IsRealExpression[expr];
 IsRealExpression[Transpose[expr_]]  := IsRealExpression[expr];
 IsRealExpression[SARAH`Tp[expr_]]   := IsRealExpression[expr];
 IsRealExpression[SARAH`Adj[expr_]]  := IsRealExpression[expr];
-IsRealExpression[bar[expr_]]        := IsRealExpression[expr];
+IsRealExpression[SARAH`bar[expr_]]  := IsRealExpression[expr];
 
 IsRealExpression[expr_Symbol] := IsRealParameter[expr];
 
@@ -398,17 +834,29 @@ GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ}] :=
        CConversion`MatrixType[CConversion`complexScalarCType, num1, num2]
       ];
 
-GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
+GetTypeFromDimension[sym_, {dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
     If[IsRealParameter[sym],
-       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3],
-       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3]
+       CConversion`TensorType[CConversion`realScalarCType, dims],
+       CConversion`TensorType[CConversion`complexScalarCType, dims]
       ];
 
-GetTypeFromDimension[sym_, {num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
-    If[IsRealParameter[sym],
-       CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4],
-       CConversion`TensorType[CConversion`complexScalarCType, num1, num2, num3, num4]
-      ];
+GetIntegerTypeFromDimension[{}] :=
+    CConversion`ScalarType[CConversion`integerScalarCType];
+
+GetIntegerTypeFromDimension[{0}] :=
+    GetIntegerTypeFromDimension[{}];
+
+GetIntegerTypeFromDimension[{1}] :=
+    GetIntegerTypeFromDimension[{}];
+
+GetIntegerTypeFromDimension[{num_?NumberQ}] :=
+    CConversion`VectorType[CConversion`integerScalarCType, num];
+
+GetIntegerTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+    CConversion`MatrixType[CConversion`integerScalarCType, num1, num2];
+
+GetIntegerTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
+    CConversion`TensorType[CConversion`integerScalarCType, dims];
 
 GetRealTypeFromDimension[{}] :=
     CConversion`ScalarType[CConversion`realScalarCType];
@@ -425,22 +873,56 @@ GetRealTypeFromDimension[{num_?NumberQ}] :=
 GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
     CConversion`MatrixType[CConversion`realScalarCType, num1, num2];
 
-GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ}] :=
-    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3];
+GetRealTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
+    CConversion`TensorType[CConversion`realScalarCType, dims];
 
-GetRealTypeFromDimension[{num1_?NumberQ, num2_?NumberQ, num3_?NumberQ, num4_?NumberQ}] :=
-    CConversion`TensorType[CConversion`realScalarCType, num1, num2, num3, num4];
+GetComplexTypeFromDimension[{}] :=
+    CConversion`ScalarType[CConversion`complexScalarCType];
+
+GetComplexTypeFromDimension[{0}] :=
+    GetComplexTypeFromDimension[{}];
+
+GetComplexTypeFromDimension[{1}] :=
+    GetComplexTypeFromDimension[{}];
+
+GetComplexTypeFromDimension[{num_?NumberQ}] :=
+    CConversion`VectorType[CConversion`complexScalarCType, num];
+
+GetComplexTypeFromDimension[{num1_?NumberQ, num2_?NumberQ}] :=
+    CConversion`MatrixType[CConversion`complexScalarCType, num1, num2];
+
+GetComplexTypeFromDimension[{dims__} /; Length[{dims}] > 2 && (And @@ (NumberQ /@ {dims}))] :=
+    CConversion`TensorType[CConversion`complexScalarCType, dims];
+
+GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
+    CConversion`GetScalarElementType[GetType[sym]];
 
 GetType[FlexibleSUSY`SCALE] := GetRealTypeFromDimension[{}];
 
 GetType[FlexibleSUSY`M[sym_]] :=
     GetRealTypeFromDimension[{SARAH`getGen[sym, FlexibleSUSY`FSEigenstates]}];
 
+GetType[sym_?IsInputParameter] :=
+    Cases[GetInputParametersAndTypes[], {sym, _, type_} :> type][[1]];
+
+GetType[sym_?IsExtraParameter] :=
+    Cases[GetExtraParametersAndTypes[], {sym, _, type_} :> type][[1]];
+
 GetType[sym_] :=
     GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
 
-GetType[sym_[indices__] /; And @@ (IsIndex /@ {indices})] :=
-    GetTypeFromDimension[sym, SARAH`getDimParameters[sym]];
+GetParameterDimensions[sym_ /; (IsInputParameter[sym] || IsExtraParameter[sym])] :=
+    Module[{type},
+           type = GetType[sym];
+           Switch[type,
+                  CConversion`ScalarType[_], {1},
+                  CConversion`VectorType[_, n_], {type[[2]]},
+                  CConversion`ArrayType[_, n_], {type[[2]]},
+                  CConversion`MatrixType[_, m_, n_], {type[[2]], type[[3]]},
+                  CConversion`TensorType[_, indices__], List @@ Rest[type],
+                  _, Print["Error: unknown parameter type: ", ToString[type]]; Quit[1];
+                 ]
+          ];
 
 GetParameterDimensions[sym_] :=
     Module[{dim},
@@ -473,6 +955,9 @@ CreateIndexReplacementRule[{parameter_, CConversion`TensorType[_,_,_,_,_]}] :=
     Module[{i,j,k,l},
            RuleDelayed @@ Rule[parameter[i_,j_,k_,l_], parameter[i-1,j-1,k-1,l-1]]
           ];
+
+CreateIndexReplacementRule[parameter_ /; (IsInputParameter[parameter] || IsExtraParameter[parameter])] :=
+    CreateIndexReplacementRule[{parameter, GetType[parameter]}];
 
 CreateIndexReplacementRule[parameter_] :=
     Module[{i,j,k,l, dim, rule},
@@ -512,6 +997,26 @@ ApplyGUTNormalization[] :=
               ];
            Return[rules];
           ];
+
+CreateParameterDefinition[par_] :=
+    CConversion`CreateCType[GetType[par]] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+CreateParameterDefinition[{par_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+CreateParameterDefinition[{par_, block_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <> ";\n";
+
+CreateParameterDefinitionAndDefaultInitialize[par_] :=
+    CConversion`CreateCType[GetType[par]] <> " " <> CConversion`ToValidCSymbolString[par] <> "{};\n";
+
+CreateParameterDefinitionAndDefaultInitialize[{par_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <>
+    CConversion`CreateDefaultAggregateInitialization[type] <> ";\n";
+
+CreateParameterDefinitionAndDefaultInitialize[{par_, block_, type_}] :=
+    CConversion`CreateCType[type] <> " " <> CConversion`ToValidCSymbolString[par] <>
+    CConversion`CreateDefaultAggregateInitialization[type] <> ";\n";
 
 CreateSetAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
     Block[{},
@@ -627,465 +1132,126 @@ CreateSetAssignment[name_, startIndex_, CConversion`TensorType[CConversion`compl
            Return[{ass, count}];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, parameterType_, struct_:"pars"] :=
+(* assigns the parameter (str) to the container element *)
+DisplayAssignParSet[str_String, startIndex_, currIdx_, struct_String] :=
+    struct <> "(" <> ToString[startIndex + currIdx - 1] <> ") = " <> str <> ";\n";
+
+(* creates parameter name and calls SetterFunc[] (= DisplayAssignParSet[] by default) *)
+DisplayAssignPar[(h:(Re|Im))[(par_String)[idx__]], startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[ToString[h] <> "(" <> par <> "(" <>
+         Utils`StringJoinWithSeparator[{idx}, ","] <>
+         "))", startIndex, currIdx, struct];
+
+DisplayAssignPar[(par_String)[idx__], startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[par <> "(" <>
+         Utils`StringJoinWithSeparator[{idx}, ","] <>
+         ")", startIndex, currIdx, struct];
+
+DisplayAssignPar[(h:(Re|Im))[par_String], startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[ToString[h] <> "(" <> par <> ")", startIndex, currIdx, struct];
+
+DisplayAssignPar[par_, startIndex_, currIdx_, struct_String, SetterFunc_:DisplayAssignParSet] :=
+    SetterFunc[CConversion`RValueToCFormString[par], startIndex, currIdx, struct];
+
+CreateDisplayAssignment[name_, startIndex_, type_, struct_:"pars"] :=
+    { StringJoin @
+        MapIndexed[DisplayAssignPar[#1,startIndex,First[#2],struct]&,
+                   DecomposeParameter[name, type]],
+      Length[DecomposeParameter[name, type]]
+    };
+
+(* assigns the string (str) to the std container element *)
+DisplayAssignNameSet[str_String, startIndex_, currIdx_, struct_String] :=
+    struct <> "[" <> ToString[startIndex + currIdx - 1] <> "] = \"" <> str <> "\";\n";
+
+(* creates parameter name and calls DisplayAssignNameSet[] *)
+DisplayAssignName[par_, startIndex_, currIdx_, struct_String] :=
+    DisplayAssignPar[par, startIndex, currIdx, struct, DisplayAssignNameSet];
+
+CreateStdVectorNamesAssignment[name_, startIndex_, type_, struct_:"names"] :=
+    { StringJoin @
+        MapIndexed[DisplayAssignName[#1,startIndex,First[#2],struct]&,
+                   DecomposeParameter[name, type]],
+      Length[DecomposeParameter[name, type]]
+    };
+
+CreateParameterSARAHNameStr[par_] :=
+    "\"" <> CConversion`RValueToCFormString[par] <> "\"";
+
+CreateParameterSARAHNames[name_, type_] :=
+    Utils`StringJoinWithSeparator[CreateParameterSARAHNameStr /@ DecomposeParameter[name, type], ", "];
+
+(* decomposes a parameter into its real pieces *)
+DecomposeParameter[par_, parameterType_] :=
     Block[{},
-          Print["Error: CreateDisplayAssignment: unknown parameter type: ",
+          Print["Error: DecomposeParameter: unknown parameter type: ",
                 ToString[parameterType]];
           Quit[1];
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"pars"] :=
-    Module[{ass = ""},
-           ass = struct <> "(" <> ToString[startIndex] <> ") = "
-                 <> name <> ";\n";
-           Return[{ass, 1}];
+DecomposeParameter[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
+    { name };
+
+DecomposeParameter[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
+    { Re[name], Im[name] };
+
+DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)[CConversion`realScalarCType, rows_]] :=
+    Array[name, rows, 0];
+
+DecomposeParameter[name_, (CConversion`VectorType|CConversion`ArrayType)[CConversion`complexScalarCType, rows_]] :=
+    Flatten[{Re[#], Im[#]}& /@ Array[name, rows, 0]];
+
+DecomposeParameter[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
+    Flatten[Array[name, {rows, cols}, 0]];
+
+DecomposeParameter[name_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
+    Flatten[{Re[#], Im[#]}& /@ Flatten[Array[name, {rows,cols}, 0]]];
+
+DecomposeParameter[name_, CConversion`TensorType[CConversion`realScalarCType, dims__]] :=
+    Flatten[Array[name, {dims}, 0]];
+
+DecomposeParameter[name_, CConversion`TensorType[CConversion`complexScalarCType, dims__]] :=
+    Flatten[{Re[#], Im[#]}& /@ Flatten[Array[name, {dims}, 0]]];
+
+CreateEnumName[(h:(Re|Im))[par_]] :=
+    CreateEnumName[h] <> CreateEnumName[par];
+
+CreateEnumName[par_[idx__]] :=
+    CreateEnumName[par] <>
+    Utils`StringJoinWithSeparator[{idx}, "_", CConversion`ToValidCSymbolString];
+
+CreateEnumName[par_] :=
+    CConversion`ToValidCSymbolString[par];
+
+CreateParameterEnums[name_, type_] :=
+    Utils`StringJoinWithSeparator[CreateEnumName /@ DecomposeParameter[name, type], ", "];
+
+CreateExtraParameterEnum[extraParameters_List] :=
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterEnums[#, GetType[#]]& /@ extraParameters, ", "];
+           If[Length[extraParameters] > 0, result = result <> ", ";];
+           "enum Extra_parameters : int { " <> result <> "NUMBER_OF_EXTRA_PARAMETERS };\n"
           ];
 
-CreateDisplayAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"pars"] :=
-    Module[{ass = ""},
-           ass = struct <> "(" <> ToString[startIndex] <> ") = Re(" <> name <> ");\n" <>
-                 struct <> "(" <> ToString[startIndex + 1] <> ") = Im(" <> name <> ");\n";
-           Return[{ass, 2}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"pars"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = "
-                     <> name <> "(" <> ToString[i] <> ");\n";
-              ];
-           If[rows != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, rows}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"pars"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = Re("
-                     <> name <> "(" <> ToString[i] <> "));\n";
-               ass = ass <> struct <> "(" <> ToString[startIndex + count + 1] <> ") = Im("
-                     <> name <> "(" <> ToString[i] <> "));\n";
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"pars"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = "
-                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                          <> ");\n";
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"pars"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   ass = ass <> struct <> "(" <> ToString[startIndex + count] <> ") = Re("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "));\n";
-                   ass = ass <> struct <> "(" <> ToString[startIndex + count + 1] <> ") = Im("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "));\n";
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[2 rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count++,
-                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = "
-                              <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
-                              <> ");\n";
-                      ];
-                  ];
-              ];
-           If[dim1 * dim2 * dim3 != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateDisplayAssignment[name_, startIndex_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count+=2,
-                       ass = ass <> "pars(" <> ToString[startIndex + count] <> ") = Re("
-                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
-                             <> "));\n";
-                       ass = ass <> "pars(" <> ToString[startIndex + count + 1] <> ") = Im("
-                             <> name <> "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k]
-                             <> "));\n";
-                      ];
-                  ];
-              ];
-           If[2 * dim1 * dim2 * dim3 != count,
-              Print["Error: CreateDisplayAssignment: something is wrong with the indices: "
-                    <> ToString[2 dim1 * dim2 * dim3] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, parameterType_, struct_:"names"] :=
-    Block[{},
-          Print["Error: CreateStdVectorNamesAssignment: unknown parameter type: ",
-                ToString[parameterType]];
-          Quit[1];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType], struct_:"names"] :=
-    Module[{ass = ""},
-           ass = struct <> "[" <> ToString[startIndex] <> "] = \""
-                 <> name <> "\";\n";
-           Return[{ass, 1}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`ScalarType[CConversion`complexScalarCType], struct_:"names"] :=
-    Module[{ass = ""},
-           ass = struct <> "[" <> ToString[startIndex] <> "] = \"Re(" <> name <> ")\";\n" <>
-                 struct <> "[" <> ToString[startIndex + 1] <> "] = \"Im(" <> name <> ")\";\n";
-           Return[{ass, 2}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`realScalarCType, rows_], struct_:"names"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \""
-                     <> name <> "(" <> ToString[i] <> ")\";\n";
-              ];
-           If[rows != count,
-              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, rows}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, (CConversion`VectorType | CConversion`ArrayType)[CConversion`complexScalarCType, rows_], struct_:"names"] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \"Re("
-                     <> name <> "(" <> ToString[i] <> "))\";\n";
-               ass = ass <> struct <> "[" <> ToString[startIndex + count + 1] <> "] = \"Im("
-                     <> name <> "(" <> ToString[i] <> "))\";\n";
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_], struct_:"names"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \""
-                          <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                          <> ")\";\n";
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateStdVectorAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateStdVectorNamesAssignment[name_, startIndex_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_], struct_:"names"] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   ass = ass <> struct <> "[" <> ToString[startIndex + count] <> "] = \"Re("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "))\";\n";
-                   ass = ass <> struct <> "[" <> ToString[startIndex + count + 1] <> "] = \"Im("
-                         <> name <> "(" <> ToString[i] <> "," <> ToString[j]
-                         <> "))\";\n";
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateStdVectorNamesAssignment: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];];
-           Return[{ass, count}];
-          ];
-
-CreateParameterNamesStr[name_, parameterType_] :=
-    Block[{},
-          Print["Error: CreateParameterNamesStr: unknown parameter type: ",
-                ToString[parameterType]];
-          Quit[1];
-          ];
-
-CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
-    "\"" <> CConversion`ToValidCSymbolString[name] <> "\"";
-
-CreateParameterNamesStr[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
-    "\"Re(" <> CConversion`ToValidCSymbolString[name] <> ")\", " <>
-    "\"Im(" <> CConversion`ToValidCSymbolString[name] <> ")\"";
-
-CreateParameterNamesStr[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               If[ass != "", ass = ass <> ", ";];
-               ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
-                     "(" <> ToString[i] <> ")\"";
-              ];
-           If[rows != count,
-              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterNamesStr[name_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               If[ass != "", ass = ass <> ", ";];
-               ass = ass <> "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
-                     "(" <> ToString[i] <> "))\", ";
-               ass = ass <> "\"Im(" <> CConversion`ToValidCSymbolString[name] <>
-                     "(" <> ToString[i] <> "))\"";
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
-                    <> ToString[2 * rows] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterNamesStr[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
-                         "(" <> ToString[i] <> "," <> ToString[j] <> ")\"";
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterNamesStr[name_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
-                         "(" <> ToString[i] <> "," <> ToString[j] <> "))\", ";
-                   ass = ass <> "\"Im(" <> CConversion`ToValidCSymbolString[name] <>
-                         "(" <> ToString[i] <> "," <> ToString[j] <> "))\"";
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
-                    <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count++,
-                       If[ass != "", ass = ass <> ", ";];
-                       ass = ass <> "\"" <> CConversion`ToValidCSymbolString[name] <>
-                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> ")\"";
-                      ];
-                  ];
-              ];
-           If[dim1 * dim2 * dim3 != count,
-              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
-                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterNamesStr[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count+=2,
-                       If[ass != "", ass = ass <> ", ";];
-                       ass = ass <> "\"Re(" <> CConversion`ToValidCSymbolString[name] <>
-                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> "))\", ";
-                       ass = ass <> "\"Im(" <> CConversion`ToValidCSymbolString[name] <>
-                             "(" <> ToString[i] <> "," <> ToString[j] <> "," <> ToString[k] <> "))\"";
-                      ];
-                  ];
-              ];
-           If[2 * dim1 * dim2 * dim3 != count,
-              Print["Error: CreateParameterNamesStr: something is wrong with the indices: "
-                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterEnums[name_, parameterType_] :=
-    Block[{},
-          Print["Error: CreateParameterEnums: unknown parameter type: ",
-                ToString[parameterType]];
-          Quit[1];
-          ];
-
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`realScalarCType | CConversion`integerScalarCType]] :=
-    CConversion`ToValidCSymbolString[name];
-
-CreateParameterEnums[name_, CConversion`ScalarType[CConversion`complexScalarCType]] :=
-    CConversion`ToValidCSymbolString[Re[name]] <> ", " <>
-    CConversion`ToValidCSymbolString[Im[name]];
-
-CreateParameterEnums[name_, CConversion`VectorType[CConversion`realScalarCType, rows_]] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count++,
-               If[ass != "", ass = ass <> ", ";];
-               ass = ass <> CConversion`ToValidCSymbolString[name[i]];
-              ];
-           If[rows != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[rows] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterEnums[name_, CConversion`VectorType[CConversion`complexScalarCType, rows_]] :=
-    Module[{ass = "", i, count = 0},
-           For[i = 0, i < rows, i++; count+=2,
-               If[ass != "", ass = ass <> ", ";];
-               ass = ass <> CConversion`ToValidCSymbolString[Re[name[i]]] <> ", "
-                         <> CConversion`ToValidCSymbolString[Im[name[i]]];
-              ];
-           If[2 * rows != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[2 * rows] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterEnums[name_, CConversion`MatrixType[CConversion`realScalarCType, rows_, cols_]] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count++,
-                   If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[name] <> ToString[i] <> "_" <> ToString[j];
-                  ];
-              ];
-           If[rows * cols != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[rows * cols] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterEnums[name_, CConversion`MatrixType[CConversion`complexScalarCType, rows_, cols_]] :=
-    Module[{ass = "", i, j, count = 0},
-           For[i = 0, i < rows, i++,
-               For[j = 0, j < cols, j++; count+=2,
-                   If[ass != "", ass = ass <> ", ";];
-                   ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> ", "
-                             <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j];
-                  ];
-              ];
-           If[2 * rows * cols != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[2 * rows * cols] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterEnums[name_, CConversion`TensorType[CConversion`realScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count++,
-                       If[ass != "", ass = ass <> ", ";];
-                       ass = ass <> CConversion`ToValidCSymbolString[name] <>
-                             ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
-                      ];
-                  ];
-              ];
-           If[dim1 * dim2 * dim3 != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[dim1 * dim2 * dim3] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
-          ];
-
-CreateParameterEnums[name_, CConversion`TensorType[CConversion`complexScalarCType, dim1_, dim2_, dim3_]] :=
-    Module[{ass = "", i, j, k, count = 0},
-           For[i = 0, i < dim1, i++,
-               For[j = 0, j < dim2, j++,
-                   For[k = 0, k < dim3, k++; count+=2,
-                       If[ass != "", ass = ass <> ", ";];
-                       ass = ass <> CConversion`ToValidCSymbolString[Re[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k] <> ", "
-                                 <> CConversion`ToValidCSymbolString[Im[name]] <> ToString[i] <> "_" <> ToString[j] <> "_" <> ToString[k];
-                      ];
-                  ];
-              ];
-           If[2 * dim1 * dim2 * dim3 != count,
-              Print["Error: CreateParameterEnums: something is wrong with the indices: "
-                    <> ToString[2 * dim1 * dim2 * dim3] <> " != " <> ToString[count]];
-             ];
-           Return[ass];
+CreateExtraParameterNames[extraParameters_List] :=
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterSARAHNames[#,GetType[#]]& /@ extraParameters, ", "];
+           "const std::array<std::string, NUMBER_OF_EXTRA_PARAMETERS> extra_parameter_names = {" <>
+           result <> "};\n"
           ];
 
 CreateInputParameterEnum[inputParameters_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[inputParameters], i++,
-               If[Head[inputParameters[[i]]] =!= List || Length[inputParameters[[i]] != 3],
-                  Print["Error: CreateInputParameterEnum: wrong input parameter format: ",
-                        inputParameters[[i]]];
-                  Quit[1];
-                 ];
-               par  = inputParameters[[i,1]];
-               type = inputParameters[[i,3]];
-               name = Parameters`CreateParameterEnums[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterEnums[#[[1]],#[[3]]]& /@ inputParameters, ", "];
            If[Length[inputParameters] > 0, result = result <> ", ";];
-           result = result <> "NUMBER_OF_INPUT_PARAMETERS";
-           result = "enum Input_parameters : unsigned {" <>
-                    result <> "};\n";
-           Return[result];
+           "enum Input_parameters : int { " <> result <> "NUMBER_OF_INPUT_PARAMETERS };\n"
           ];
 
 CreateInputParameterNames[inputParameters_List] :=
-    Module[{i, par, type, name, result = ""},
-           For[i = 1, i <= Length[inputParameters], i++,
-               If[Head[inputParameters[[i]]] =!= List || Length[inputParameters[[i]] != 3],
-                  Print["Error: CreateInputParameterEnum: wrong input parameter format: ",
-                        inputParameters[[i]]];
-                  Quit[1];
-                 ];
-               par  = inputParameters[[i,1]];
-               type = inputParameters[[i,3]];
-               name = Parameters`CreateParameterNamesStr[par, type];
-               If[i > 1, result = result <> ", ";];
-               result = result <> name;
-              ];
-           result = "const char* input_parameter_names[NUMBER_OF_INPUT_PARAMETERS] = {" <>
-                    result <> "};\n";
-           Return[result];
+    Module[{result},
+           result = Utils`StringJoinWithSeparator[CreateParameterSARAHNames[#[[1]],#[[3]]]& /@ inputParameters, ", "];
+           "const std::array<std::string, NUMBER_OF_INPUT_PARAMETERS> input_parameter_names = {" <>
+           result <> "};\n"
           ];
 
 SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
@@ -1102,12 +1268,12 @@ SetInputParameter[parameter_, value_, wrapper_String, castToType_:None] :=
              ]
           ];
 
-SetPhase[phase_, value_, class_String] :=
+SetPhase[phase_, value_, classPrefix_String] :=
     Module[{phaseStr, valueStr},
            If[IsPhase[phase],
               phaseStr = Phases`CreatePhaseName[phase];
               valueStr = CConversion`RValueToCFormString[value];
-              class <> "->set_" <> phaseStr <> "(" <> valueStr <> ");\n",
+              classPrefix <> "set_" <> phaseStr <> "(" <> valueStr <> ");\n",
               ""
              ]
           ];
@@ -1140,15 +1306,16 @@ SetParameter[Im[parameter_], value_String, class_String, castToType_:None] :=
 
 SetParameter[parameter_, value_String, class_String, castToType_:None] :=
     Module[{parameterStr, targetType = castToType},
-           If[IsModelParameter[parameter],
+           If[IsModelParameter[parameter] || IsExtraParameter[parameter],
               parameterStr = CConversion`ToValidCSymbolString[StripIndices[parameter]];
               (* if the parameter indices, we need to cast to the element type *)
               If[GetIndices[parameter] =!= {} && targetType =!= None,
                  targetType = CConversion`GetScalarElementType[targetType];
                 ];
-              class <> "->set_" <> parameterStr <> "(" <>
+              class <> "set_" <> parameterStr <> "(" <>
               AppendIfNotEmpty[ConcatIndices[GetIndices[parameter]],","] <>
-              CConversion`CastTo[value,targetType] <> ");\n",
+              CConversion`CastTo[value,targetType] <> ");\n"
+              ,
               ""
              ]
           ];
@@ -1170,37 +1337,15 @@ SetParameter[parameter_, value_, castToType_:None] :=
     CConversion`ToValidCSymbolString[StripIndices[parameter]] <> CreateIndices[parameter] <> " = " <>
     CConversion`CastTo[CConversion`RValueToCFormString[value],castToType] <> ";\n";
 
-SaveParameterLocally[parameters_List, prefix_String, caller_String] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parameters], i++,
-               result = result <> SaveParameterLocally[parameters[[i]], prefix, caller];
-              ];
-           Return[result];
-          ];
+SaveParameterLocally[parameters_List] :=
+    StringJoin[SaveParameterLocally /@ parameters];
 
-SaveParameterLocally[parameter_, prefix_String, caller_String] :=
-    Module[{ parStr, parStrSym },
-           parStr = CConversion`RValueToCFormString[parameter];
-           parStrSym = CConversion`ToValidCSymbolString[parameter];
-           "const auto " <> prefix <> parStrSym <> " = " <>
-           If[caller != "", caller <> "(" <> parStr <> ")", parStr] <> ";\n"
-          ];
-
-RestoreParameter[parameters_List, prefix_String, modelPtr_String] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parameters], i++,
-               result = result <> RestoreParameter[parameters[[i]], prefix, modelPtr];
-              ];
-           Return[result];
-          ];
-
-RestoreParameter[parameter_, prefix_String, modelPtr_String] :=
-    Module[{ parStr, parStrSym },
-           parStr = CConversion`RValueToCFormString[parameter];
-           parStrSym = CConversion`ToValidCSymbolString[parameter];
-           If[modelPtr != "",
-              SetParameter[parameter, prefix <> parStrSym, modelPtr],
-              parStr <> " = " <> prefix <> parStrSym <> ";\n"]
+SaveParameterLocally[parameter_] :=
+    Module[{ par, parStr, parStrSym },
+           par = parameter /. { Re -> Identity, Im -> Identity, Abs -> Identity };
+           parStr = CConversion`RValueToCFormString[par];
+           parStrSym = CConversion`ToValidCSymbolString[par];
+           "const auto save_" <> parStrSym <> "_raii = make_raii_save(" <> parStr <> ");\n"
           ];
 
 RemoveProtectedHeads[expr_] :=
@@ -1210,48 +1355,52 @@ RemoveProtectedHeads[expr_] :=
               SARAH`Mass  -> FlexibleSUSY`M,
               SARAH`Mass2 -> FlexibleSUSY`M };
 
+CreateRulesForProtectedHead[expr_, protectedHead_Symbol] :=
+    Cases[expr, protectedHead[p__] :> Rule[protectedHead[p],Symbol["x$" <> ToString[Hash[p]]]], {0, Infinity}];
+
+CreateRulesForProtectedHead[expr_, protectedHeads_List] :=
+    Flatten @ Join[CreateRulesForProtectedHead[expr,#]& /@ protectedHeads];
+
+FindMacro[par_] :=
+    Which[IsModelParameter[par] , Global`MODELPARAMETER,
+          IsOutputParameter[par], Global`MODELPARAMETER,
+          IsPhase[par]          , Global`MODELPARAMETER,
+          IsInputParameter[par] , Global`INPUTPARAMETER,
+          IsExtraParameter[par] , Global`EXTRAPARAMETER,
+          True                  , Identity
+         ];
+
+WrapPreprocessorMacroAround[expr_String, ___] := expr;
+
+WrapPreprocessorMacroAround[expr_, protectedHeads_List:{FlexibleSUSY`Pole, SARAH`SM}] :=
+    Module[{allPars, replacements, protectionRules, exprWithoutProtectedSymbols},
+           allPars = Flatten[{FSModelParameters, FSInputParameters,
+                              FSOutputParameters, FSPhysicalOutputParameters,
+                              FSPhases, FSDerivedParameters, FSExtraParameters} /. FindAllParametersClassified[expr]];
+           replacements = Join[
+               RuleDelayed[#     , FindMacro[#][#]   ]& /@ allPars,
+               RuleDelayed[#[i__], FindMacro[#][#][i]]& /@ allPars,
+               {RuleDelayed[FlexibleSUSY`M[p_[i__]], FindMacro[FlexibleSUSY`M[p]][FlexibleSUSY`M[p]][i]]}
+           ];
+           protectionRules = CreateRulesForProtectedHead[expr, protectedHeads];
+           exprWithoutProtectedSymbols = expr /. protectionRules;
+           (* substitute back protected symbols *)
+           exprWithoutProtectedSymbols /. replacements /. (Reverse /@ protectionRules)
+          ];
+
 DefineLocalConstCopy[parameter_, macro_String, prefix_String:""] :=
-    "const auto " <> prefix <> ToValidCSymbolString[parameter] <> " = " <>
-    macro <> "(" <> ToValidCSymbolString[parameter] <> ");\n";
+    "const auto " <> prefix <> CConversion`ToValidCSymbolString[parameter] <> " = " <>
+    macro <> "(" <> CConversion`ToValidCSymbolString[parameter] <> ");\n";
 
 PrivateCallLoopMassFunction[FlexibleSUSY`M[particle_Symbol]] :=
-    "calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole();\n";
+    "calculate_" <> CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]] <> "_pole();\n";
 
 CalculateLocalPoleMasses[parameter_] :=
     "MODEL->" <> PrivateCallLoopMassFunction[parameter];
 
-FindAllParametersClassified[expr_] :=
-    Module[{symbols = DeleteDuplicates[Flatten[FindAllParameters[expr]]],
-            inputPars, modelPars, outputPars,
-            poleMasses, phases, depNum, allOutPars},
-           allOutPars = DeleteDuplicates[Flatten[
-               Join[allOutputParameters,
-                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> FlexibleSUSY`M[a],
-                    allOutputParameters /. FlexibleSUSY`M[{a__}] :> (FlexibleSUSY`M /@ {a})
-                   ]]];
-           poleMasses = {
-               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_]]     /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}],
-               Cases[expr, FlexibleSUSY`Pole[FlexibleSUSY`M[a_[__]]] /; MemberQ[allOutputParameters,FlexibleSUSY`M[a]] :> FlexibleSUSY`M[a], {0,Infinity}]
-                        };
-           poleMasses   = DeleteDuplicates[Flatten[poleMasses]];
-           inputPars    = DeleteDuplicates[Select[symbols, (MemberQ[allInputParameters,#])&]];
-           modelPars    = DeleteDuplicates[Select[symbols, (MemberQ[allModelParameters,#])&]];
-           outputPars   = DeleteDuplicates[Select[symbols, (MemberQ[allOutPars,#])&]];
-           phases       = DeleteDuplicates[Select[symbols, (MemberQ[Phases`GetArg /@ allPhases,#])&]];
-           depNum       = DeleteDuplicates[Select[symbols, (MemberQ[GetDependenceSPhenoSymbols[],#])&]];
-           {
-               FSModelParameters -> modelPars,
-               FSInputParameters -> inputPars,
-               FSOutputParameters -> outputPars,
-               FSPhysicalOutputParameters -> poleMasses,
-               FSPhases -> phases,
-               FSDerivedParameters -> depNum
-           }
-          ];
-
 CreateLocalConstRefs[expr_] :=
     Module[{result = "", pars, inputSymbols, modelPars, outputPars,
-            poleMasses, phases, depNum},
+            poleMasses, phases, depNum, extraPars},
            pars = FindAllParametersClassified[expr];
            inputSymbols = FSInputParameters /. pars;
            modelPars    = FSModelParameters /. pars;
@@ -1259,11 +1408,13 @@ CreateLocalConstRefs[expr_] :=
            phases       = FSPhases /. pars;
            depNum       = FSDerivedParameters /. pars;
            poleMasses   = FSPhysicalOutputParameters /. pars;
+           extraPars    = FSExtraParameters /. pars;
            (result = result <> DefineLocalConstCopy[#,"INPUTPARAMETER"])& /@ inputSymbols;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ modelPars;
            (result = result <> DefineLocalConstCopy[#,"MODELPARAMETER"])& /@ outputPars;
            (result = result <> DefineLocalConstCopy[#,"PHASE"         ])& /@ phases;
            (result = result <> DefineLocalConstCopy[#,"DERIVEDPARAMETER"])& /@ depNum;
+           (result = result <> DefineLocalConstCopy[#,"EXTRAPARAMETER"])& /@ extraPars;
            (result = result <> CalculateLocalPoleMasses[#])& /@ poleMasses;
            Return[result];
           ];
@@ -1280,7 +1431,7 @@ DefineLocalConstCopyForBeta[{par_, -1}] :=
     DefineLocalConstCopy[par, "BETAPARAMETER", "beta_"];
 
 DefineLocalConstCopyForBeta[{par_, loops_}] :=
-    Module[{lstr = ToString[loops], parStr = ToValidCSymbolString[par]},
+    Module[{lstr = ToString[loops], parStr = CConversion`ToValidCSymbolString[par]},
            "const auto BETA1(" <> lstr <> "," <> parStr <>
            ") = BETAPARAMETER1(" <> lstr <> "," <> parStr <> ");\n"
           ];
@@ -1342,8 +1493,8 @@ IncreaseIndexLiterals[expr_] :=
     IncreaseIndexLiterals[expr, 1];
 
 IncreaseIndexLiterals[expr_, num_Integer] :=
-    IncreaseIndexLiterals[expr, num, Join[allInputParameters, allModelParameters,
-                                          allOutputParameters]];
+    IncreaseIndexLiterals[expr, num, Join[GetInputParameters[], GetExtraParameters[],
+                                          allModelParameters, allOutputParameters]];
 
 IncreaseIndexLiterals[expr_, num_Integer, heads_List] :=
     Module[{indexedSymbols, rules, allHeads},
@@ -1360,7 +1511,27 @@ DecreaseIndexLiterals[expr_, heads_List] :=
     IncreaseIndexLiterals[expr, -1, heads];
 
 DecreaseSumIndices[expr_] :=
-    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> CConversion`FSIndexSum[idx, start - 1, stop - 1, exp];
+    expr //. SARAH`sum[idx_, start_, stop_, exp_] :> FlexibleSUSY`SUM[idx, start - 1, stop - 1, exp];
+
+ReplaceThetaStep[expr_] := expr /; FreeQ[expr,ThetaStep];
+
+ReplaceThetaStep[expr_] :=
+    Factor[
+        Expand[expr] //. {
+            Times[a__, ThetaStep[i1_, i2_], b__] :> FlexibleSUSY`IF[i1 < i2, a b, 0],
+            Times[a__, ThetaStep[i1_, i2_]] :> FlexibleSUSY`IF[i1 < i2, a, 0],
+            Times[ThetaStep[i1_, i2_], a__] :> FlexibleSUSY`IF[i1 < i2, a, 0]
+        }
+    ];
+
+(* Converts an expression to a valid C++ string. *)
+ExpressionToString[expr_] :=
+    CConversion`RValueToCFormString[
+        Simplify[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[ReplaceThetaStep[expr]]]]];
+
+ExpressionToString[expr_, heads_] :=
+    CConversion`RValueToCFormString[
+        Simplify[Parameters`DecreaseIndexLiterals[Parameters`DecreaseSumIndices[ReplaceThetaStep[expr]], heads]]];
 
 GetEffectiveMu[] :=
     Module[{},
@@ -1509,6 +1680,8 @@ StripSARAHIndicesRules[numberOfIndices_] :=
 ExtractParametersFromSARAHBetaLists[beta_List] :=
     StripIndices[#[[1]]]& /@ beta;
 
+ExtractParametersFromSARAHBetaLists[_] := {};
+
 GetModelParametersWithMassDimension[dim_?IntegerQ] :=
     Module[{dimPars},
            Switch[dim,
@@ -1524,6 +1697,33 @@ GetModelParametersWithMassDimension[dim_?IntegerQ] :=
            ExtractParametersFromSARAHBetaLists[dimPars]
           ];
 
+GetParametersWithMassDimension[dim_?IntegerQ] :=
+    Module[{dimPars},
+           dimPars = GetModelParametersWithMassDimension[dim];
+           dimPars = Join[dimPars, Flatten[Cases[extraMassDimensions, {dim, pars_} :> pars]]];
+           DeleteDuplicates[dimPars]
+          ];
+
+GetModelParameterMassDimension[par_?IsModelParameter] :=
+    Module[{i, parsList},
+           For[i = 0, i <= 3, i++,
+               parsList = GetModelParametersWithMassDimension[i];
+               If[MemberQ[parsList, StripIndices[par]],
+                  Return[i]
+                 ];
+              ];
+           Print["Error: mass dimension for ", par, " not found!"];
+           Quit[1];
+          ];
+
+GetModelParameterMassDimension[par_] :=
+    Block[{},
+          Print["Error: GetModelParameterMassDimension:", par, " is not a model parameter!"];
+          Quit[1];
+         ];
+
+IsGaugeCoupling[par_] := MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaGauge], par];
+
 AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
     Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
             pars},
@@ -1532,24 +1732,6 @@ AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
                                   Abs[p_] :> p, FlexibleSUSY`Phase[p_] :> p };
            And @@ (FreeQ[frac,#]& /@ pars)
           ];
-
-FilterOutLinearDependentEqs[{}, _List] := {};
-
-FilterOutLinearDependentEqs[{eq_}, _List] := {eq};
-
-FilterOutLinearDependentEqs[{eq_, rest__}, parameters_List] :=
-    If[Or @@ (AreLinearDependent[#,parameters]& /@ ({eq,#}& /@ {rest})),
-       (* leave out eq and check rest *)
-       FilterOutLinearDependentEqs[{rest}, parameters],
-       (* keep eq and check rest *)
-       {eq, Sequence @@ FilterOutLinearDependentEqs[{rest}, parameters]}
-      ];
-
-FilterOutIndependentEqs[eqs_List, pars_List] :=
-    DeleteDuplicates @ Flatten @ Join[FilterOutIndependentEqs[eqs,#]& /@ pars];
-
-FilterOutIndependentEqs[eqs_List, p_] :=
-    Select[eqs, (!FreeQ[#,p])&];
 
 GetThirdGeneration[par_] :=
     Which[IsScalar[par], par,
@@ -1600,6 +1782,40 @@ GetIntermediateOutputParameterDependencies[expr_] :=
         GetAllOutputParameterDependenciesReplaced[expr],
         Join[GetOutputParameters[], GetInputParameters[], GetExponent /@ GetPhases[]]
     ];
+
+CreateExtraParameterArrayGetter[{}] :=
+    "return Eigen::ArrayXd();\n";
+
+CreateExtraParameterArrayGetter[extraParameters_List] :=
+    Module[{get = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[extraParameters], i++,
+               par  = extraParameters[[i]];
+               type = GetType[extraParameters[[i]]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateDisplayAssignment[name, paramCount, type];
+               get = get <> assignment;
+               paramCount += nAssignments;
+              ];
+           get = "Eigen::ArrayXd pars(" <> ToString[paramCount] <> ");\n\n" <>
+                 get <> "\n" <>
+                 "return pars;";
+           Return[get];
+          ];
+
+CreateExtraParameterArraySetter[extraParameters_List] :=
+    Module[{set = "", paramCount = 0, name = "", par,
+            type, i, assignment = "", nAssignments = 0},
+           For[i = 1, i <= Length[extraParameters], i++,
+               par  = extraParameters[[i]];
+               type = GetType[extraParameters[[i]]];
+               name = CConversion`ToValidCSymbolString[par];
+               {assignment, nAssignments} = Parameters`CreateSetAssignment[name, paramCount, type];
+               set = set <> assignment;
+               paramCount += nAssignments;
+              ];
+           Return[set];
+          ];
 
 CreateInputParameterArrayGetter[{}] :=
     "return Eigen::ArrayXd();\n";

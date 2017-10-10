@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -26,6 +27,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+namespace flexiblesusy {
 
 /// returns directory from file name
 std::string directory(const std::string& file_name)
@@ -105,14 +108,18 @@ bool starts_with(const std::string& str, const std::string& prefix)
 }
 
 /// removes whitespace from left side of string
-std::string trim_left(const std::string& s)
+void trim_left(std::string& str)
 {
-   std::string str(s);
-
    str.erase(str.begin(),
              std::find_if(str.begin(), str.end(),
                           [] (std::string::value_type c) { return !std::isspace(c); }));
+}
 
+/// returns copy of s with whitespace removed from left side of string
+std::string trim_left_copy(const std::string& s)
+{
+   std::string str(s);
+   trim_left(str);
    return str;
 }
 
@@ -159,22 +166,22 @@ void print_empty_phony_targets(const std::vector<std::string>& dependencies,
       ostr << '\n' << d << ":\n";
 }
 
-/// returns file name from #include "..." statement
+/// returns file name from include "..." statement
 std::string get_filename_from_include(std::string line)
 {
-   line = trim_left(line);
+   trim_left(line);
 
    if (line.empty() || line[0] != '#')
       return "";
 
    // skip `#' and following whitespace
-   line = trim_left(line.substr(1));
+   line = trim_left_copy(line.substr(std::strlen("#")));
 
    if (!starts_with(line, "include"))
       return "";
 
    // skip `include'
-   line = trim_left(line.substr(7));
+   line = trim_left_copy(line.substr(std::strlen("include")));
 
    // extract file name from "file-name"
    std::size_t pos1 = line.find_first_of('"');
@@ -282,8 +289,12 @@ std::vector<std::string> search_includes(const std::string& file_name,
    return existing;
 }
 
+} // namespace flexiblesusy
+
 int main(int argc, char* argv[])
 {
+   using namespace flexiblesusy;
+
    if (argc < 2) {
       std::cerr << "Error: no file given\n";
       print_usage(argv[0]);
@@ -298,8 +309,10 @@ int main(int argc, char* argv[])
 
    for (int i = 1; i < argc; i++) {
       const std::string arg(argv[i]);
+      if (starts_with(arg, "-D"))
+         continue;
       if (starts_with(arg, "-I") && arg.length() > 2) {
-         paths.push_back(arg.substr(2));
+         paths.push_back(arg.substr(std::strlen("-I")));
          continue;
       }
       if (arg == "-MG") {

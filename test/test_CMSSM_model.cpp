@@ -1,19 +1,30 @@
+#include <cmath>
+#include <iostream>
+#include <limits>
+#include <string>
+
+#include "conversion.hpp"
+#include "fixed_point_iterator.hpp"
+#include "root_finder.hpp"
+#include "wrappers.hpp"
+
+#include <cmath>
+#include <iostream>
+#include <sstream>
+#include <limits>
+#include <string>
 
 #define private public
 
+#include "CMSSM_two_scale_ewsb_solver.hpp"
 #include "CMSSM_two_scale_model.hpp"
-#include "test.h"
+#include "test_legacy.hpp"
 #include "test_CMSSM.hpp"
 #include "softsusy.h"
 #include "wrappers.hpp"
 #include "conversion.hpp"
 #include "root_finder.hpp"
 #include "fixed_point_iterator.hpp"
-
-#include <cmath>
-#include <iostream>
-#include <limits>
-#include <string>
 
 void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
 {
@@ -22,28 +33,28 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
    const int size = rows * cols;
 
    if (cols != 3) {
-      cout << "<OrderAccordingTo> Error: reference vector dose not have"
-         " 2 columns" << endl;
+      std::cout << "<OrderAccordingTo> Error: reference vector dose not have"
+         " 2 columns" << std::endl;
       return;
    }
    if (rows != 2) {
-      cout << "<OrderAccordingTo> Error: reference vector dose not have"
-         " 3 rows" << endl;
+      std::cout << "<OrderAccordingTo> Error: reference vector dose not have"
+         " 3 rows" << std::endl;
       return;
    }
    if (m.displayStart() != 1) {
-      cout << "<OrderAccordingTo> Error: mass vector dose not begin"
-         " at index 1" << endl;
+      std::cout << "<OrderAccordingTo> Error: mass vector dose not begin"
+         " at index 1" << std::endl;
       return;
    }
    if (m.displayEnd() != size) {
-      cout << "<OrderAccordingTo> Error: mass vector dose not end"
-         " at index " << size << endl;
+      std::cout << "<OrderAccordingTo> Error: mass vector dose not end"
+         " at index " << size << std::endl;
       return;
    }
    if (z.displayCols() != size || z.displayCols() != size) {
-      cout << "<OrderAccordingTo> Error: mixing matrix dose not have"
-         " " << size << " rows or cols" << endl;
+      std::cout << "<OrderAccordingTo> Error: mixing matrix dose not have"
+         " " << size << " rows or cols" << std::endl;
       return;
    }
 
@@ -55,6 +66,11 @@ void OrderAccordingTo(DoubleVector& m, DoubleMatrix& z, const DoubleMatrix& ref)
          z.swaprows(idx, (k-1) * cols + i);
       }
    }
+}
+
+void test_default_settings(const CMSSM_mass_eigenstates& m)
+{
+   TEST(m.ewsb_solver != nullptr);
 }
 
 void test_weinberg_angle(CMSSM_mass_eigenstates m)
@@ -355,9 +371,9 @@ void compare_gluino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.gluino(1);
    const double softsusy_gluino_se = s.displayPhys().mGluino - softsusy_gluino_tree;
    const double p = std::fabs(m3);
-   const double glu_scalar = m.self_energy_Glu_1(p).real();
-   const double glu_left   = m.self_energy_Glu_PL(p).real();
-   const double glu_right  = m.self_energy_Glu_PR(p).real();
+   const double glu_scalar = m.self_energy_Glu_1loop_1(p).real();
+   const double glu_left   = m.self_energy_Glu_1loop_PL(p).real();
+   const double glu_right  = m.self_energy_Glu_1loop_PR(p).real();
    const double glu_se     = - (glu_scalar + m3 * (glu_left + glu_right));
 
    TEST_CLOSE(softsusy_gluino_se, glu_se, 1.0e-4);
@@ -387,11 +403,11 @@ void compare_neutralino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    TEST_EQUALITY(softsusy_tree, softsusy_tree.transpose());
 
    ComplexMatrix sarah_sigma_L(4,4), sarah_sigma_R(4,4), sarah_sigma_S(4,4);
-   for (unsigned i = 1; i <= 4; ++i) {
-      for (unsigned k = 1; k <= 4; ++k) {
-         sarah_sigma_L(i,k) = m.self_energy_Chi_PL(p,i-1,k-1);
-         sarah_sigma_R(i,k) = m.self_energy_Chi_PR(p,i-1,k-1);
-         sarah_sigma_S(i,k) = m.self_energy_Chi_1(p,i-1,k-1);
+   for (int i = 1; i <= 4; ++i) {
+      for (int k = 1; k <= 4; ++k) {
+         sarah_sigma_L(i,k) = m.self_energy_Chi_1loop_PL(p,i-1,k-1);
+         sarah_sigma_R(i,k) = m.self_energy_Chi_1loop_PR(p,i-1,k-1);
+         sarah_sigma_S(i,k) = m.self_energy_Chi_1loop_1(p,i-1,k-1);
       }
    }
 
@@ -438,11 +454,11 @@ void compare_chargino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    softsusy_tree(2, 2) = smu;
 
    ComplexMatrix sarah_sigma_L(2,2), sarah_sigma_R(2,2), sarah_sigma_S(2,2);
-   for (unsigned i = 1; i <= 2; ++i) {
-      for (unsigned k = 1; k <= 2; ++k) {
-         sarah_sigma_L(i,k) = m.self_energy_Cha_PL(p,i-1,k-1);
-         sarah_sigma_R(i,k) = m.self_energy_Cha_PR(p,i-1,k-1);
-         sarah_sigma_S(i,k) = m.self_energy_Cha_1(p,i-1,k-1);
+   for (int i = 1; i <= 2; ++i) {
+      for (int k = 1; k <= 2; ++k) {
+         sarah_sigma_L(i,k) = m.self_energy_Cha_1loop_PL(p,i-1,k-1);
+         sarah_sigma_R(i,k) = m.self_energy_Cha_1loop_PR(p,i-1,k-1);
+         sarah_sigma_S(i,k) = m.self_energy_Cha_1loop_1(p,i-1,k-1);
       }
    }
 
@@ -483,10 +499,10 @@ void compare_sneutrino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doSnu(0.0, 1);
    const DoubleVector Snu_softsusy_1loop(s.displayPhys().msnu);
    ComplexMatrix Snu_sarah_se(3,3);
-   for (unsigned i1 = 1; i1 <= 3; ++i1) {
+   for (int i1 = 1; i1 <= 3; ++i1) {
       const double p = Snu_sarah_tree(i1);
-      for (unsigned i2 = 1; i2 <= 3; ++i2) {
-         Snu_sarah_se(i1, i2) = m.self_energy_Sv(p, i1-1, i2-1);
+      for (int i2 = 1; i2 <= 3; ++i2) {
+         Snu_sarah_se(i1, i2) = m.self_energy_Sv_1loop(p, i1-1, i2-1);
       }
    }
 
@@ -499,7 +515,7 @@ void compare_sneutrino_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    TEST_CLOSE(Snu_sarah_se(2,3), Complex(0,0), 1.0e-10);
 
    DoubleVector Snu_sarah_1loop(3);
-   for (unsigned i = 1; i <= 3; ++i) {
+   for (int i = 1; i <= 3; ++i) {
       Snu_sarah_1loop(i) = zeroSqrt(sqr(Snu_sarah_tree(i))
                                      - Snu_sarah_se(i,i).real());
    }
@@ -530,15 +546,15 @@ void compare_selectron_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doChargedSleptons(mtau, 0.0, sinthDRbar, 1);
    const DoubleMatrix Se_softsusy_1loop(s.displayPhys().me);
    ComplexMatrix Se_sarah_se(6,6);
-   for (unsigned i1 = 1; i1 <= 6; ++i1) {
+   for (int i1 = 1; i1 <= 6; ++i1) {
       const double p = Se_sarah_tree(i1);
-      for (unsigned i2 = 1; i2 <= 6; ++i2) {
-         Se_sarah_se(i1, i2) = m.self_energy_Se(p, i1-1, i2-1);
+      for (int i2 = 1; i2 <= 6; ++i2) {
+         Se_sarah_se(i1, i2) = m.self_energy_Se_1loop(p, i1-1, i2-1);
       }
    }
 
    DoubleMatrix Se_softsusy_se(6,6);
-   for (unsigned i = 1; i <= 2; ++i) {
+   for (int i = 1; i <= 2; ++i) {
       DoubleMatrix mat(2,2);
       s.addSlepCorrection(mat, i);
       Se_softsusy_se(i,i)     = -mat(1,1);
@@ -594,15 +610,15 @@ void compare_sup_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doUpSquarks(mt, 0.0, sinthDRbar, 1);
    const DoubleMatrix Su_softsusy_1loop(s.displayPhys().mu);
    ComplexMatrix Su_sarah_se(6,6);
-   for (unsigned i1 = 1; i1 <= 6; ++i1) {
-      for (unsigned i2 = 1; i2 <= 6; ++i2) {
+   for (int i1 = 1; i1 <= 6; ++i1) {
+      for (int i2 = 1; i2 <= 6; ++i2) {
          const double p = sqrt(Su_sarah_tree(i1) * Su_sarah_tree(i2));
-         Su_sarah_se(i1, i2) = m.self_energy_Su(p, i1-1, i2-1);
+         Su_sarah_se(i1, i2) = m.self_energy_Su_1loop(p, i1-1, i2-1);
       }
    }
 
    DoubleMatrix Su_softsusy_se(6,6);
-   for (unsigned i = 1; i <= 2; ++i) {
+   for (int i = 1; i <= 2; ++i) {
       DoubleMatrix mat(2,2);
       s.addSupCorrection(mat, i);
       Su_softsusy_se(i,i)     = -mat(1,1);
@@ -634,10 +650,10 @@ void compare_sup_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
       Su_softsusy_se(6,3) = -mStopSquared(2,1);
       Su_softsusy_se(6,6) = -mStopSquared(2,2);
 
-      Su_sarah_se(3,3) = m.self_energy_Su(p,2,2);
-      Su_sarah_se(3,6) = m.self_energy_Su(p,2,5);
-      Su_sarah_se(6,3) = m.self_energy_Su(p,5,2);
-      Su_sarah_se(6,6) = m.self_energy_Su(p,5,5);
+      Su_sarah_se(3,3) = m.self_energy_Su_1loop(p,2,2);
+      Su_sarah_se(3,6) = m.self_energy_Su_1loop(p,2,5);
+      Su_sarah_se(6,3) = m.self_energy_Su_1loop(p,5,2);
+      Su_sarah_se(6,6) = m.self_energy_Su_1loop(p,5,5);
    }
 
    TEST_CLOSE(Su_softsusy_se(3,3), Su_sarah_se(3,3), 1.0e-7);
@@ -669,15 +685,15 @@ void compare_sdown_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    s.doDownSquarks(mb, 0.0, sinthDRbar, 1, mt);
    const DoubleMatrix Sd_softsusy_1loop(s.displayPhys().md);
    ComplexMatrix Sd_sarah_se(6,6);
-   for (unsigned i1 = 1; i1 <= 6; ++i1) {
-      for (unsigned i2 = 1; i2 <= 6; ++i2) {
+   for (int i1 = 1; i1 <= 6; ++i1) {
+      for (int i2 = 1; i2 <= 6; ++i2) {
          const double p = sqrt(Sd_sarah_tree(i1) * Sd_sarah_tree(i2));
-         Sd_sarah_se(i1, i2) = m.self_energy_Sd(p, i1-1, i2-1);
+         Sd_sarah_se(i1, i2) = m.self_energy_Sd_1loop(p, i1-1, i2-1);
       }
    }
 
    DoubleMatrix Sd_softsusy_se(6,6);
-   for (unsigned i = 1; i <= 2; ++i) {
+   for (int i = 1; i <= 2; ++i) {
       DoubleMatrix mat(2,2);
       s.addSdownCorrection(mat, i);
       Sd_softsusy_se(i,i)     = -mat(1,1);
@@ -709,10 +725,10 @@ void compare_sdown_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
       Sd_softsusy_se(6,3) = -mSbotSquared(2,1);
       Sd_softsusy_se(6,6) = -mSbotSquared(2,2);
 
-      Sd_sarah_se(3,3) = m.self_energy_Sd(p,2,2);
-      Sd_sarah_se(3,6) = m.self_energy_Sd(p,2,5);
-      Sd_sarah_se(6,3) = m.self_energy_Sd(p,5,2);
-      Sd_sarah_se(6,6) = m.self_energy_Sd(p,5,5);
+      Sd_sarah_se(3,3) = m.self_energy_Sd_1loop(p,2,2);
+      Sd_sarah_se(3,6) = m.self_energy_Sd_1loop(p,2,5);
+      Sd_sarah_se(6,3) = m.self_energy_Sd_1loop(p,5,2);
+      Sd_sarah_se(6,6) = m.self_energy_Sd_1loop(p,5,5);
    }
 
    TEST_CLOSE(Sd_softsusy_se(3,3), Sd_sarah_se(3,3), 1.0e-7);
@@ -751,10 +767,10 @@ void compare_CP_even_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    softsusy_sigma_heavy(2,2) = s.pis2s2(mH0, scale);
 
    ComplexMatrix sarah_sigma_light(2,2), sarah_sigma_heavy(2,2);
-   for (unsigned i1 = 1; i1 <= 2; ++i1) {
-      for (unsigned i2 = 1; i2 <= 2; ++i2) {
-         sarah_sigma_light(i1,i2) = m.self_energy_hh(mh0,i1-1,i2-1);
-         sarah_sigma_heavy(i1,i2) = m.self_energy_hh(mH0,i1-1,i2-1);
+   for (int i1 = 1; i1 <= 2; ++i1) {
+      for (int i2 = 1; i2 <= 2; ++i2) {
+         sarah_sigma_light(i1,i2) = m.self_energy_hh_1loop(mh0,i1-1,i2-1);
+         sarah_sigma_heavy(i1,i2) = m.self_energy_hh_1loop(mH0,i1-1,i2-1);
       }
    }
 
@@ -792,9 +808,9 @@ void compare_CP_odd_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double softsusy_sigma_AA = s.piAA(mA0, scale);
 
    ComplexMatrix sarah_sigma_AA(2,2);
-   for (unsigned i1 = 1; i1 <= 2; ++i1) {
-      for (unsigned i2 = 1; i2 <= 2; ++i2) {
-         sarah_sigma_AA(i1,i2) = m.self_energy_Ah(p,i1-1,i2-1);
+   for (int i1 = 1; i1 <= 2; ++i1) {
+      for (int i2 = 1; i2 <= 2; ++i2) {
+         sarah_sigma_AA(i1,i2) = m.self_energy_Ah_1loop(p,i1-1,i2-1);
       }
    }
 
@@ -841,9 +857,9 @@ void compare_charged_higgs_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double softsusy_sigma_HpHm = s.piHpHm(mHpm, scale);
 
    ComplexMatrix sarah_sigma_Hpm(2,2);
-   for (unsigned i1 = 1; i1 <= 2; ++i1) {
-      for (unsigned i2 = 1; i2 <= 2; ++i2) {
-         sarah_sigma_Hpm(i1,i2) = m.self_energy_Hpm(p,i1-1,i2-1);
+   for (int i1 = 1; i1 <= 2; ++i1) {
+      for (int i2 = 1; i2 <= 2; ++i2) {
+         sarah_sigma_Hpm(i1,i2) = m.self_energy_Hpm_1loop(p,i1-1,i2-1);
       }
    }
 
@@ -869,7 +885,7 @@ void compare_z_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
 {
    const double p = m.get_MVZ();
    const double scale = m.get_scale();
-   const Complex sarah_z_se(m.self_energy_VZ(p));
+   const Complex sarah_z_se(m.self_energy_VZ_1loop(p));
    const double softsusy_z_se = s.piZZT(p, scale, false);
 
    TEST_EQUALITY(scale, m.get_scale());
@@ -886,7 +902,7 @@ void compare_w_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
 {
    const double p = m.get_MVWm();
    const double scale = m.get_scale();
-   const Complex sarah_w_se(m.self_energy_VWm(p));
+   const Complex sarah_w_se(m.self_energy_VWm_1loop(p));
    const double softsusy_w_se = s.piWWT(p, scale, false);
 
    TEST_EQUALITY(scale, m.get_scale());
@@ -989,8 +1005,8 @@ void compare_tadpoles(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double vd = m.get_vd();
    const double vu = m.get_vu();
 
-   const double td = m.tadpole_hh(0).real();
-   const double tu = m.tadpole_hh(1).real();
+   const double td = m.tadpole_hh_1loop(0).real();
+   const double tu = m.tadpole_hh_1loop(1).real();
 
    // check equality of tadpoles
    TEST_CLOSE(td / vd, s.doCalcTadpole1oneLoop(mt, sinthDRbar), 1.0e-11);
@@ -1008,8 +1024,8 @@ void compare_tadpoles_2loop(MssmSoftsusy s, CMSSM<Two_scale> m)
    const double vd = m.get_vd();
    const double vu = m.get_vu();
 
-   const double td_fs = m.tadpole_hh(0).real();
-   const double tu_fs = m.tadpole_hh(1).real();
+   const double td_fs = m.tadpole_hh_1loop(0).real();
+   const double tu_fs = m.tadpole_hh_1loop(1).real();
 
    double td_ss = s.doCalcTadpole1oneLoop(mt, sinthDRbar);
    double tu_ss = s.doCalcTadpole2oneLoop(mt, sinthDRbar);
@@ -1240,8 +1256,8 @@ void test_ewsb_1loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    // one-loop
    model.solve_ewsb_one_loop();
-   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, 0.006);
-   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, 0.006);
+   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh_1loop(0).real(), 0.0, 0.02);
+   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh_1loop(1).real(), 0.0, 0.05);
 
    softsusy::numRewsbLoops = 1;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
@@ -1278,10 +1294,10 @@ void test_ewsb_2loop(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
 
    const auto two_loop_tadpole(model.tadpole_hh_2loop());
 
-   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real()
-              - two_loop_tadpole[0], 0.0, 0.007);
-   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real()
-              - two_loop_tadpole[1], 0.0, 0.001);
+   TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh_1loop(0).real()
+              - two_loop_tadpole[0], 0.0, 0.03);
+   TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh_1loop(1).real()
+              - two_loop_tadpole[1], 0.0, 0.06);
 
    softsusy::numRewsbLoops = 2;
    softSusy.rewsb(signMu, softSusy.displayDrBarPars().mt, pars);
@@ -1309,10 +1325,9 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    softSusy.setMh2Squared(m2sq);
 
    const int ewsb_loop_order = 1;
-   const int number_of_ewsb_iterations = 100;
+   const int number_of_ewsb_iterations = 50;
    const double ewsb_iteration_precision = 1.0e-5;
    model.set_ewsb_loop_order(ewsb_loop_order);
-   model.set_number_of_ewsb_iterations(number_of_ewsb_iterations);
    model.set_ewsb_iteration_precision(ewsb_iteration_precision);
 
    // these conditions must be fulfilled to have EWSB
@@ -1326,31 +1341,52 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
    const double Mu_ss = softSusy.displaySusyMu();
    const double BMu_ss = softSusy.displayM3Squared();
 
-   // prepare solvers
-   CMSSM<Two_scale>::EWSB_args params = {&model, ewsb_loop_order};
+   typedef Eigen::Matrix<double,2,1> EWSB_vector_t;
 
+   CMSSM_ewsb_solver<Two_scale> ewsb_solver;
+   ewsb_solver.set_loop_order(ewsb_loop_order);
+   ewsb_solver.set_number_of_iterations(number_of_ewsb_iterations);
+   ewsb_solver.set_precision(ewsb_iteration_precision);
+
+   auto ewsb_stepper = [&ewsb_solver, &model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      model.set_BMu(ewsb_pars(0));
+      model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
+      if (ewsb_solver.get_loop_order() > 0)
+         model.calculate_DRbar_masses();
+      return ewsb_solver.ewsb_step(model);
+   };
+
+   auto tadpole_stepper = [&ewsb_solver, &model](const EWSB_vector_t& ewsb_pars) -> EWSB_vector_t {
+      model.set_BMu(ewsb_pars(0));
+      model.set_Mu(model.get_input().SignMu * Abs(ewsb_pars(1)));
+      if (ewsb_solver.get_loop_order() > 0)
+         model.calculate_DRbar_masses();
+      return ewsb_solver.tadpole_equations(model);
+   };
+
+   // prepare solvers
    EWSB_solver* solvers[] = {
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrid),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLHybrid),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_hybrids),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLHybridS),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_broyden),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLBroyden),
       new Root_finder<2>(
-         CMSSM<Two_scale>::tadpole_equations, &params, number_of_ewsb_iterations,
-         ewsb_iteration_precision, gsl_multiroot_fsolver_dnewton),
+         tadpole_stepper, number_of_ewsb_iterations,
+         ewsb_iteration_precision, Root_finder<2>::GSLNewton),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_relative>(
-         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_stepper, number_of_ewsb_iterations,
          fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision)),
       new Fixed_point_iterator<2, fixed_point_iterator::Convergence_tester_absolute>(
-         CMSSM<Two_scale>::ewsb_step, &params, number_of_ewsb_iterations,
+         ewsb_stepper, number_of_ewsb_iterations,
          fixed_point_iterator::Convergence_tester_absolute(ewsb_iteration_precision))
    };
 
-   const auto x_init(model.ewsb_initial_guess());
+   const auto x_init(ewsb_solver.initial_guess(model));
 
    // starting values for Mu, BMu
    const double Mu_0 = model.get_Mu();
@@ -1360,7 +1396,7 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
       model.set_Mu(Mu_0);
       model.set_BMu(BMu_0);
 
-      const int status = model.solve_ewsb_iteratively_with(solvers[i], x_init);
+      const int status = ewsb_solver.solve_iteratively_with(model, solvers[i], x_init);
 
       TEST_EQUALITY(status, EWSB_solver::SUCCESS);
 
@@ -1374,18 +1410,18 @@ void test_ewsb_solvers(CMSSM<Two_scale> model, MssmSoftsusy softSusy)
          // The newton method does not provide a precise root for this
          // point.  However, the values for Mu and BMu are close
          // enough to the values from Softsusy, see below.
-         test_precision = 0.01;
+         test_precision = 0.02;
          break;
       case 4:
-         test_precision = 0.006;
+         test_precision = 0.05;
          break;
       default:
-         test_precision = precision;
+         test_precision = 1.1 * precision;
          break;
       }
 
-      TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh(0).real(), 0.0, test_precision);
-      TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh(1).real(), 0.0, test_precision);
+      TEST_CLOSE(model.get_ewsb_eq_hh_1() - model.tadpole_hh_1loop(0).real(), 0.0, test_precision);
+      TEST_CLOSE(model.get_ewsb_eq_hh_2() - model.tadpole_hh_1loop(1).real(), 0.0, test_precision);
 
       TEST_CLOSE_REL(Mu_1 , Mu_ss , precision);
       TEST_CLOSE_REL(BMu_1, BMu_ss, precision);
@@ -1433,13 +1469,13 @@ void compare_self_energy_CP_even_higgs(CMSSM<Two_scale> model,
    softSusy.setPhys(physical);
    softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
 
-   model.set_number_of_mass_iterations(1);
+   model.set_precision(std::pow(10,-0.1)); // performs 1 iteration
    model.calculate_Mhh_pole();
 
    hh_ss = softSusy.displayPhys().mh0;
    hh_fs = model.get_physical().Mhh;
 
-   TEST_CLOSE(hh_ss(1), hh_fs(0), 7.0e-7);
+   TEST_CLOSE(hh_ss(1), hh_fs(0), 4.0e-6);
    TEST_CLOSE(hh_ss(2), hh_fs(1), 2.0e-6);
 }
 
@@ -1484,7 +1520,7 @@ void compare_self_energy_CP_odd_higgs(CMSSM<Two_scale> model,
    softSusy.setPhys(physical);
    softSusy.higgs(accuracy, piWWT, pizztMS); // does one iteration
 
-   model.set_number_of_mass_iterations(1);
+   model.set_precision(std::pow(10,-0.1)); // performs 1 iteration
    model.calculate_MAh_pole();
 
    Ah_ss = softSusy.displayPhys().mA0;
@@ -1600,6 +1636,8 @@ void compare_models(int loopLevel)
 
    setup_models(m, softSusy, input, loopLevel);
 
+   std::cout << "testing default setup ...";
+   test_default_settings(m);
    std::cout << "comparing parameters ... ";
    test_parameter_equality(softSusy, m);
    std::cout << "done\n";

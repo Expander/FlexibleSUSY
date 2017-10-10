@@ -7,6 +7,7 @@
 */
 
 #include "flavoursoft.h"
+#include <utility>
 
 namespace softsusy {
 
@@ -1206,21 +1207,27 @@ ostream & operator <<(ostream & left, const flavourPhysical &s) {
   return left;
 }
 
-istream & operator >>(istream & left, flavourPhysical &s) {
-  string c;
-  left >> c >> s.msU;
-  left >> c >> c >> s.uSqMix;
-  
-  left >> c >> s.msD; 
-  left >> c >> c >> s.dSqMix;  
+void extractFlavour(
+   int gen, DoubleMatrix& Z, const DoubleVector& m,
+   double& m1, double& m2, double& theta)
+{
+   int j1 = gen, j2 = gen;
 
-  left >> c >> s.msE; 
-  left >> c >> c >> s.eSqMix;  
+   Z.displayRow(gen).absmax(j1);
+   m1 = m(j1);
 
-  left >> c >> s.msNu; 
-  left >> c >> c >> s.nuSqMix;  
+   if (gen == 3) theta = asin(Z(gen+3, j1));
 
-  return left;
+   // set j1'th column to zero in order to not pick j1 again
+   for (int i = 1; i <= Z.displayRows(); i++)
+      Z(i, j1) = 0;
+
+   Z.displayRow(gen+3).absmax(j2);
+   m2 = m(j2);
+
+   // set j2'th column to zero in order to not pick j2 again
+   for (int i = 1; i <= Z.displayRows(); i++)
+      Z(i, j2) = 0;
 }
 
 // calculates masses all at tree-level in the DRbar scheme, useful for
@@ -1356,30 +1363,11 @@ void FlavourMssmSoftsusy::calcDrBarPars() {
   eSqMasses = eSqMasses.apply(zeroSqrt);
 
   drBarPars s(displayDrBarPars());
-  int b1Pos = 0, t1Pos = 0, tau1Pos = 0;
   for(i=1; i<=3; i++) {
-
-    uSqMixT.displayRow(i).max(j); 
-    s.mu(1, i) = uSqMasses(j);
-    if (i == 3) t1Pos = j;
-    uSqMixT.displayRow(i+3).max(j); 
-    s.mu(2, i) = uSqMasses(j);
-
-    dSqMixT.displayRow(i).max(j); 
-    s.md(1, i) = dSqMasses(j);
-    if (i == 3) b1Pos = j;
-    dSqMixT.displayRow(i+3).max(j); 
-    s.md(2, i) = dSqMasses(j);
-
-    eSqMixT.displayRow(i).max(j); 
-    s.me(1, i) = eSqMasses(j);
-    if (i == 3) tau1Pos = j;
-    eSqMixT.displayRow(i+3).max(j); 
-    s.me(2, i) = eSqMasses(j);
+     extractFlavour(i, uSqMixT, uSqMasses, s.mu(1,i), s.mu(2,i), s.thetat);
+     extractFlavour(i, dSqMixT, dSqMasses, s.md(1,i), s.md(2,i), s.thetab);
+     extractFlavour(i, eSqMixT, eSqMasses, s.me(1,i), s.me(2,i), s.thetatau);
   }
-  s.thetat   = asin(uSqMixT(6, t1Pos));
-  s.thetab   = asin(dSqMixT(6, b1Pos));
-  s.thetatau = asin(eSqMixT(6, tau1Pos));
 
   DoubleMatrix uMns(displayMns());
   DoubleMatrix mNuSq(uMns.transpose() * Ve.transpose() * 
@@ -1429,10 +1417,10 @@ void FlavourMssmSoftsusy::calcDrBarPars() {
 }
 
 MssmSusy FlavourMssmSoftsusy::guessAtSusyMt(double tanb, 
-					    const QedQcd & oneset) { 
+					    const QedQcd_legacy & oneset) { 
 
   // This bit gives a guess at a SUSY object
-  QedQcd leAtMt(oneset);
+  QedQcd_legacy leAtMt(oneset);
 
   DoubleVector a(3), g(3);
   double sinth2 = 1.0 - sqr(MW / MZ);

@@ -1,3 +1,25 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
 BeginPackage["EffectiveCouplings`", {"SARAH`", "CConversion`", "Parameters`", "SelfEnergies`", "TreeMasses`", "TextFormatting`", "Utils`", "Vertices`", "Observables`", "Constraint`"}];
 
 InitializeEffectiveCouplings::usage="";
@@ -158,7 +180,7 @@ CalculatePartialWidths[couplings_List] :=
                functionName = "get_" <> particlesStr <> "_partial_width(";
                If[dim == 1,
                   functionName = functionName <> ") const";,
-                  functionName = functionName <> "unsigned gO1) const";
+                  functionName = functionName <> "int gO1) const";
                  ];
                couplingName = "eff_Cp" <> particlesStr;
                massStr = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
@@ -228,8 +250,8 @@ GetTwoBodyDecays[particle_] :=
                   fields = First[vertex];
                   coupling = Rest[vertex];
                   If[Length[coupling] > 1,
-                     coupling = (SARAH`Cp @@ (StripColorAndLorentzIndices @ fields))[SARAH`PL];,
-                     coupling = SARAH`Cp @@ (StripColorAndLorentzIndices @ fields);
+                     coupling = Vertices`SortCp[SARAH`Cp @@ (StripColorAndLorentzIndices @ fields)][SARAH`PL];,
+                     coupling = Vertices`SortCp[SARAH`Cp @@ (StripColorAndLorentzIndices @ fields)];
                     ];
                   candidate = Append[DeleteCases[fields /. head_[{__}] :> head, p_ /; p === AntiParticle[particle], {0, Infinity}, 1], coupling];
                   If[FreeQ[found, C[candidate[[1]], candidate[[2]]]] &&
@@ -348,7 +370,7 @@ CreateEffectiveCouplingsGetters[couplings_List] :=
                getters = getters <> type <> " get_" <> couplingName;
                If[dim == 1,
                   getters = getters <> "() const { return " <> couplingName <> "; }\n";,
-                  getters = getters <> "(unsigned gO1) const { return " <> couplingName <> "(gO1); }\n";
+                  getters = getters <> "(int gO1) const { return " <> couplingName <> "(gO1); }\n";
                  ];
               ];
            getters
@@ -467,7 +489,7 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
                                     <> "copy_mixing_matrices_from_model();\n";
                        ];
                      result = result <> savedMass
-                                     <> "for (unsigned gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
+                                     <> "for (int gO1 = " <> ToString[start-1] <> "; gO1 < " <> ToString[dim] <> "; ++gO1) {\n";
                      body = body <> Utils`StringJoinWithSeparator[CallEffectiveCouplingCalculation[#]& /@ couplingsForParticles[[i,2]], "\n"] <> "\n";
                      result = result <> TextFormatting`IndentText[body] <> "}\n\n";
                     ];
@@ -476,13 +498,13 @@ CreateEffectiveCouplingsCalculation[couplings_List] :=
 
            result = "const double scale = model.get_scale();\nconst Eigen::ArrayXd saved_parameters(model.get());\n\n"
                     <> "const double saved_mt = PHYSICAL("
-                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]]
                     <> ");\nPHYSICAL("
-                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                    <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]]
                     <> ") = qedqcd.displayPoleMt();\n\n"
                     <> result;
            result = result <> "PHYSICAL("
-                           <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[SARAH`TopQuark]]
+                           <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[]]]
                            <> ") = saved_mt;\n";
            result = result <> "model.set_scale(scale);\nmodel.set(saved_parameters);\n";
 
@@ -496,7 +518,7 @@ CreateEffectiveCouplingPrototype[coupling_] :=
            If[particle =!= Null && vectorBoson =!= Null,
               dim = TreeMasses`GetDimension[particle];
               name = CreateEffectiveCouplingName[particle, vectorBoson];
-              result = "void calculate_" <> name <> If[dim == 1, "();\n", "(unsigned gO1);\n"];
+              result = "void calculate_" <> name <> If[dim == 1, "();\n", "(int gO1);\n"];
              ];
            result
           ];
@@ -558,22 +580,22 @@ CreateLocalConstRefsIgnoringMixings[expr_, mixings_List] :=
 CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
     Module[{symbol, prototype = "", definition = "",
             indices = {}, localExpr, body = "", functionName = "", i,
-            type, typeStr, initialValue},
+            type, typeStr},
            indices = GetParticleIndicesInCoupling[coupling];
            symbol = CreateCouplingSymbol[coupling];
            functionName = CConversion`ToValidCSymbolString[CConversion`GetHead[symbol]];
            functionName = functionName <> "(";
            For[i = 1, i <= Length[indices], i++,
                If[i > 1, functionName = functionName <> ", ";];
-               functionName = functionName <> "unsigned ";
+               functionName = functionName <> "int ";
                If[!IntegerQ[indices[[i]]] && !FreeQ[expr, indices[[i]]],
                   functionName = functionName <> CConversion`ToValidCSymbolString[indices[[i]]];
                  ];
               ];
            functionName = functionName <> ")";
            If[Parameters`IsRealExpression[expr],
-              type = CConversion`ScalarType[CConversion`realScalarCType]; initialValue = " = 0.0";,
-              type = CConversion`ScalarType[CConversion`complexScalarCType]; initialValue = "";];
+              type = CConversion`ScalarType[CConversion`realScalarCType];,
+              type = CConversion`ScalarType[CConversion`complexScalarCType];];
            typeStr = CConversion`CreateCType[type];
            prototype = typeStr <> " " <> functionName <> " const;\n";
            definition = typeStr <> " " <> FlexibleSUSY`FSModelName
@@ -581,9 +603,9 @@ CreateNeededCouplingFunction[coupling_, expr_, mixings_List] :=
            localExpr = expr /. (Rule[#[],#]& /@ Parameters`GetDependenceSPhenoSymbols[]);
            localExpr = localExpr /. Parameters`GetDependenceSPhenoRules[];
            body = CreateLocalConstRefsIgnoringMixings[localExpr, mixings] <> "\n" <>
-                  typeStr <> " result" <> initialValue <> ";\n\n";
-           body = body <> TreeMasses`ExpressionToString[localExpr, "result"];
-           body = body <> "\nreturn result;\n";
+                  "const " <> typeStr <> " result = " <>
+                  Parameters`ExpressionToString[localExpr] <> ";\n\n" <>
+                  "return result;\n";
            body = TextFormatting`IndentText[TextFormatting`WrapLines[body]];
            definition = definition <> body <> "}\n";
            {prototype, definition}
@@ -680,7 +702,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
            If[dim == 1,
               result = body <> "\n";,
               start = TreeMasses`GetDimensionStartSkippingGoldstones[internal];
-              result = "for (unsigned gI1 = " <> ToString[start - 1] <> "; gI1 < " <> ToString[dim] <> "; ++gI1) {\n";
+              result = "for (int gI1 = " <> ToString[start - 1] <> "; gI1 < " <> ToString[dim] <> "; ++gI1) {\n";
               result = result <> TextFormatting`IndentText[body] <> "\n}\n";
              ];
            {result, parameters}
@@ -698,7 +720,7 @@ CreateEffectiveCouplingFunction[coupling_] :=
                        <> "_effective_couplings::calculate_" <> name <> "(";
               If[dim == 1,
                  result = result <> ")\n{\n";,
-                 result = result <> "unsigned gO1)\n{\n";
+                 result = result <> "int gO1)\n{\n";
                 ];
 
               mass = CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]];
@@ -727,13 +749,13 @@ CreateEffectiveCouplingFunction[coupling_] :=
                  ];
 
               Which[particle === SARAH`HiggsBoson && vectorBoson === SARAH`VectorG,
-                    body = body <> "result *= std::complex<double>(0.75,0.);\n\n";
+                    body = body <> "result *= 0.75;\n\n";
                     body = body <> "if (include_qcd_corrections) {\n"
                            <> TextFormatting`IndentText["result *= scalar_scaling_factor(decay_mass);"] <> "\n}\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorP,
-                    body = body <> "result *= std::complex<double>(2.0,0.);\n";,
+                    body = body <> "result *= 2.0;\n";,
                     particle === SARAH`PseudoScalar && vectorBoson === SARAH`VectorG,
-                    body = body <> "result *= std::complex<double>(1.5,0.);\n\n";
+                    body = body <> "result *= 1.5;\n\n";
                     body = body <> "if (include_qcd_corrections) {\n"
                            <> TextFormatting`IndentText["result *= pseudoscalar_scaling_factor(decay_mass);"] <> "\n}\n";
                    ];

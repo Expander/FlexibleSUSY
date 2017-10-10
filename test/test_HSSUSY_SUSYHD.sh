@@ -7,7 +7,7 @@ output="$BASEDIR/test_HSSUSY_SUSYHD.out.dat"
 exe="$BASEDIR/../models/HSSUSY/run_HSSUSY.x"
 print_block="$BASEDIR/../utils/print_slha_block.awk"
 
-rel_error="0.00061"
+rel_error="0.00065"
 
 if test ! -x "$exe"; then
     echo "Error: HSSUSY spectrum generator not found: $exe"
@@ -99,8 +99,6 @@ Block EXTPAR                 # Input parameters
   103   1                    # 2-loop at*ab
   104   1                    # 2-loop atau*atau
   105   1                    # 2-loop at*at
-  106   1                    # 1-loop ab
-  107   1                    # 1-loop atau
 Block MSQ2IN
   1  1     ${MS2}            # mq2(1,1)
   2  2     ${MS2}            # mq2(2,2)
@@ -122,7 +120,7 @@ Block MSD2IN
   2  2     ${MS2}            # md2(2,2)
   3  3     ${MS2}            # md2(3,3)
 EOF
-    } | $exe --slha-input-file=- | \
+    } | $exe --slha-input-file=- 2>/dev/null | \
         awk -f "$print_block" -v block=MASS | \
         awk '{ if ($1 == 25) print $2 }')
 

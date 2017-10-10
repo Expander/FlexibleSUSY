@@ -9,57 +9,59 @@
 
 using namespace flexiblesusy;
 
+typedef Eigen::Matrix<double,2,1> EV2_t;
+
 BOOST_AUTO_TEST_CASE( test_parabola_2dim )
 {
-   struct Parabola {
-      static double func(const gsl_vector* x, void*) {
-         const double y = gsl_vector_get(x, 0);
-         const double z = gsl_vector_get(x, 1);
-         return Sqr(y - 5.0) + Sqr(z - 1.0);
-      }
+   auto parabola = [](const EV2_t& x) -> double {
+      const double y = x(0);
+      const double z = x(1);
+      return Sqr(y - 5.0) + Sqr(z - 1.0);
    };
 
-   Minimizer<2> minimizer(Parabola::func, NULL, 100, 1.0e-5);
-   const double start[2] = { 10, 10 };
+   Minimizer<2> minimizer(parabola, 100, 1.0e-5);
+   Eigen::Matrix<double,2,1> start;
+   start << 10, 10;
    const int status = minimizer.minimize(start);
+   const auto minimum_point = minimizer.get_solution();
 
    BOOST_CHECK_EQUAL(status, GSL_SUCCESS);
    BOOST_CHECK_SMALL(minimizer.get_minimum_value(), 1.0e-5);
-   BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(0), 5.0, 1.0e-5);
-   BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(1), 1.0, 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(minimum_point(0), 5.0, 1.0e-5);
+   BOOST_CHECK_CLOSE_FRACTION(minimum_point(1), 1.0, 1.0e-5);
 }
 
-struct Parabola {
-   static unsigned number_of_calls;
-   static double func(const gsl_vector* x, void*) {
-      const double y = gsl_vector_get(x, 0);
-      const double z = gsl_vector_get(x, 1);
-      number_of_calls++;
-      return Sqr(y - 5.0) + Sqr(z - 1.0);
-   }
-};
+static int number_of_calls = 0;
 
-unsigned Parabola::number_of_calls = 0;
+auto parabola = [](const EV2_t& x) -> double {
+   number_of_calls++;
+   const double y = x(0);
+   const double z = x(1);
+   return Sqr(y - 5.0) + Sqr(z - 1.0);
+};
 
 BOOST_AUTO_TEST_CASE( test_number_of_calls )
 {
    const double precision = 1.0e-5;
-   Minimizer<2> minimizer(Parabola::func, NULL, 100, precision);
-   const double start[2] = { 10, 10 };
+   Minimizer<2> minimizer(parabola, 100, precision);
+   Eigen::Matrix<double,2,1> start;
+   start << 10, 10;
    int status = GSL_SUCCESS;
 
-   const gsl_multimin_fminimizer_type* solvers[] =
-      {gsl_multimin_fminimizer_nmsimplex, gsl_multimin_fminimizer_nmsimplex2,
-       gsl_multimin_fminimizer_nmsimplex2rand};
+   Minimizer<2>::Solver_type solvers[] =
+      { Minimizer<2>::GSLSimplex,
+        Minimizer<2>::GSLSimplex2,
+        Minimizer<2>::GSLSimplex2Rand };
 
    for (std::size_t i = 0; i < sizeof(solvers)/sizeof(*solvers); ++i) {
-      Parabola::number_of_calls = 0;
+      number_of_calls = 0;
       minimizer.set_solver_type(solvers[i]);
       status = minimizer.minimize(start);
+      const auto minimum_point = minimizer.get_solution();
 
       BOOST_REQUIRE(status == GSL_SUCCESS);
-      BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(0), 5.0, precision);
-      BOOST_CHECK_CLOSE_FRACTION(minimizer.get_minimum_point(1), 1.0, precision);
-      BOOST_MESSAGE("solver type " << i << " used " << Parabola::number_of_calls << " calls");
+      BOOST_CHECK_CLOSE_FRACTION(minimum_point(0), 5.0, precision);
+      BOOST_CHECK_CLOSE_FRACTION(minimum_point(1), 1.0, precision);
+      BOOST_TEST_MESSAGE("solver type " << i << " used " << number_of_calls << " calls");
    }
 }

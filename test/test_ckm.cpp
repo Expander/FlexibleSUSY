@@ -4,7 +4,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "test.h"
+#include "test.hpp"
 #include "ckm.hpp"
 #include "wrappers.hpp"
 #include "linalg2.hpp"
@@ -19,7 +19,7 @@ bool is_orthogonal(const Eigen::Matrix<double,3,3>& m,
    bool result = is_equal(unity, Eigen::Matrix<double,3,3>::Identity(), max_deviation);
 
    if (!result)
-      BOOST_MESSAGE("matrix is not orthogonal!"
+      BOOST_TEST_MESSAGE("matrix is not orthogonal!"
                     "\n   Matrix = " << m <<
                     "\n   Matrix * Matrix^T = " << unity <<
                     "\n   Maximum allowed max_deviation from unity = " << max_deviation);
@@ -41,7 +41,7 @@ bool is_unitary(const Eigen::Matrix<std::complex<double>,3,3>& m,
    bool result = is_equal(unity, Eigen::Matrix<std::complex<double>,3,3>::Identity(), max_deviation);
 
    if (!result)
-      BOOST_MESSAGE("matrix is not unitary!"
+      BOOST_TEST_MESSAGE("matrix is not unitary!"
                     "\n   Matrix = " << m <<
                     "\n   Matrix * Matrix^+ = " << unity <<
                     "\n   Maximum allowed max_deviation from unity = " << max_deviation);

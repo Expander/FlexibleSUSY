@@ -2,13 +2,38 @@ DIR          := models/SoftsusyMSSM
 MODNAME      := SoftsusyMSSM
 WITH_$(MODNAME) := yes
 
-LIBSoftsusyMSSM_SRC  := \
-		$(DIR)/mssmUtils.cpp \
-		$(DIR)/physpars.cpp \
-		$(DIR)/susy.cpp \
-		$(DIR)/tensor.cpp
+LIBSoftsusyMSSM_HDR  := \
+		$(DIR)/conversion.hpp \
+		$(DIR)/def.h \
+		$(DIR)/diagonalization.hpp \
+		$(DIR)/gut_scale_calculator.hpp \
+		$(DIR)/linalg.h \
+		$(DIR)/lowe_legacy.h \
+		$(DIR)/mycomplex.h \
+		$(DIR)/numerics_legacy.h \
+		$(DIR)/rge.h \
+		$(DIR)/rk_legacy.hpp \
+		$(DIR)/utils.h \
+		$(DIR)/xpr-base.h \
+		$(DIR)/xpr-matrix.h \
+		$(DIR)/xpr-vector.h
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+LIBSoftsusyMSSM_SRC  := \
+		$(DIR)/conversion.cpp \
+		$(DIR)/def.cpp \
+		$(DIR)/diagonalization.cpp \
+		$(DIR)/linalg.cpp \
+		$(DIR)/lowe_legacy.cpp \
+		$(DIR)/mssmUtils.cpp \
+		$(DIR)/numerics_legacy.cpp \
+		$(DIR)/physpars.cpp \
+		$(DIR)/rge.cpp \
+		$(DIR)/rk_legacy.cpp \
+		$(DIR)/susy.cpp \
+		$(DIR)/tensor.cpp \
+		$(DIR)/utils.cpp
+
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBSoftsusyMSSM_SRC  += \
 		$(DIR)/SoftsusyMSSM_two_scale.cpp \
 		$(DIR)/SoftsusyMSSM_two_scale_convergence_tester.cpp \
@@ -67,7 +92,7 @@ $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP) $(LIBSoftsusyMSSM_OBJ) $(EXESoftsu
 $(LIBSoftsusyMSSM): $(LIBSoftsusyMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP)

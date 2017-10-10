@@ -450,9 +450,9 @@ void setup_data(const CMSSM_input_parameters& input,
    const double ss_pizztMZ = ss.piZZT(mz_pole, scale, false);
    const double ss_piwwt0  = ss.piWWT(0., scale, false);
    const double ss_piwwtMW = ss.piWWT(mw_pole, scale, false);
-   const double fs_pizztMZ = Re(fs.self_energy_VZ(mz_pole));
-   const double fs_piwwt0  = Re(fs.self_energy_VWm(0));
-   const double fs_piwwtMW = Re(fs.self_energy_VWm(mw_pole));
+   const double fs_pizztMZ = Re(fs.self_energy_VZ_1loop(mz_pole));
+   const double fs_piwwt0  = Re(fs.self_energy_VWm_1loop(0));
+   const double fs_piwwtMW = Re(fs.self_energy_VWm_1loop(mw_pole));
 
    BOOST_CHECK_CLOSE_FRACTION(ss_pizztMZ, fs_pizztMZ, 5.0e-08);
    BOOST_CHECK_CLOSE_FRACTION(ss_piwwtMW, fs_piwwtMW, 3.0e-05);
@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    const double tol = 1.0e-8;
    const int maxTries = 20;
 
-   BOOST_MESSAGE("running MssmSoftsusy::rhohat() ...");
+   BOOST_TEST_MESSAGE("running MssmSoftsusy::rhohat() ...");
    const double rho_start = 1.0, sin_start = 0.48;
    double outrho = rho_start, outsin = sin_start;
    stopwatch.start();
@@ -532,15 +532,15 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
              tol, maxTries);
    stopwatch.stop();
    const double ss_time = stopwatch.get_time_in_seconds();
-   BOOST_MESSAGE("MssmSoftsusy::rhohat() finished!");
-   BOOST_MESSAGE("MssmSoftsusy::rhohat() takes " << ss_time << " seconds");
+   BOOST_TEST_MESSAGE("MssmSoftsusy::rhohat() finished!");
+   BOOST_TEST_MESSAGE("MssmSoftsusy::rhohat() takes " << ss_time << " seconds");
 
    Weinberg_angle weinberg;
    weinberg.set_number_of_iterations(maxTries);
    weinberg.set_precision_goal(tol);
    weinberg.set_data(data);
 
-   BOOST_MESSAGE("running Weinberg_angle::calculate() ...");
+   BOOST_TEST_MESSAGE("running Weinberg_angle::calculate() ...");
 
    stopwatch.start();
    const int error = weinberg.calculate(rho_start, sin_start);
@@ -550,8 +550,8 @@ BOOST_AUTO_TEST_CASE( test_rho_sinTheta )
    BOOST_REQUIRE(error == 0);
    const double fs_sintheta = weinberg.get_sin_theta();
 
-   BOOST_MESSAGE("running Weinberg_angle::calculate() finished!");
-   BOOST_MESSAGE("Weinberg_angle::calculate() takes " << fs_time
+   BOOST_TEST_MESSAGE("running Weinberg_angle::calculate() finished!");
+   BOOST_TEST_MESSAGE("Weinberg_angle::calculate() takes " << fs_time
                  << " seconds");
 
    const double fs_rhohat = weinberg.get_rho_hat();
@@ -595,9 +595,9 @@ BOOST_AUTO_TEST_CASE( test_self_energy_top_correction )
    const double ss_pizztMZ = ss.piZZT(mz_pole, scale, false);
    const double ss_piwwtMW = ss.piWWT(mw_pole, scale, false);
    const double ss_piwwt0  = ss.piWWT(0.     , scale, false);
-   const double fs_pizztMZ = Re(fs.self_energy_VZ(mz_pole));
-   const double fs_piwwtMW = Re(fs.self_energy_VWm(mw_pole));
-   const double fs_piwwt0  = Re(fs.self_energy_VWm(0));
+   const double fs_pizztMZ = Re(fs.self_energy_VZ_1loop(mz_pole));
+   const double fs_piwwtMW = Re(fs.self_energy_VWm_1loop(mw_pole));
+   const double fs_piwwt0  = Re(fs.self_energy_VWm_1loop(0));
 
    BOOST_CHECK_CLOSE_FRACTION(ss_pizztMZ, fs_pizztMZ, 5.0e-08);
    BOOST_CHECK_CLOSE_FRACTION(ss_piwwtMW, fs_piwwtMW, 3.0e-05);

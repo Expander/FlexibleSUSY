@@ -22,6 +22,7 @@
 #include <cstdlib>
 #include <iosfwd>
 #include <string>
+#include "array_view.hpp"
 #include "error.hpp"
 
 namespace flexiblesusy {
@@ -46,11 +47,12 @@ class Command_line_options {
 public:
    Command_line_options() = default;
    Command_line_options(int, char*[]);
+   Command_line_options(const Dynamic_array_view<char*>&);
 
    bool must_exit() const { return do_exit; }
    bool must_print_model_info() const { return do_print_model_info; }
    int status() const { return exit_status; }
-   void parse(int, char*[]);
+   void parse(const Dynamic_array_view<char*>&);
    void print_build_info(std::ostream&) const;
    void print_usage(std::ostream&) const;
    void print_version(std::ostream&) const;

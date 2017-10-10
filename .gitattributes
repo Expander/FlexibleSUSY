@@ -1,10 +1,11 @@
+.clang-format                   export-ignore
 .gitignore                      export-ignore
 .gitattributes                  export-ignore
 TODO                            export-ignore
 
 addons/test_*                   export-ignore
 
-doc/images                      export-ignore
+doc/images/*.xcf                export-ignore
 doc/release                     export-ignore
 doc/FlexibleFuture.txt          export-ignore
 
@@ -14,9 +15,20 @@ examples/lattice_numerical_fmssm.cpp        export-ignore
 examples/lattice_numerical_fmssm_fmssmn.cpp export-ignore
 examples/switch_MSSM.cpp                    export-ignore
 
-meta/SM/HSSUSY_corrections.m    export-ignore
+meta/MSSM/allgennb.log          export-ignore
+meta/MSSM/extract_*.m           export-ignore
+meta/MSSM/*.expr                export-ignore
+meta/MSSM/*_to_cpp.m            export-ignore
+meta/MSSM/dmbas2.m              export-ignore
+meta/MSSM/dmtas2.m              export-ignore
+
+meta/SM/beta_m2_1303.4364.m     export-ignore
+meta/SM/extract_*.m             export-ignore
 
 model_files/BetaSM              export-ignore
+model_files/cCMSSM              export-ignore
+model_files/complexMSSM         export-ignore
+model_files/CMSSMCPVSemiAnalytic export-ignore
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
 model_files/CMSSMFPITadpole     export-ignore
@@ -25,43 +37,65 @@ model_files/CMSSMGSLHybrid      export-ignore
 model_files/CMSSMGSLHybridS     export-ignore
 model_files/CMSSMGSLNewton      export-ignore
 model_files/CMSSMLowPrecision   export-ignore
+model_files/CMSSMMatchedAtMTDRbar export-ignore
+model_files/CMSSMMatchedAtMTPole  export-ignore
 model_files/CMSSMMediumPrecision export-ignore
 model_files/CMSSMHighPrecision  export-ignore
 model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
+model_files/CMSSMSemiAnalytic   export-ignore
+model_files/CMSSMYt2L           export-ignore
+model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
+model_files/LRLR                export-ignore
+model_files/lowNUHMSSM          export-ignore
+model_files/lowNUHMSSMSemiAnalytic export-ignore
 model_files/MDM                 export-ignore
+model_files/MRSSM2              export-ignore
+model_files/MSSMNoEWVEVs        export-ignore
+model_files/MSSMNoFVSLHA2       export-ignore
 model_files/minMSSM             export-ignore
+model_files/munuSSMSemiAnalytic export-ignore
 model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
+model_files/NUHMSSMNoFV         export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
+model_files/SMEWSBAtMZ          export-ignore
+model_files/SMHighScale         export-ignore
 model_files/SMHighPrecision     export-ignore
 model_files/SMnoGUT             export-ignore
 model_files/SMNoRGEs            export-ignore
+model_files/SMSemiAnalytic      export-ignore
+model_files/SSMSemiAnalytic     export-ignore
+model_files/SMThrow             export-ignore
 model_files/TensorCoupling      export-ignore
 model_files/THDMIIMSSMBCApprox  export-ignore
+model_files/THDMIIEWSBAtMZSemiAnalytic export-ignore
 model_files/HGTHDMIIMSSMBCApprox export-ignore
 model_files/SMtower             export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
-models/sm                       export-ignore
-models/smcw                     export-ignore
+models/SoftsusyMSSM             export-ignore
+models/SoftsusyNMSSM            export-ignore
+models/SoftsusyFlavourMSSM      export-ignore
 
 release                         export-ignore
 
 sarah/B-L-SM-lightZp            export-ignore
 sarah/InertMSSM                 export-ignore
 sarah/MDM                       export-ignore
+sarah/MSSMNoEWVEVs              export-ignore
 sarah/NoYukawaMSSM              export-ignore
 sarah/NSM                       export-ignore
 sarah/UnbrokenMSSM              export-ignore
 sarah/SMnoGUT                   export-ignore
+sarah/SM2                       export-ignore
 sarah/TensorCoupling            export-ignore
 
 src/SM.cpp                           export-ignore

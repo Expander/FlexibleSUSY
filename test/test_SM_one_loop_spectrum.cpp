@@ -52,36 +52,12 @@ BOOST_AUTO_TEST_CASE( test_SM_tree_level_masses )
 
    // check Higgs pole mass
    const double Mhh_1l(m.get_physical().Mhh);
-   const double hh_1l = Sqrt(-m.get_mu2() + 1.5*lambda*Sqr(v) - Re(m.self_energy_hh(Mhh_1l)));
+   const double hh_1l = Sqrt(-m.get_mu2() + 1.5*lambda*Sqr(v) - Re(m.self_energy_hh_1loop(Mhh_1l)));
 
    BOOST_CHECK_CLOSE(Mhh_1l, hh_1l, 2.0e-4);
 
    // check that tree-level Higgs mass has not changed
    BOOST_CHECK_CLOSE(m.get_Mhh(), hh_tree, 1.0e-12);
-}
-
-BOOST_AUTO_TEST_CASE( test_SM_wz_self_energies )
-{
-   SM_input_parameters input;
-   input.LambdaIN = 0.25;
-   SM<Two_scale> m;
-   setup_SM_const(m, input);
-
-   m.calculate_DRbar_masses();
-
-   if (m.get_problems().have_problem()) {
-      std::ostringstream ostr;
-      m.get_problems().print_problems(ostr);
-      BOOST_FAIL(ostr.str());
-   }
-
-   const double p = 100.;
-
-   const double se_w_heavy = Re(m.self_energy_VWp_heavy(p));
-   const double se_z_heavy = Re(m.self_energy_VZ_heavy(p));
-
-   BOOST_CHECK_SMALL(se_w_heavy, 1.0e-10);
-   BOOST_CHECK_SMALL(se_z_heavy, 1.0e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
@@ -109,17 +85,17 @@ BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
    Eigen::Matrix<std::complex<double>,3,3> se_t_no_gluon;
 
    // top self-energies with and without gluon
-   for (unsigned i = 0; i < 3; i++) {
-      for (unsigned k = 0; k < 3; k++) {
-         se_t(i,k) = m.self_energy_Fu_1(p,i,k);
-         se_t_no_gluon(i,k) = m.self_energy_Fu_1_heavy_rotated(p,i,k);
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         se_t(i,k) = m.self_energy_Fu_1loop_1(p,i,k);
+         se_t_no_gluon(i,k) = m.self_energy_Fu_1loop_1_heavy_rotated(p,i,k);
       }
    }
 
    // adding gluon contrbution
    Eigen::Matrix<std::complex<double>,3,3> se_t_check(se_t_no_gluon);
 
-   for (unsigned i = 0; i < 3; i++) {
+   for (int i = 0; i < 3; i++) {
       const double gluon_contrib =
          -5.333333333333333 *
          (-0.5 + ReB0(Sqr(p),Sqr(MFu(i)),0,Sqr(scale)))
@@ -133,8 +109,8 @@ BOOST_AUTO_TEST_CASE( test_SM_heavy_top_self_energy )
 
    se_t_check = Vu.transpose() * se_t_check * Uu;
 
-   for (unsigned i = 0; i < 3; i++) {
-      for (unsigned k = 0; k < 3; k++) {
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
          BOOST_CHECK_CLOSE(Re(se_t(i,k)), Re(se_t_check(i,k)), 1.0e-10);
          BOOST_CHECK_CLOSE(Im(se_t(i,k)), Im(se_t_check(i,k)), 1.0e-10);
       }

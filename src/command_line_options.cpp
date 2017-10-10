@@ -25,25 +25,32 @@
 namespace flexiblesusy {
 
 Command_line_options::Command_line_options(int argc, char* argv[])
+   : Command_line_options(make_dynamic_array_view(&argv[0], argc))
 {
-   parse(argc, argv);
+}
+
+Command_line_options::Command_line_options(const Dynamic_array_view<char*>& args)
+{
+   parse(args);
 }
 
 /**
  * Parse string of program options and store the given option values
  * in the member variables of this class.
  *
- * @param argc number of program arguments
- * @param argv program arguments
+ * @param args command line arguments
  */
-void Command_line_options::parse(int argc, char* argv[])
+void Command_line_options::parse(const Dynamic_array_view<char*>& args)
 {
-   assert(argc > 0);
    reset();
-   program = argv[0];
 
-   for (int i = 1; i < argc; ++i) {
-      const std::string option(argv[i]);
+   if (args.empty())
+      return;
+
+   program = args[0];
+
+   for (int i = 1; i < args.size(); ++i) {
+      const std::string option(args[i]);
       if (starts_with(option,"--slha-input-file=")) {
          slha_input_file = option.substr(18);
          if (slha_input_file.empty())

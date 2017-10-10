@@ -36,7 +36,6 @@ public:
    Standard_model_effective_couplings(const Standard_model&,
                                    const softsusy::QedQcd&,
                                    const Physical_input&);
-   ~Standard_model_effective_couplings();
 
    void do_run_couplings(bool flag) { rg_improve = flag; }
    bool do_run_couplings() const { return rg_improve; }
@@ -57,13 +56,13 @@ public:
 
    void calculate_effective_couplings();
 
-   std::complex<double> CpFdhhbarFdPL(unsigned gt1, unsigned gt3) const;
-   std::complex<double> CpFuhhbarFuPL(unsigned gt1, unsigned gt3) const;
-   std::complex<double> CpFehhbarFePL(unsigned gt1, unsigned gt3) const;
+   std::complex<double> CpFdhhbarFdPL(int gt1, int gt3) const;
+   std::complex<double> CpFuhhbarFuPL(int gt1, int gt3) const;
+   std::complex<double> CpFehhbarFePL(int gt1, int gt3) const;
    double CphhVWpconjVWp() const;
-   std::complex<double> CpAhFdbarFdPL(unsigned gt2, unsigned gt3) const;
-   std::complex<double> CpAhFubarFuPL(unsigned gt2, unsigned gt3) const;
-   std::complex<double> CpAhFebarFePL(unsigned gt2, unsigned gt3) const;
+   std::complex<double> CpAhFdbarFdPL(int gt2, int gt3) const;
+   std::complex<double> CpAhFubarFuPL(int gt2, int gt3) const;
+   std::complex<double> CpAhFebarFePL(int gt2, int gt3) const;
    void calculate_eff_CphhVPVP();
    void calculate_eff_CphhVGVG();
    void calculate_eff_CpAhVPVP();

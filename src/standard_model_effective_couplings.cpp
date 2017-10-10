@@ -47,10 +47,6 @@ Standard_model_effective_couplings::Standard_model_effective_couplings(
 {
 }
 
-Standard_model_effective_couplings::~Standard_model_effective_couplings()
-{
-}
-
 void Standard_model_effective_couplings::calculate_effective_couplings()
 {
    const standard_model::Standard_model sm(initialise_SM());
@@ -223,7 +219,7 @@ double Standard_model_effective_couplings::get_AhVGVG_partial_width() const
    return 0.039788735772973836 * Power(mass, 3.0) * AbsSqr(eff_CpAhVGVG);
 }
 
-std::complex<double> Standard_model_effective_couplings::CpFdhhbarFdPL(unsigned gt1, unsigned gt3) const
+std::complex<double> Standard_model_effective_couplings::CpFdhhbarFdPL(int gt1, int gt3) const
 {
    const auto Yd = MODELPARAMETER(Yd);
 
@@ -231,10 +227,10 @@ std::complex<double> Standard_model_effective_couplings::CpFdhhbarFdPL(unsigned 
 
    std::complex<double> tmp_467;
    std::complex<double> tmp_468;
-   for (unsigned j2 = 0; j2 < 3; ++j2) {
+   for (int j2 = 0; j2 < 3; ++j2) {
       std::complex<double> tmp_469;
       std::complex<double> tmp_470;
-      for (unsigned j1 = 0; j1 < 3; ++j1) {
+      for (int j1 = 0; j1 < 3; ++j1) {
          tmp_470 += Conj(Ud(gt3,j1))*Yd(j1,j2);
       }
       tmp_469 += tmp_470;
@@ -246,7 +242,7 @@ std::complex<double> Standard_model_effective_couplings::CpFdhhbarFdPL(unsigned 
    return result;
 }
 
-std::complex<double> Standard_model_effective_couplings::CpFuhhbarFuPL(unsigned gt1, unsigned gt3) const
+std::complex<double> Standard_model_effective_couplings::CpFuhhbarFuPL(int gt1, int gt3) const
 {
    const auto Yu = MODELPARAMETER(Yu);
 
@@ -254,10 +250,10 @@ std::complex<double> Standard_model_effective_couplings::CpFuhhbarFuPL(unsigned 
 
    std::complex<double> tmp_471;
    std::complex<double> tmp_472;
-   for (unsigned j2 = 0; j2 < 3; ++j2) {
+   for (int j2 = 0; j2 < 3; ++j2) {
       std::complex<double> tmp_473;
       std::complex<double> tmp_474;
-      for (unsigned j1 = 0; j1 < 3; ++j1) {
+      for (int j1 = 0; j1 < 3; ++j1) {
          tmp_474 += Conj(Uu(gt3,j1))*Yu(j1,j2);
       }
       tmp_473 += tmp_474;
@@ -269,7 +265,7 @@ std::complex<double> Standard_model_effective_couplings::CpFuhhbarFuPL(unsigned 
    return result;
 }
 
-std::complex<double> Standard_model_effective_couplings::CpFehhbarFePL(unsigned gt1, unsigned gt3) const
+std::complex<double> Standard_model_effective_couplings::CpFehhbarFePL(int gt1, int gt3) const
 {
    const auto Ye = MODELPARAMETER(Ye);
 
@@ -277,10 +273,10 @@ std::complex<double> Standard_model_effective_couplings::CpFehhbarFePL(unsigned 
 
    std::complex<double> tmp_475;
    std::complex<double> tmp_476;
-   for (unsigned j2 = 0; j2 < 3; ++j2) {
+   for (int j2 = 0; j2 < 3; ++j2) {
       std::complex<double> tmp_477;
       std::complex<double> tmp_478;
-      for (unsigned j1 = 0; j1 < 3; ++j1) {
+      for (int j1 = 0; j1 < 3; ++j1) {
          tmp_478 += Conj(Ue(gt3,j1))*Ye(j1,j2);
       }
       tmp_477 += tmp_478;
@@ -304,7 +300,7 @@ double Standard_model_effective_couplings::CphhVWpconjVWp() const
    return result;
 }
 
-std::complex<double> Standard_model_effective_couplings::CpAhFdbarFdPL(unsigned gt2, unsigned gt3) const
+std::complex<double> Standard_model_effective_couplings::CpAhFdbarFdPL(int gt2, int gt3) const
 {
    const auto Yd = MODELPARAMETER(Yd);
 
@@ -312,10 +308,10 @@ std::complex<double> Standard_model_effective_couplings::CpAhFdbarFdPL(unsigned 
 
    std::complex<double> tmp_479;
    std::complex<double> tmp_480;
-   for (unsigned j2 = 0; j2 < 3; ++j2) {
+   for (int j2 = 0; j2 < 3; ++j2) {
       std::complex<double> tmp_481;
       std::complex<double> tmp_482;
-      for (unsigned j1 = 0; j1 < 3; ++j1) {
+      for (int j1 = 0; j1 < 3; ++j1) {
          tmp_482 += Conj(Ud(gt3,j1))*Yd(j1,j2);
       }
       tmp_481 += tmp_482;
@@ -327,7 +323,7 @@ std::complex<double> Standard_model_effective_couplings::CpAhFdbarFdPL(unsigned 
    return result;
 }
 
-std::complex<double> Standard_model_effective_couplings::CpAhFubarFuPL(unsigned gt2, unsigned gt3) const
+std::complex<double> Standard_model_effective_couplings::CpAhFubarFuPL(int gt2, int gt3) const
 {
    const auto Yu = MODELPARAMETER(Yu);
 
@@ -335,10 +331,10 @@ std::complex<double> Standard_model_effective_couplings::CpAhFubarFuPL(unsigned 
 
    std::complex<double> tmp_483;
    std::complex<double> tmp_484;
-   for (unsigned j2 = 0; j2 < 3; ++j2) {
+   for (int j2 = 0; j2 < 3; ++j2) {
       std::complex<double> tmp_485;
       std::complex<double> tmp_486;
-      for (unsigned j1 = 0; j1 < 3; ++j1) {
+      for (int j1 = 0; j1 < 3; ++j1) {
          tmp_486 += Conj(Uu(gt3,j1))*Yu(j1,j2);
       }
       tmp_485 += tmp_486;
@@ -350,7 +346,7 @@ std::complex<double> Standard_model_effective_couplings::CpAhFubarFuPL(unsigned 
    return result;
 }
 
-std::complex<double> Standard_model_effective_couplings::CpAhFebarFePL(unsigned gt2, unsigned gt3) const
+std::complex<double> Standard_model_effective_couplings::CpAhFebarFePL(int gt2, int gt3) const
 {
    const auto Ye = MODELPARAMETER(Ye);
 
@@ -358,10 +354,10 @@ std::complex<double> Standard_model_effective_couplings::CpAhFebarFePL(unsigned 
 
    std::complex<double> tmp_487;
    std::complex<double> tmp_488;
-   for (unsigned j2 = 0; j2 < 3; ++j2) {
+   for (int j2 = 0; j2 < 3; ++j2) {
       std::complex<double> tmp_489;
       std::complex<double> tmp_490;
-      for (unsigned j1 = 0; j1 < 3; ++j1) {
+      for (int j1 = 0; j1 < 3; ++j1) {
          tmp_490 += Conj(Ue(gt3,j1))*Ye(j1,j2);
       }
       tmp_489 += tmp_490;
@@ -385,17 +381,17 @@ void Standard_model_effective_couplings::calculate_eff_CphhVPVP()
    const auto vev = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
 
    std::complex<double> result = 0;
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += 0.3333333333333333 * scalar_fermion_qcd_factor(decay_mass,
          MFd(gI1)) * CpFdhhbarFdPL(gI1, gI1) * vev * AS12(decay_scale / Sqr(MFd(
          gI1))) / MFd(gI1);
    }
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += 1.3333333333333333 * scalar_fermion_qcd_factor(decay_mass,
          MFu(gI1)) * CpFuhhbarFuPL(gI1, gI1) * vev * AS12(decay_scale / Sqr(MFu(
          gI1))) / MFu(gI1);
    }
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += CpFehhbarFePL(gI1, gI1) * vev * AS12(decay_scale / Sqr(MFe(
          gI1))) / MFe(gI1);
    }
@@ -422,11 +418,11 @@ void Standard_model_effective_couplings::calculate_eff_CphhVGVG()
    const auto vev = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
 
    std::complex<double> result = 0;
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += CpFdhhbarFdPL(gI1, gI1) * vev * AS12(decay_scale / Sqr(MFd(
          gI1))) / MFd(gI1);
    }
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += CpFuhhbarFuPL(gI1, gI1) * vev * AS12(decay_scale / Sqr(MFu(
          gI1))) / MFu(gI1);
    }
@@ -455,17 +451,17 @@ void Standard_model_effective_couplings::calculate_eff_CpAhVPVP()
    const auto vev = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
 
    std::complex<double> result = 0;
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += 0.3333333333333333 * pseudoscalar_fermion_qcd_factor(
          decay_mass, MFd(gI1)) * CpAhFdbarFdPL(gI1, gI1) * vev * AP12(decay_scale
          / Sqr(MFd(gI1))) / MFd(gI1);
    }
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += 1.3333333333333333 * pseudoscalar_fermion_qcd_factor(
          decay_mass, MFu(gI1)) * CpAhFubarFuPL(gI1, gI1) * vev * AP12(decay_scale
          / Sqr(MFu(gI1))) / MFu(gI1);
    }
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += CpAhFebarFePL(gI1, gI1) * vev * AP12(decay_scale / Sqr(MFe(
          gI1))) / MFe(gI1);
    }
@@ -491,11 +487,11 @@ void Standard_model_effective_couplings::calculate_eff_CpAhVGVG()
    const auto vev = 1.0 / Sqrt(qedqcd.displayFermiConstant() * Sqrt(2.0));
 
    std::complex<double> result = 0;
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += CpAhFdbarFdPL(gI1, gI1) * vev * AP12(decay_scale / Sqr(MFd(
          gI1))) / MFd(gI1);
    }
-   for (unsigned gI1 = 0; gI1 < 3; ++gI1) {
+   for (int gI1 = 0; gI1 < 3; ++gI1) {
       result += CpAhFubarFuPL(gI1, gI1) * vev * AP12(decay_scale / Sqr(MFu(
          gI1))) / MFu(gI1);
    }

@@ -2,7 +2,7 @@
 #ifndef TEST_CMSSM_H
 #define TEST_CMSSM_H
 
-#include "test.h"
+#include "test_legacy.hpp"
 #include "softsusy.h"
 #include "CMSSM_two_scale_model.hpp"
 #include "wrappers.hpp"
@@ -62,8 +62,8 @@ void ensure_n_loop_ewsb(CMSSM<Two_scale>& m, int loop_level)
    m.solve_ewsb();
 
    if (loop_level == 1) {
-      TEST_CLOSE(m.get_ewsb_eq_hh_1() - m.tadpole_hh(0).real(), 0.0, 0.05);
-      TEST_CLOSE(m.get_ewsb_eq_hh_2() - m.tadpole_hh(1).real(), 0.0, 0.004);
+      TEST_CLOSE(m.get_ewsb_eq_hh_1() - m.tadpole_hh_1loop(0).real(), 0.0, 0.05);
+      TEST_CLOSE(m.get_ewsb_eq_hh_2() - m.tadpole_hh_1loop(1).real(), 0.0, 0.15);
    }
 }
 

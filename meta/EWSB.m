@@ -1,5 +1,35 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
 
 BeginPackage["EWSB`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "TreeMasses`", "WriteOut`", "Utils`"}];
+
+FilterOutLinearDependentEqs::usage="returns linearly independent equations";
+
+FilterOutIndependentEqs::usage = "returns equations that depend on the
+given list of parameters.  I.e. equations, that do not depend on the
+given list of parameters are omitted from the output.";
+
+GetLinearlyIndependentEqs::usage="Removes linearly dependent EWSB equations
+from a list of equations";
 
 FindSolutionAndFreePhases::usage="Finds solution to the EWSB and free
 phases / signs."
@@ -16,6 +46,9 @@ of the EWSB equations";
 FillInitialGuessArray::usage="fills a C array with initial values for the
 EWSB eqs. solver";
 
+CreateMemberTreeLevelEwsbSolver::usage="Converts tree-level EWSB solutions
+to C form";
+
 CreateTreeLevelEwsbSolver::usage="Converts tree-level EWSB solutions
 to C form";
 
@@ -25,6 +58,9 @@ finders";
 SetEWSBSolution::usage="sets the model parameters to the solution
 provided by the solver";
 
+SetTreeLevelSolution::usage="sets the model parameters to the
+tree-level solution";
+
 FillArrayWithParameters::usage="fill an array with parameters";
 
 DivideTadpolesByVEV::usage="Divides an array of tadpoles by their
@@ -33,14 +69,11 @@ corresponding VEV";
 CreateEwsbSolverWithTadpoles::usage="Solve EWSB eqs. including
 tadpoles (one step, no iteration)";
 
-GetEWSBParametersFromGSLVector::usage="Create local copies of EWSB
-output parameters from GSL vector";
+GetEWSBParametersFromVector::usage="Create local copies of EWSB
+ output parameters from an Eigen vector";
 
 SetEWSBParametersFromLocalCopies::usage="Set model parameters from
 local copies";
-
-SetEWSBParametersFromGSLVector::usage="Set model parameters from GSL
-vector.";
 
 CreateEWSBParametersInitializationList::usage="Creates initialization
 list with EWSB output parameters";
@@ -51,6 +84,19 @@ list with EWSB output parameters";
 CreateEWSBParametersInitialization::usage="Creates initialization
 of EWSB output parameters";
 
+GetValidEWSBInitialGuesses::usage="Remove invalid initial guess settings";
+
+GetValidEWSBSubstitutions::usage="Remove invalid EWSB substitutions";
+
+SetModelParametersFromEWSB::usage="Set model parameters from EWSB solution
+using the given substitutions";
+
+ApplyEWSBSubstitutions::usage="Set model parameters according to the
+given list of substitutions";
+
+SolveEWSBIgnoringFailures::usage="Solve EWSB conditions without
+flagging a problem if no solution is found.";
+
 Begin["`Private`"];
 
 DebugPrint[msg___] :=
@@ -58,7 +104,7 @@ DebugPrint[msg___] :=
        Print["Debug<EWSB>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
 AppearsInEquationOnlyAs[parameter_, equation_, function_] :=
-    FreeQ[equation /. function[parameter] :> Unique[ToValidCSymbolString[parameter]], parameter];
+    FreeQ[equation /. function[parameter] :> Unique[CConversion`ToValidCSymbolString[parameter]], parameter];
 
 AppearsOnlySquaredInEquation[parameter_, equation_] :=
     AppearsInEquationOnlyAs[parameter, equation, Power[#,2]&];
@@ -73,12 +119,50 @@ AppearsNotInEquation[parameter_, equation_] :=
 CheckInEquations[parameter_, statement_, equations_List] :=
     And @@ (statement[parameter,#]& /@ equations);
 
+AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
+    Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
+            pars},
+           (* ignore parameter heads Re[], Im[], Abs[], Phase[] *)
+           pars = parameters /. { Re[p_] :> p, Im[p_] :> p,
+                                  Abs[p_] :> p, FlexibleSUSY`Phase[p_] :> p };
+           And @@ (FreeQ[frac,#]& /@ pars)
+          ];
+
+FilterOutLinearDependentEqs[{}, _List] := {};
+
+FilterOutLinearDependentEqs[{eq_}, _List] := {eq};
+
+FilterOutLinearDependentEqs[{eq_, rest__}, parameters_List] :=
+    If[Or @@ (AreLinearDependent[#,parameters]& /@ ({eq,#}& /@ {rest})),
+       (* leave out eq and check rest *)
+       FilterOutLinearDependentEqs[{rest}, parameters],
+       (* keep eq and check rest *)
+       {eq, Sequence @@ FilterOutLinearDependentEqs[{rest}, parameters]}
+      ];
+
+FilterOutIndependentEqs[eqs_List, pars_List] :=
+    DeleteDuplicates @ Flatten @ Join[FilterOutIndependentEqs[eqs,#]& /@ pars];
+
+FilterOutIndependentEqs[eqs_List, p_] :=
+    Select[eqs, (!FreeQ[#,p])&];
+
+GetLinearlyIndependentEqs[eqs_List, parameters_List, substitutions_List:{}] :=
+    Module[{eqsToSolve, indepEqsToSolve, eqsToKeep},
+           If[substitutions =!= {},
+              eqsToSolve = Parameters`ReplaceAllRespectingSARAHHeads[eqs, substitutions];,
+              eqsToSolve = eqs;
+             ];
+           indepEqsToSolve = FilterOutLinearDependentEqs[eqsToSolve, parameters];
+           eqsToKeep = Position[eqsToSolve, p_ /; MemberQ[indepEqsToSolve, p]];
+           Extract[eqs, eqsToKeep]
+          ];
+
 CreateEWSBEqPrototype[higgs_] :=
     Module[{result = "", i, ctype},
            ctype = CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]];
            For[i = 1, i <= TreeMasses`GetDimension[higgs], i++,
                result = result <> ctype <> " get_ewsb_eq_" <>
-                        ToValidCSymbolString[higgs] <>
+                        CConversion`ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const;\n";
               ];
            Return[result];
@@ -114,7 +198,7 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
            For[i = 1, i <= dim, i++,
                result = result <>
                         ctype <> " CLASSNAME::get_ewsb_eq_" <>
-                        ToValidCSymbolString[higgs] <>
+                        CConversion`ToValidCSymbolString[higgs] <>
                         "_" <> ToString[i] <> "() const\n{\n";
                If[i <= dimEq,
                   eq = equation[[i]];,
@@ -132,27 +216,21 @@ CreateEWSBEqFunction[higgs_, equation_List] :=
 
 FindFreePhase[parameter_, freePhases_] :=
     Module[{phases},
-           phases = Cases[freePhases, FlexibleSUSY`Phase[parameter] | FlexibleSUSY`Sign[parameter]];
+           phases = Cases[freePhases, FlexibleSUSY`Phase[parameter] | Sign[parameter]];
            If[phases === {}, Null, phases[[1]]]
           ];
 
-GetValueWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
-    Module[{result, parameterStr, freePhase, gslInput},
-           parameterStr = ToValidCSymbolString[parameter];
-           freePhase = FindFreePhase[parameter, freePhases];
-           gslInput = "gsl_vector_get(" <> gslIntputVector <> ", " <> ToString[index] <> ")";
-           If[freePhase =!= Null,
-              result = "INPUT(" <> ToValidCSymbolString[freePhase] <> ") * " <> "Abs(" <> gslInput <> ")";
-              ,
-              result = gslInput;
-             ];
-           Return[result];
-          ];
+WrapPhase[phase_ /; phase === Null, str_String, macro_String:"LOCALINPUT"] :=
+    str;
 
-SetParameterWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
-    Module[{value},
-           value = GetValueWithPhase[parameter, gslIntputVector, index, freePhases];
-           Parameters`SetParameter[parameter, value, "model"]
+WrapPhase[phase_, str_String, macro_String:"LOCALINPUT"] :=
+    macro <> "(" <> CConversion`ToValidCSymbolString[phase] <> ")*Abs(" <> str <> ")";
+
+GetValueWithPhase[parameter_, gslIntputVector_String, index_Integer, freePhases_List] :=
+    Module[{freePhase, gslInput},
+           freePhase = FindFreePhase[parameter, freePhases];
+           gslInput = gslIntputVector <> "(" <> ToString[index] <> ")";
+           WrapPhase[freePhase, gslInput, "INPUT"]
           ];
 
 FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
@@ -161,20 +239,52 @@ FillArrayWithEWSBEqs[higgs_, gslOutputVector_String] :=
            For[i = 1, i <= dim, i++,
                result = result <> gslOutputVector <> "[" <> ToString[i-1] <>
                         "] = " <> "get_ewsb_eq_" <>
-                        ToValidCSymbolString[higgs] <> "_" <>
+                        CConversion`ToValidCSymbolString[higgs] <> "_" <>
                         ToString[i] <> "();\n";
               ];
            Return[result];
           ];
 
-InitialGuessFor[par_] :=
-    If[Parameters`IsRealParameter[par], par, Abs[par]];
+GetValidEWSBInitialGuesses[initialGuess_List] :=
+    Module[{i},
+           For[i = 1, i <= Length[initialGuess], i++,
+               If[!MatchQ[initialGuess[[i]], {_,_}],
+                  Print["Warning: ignoring invalid initial guess: ", initialGuess[[i]]];
+                 ];
+              ];
+           Cases[initialGuess, {_,_}]
+          ];
 
-FillInitialGuessArray[parametersFixedByEWSB_List, arrayName_String:"x_init"] :=
-    Module[{i, result = ""},
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+GetValidEWSBSubstitutions[substitutions_List] :=
+    Module[{i},
+           For[i = 1, i <= Length[substitutions], i++,
+               If[!MatchQ[substitutions[[i]], {_,_}],
+                  Print["Warning: ignoring invalid EWSB substitution: ", substitutions[[i]]];
+                 ];
+              ];
+           Cases[substitutions, {_,_}]
+          ];
+
+InitialGuessFor[par_, initialGuesses_List:{}] :=
+    Module[{guess},
+           If[initialGuesses === {} || !MemberQ[#[[1]]& /@ initialGuesses, par],
+              If[Parameters`IsRealParameter[par], guess = par, guess = Abs[par]];,
+              guess = Cases[initialGuesses, {p_ /; p === par, val_} :> val];
+              If[Length[guess] > 1,
+                 Print["Warning: multiple initial guesses given for ", par];
+                ];
+              guess = First[guess];
+             ];
+           guess
+          ];
+
+FillInitialGuessArray[parametersFixedByEWSB_List, initialGuessValues_List:{}, arrayName_String:"x_init"] :=
+    Module[{i, guesses, result = ""},
+           guesses = InitialGuessFor[#, initialGuessValues]& /@ parametersFixedByEWSB;
+           result = result <> Parameters`CreateLocalConstRefs[guesses];
+           For[i = 1, i <= Length[guesses], i++,
                result = result <> arrayName <> "[" <> ToString[i-1] <> "] = " <>
-                        CConversion`RValueToCFormString[InitialGuessFor[parametersFixedByEWSB[[i]]]] <>
+                        CConversion`RValueToCFormString[guesses[[i]]] <>
                         ";\n";
               ];
            Return[result];
@@ -289,6 +399,16 @@ FindMinimumByteCount[lst_List] :=
 IsNoSolution[expr_] :=
     Head[expr] === Solve || Flatten[expr] === {};
 
+TimeConstrainedEliminate[eqs_List, par_] :=
+    Module[{result},
+           result = TimeConstrained[Eliminate[eqs, par],
+                                    FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
+           If[result === {},
+              DebugPrint["unable to eliminate ", par, ": ", eqs];
+             ];
+           result
+          ];
+
 TimeConstrainedSolve[eq_, par_] :=
     Module[{result, independentEq = eq, Selector},
            If[Head[eq] === List,
@@ -296,7 +416,13 @@ TimeConstrainedSolve[eq_, par_] :=
                                         And @@ (Function[p,FreeQ[e,p]] /@ par),
                                         FreeQ[e,par]
                                        ]];
-              independentEq = Select[eq, (!Selector[#])&];
+              independentEq = Select[eq, (!Selector[#])&];,
+              If[Head[par] =!= List,
+                 If[FreeQ[eq, par],
+                    Print["Error: parameter ", par, " does not appear in the equation"];
+                    Return[{}];
+                   ];
+                ];
              ];
            result = TimeConstrained[Solve[independentEq, par],
                                     FlexibleSUSY`FSSolveEWSBTimeConstraint, {}];
@@ -324,26 +450,32 @@ EliminateOneParameter[{eq_}, {p_}] :=
 (* solves the two equations for `par' and returns the simpler solution *)
 SolveRest[eq1_, eq2_, par_] :=
     Module[{rest = {}, solution},
-           DebugPrint["solving rest for ", par, ": ", eq1];
-           solution = TimeConstrainedSolve[eq1, par];
-           If[IsNoSolution[solution],
-              DebugPrint["Failed"];,
-              DebugPrint["Solution found: ", solution];
-              AppendTo[rest, solution];
+           If[FreeQ[eq1, par],
+              DebugPrint[par, " does not appear in equation: ", eq1];,
+              DebugPrint["solving rest for ", par, ": ", eq1];
+              solution = TimeConstrainedSolve[eq1, par];
+              If[IsNoSolution[solution],
+                 DebugPrint["Failed"];,
+                 DebugPrint["Solution found: ", solution];
+                 AppendTo[rest, solution];
+                ];
              ];
-           DebugPrint["solving rest for ", par, ": ", eq2];
-           solution = TimeConstrainedSolve[eq2, par];
-           If[IsNoSolution[solution],
-              DebugPrint["Failed"];,
-              DebugPrint["Solution found: ", solution];
-              AppendTo[rest, solution];
+           If[FreeQ[eq2, par],
+              DebugPrint[par, " does not appear in equation: ", eq2];,
+              DebugPrint["solving rest for ", par, ": ", eq2];
+              solution = TimeConstrainedSolve[eq2, par];
+              If[IsNoSolution[solution],
+                 DebugPrint["Failed"];,
+                 DebugPrint["Solution found: ", solution];
+                 AppendTo[rest, solution];
+                ];
              ];
            FindMinimumByteCount[rest]
           ];
 
 EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
     Module[{reduction = {{}, {}}, solution, rest},
-           DebugPrint["Tying to elimiate one of the parameters ",
+           DebugPrint["Trying to eliminate one of the parameters ",
                       {p1,p2}, " from the eqs.: ",
                       {eq1,eq2}];
            If[FreeQ[{eq1, eq2}, p1],
@@ -397,10 +529,10 @@ EliminateOneParameter[{eq1_, eq2_}, {p1_, p2_}] :=
              ];
            DebugPrint["eliminate ", p1, " and solve for ", p2, ": ", {eq1, eq2}];
            reduction[[1]] =
-           TimeConstrainedSolve[Eliminate[{eq1, eq2}, p1], p2];
+           TimeConstrainedSolve[TimeConstrainedEliminate[{eq1, eq2}, p1], p2];
            DebugPrint["eliminate ", p2, " and solve for ", p1, ": ", {eq1, eq2}];
            reduction[[2]] =
-           TimeConstrainedSolve[Eliminate[{eq1, eq2}, p2], p1];
+           TimeConstrainedSolve[TimeConstrainedEliminate[{eq1, eq2}, p2], p1];
            If[IsNoSolution[reduction[[1]]] || IsNoSolution[reduction[[2]]],
               DebugPrint["Failed"];
               Return[{}];
@@ -501,7 +633,7 @@ ReduceSolution[{{}}] := {{},{}};
 
 SignOrPhase[par_] :=
     If[Parameters`IsRealParameter[par],
-       FlexibleSUSY`Sign[par],
+       Sign[par],
        FlexibleSUSY`Phase[par]];
 
 ReduceTwoSolutions[sol1_, sol2_] :=
@@ -556,9 +688,13 @@ ReduceSolution[solution_List] :=
            {{},{}}
           ];
 
-FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:""] :=
-    Module[{solution, reducedSolution, freePhases},
-           solution = FindSolution[equations, parametersFixedByEWSB];
+FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile_String:"", substitutions_List:{}] :=
+    Module[{eqsToSolve, solution, reducedSolution, freePhases},
+           If[substitutions =!= {},
+              eqsToSolve = Parameters`ReplaceAllRespectingSARAHHeads[equations, substitutions];,
+              eqsToSolve = equations;
+             ];
+           solution = FindSolution[eqsToSolve, parametersFixedByEWSB];
            {reducedSolution, freePhases} = ReduceSolution[solution];
            DebugPrint["The full, reduced solution to the EWSB eqs. is:",
                       reducedSolution];
@@ -573,16 +709,68 @@ FindSolutionAndFreePhases[equations_List, parametersFixedByEWSB_List, outputFile
            Return[{Flatten[reducedSolution], freePhases}];
           ];
 
-CreateTreeLevelEwsbSolver[solution_List] :=
-    Module[{result = "", body = "",
+GetFreeParameter[Rule[a_,b_]] := b;
+GetFreeParameter[RuleDelayed[a_,b_]] := b;
+GetFreeParameter[p_] := Print["Error: not a rule: ", p];
+
+GetFixedParameter[Rule[a_,b_]] := a;
+GetFixedParameter[RuleDelayed[a_,b_]] := a;
+GetFixedParameter[p_] := Print["Error: not a rule: ", p];
+
+(* Replaces each symbol in `symbols' in `expr' by
+   Transformator[symbol].  Heads to be protected can be given in
+   `protectedHeads'.
+
+   Example:
+
+   In[]:= TransformSymbolsIn[a + A[a], a, Unique, {A}]
+   Out[]= a$191 + A[a]
+ *)
+TransformSymbolsIn[expr_, symbols_List, Transformator_, protectedHeads_:{SARAH`L, SARAH`B, SARAH`T, SARAH`Q}] :=
+    Module[{transformationRules, protectedSymbols, protectionRules},
+           transformationRules =  Rule[#, Transformator[#]]& /@ symbols;
+           protectedHeadsPattern = Alternatives @@ (Blank /@ protectedHeads);
+           protectedSymbols = Complement[
+               DeleteDuplicates @ Extract[expr, Position[expr, protectedHeadsPattern]],
+               symbols
+           ];
+           protectionRules = Rule[#, Unique[CConversion`ToValidCSymbolString[#]]]& /@ protectedSymbols;
+           transformationRules = transformationRules /. protectionRules;
+           expr /. protectionRules /. transformationRules /. (Reverse /@ protectionRules)
+          ];
+
+(* returns list rhs of rules where the lhs symbols are replaced by unique symbols *)
+RemoveFixedParameters[rules_List] :=
+    Module[{fixedParameters, freeParameters},
+           fixedParameters = GetFixedParameter /@ rules;
+           freeParameters  = GetFreeParameter /@ rules;
+           TransformSymbolsIn[freeParameters, fixedParameters, Unique[CConversion`ToValidCSymbolString[#]]&]
+          ];
+
+ReplaceFixedParametersBySymbolsInTarget[Rule[a_,b_], fixedParameters_List] :=
+    Rule[a,
+         TransformSymbolsIn[b, fixedParameters, CConversion`ToValidCSymbol[#]&] /.
+         { Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]],
+           FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]] }
+        ];
+
+ReplaceFixedParametersBySymbolsInTarget[rules_List, fixedParameters_List] :=
+    ReplaceFixedParametersBySymbolsInTarget[#, fixedParameters]& /@ rules;
+
+ReplaceFixedParametersBySymbolsInTarget[solution_List] :=
+    ReplaceFixedParametersBySymbolsInTarget[solution, GetFixedParameter /@ solution];
+
+CreateMemberTreeLevelEwsbSolver[solution_List, substitutions_List:{}] :=
+    Module[{result = "", body = "", fixedPars,
             i, par, expr, parStr, oldParStr, reducedSolution,
             type},
+           fixedPars = GetFixedParameter /@ solution;
            reducedSolution = solution;
            If[reducedSolution =!= {},
               (* create local const refs to input parameters appearing
                  in the solution *)
               reducedSolution = reducedSolution /. {
-                  FlexibleSUSY`Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]],
+                  Sign[p_]               :> Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]],
                   FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
                                                    };
               result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"] <> "\n";
@@ -594,7 +782,7 @@ CreateTreeLevelEwsbSolver[solution_List] :=
                   parStr = CConversion`RValueToCFormString[par];
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
                   result = result <>
-                           "const " <> type <>" " <> oldParStr <> " = " <> parStr <> ";\n";
+                           "const " <> type <> " " <> oldParStr <> " = " <> parStr <> ";\n";
                  ];
               result = result <> "\n";
               (* write solution *)
@@ -616,46 +804,126 @@ CreateTreeLevelEwsbSolver[solution_List] :=
                     ];
                  ];
               result = result <> ";\n\n";
-              body = "";
               For[i = 1, i <= Length[reducedSolution], i++,
                   par    = reducedSolution[[i,1]];
                   oldParStr = "old_" <> CConversion`ToValidCSymbolString[par];
                   body = body <> Parameters`SetParameter[par, oldParStr, None];
                  ];
-              body = body <> "error = 1;\n";
-              result = result <>
-                       "if (!is_finite) {\n" <>
-                       IndentText[body] <>
-                       "}";
+              body = body <> "error = EWSB_solver::FAIL;\n";
+              If[substitutions === {},
+                 result = result <>
+                          "if (!is_finite) {\n" <>
+                          IndentText[body] <>
+                          "}";,
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[fixedPars, substitutions]]] <>
+                          "} else {\n" <>
+                          IndentText[body] <>
+                          "}";
+                ];
               ,
-              result = "error = solve_ewsb_iteratively(0);\n";
+              result = "error = solve_ewsb_tree_level();\n";
              ];
            Return[result];
           ];
 
+CreateTreeLevelEwsbSolver[solution_List] :=
+    Module[{result = "",
+            i, par, expr, parStr, decls = "", reducedSolution,
+            type},
+           reducedSolution = solution;
+           If[reducedSolution =!= {},
+              (* create local const refs to input parameters appearing
+                 in the solution *)
+              reducedSolution = ReplaceFixedParametersBySymbolsInTarget[reducedSolution];
+              result = Parameters`CreateLocalConstRefs[RemoveFixedParameters[reducedSolution]] <> "\n";
+              (* save old parameters *)
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  type = CConversion`CreateCType[CConversion`GetScalarElementType[Parameters`GetType[par]]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  result = result <> type <> " " <> parStr <> ";\n";
+                 ];
+              result = result <> "\n";
+              (* write solution *)
+              For[i = 1, i <= Length[reducedSolution], i++,
+                  par  = reducedSolution[[i,1]];
+                  expr = reducedSolution[[i,2]];
+                  type = CConversion`GetScalarElementType[Parameters`GetType[par]];
+                  result = result <> CConversion`ToValidCSymbolString[par] <> " = " <>
+                           CConversion`CastTo[CConversion`RValueToCFormString[expr], type] <> ";\n";
+                 ];
+              result = result <> "\n";
+              ,
+              result = "error = solve_iteratively_at(model, 0);\n";
+             ];
+           Return[result];
+          ];
+
+SetTreeLevelSolution[ewsbSolution_, substitutions_List:{}, struct_String:"model."] :=
+    Module[{i, parametersFixedByEWSB, par, parStr, body = "", result = ""},
+           If[ewsbSolution =!= {},
+              parametersFixedByEWSB = #[[1]]& /@ ewsbSolution;
+              result = result <> "const bool is_finite = ";
+              For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+                  par    = parametersFixedByEWSB[[i]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  result = result <> "IsFinite(" <> parStr <> ")";
+                  If[i != Length[parametersFixedByEWSB],
+                     result = result <> " && ";
+                    ];
+                 ];
+              result = result <> ";\n\n";
+              For[i = 1, i <= Length[parametersFixedByEWSB], i++,
+                  par    = parametersFixedByEWSB[[i]];
+                  parStr = CConversion`ToValidCSymbolString[par];
+                  body = body <> Parameters`SetParameter[par, parStr, struct, None];
+                 ];
+              If[substitutions === {},
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[body] <>
+                          IndentText["model.get_problems().unflag_no_ewsb();\n"] <>
+                          "} else {\n" <>
+                          IndentText["error = EWSB_solver::FAIL;\nmodel.get_problems().flag_no_ewsb();\n"] <>
+                          "}";,
+                 result = result <>
+                          "if (is_finite) {\n" <>
+                          IndentText[body] <>
+                          IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
+                          IndentText["model.get_problems().unflag_no_ewsb();\n"] <>
+                          "} else {\n" <>
+                          IndentText["error = EWSB_solver::FAIL;\nmodel.get_problems().flag_no_ewsb();\n"] <>
+                          "}";
+                ];
+             ];
+           result
+          ];
+
 CreateNewEWSBRootFinder[] :=
-    "new Root_finder<number_of_ewsb_equations>(CLASSNAME::tadpole_equations, &params, number_of_ewsb_iterations, ewsb_iteration_precision, ";
+    "new Root_finder<number_of_ewsb_equations>(tadpole_stepper, number_of_iterations, precision, ";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIRelative] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_relative(ewsb_iteration_precision))";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_relative>(ewsb_stepper, number_of_iterations, fixed_point_iterator::Convergence_tester_relative(precision))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPIAbsolute] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_absolute(ewsb_iteration_precision))";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_absolute>(ewsb_stepper, number_of_iterations, fixed_point_iterator::Convergence_tester_absolute(precision))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`FPITadpole] :=
-    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_tadpole>(CLASSNAME::ewsb_step, &params, number_of_ewsb_iterations, fixed_point_iterator::Convergence_tester_tadpole(ewsb_iteration_precision, CLASSNAME::tadpole_equations, &params))";
+    "new Fixed_point_iterator<number_of_ewsb_equations, fixed_point_iterator::Convergence_tester_tadpole<number_of_ewsb_equations> >(ewsb_stepper, number_of_iterations, fixed_point_iterator::Convergence_tester_tadpole<number_of_ewsb_equations>(precision, tadpole_stepper))";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybrid] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrid)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLHybrid)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLHybridS] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_hybrids)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLHybridS)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLBroyden] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_broyden)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLBroyden)";
 
 CreateEWSBRootFinder[rootFinder_ /; rootFinder === FlexibleSUSY`GSLNewton] :=
-    CreateNewEWSBRootFinder[] <> "gsl_multiroot_fsolver_dnewton)";
+    CreateNewEWSBRootFinder[] <> "Root_finder<number_of_ewsb_equations>::GSLNewton)";
 
 CreateEWSBRootFinders[{}] :=
     Block[{},
@@ -668,24 +936,6 @@ MakeUniquePtr[str_String, obj_String] :=
 
 CreateEWSBRootFinders[rootFinders_List] :=
     Utils`StringJoinWithSeparator[MakeUniquePtr[#,"EWSB_solver"]& /@ (CreateEWSBRootFinder /@ rootFinders), ",\n"];
-
-WrapPhase[phase_ /; phase === Null, str_String] :=
-    str;
-
-WrapPhase[phase_, str_String] :=
-    "LOCALINPUT(" <> CConversion`ToValidCSymbolString[phase] <> ")*Abs(" <> str <> ")";
-
-SetEWSBSolution[par_, idx_, phase_, func_String] :=
-    Parameters`SetParameter[par, WrapPhase[phase, func <> "(" <> ToString[idx-1] <> ")"], None];
-
-SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String] :=
-    Module[{result = "", i, phase},
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               phase = FindFreePhase[parametersFixedByEWSB[[i]], freePhases];
-               result = result <> SetEWSBSolution[parametersFixedByEWSB[[i]], i, phase, func];
-              ];
-           result
-          ];
 
 ConvertToReal[par_] :=
     If[Parameters`IsRealParameter[par],
@@ -716,18 +966,15 @@ DivideTadpolesByVEV[arrayName_String, vevToTadpoleAssociation_List] :=
            result
           ];
 
-CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_List] :=
+CreateEwsbSolverWithTadpoles[solution_List] :=
     Module[{result = "", i, par, expr, parStr, reducedSolution, rules, type},
            reducedSolution = solution /.
                FlexibleSUSY`tadpole[p_] :> CConversion`ReleaseHoldAt[HoldForm[FlexibleSUSY`tadpole[[p-1]]], {1,2}];
            If[reducedSolution =!= {},
-              (* create local const refs to input parameters appearing
+              (* create local const refs to parameters appearing on RHS
                  in the solution *)
-              reducedSolution = reducedSolution /. {
-                  FlexibleSUSY`Sign[p_]  :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Sign[p]]],
-                  FlexibleSUSY`Phase[p_] :> Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]
-                                                   };
-              result = Parameters`CreateLocalConstRefsForInputParameters[reducedSolution, "LOCALINPUT"];
+              reducedSolution = ReplaceFixedParametersBySymbolsInTarget[reducedSolution];
+              result = Parameters`CreateLocalConstRefs[RemoveFixedParameters[reducedSolution]];
               (* define variables for new parameters *)
               For[i = 1, i <= Length[reducedSolution], i++,
                   par  = reducedSolution[[i,1]];
@@ -764,8 +1011,8 @@ CreateEwsbSolverWithTadpoles[solution_List, softHiggsMassToTadpoleAssociation_Li
            Return[result];
           ];
 
-GetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
-                               gslIntputVector_String:"x"] :=
+GetEWSBParametersFromVector[parametersFixedByEWSB_List, freePhases_List,
+                            vector_String] :=
     Module[{i, result = "", par, parStr, type},
            For[i = 1, i <= Length[parametersFixedByEWSB], i++,
                par = parametersFixedByEWSB[[i]];
@@ -773,7 +1020,7 @@ GetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
                parStr = CConversion`ToValidCSymbolString[par];
                result = result <>
                         "const " <> type <> " " <> parStr <> " = " <>
-                        GetValueWithPhase[par, gslIntputVector, i-1, freePhases] <> ";\n";
+                        GetValueWithPhase[par, vector, i-1, freePhases] <> ";\n";
               ];
            Return[result];
           ];
@@ -784,15 +1031,9 @@ SetEWSBParametersFromLocalCopies[parameters_List, struct_String] :=
            result
           ];
 
-SetEWSBParametersFromGSLVector[parametersFixedByEWSB_List, freePhases_List,
-                               gslIntputVector_String] :=
-    Module[{i, result = "", par},
-           For[i = 1, i <= Length[parametersFixedByEWSB], i++,
-               par = parametersFixedByEWSB[[i]];
-               result = result <> SetParameterWithPhase[par, gslIntputVector, i-1, freePhases];
-              ];
-           Return[result];
-          ];
+SetEWSBSolution[parametersFixedByEWSB_List, freePhases_List, func_String, class_String] :=
+    GetEWSBParametersFromVector[parametersFixedByEWSB, freePhases, func] <>
+    SetEWSBParametersFromLocalCopies[parametersFixedByEWSB, class];
 
 CreateEWSBParametersInitializationComma[{}] := "";
 
@@ -807,6 +1048,55 @@ SetEWSBParameter[par_, idx_, array_String] :=
 
 CreateEWSBParametersInitialization[parameters_List, array_String] :=
     StringJoin[MapIndexed[SetEWSBParameter[#1,First[#2 - 1],array]&, parameters]];
+
+(* @todo handle patterns here *)
+SetModelParametersFromEWSB[parametersFixedByEWSB_List, substitutions_List, class_String] :=
+    Module[{subs = substitutions, localPars, result = ""},
+           subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
+                                        Global`LOCALINPUT[CConversion`ToValidCSymbol[Sign[p]]]],
+                            RuleDelayed[FlexibleSUSY`Phase[p_] /; Parameters`IsInputParameter[FlexibleSUSY`Phase[p]],
+                                        Global`LOCALINPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]] };
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ subs;
+           localPars = Parameters`FindAllParameters[#[[2]]& /@ subs, parametersFixedByEWSB];
+           Parameters`CreateLocalConstRefs[localPars] <> result
+          ];
+
+(* @todo handle patterns here *)
+ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_String:"model."] :=
+    Module[{pars, subs = substitutions, result = ""},
+           subs = subs /. { RuleDelayed[Sign[p_] /; Parameters`IsInputParameter[Sign[p]],
+                                        Global`INPUT[CConversion`ToValidCSymbol[Sign[p]]]],
+                            RuleDelayed[FlexibleSUSY`Phase[p_] /; Parameters`IsInputParameter[FlexibleSUSY`Phase[p]],
+                                        Global`INPUT[CConversion`ToValidCSymbol[FlexibleSUSY`Phase[p]]]] };
+           (result = result <> Parameters`SetParameter[#[[1]], #[[2]], class])& /@ subs;
+           pars = DeleteDuplicates[Parameters`FindAllParameters[#[[2]]& /@ subs]];
+           pars = Select[pars, !MemberQ[parametersFixedByEWSB, #]&];
+           Parameters`CreateLocalConstRefs[pars] <> result
+          ];
+
+SolveEWSBIgnoringFailures[loops_Integer] :=
+    Module[{flagEWSB, unflagEWSB, warning, result},
+           flagEWSB = "this->problems.flag_no_ewsb();\n";
+           unflagEWSB = "this->problems.unflag_no_ewsb();\n";
+           body = "if (has_no_ewsb_flag) {\n" <> IndentText[flagEWSB]
+                  <> "} else {\n" <> IndentText[unflagEWSB] <> "}\n";
+           body = "[this, has_no_ewsb_flag] () {\n" <> IndentText[body] <> "}\n";
+           result = "const bool has_no_ewsb_flag = problems.no_ewsb();\n";
+           result = result <> "const auto save_ewsb_flag = make_raii_guard(\n"
+                    <> IndentText[body] <> ");\n";
+           result = result <> "problems.unflag_no_ewsb();\n";
+           If[loops == 0,
+              result = result <> "solve_ewsb_tree_level();\n";,
+              result = result <> "const auto save_ewsb_loop_order = make_raii_save(ewsb_loop_order);\n"
+                       <> "ewsb_loop_order = " <> ToString[loops] <> ";\n"
+                       <> "solve_ewsb();\n";
+             ];
+           warning = "WARNING(\"solving EWSB at " <> ToString[loops]
+                     <> "-loop order failed\");\n";
+           warning = "if (problems.no_ewsb()) {\n" <> IndentText[warning] <> "}\n";
+           warning = "#ifdef ENABLE_VERBOSE\n" <> IndentText[warning] <> "#endif";
+           IndentText[result] <> warning
+          ];
 
 End[];
 

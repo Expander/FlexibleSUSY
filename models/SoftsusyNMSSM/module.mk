@@ -2,7 +2,7 @@ DIR          := models/SoftsusyNMSSM
 MODNAME      := SoftsusyNMSSM
 WITH_$(MODNAME) := yes
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM),yes)
+ifeq ($(WITH_SoftsusyMSSM),yes)
 LIBSoftsusyNMSSM_SRC  := \
 		$(DIR)/nmssmUtils.cpp \
 		$(DIR)/nmssmsoftpars.cpp \
@@ -10,7 +10,7 @@ LIBSoftsusyNMSSM_SRC  := \
 		$(DIR)/nmssmsusy.cpp \
 		$(DIR)/nmssm1loop.f
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBSoftsusyNMSSM_SRC  += \
 		$(DIR)/SoftsusyNMSSM_two_scale.cpp \
 		$(DIR)/SoftsusyNMSSM_two_scale_convergence_tester.cpp \
@@ -32,7 +32,7 @@ LIBSoftsusyNMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
 EXESoftsusyNMSSM_SRC  :=
 
-ifeq ($(shell $(FSCONFIG) --with-SoftsusyMSSM --with-SoftsusyNMSSM),yes yes)
+ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM),yes yes)
 EXESoftsusyNMSSM_SRC  += \
 		$(DIR)/run_softpoint.cpp
 endif
@@ -74,7 +74,7 @@ $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP) $(LIBSoftsusyNMSSM_OBJ) $(EXESof
 $(LIBSoftsusyNMSSM): $(LIBSoftsusyNMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(RUN_SOFTPOINT_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(LIBLEGACY) $(filter-out -%,$(LOOPFUNCLIBS))
+$(RUN_SOFTPOINT_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyNMSSM_DEP) $(EXESoftsusyNMSSM_DEP)

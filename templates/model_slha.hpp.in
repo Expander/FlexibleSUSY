@@ -16,16 +16,219 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+/**
+ * @file @ModelName@_model_slha.hpp
+ * @brief contains wrapper class for model class in SLHA convention
+ */
+
 // File generated at @DateAndTime@
 
 #ifndef @ModelName@_SLHA_H
 #define @ModelName@_SLHA_H
 
+#include "@ModelName@_input_parameters.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
+#include "@ModelName@_physical.hpp"
+
+#include "ckm.hpp"
+#include "linalg2.hpp"
+#include "pmns.hpp"
+#include "slha_io.hpp"
+#include "wrappers.hpp"
+
+#define LOCALPHYSICAL(p) physical.p
+#define MODELPARAMETER(p) this->p
+#define PHYSICAL_SLHA(p) physical_slha.p
+#define PHYSICAL_SLHA_REAL(p) Re(physical_slha.p)
+
 namespace flexiblesusy {
 
-template <class T>
-class @ModelName@_slha;
+/**
+ * @class @ModelName@_slha<T>
+ * @brief model class wrapper in SLHA convention
+ *
+ * @tparam Model model class to wrap
+ */
 
+template <class Model>
+class @ModelName@_slha : public Model {
+public:
+   explicit @ModelName@_slha(const @ModelName@_input_parameters& input_ = @ModelName@_input_parameters());
+   explicit @ModelName@_slha(const Model&, bool do_convert_masses_to_slha = true);
+   @ModelName@_slha(const @ModelName@_slha&) = default;
+   @ModelName@_slha(@ModelName@_slha&&) = default;
+   virtual ~@ModelName@_slha() = default;
+   @ModelName@_slha& operator=(const @ModelName@_slha&) = default;
+   @ModelName@_slha& operator=(@ModelName@_slha&&) = default;
+
+   virtual void clear() override;
+   void convert_to_slha(); ///< converts pole masses and couplings to SLHA convention
+   const Eigen::Matrix<std::complex<double>,3,3>& get_ckm_matrix() const { return ckm; }
+   const Eigen::Matrix<std::complex<double>,3,3>& get_pmns_matrix() const { return pmns; }
+   const @ModelName@_physical& get_physical_slha() const; ///< returns pole masses to SLHA convention
+   @ModelName@_physical& get_physical_slha(); ///< returns pole masses to SLHA convention
+   void set_convert_masses_to_slha(bool); ///< allow/disallow for negative majoran fermion masses
+
+   // interface functions
+   virtual void calculate_spectrum() override;
+   virtual void print(std::ostream&) const override;
+
+@slhaPoleMassGetters@
+@slhaPoleMixingMatrixGetters@
+@slhaYukawaGetter@
+@slhaTrilinearCouplingsGetter@
+@slhaSoftSquaredMassesGetter@
+@slhaFerimonMixingMatricesGetters@
+
+private:
+   @ModelName@_physical physical_slha{}; ///< contains the pole masses and mixings in slha convention
+   Eigen::Matrix<std::complex<double>,3,3> ckm{Eigen::Matrix<std::complex<double>,3,3>::Identity()};
+   Eigen::Matrix<std::complex<double>,3,3> pmns{Eigen::Matrix<std::complex<double>,3,3>::Identity()};
+   bool convert_masses_to_slha{true};    ///< allow/disallow for negative majoran fermion masses
+@slhaYukawaDef@
+@slhaFerimonMixingMatricesDef@
+@slhaTrilinearCouplingsDef@
+@slhaSoftSquaredMassesDef@
+
+   void calculate_ckm_matrix();
+   void calculate_pmns_matrix();
+   void convert_yukawa_couplings_to_slha();
+   void convert_trilinear_couplings_to_slha();
+   void convert_soft_squared_masses_to_slha();
+};
+
+template <class Model>
+@ModelName@_slha<Model>::@ModelName@_slha(const @ModelName@_input_parameters& input_)
+   : Model(input_)
+{
 }
+
+/**
+ * Copy constructor.  Copies from base class (model class in
+ * BPMZ convention) and converts parameters to SLHA.
+ *
+ * @param model_ model class in BPMZ convention
+ * @param do_convert_masses_to_slha whether to convert majorana
+ *    fermion masses to SLHA convention (allow them to be negative)
+ */
+template <class Model>
+@ModelName@_slha<Model>::@ModelName@_slha(const Model& model_,
+                            bool do_convert_masses_to_slha)
+   : Model(model_)
+   , convert_masses_to_slha(do_convert_masses_to_slha)
+{
+   convert_to_slha();
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::clear()
+{
+   Model::clear();
+   physical_slha.clear();
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::calculate_spectrum()
+{
+   Model::calculate_spectrum();
+   convert_to_slha();
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::convert_to_slha()
+{
+   physical_slha = this->get_physical();
+
+   if (convert_masses_to_slha)
+      physical_slha.convert_to_slha();
+
+   convert_yukawa_couplings_to_slha();
+   calculate_ckm_matrix();
+   calculate_pmns_matrix();
+   convert_trilinear_couplings_to_slha();
+   convert_soft_squared_masses_to_slha();
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::calculate_ckm_matrix()
+{
+@calculateCKMMatrix@
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::calculate_pmns_matrix()
+{
+@calculatePMNSMatrix@
+}
+
+/**
+ * Convert Yukawa couplings to SLHA convention
+ */
+template <class Model>
+void @ModelName@_slha<Model>::convert_yukawa_couplings_to_slha()
+{
+@convertYukawaCouplingsToSLHA@
+}
+
+/**
+ * Convert trilinear couplings to SLHA convention
+ */
+template <class Model>
+void @ModelName@_slha<Model>::convert_trilinear_couplings_to_slha()
+{
+@convertTrilinearCouplingsToSLHA@
+}
+
+/**
+ * Convert soft-breaking squared mass parameters to SLHA convention
+ */
+template <class Model>
+void @ModelName@_slha<Model>::convert_soft_squared_masses_to_slha()
+{
+@convertSoftSquaredMassesToSLHA@
+}
+
+template <class Model>
+const @ModelName@_physical& @ModelName@_slha<Model>::get_physical_slha() const
+{
+   return physical_slha;
+}
+
+template <class Model>
+@ModelName@_physical& @ModelName@_slha<Model>::get_physical_slha()
+{
+   return physical_slha;
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::print(std::ostream& ostr) const
+{
+   Model::print(ostr);
+
+   ostr << "----------------------------------------\n"
+           "SLHA convention:\n"
+           "----------------------------------------\n";
+   physical_slha.print(ostr);
+}
+
+template <class Model>
+void @ModelName@_slha<Model>::set_convert_masses_to_slha(bool flag)
+{
+   convert_masses_to_slha = flag;
+}
+
+template <class Model>
+std::ostream& operator<<(std::ostream& ostr, const @ModelName@_slha<Model>& model)
+{
+   model.print(ostr);
+   return ostr;
+}
+
+} // namespace flexiblesusy
+
+#undef LOCALPHYSICAL
+#undef MODELPARAMETER
+#undef PHYSICAL_SLHA
+#undef PHYSICAL_SLHA_REAL
 
 #endif

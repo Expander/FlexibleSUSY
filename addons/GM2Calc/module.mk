@@ -110,11 +110,10 @@ $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAG
 $(LIBGM2Calc): $(LIBGM2Calc_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI) $(LIBLEGACY)
+$(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI)
 		$(CXX) -o $@ $(call abspathx,$^)
 
 ALLDEP += $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP)
 ALLSRC += $(LIBGM2Calc_SRC) $(EXEGM2Calc_SRC)
 ALLLIB += $(LIBGM2Calc)
 ALLEXE += $(EXEGM2Calc_EXE)
-ADDONLIBS += $(LIBGM2Calc)

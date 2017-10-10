@@ -8,35 +8,43 @@ LIBFLEXI_MK  := \
 LIBFLEXI_SRC := \
 		$(DIR)/betafunction.cpp \
 		$(DIR)/build_info.cpp \
+		$(DIR)/bvp_solver_problems.cpp \
 		$(DIR)/ckm.cpp \
 		$(DIR)/command_line_options.cpp \
+		$(DIR)/composite_convergence_tester.cpp \
 		$(DIR)/database.cpp \
-		$(DIR)/def.cpp \
 		$(DIR)/dilog.cpp \
 		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
-		$(DIR)/error.cpp \
+		$(DIR)/global_thread_pool.cpp \
 		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
-		$(DIR)/linalg.cpp \
+		$(DIR)/gsl_vector.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
+		$(DIR)/mssm_twoloop_as.cpp \
+		$(DIR)/mssm_twoloop_mb.cpp \
+		$(DIR)/mssm_twoloop_mt.cpp \
+		$(DIR)/mssm_twoloop_mtau.cpp \
 		$(DIR)/mssm_twoloophiggs.cpp \
 		$(DIR)/mssm_twoloophiggs_impl.f \
 		$(DIR)/nmssm_twoloophiggs.cpp \
 		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
-		$(DIR)/spectrum_generator_settings.cpp \
 		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
+		$(DIR)/problems.cpp \
 		$(DIR)/pv.cpp \
-		$(DIR)/rge.cpp \
-		$(DIR)/rk.cpp \
+		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
+		$(DIR)/sm_threeloop_as.cpp \
+		$(DIR)/sm_threeloophiggs.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
-		$(DIR)/split_threeloophiggs.cpp \
+		$(DIR)/spectrum_generator_problems.cpp \
+		$(DIR)/spectrum_generator_settings.cpp \
+		$(DIR)/splitmssm_threeloophiggs.cpp \
 		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
 		$(DIR)/standard_model_effective_couplings.cpp \
@@ -44,18 +52,21 @@ LIBFLEXI_SRC := \
 		$(DIR)/standard_model_two_scale_convergence_tester.cpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
 		$(DIR)/standard_model_two_scale_model.cpp \
+		$(DIR)/string_utils.cpp \
+		$(DIR)/threshold_corrections.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
-		$(DIR)/utils.cpp \
 		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
 
 LIBFLEXI_HDR := \
+		$(DIR)/array_view.hpp \
+		$(DIR)/basic_rk_integrator.hpp \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
+		$(DIR)/bvp_solver_problems.hpp \
 		$(DIR)/cextensions.hpp \
 		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
-		$(DIR)/compare.hpp \
 		$(DIR)/composite_convergence_tester.hpp \
 		$(DIR)/compound_constraint.hpp \
 		$(DIR)/constraint.hpp \
@@ -63,7 +74,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/convergence_tester_drbar.hpp \
 		$(DIR)/coupling_monitor.hpp \
 		$(DIR)/database.hpp \
-		$(DIR)/def.h \
 		$(DIR)/derivative.hpp \
 		$(DIR)/dilog.hpp \
 		$(DIR)/effective_couplings.hpp \
@@ -74,40 +84,51 @@ LIBFLEXI_HDR := \
 		$(DIR)/ewsb_solver.hpp \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
+		$(DIR)/global_thread_pool.hpp \
 		$(DIR)/gm2calc_interface.hpp \
+		$(DIR)/gsl.hpp \
 		$(DIR)/gsl_utils.hpp \
-		$(DIR)/gut_scale_calculator.hpp \
-		$(DIR)/two_loop_corrections.hpp \
+		$(DIR)/gsl_vector.hpp \
+		$(DIR)/loop_corrections.hpp \
+		$(DIR)/if.hpp \
 		$(DIR)/initial_guesser.hpp \
 		$(DIR)/linalg2.hpp \
-		$(DIR)/linalg.h \
 		$(DIR)/logger.hpp \
 		$(DIR)/lowe.h \
-		$(DIR)/matching.hpp \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
+		$(DIR)/model.hpp \
+		$(DIR)/mssm_twoloop_as.hpp \
+		$(DIR)/mssm_twoloop_mb.hpp \
+		$(DIR)/mssm_twoloop_mt.hpp \
+		$(DIR)/mssm_twoloop_mtau.hpp \
 		$(DIR)/mssm_twoloophiggs.h \
 		$(DIR)/mssm_twoloophiggs.hpp \
-		$(DIR)/mycomplex.h \
 		$(DIR)/nmssm_twoloophiggs.hpp \
 		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
 		$(DIR)/physical_input.hpp \
-		$(DIR)/parallel.hpp \
 		$(DIR)/pmns.hpp \
+		$(DIR)/pp_map.hpp \
 		$(DIR)/problems.hpp \
 		$(DIR)/pv.hpp \
-		$(DIR)/rge.h \
+		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
+		$(DIR)/rkf_integrator.hpp \
 		$(DIR)/root_finder.hpp \
 		$(DIR)/scan.hpp \
 		$(DIR)/sfermions.hpp \
+		$(DIR)/single_scale_constraint.hpp \
+		$(DIR)/single_scale_matching.hpp \
 		$(DIR)/slha_io.hpp \
+		$(DIR)/sm_threeloop_as.hpp \
+		$(DIR)/sm_threeloophiggs.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \
-		$(DIR)/split_threeloophiggs.hpp \
+		$(DIR)/splitmssm_threeloophiggs.hpp \
 		$(DIR)/splitmssm_thresholds.hpp \
+		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \
 		$(DIR)/standard_model_convergence_tester.hpp \
@@ -117,33 +138,40 @@ LIBFLEXI_HDR := \
 		$(DIR)/standard_model_two_scale_convergence_tester.hpp \
 		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
 		$(DIR)/standard_model_two_scale_model.hpp \
+		$(DIR)/string_utils.hpp \
 		$(DIR)/sum.hpp \
+		$(DIR)/thread_pool.hpp \
+		$(DIR)/threshold_corrections.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
-		$(DIR)/utils.h \
 		$(DIR)/weinberg_angle.hpp \
-		$(DIR)/wrappers.hpp \
-		$(DIR)/xpr-base.h \
-		$(DIR)/xpr-matrix.h \
-		$(DIR)/xpr-vector.h
+		$(DIR)/which.hpp \
+		$(DIR)/wrappers.hpp
 
-ifneq ($(findstring two_scale,$(ALGORITHMS)),)
+ifneq ($(findstring two_scale,$(SOLVERS)),)
 LIBFLEXI_SRC += \
-		$(DIR)/two_scale_composite_convergence_tester.cpp \
-		$(DIR)/two_scale_convergence_tester.cpp \
 		$(DIR)/two_scale_running_precision.cpp \
 		$(DIR)/two_scale_solver.cpp
 
 LIBFLEXI_HDR += \
-		$(DIR)/two_scale_composite_convergence_tester.hpp \
-		$(DIR)/two_scale_constraint.hpp \
-		$(DIR)/two_scale_convergence_tester.hpp \
-		$(DIR)/two_scale_convergence_tester_drbar.hpp \
-		$(DIR)/two_scale_initial_guesser.hpp \
-		$(DIR)/two_scale_matching.hpp \
-		$(DIR)/two_scale_model.hpp \
 		$(DIR)/two_scale_running_precision.hpp \
 		$(DIR)/two_scale_solver.hpp
 endif
+
+ifneq ($(findstring semi_analytic,$(SOLVERS)),)
+LIBFLEXI_SRC += \
+		$(DIR)/semi_analytic_solver.cpp \
+		$(DIR)/two_scale_running_precision.cpp \
+		$(DIR)/two_scale_solver.cpp
+
+LIBFLEXI_HDR += \
+		$(DIR)/semi_analytic_solver.hpp \
+		$(DIR)/two_scale_running_precision.hpp \
+		$(DIR)/two_scale_solver.hpp
+endif
+
+# remove duplicates in case multiple solvers are used
+LIBFLEXI_SRC := $(sort $(LIBFLEXI_SRC))
+LIBFLEXI_HDR := $(sort $(LIBFLEXI_HDR))
 
 LIBFLEXI_OBJ := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBFLEXI_SRC))) \

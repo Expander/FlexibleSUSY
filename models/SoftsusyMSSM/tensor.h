@@ -18,7 +18,7 @@
 #include <fstream>
 #include "linalg.h"
 //#include "rge.h"
-//#include "lowe.h"
+//#include "lowe_legacy.h"
 //#include "susy.h"
 // using namespace std;
 // using namespace softsusy;

@@ -19,11 +19,9 @@
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_wrappers
 
-#include <random>
 #include <complex>
 #include <boost/test/unit_test.hpp>
 #include "wrappers.hpp"
-#include "diagonalization.hpp"
 #include "stopwatch.hpp"
 #include <boost/lexical_cast.hpp>
 
@@ -36,7 +34,6 @@
 #endif
 
 using namespace flexiblesusy;
-using namespace softsusy;
 
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
@@ -72,70 +69,6 @@ BOOST_AUTO_TEST_CASE( test_UnitStep )
 }
 
 using namespace std;
-
-DoubleMatrix random_real_matrix(int n, int m)
-{
-    static default_random_engine generator;
-    static uniform_real_distribution<> o1(-3, 3);
-
-    DoubleMatrix r(n, m);
-    for (int i = 1; i <= n; i++)
-        for (int j = 1; j <= n; j++)
-            r(i, j) = o1(generator);
-    return r;
-}
-
-BOOST_AUTO_TEST_CASE(test_svd)
-{
-    for (int n = 2; n <= 6; n++) {
-        DoubleMatrix  m(n,n);
-        ComplexMatrix u(n,n);
-        ComplexMatrix v(n,n);
-        DoubleVector  s(n);
-        ComplexMatrix diag(n,n);
-
-        for (int count = 100; count; count--) {
-            m = random_real_matrix(n,n);
-            if (n == 2)
-                Diagonalize2by2(m, u, v, s);
-            else
-                Diagonalize(m, u, v, s);
-            diag = u.complexConjugate() * m * v.hermitianConjugate();
-
-            for (int i = 1; i <= s.displayEnd(); i++)
-                BOOST_CHECK(s(i) >= 0);
-            for (int i = 1; i <= diag.displayCols(); i++)
-                for (int j = 1; j <= diag.displayRows(); j++)
-                    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j?s(i):0)), 1e-13);
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_symmetric)
-{
-    for (int n = 2; n <= 6; n++) {
-        DoubleMatrix  m(n,n);
-        ComplexMatrix u(n,n);
-        DoubleVector  s(n);
-        ComplexMatrix diag(n,n);
-
-        for (int count = 100; count; count--) {
-            m = random_real_matrix(n,n);
-            m.symmetrise();
-            if (n == 2)
-                Diagonalize2by2(m, u, s);
-            else
-                Diagonalize(m, u, s);
-            diag = u.complexConjugate() * m * u.hermitianConjugate();
-
-            for (int i = 1; i <= s.displayEnd(); i++)
-                BOOST_CHECK(s(i) >= 0);
-            for (int i = 1; i <= diag.displayCols(); i++)
-                for (int j = 1; j <= diag.displayRows(); j++)
-                    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j?s(i):0)), 1e-13);
-        }
-    }
-}
 
 BOOST_AUTO_TEST_CASE(test_Diag)
 {
@@ -174,7 +107,7 @@ std::string ToString_to_string(T a)
 template <typename T>
 std::string ToString_sprintf(T a)
 {
-   static const unsigned buf_length = 20;
+   static const int buf_length = 20;
    char buf[buf_length];
    snprintf(buf, buf_length, "%i", a);
    return std::string(buf);
@@ -196,7 +129,7 @@ std::string ToString_lexical_cast(T a)
          stopwatch.stop();                                         \
          time += stopwatch.get_time_in_seconds();                  \
       }                                                            \
-      BOOST_MESSAGE("ToString via " #type ": " << time << " s");   \
+      BOOST_TEST_MESSAGE("ToString via " #type ": " << time << " s");   \
    } while (0)
 
 BOOST_AUTO_TEST_CASE(test_ToString)
@@ -521,6 +454,121 @@ BOOST_AUTO_TEST_CASE(test_Im_Eigen_Matrix)
    BOOST_CHECK_EQUAL(im2(1,1), 10.0);
 }
 
+BOOST_AUTO_TEST_CASE(test_Cube)
+{
+   BOOST_CHECK_EQUAL(Power(2.,3), Cube(2.));
+   BOOST_CHECK_EQUAL(Power(3.,3), Cube(3.));
+   BOOST_CHECK_EQUAL(Power(4.,3), Cube(4.));
+   BOOST_CHECK_EQUAL(Power(2.,3), Power3(2.));
+   BOOST_CHECK_EQUAL(Power(3.,3), Power3(3.));
+   BOOST_CHECK_EQUAL(Power(4.,3), Power3(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Quad)
+{
+   BOOST_CHECK_EQUAL(Power(2.,4), Quad(2.));
+   BOOST_CHECK_EQUAL(Power(3.,4), Quad(3.));
+   BOOST_CHECK_EQUAL(Power(4.,4), Quad(4.));
+   BOOST_CHECK_EQUAL(Power(2.,4), Power4(2.));
+   BOOST_CHECK_EQUAL(Power(3.,4), Power4(3.));
+   BOOST_CHECK_EQUAL(Power(4.,4), Power4(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power5)
+{
+   BOOST_CHECK_EQUAL(Power(2.,5), Power5(2.));
+   BOOST_CHECK_EQUAL(Power(3.,5), Power5(3.));
+   BOOST_CHECK_EQUAL(Power(4.,5), Power5(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power6)
+{
+   BOOST_CHECK_EQUAL(Power(2.,6), Power6(2.));
+   BOOST_CHECK_EQUAL(Power(3.,6), Power6(3.));
+   BOOST_CHECK_EQUAL(Power(4.,6), Power6(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power7)
+{
+   BOOST_CHECK_EQUAL(Power(2.,7), Power7(2.));
+   BOOST_CHECK_EQUAL(Power(3.,7), Power7(3.));
+   BOOST_CHECK_EQUAL(Power(4.,7), Power7(4.));
+}
+
+BOOST_AUTO_TEST_CASE(test_Power8)
+{
+   BOOST_CHECK_EQUAL(Power(2.,8), Power8(2.));
+   BOOST_CHECK_EQUAL(Power(3.,8), Power8(3.));
+   BOOST_CHECK_EQUAL(Power(4.,8), Power8(4.));
+}
+
+template <typename Base, typename Exponent>
+double time_Power(std::size_t N, Base b, Exponent e)
+{
+   Stopwatch sw;
+   sw.start();
+   for (std::size_t i = 0; i < N; i++)
+      volatile auto r = Power(b,e);
+   sw.stop();
+   return sw.get_time_in_seconds();
+}
+
+#define DEF_FUN(f)                              \
+   double time_##f(std::size_t N, double b)     \
+   {                                            \
+      Stopwatch sw;                             \
+      sw.start();                               \
+      for (std::size_t i = 0; i < N; i++)       \
+         volatile auto r = f(b);                \
+      sw.stop();                                \
+      return sw.get_time_in_seconds();          \
+   }
+
+DEF_FUN(Cube)
+DEF_FUN(Quad)
+DEF_FUN(Power5)
+DEF_FUN(Power6)
+DEF_FUN(Power7)
+DEF_FUN(Power8)
+
+BOOST_AUTO_TEST_CASE(test_Power_benchmark)
+{
+   const std::size_t N = 100000000;
+
+   const double timed_Power_3 = time_Power(N, 3., 3);
+   const double timed_Power_4 = time_Power(N, 3., 4);
+   const double timed_Power_5 = time_Power(N, 3., 5);
+   const double timed_Power_6 = time_Power(N, 3., 6);
+   const double timed_Power_7 = time_Power(N, 3., 7);
+   const double timed_Power_8 = time_Power(N, 3., 8);
+   const double timed_Cube    = time_Cube(N, 3.);
+   const double timed_Quad    = time_Quad(N, 3.);
+   const double timed_Power5  = time_Power5(N, 3.);
+   const double timed_Power6  = time_Power6(N, 3.);
+   const double timed_Power7  = time_Power7(N, 3.);
+   const double timed_Power8  = time_Power8(N, 3.);
+
+   BOOST_TEST_MESSAGE("Power(double,3): " << timed_Power_3 << " s");
+   BOOST_TEST_MESSAGE("Cube(double)   : " << timed_Cube << " s");
+   BOOST_TEST_MESSAGE("Power(double,4): " << timed_Power_4 << " s");
+   BOOST_TEST_MESSAGE("Quad(double)   : " << timed_Quad << " s");
+   BOOST_TEST_MESSAGE("Power(double,5): " << timed_Power_5 << " s");
+   BOOST_TEST_MESSAGE("Power5(double) : " << timed_Power5 << " s");
+   BOOST_TEST_MESSAGE("Power(double,6): " << timed_Power_6 << " s");
+   BOOST_TEST_MESSAGE("Power6(double) : " << timed_Power6 << " s");
+   BOOST_TEST_MESSAGE("Power(double,7): " << timed_Power_7 << " s");
+   BOOST_TEST_MESSAGE("Power7(double) : " << timed_Power7 << " s");
+   BOOST_TEST_MESSAGE("Power(double,8): " << timed_Power_8 << " s");
+   BOOST_TEST_MESSAGE("Power8(double) : " << timed_Power8 << " s");
+
+   BOOST_CHECK_LT(timed_Cube, timed_Power_3);
+   BOOST_CHECK_LT(timed_Quad, timed_Power_4);
+   BOOST_CHECK_LT(timed_Power5, timed_Power_5);
+   BOOST_CHECK_LT(timed_Power6, timed_Power_6);
+   BOOST_CHECK_LT(timed_Power7, timed_Power_7);
+   BOOST_CHECK_LT(timed_Power8, timed_Power_8);
+}
+
 BOOST_AUTO_TEST_CASE(test_Min)
 {
    BOOST_CHECK_EQUAL(Min(0.), 0.);
@@ -551,6 +599,56 @@ BOOST_AUTO_TEST_CASE(test_Max)
    BOOST_CHECK_EQUAL(Max(-1.,0.,1.), 1.);
 }
 
+BOOST_AUTO_TEST_CASE(test_UnitVector)
+{
+   // 2-vector
+   BOOST_CHECK_EQUAL((UnitVector<2,0>())(0), 1.);
+   BOOST_CHECK_EQUAL((UnitVector<2,0>())(1), 0.);
+   BOOST_CHECK_EQUAL((UnitVector<2,1>())(0), 0.);
+   BOOST_CHECK_EQUAL((UnitVector<2,1>())(1), 1.);
+
+   BOOST_CHECK_EQUAL(UnitVector<2>(0)(0), 1.);
+   BOOST_CHECK_EQUAL(UnitVector<2>(0)(1), 0.);
+   BOOST_CHECK_EQUAL(UnitVector<2>(1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector<2>(1)(1), 1.);
+
+   BOOST_CHECK_EQUAL(UnitVector(2,0)(0), 1.);
+   BOOST_CHECK_EQUAL(UnitVector(2,0)(1), 0.);
+   BOOST_CHECK_EQUAL(UnitVector(2,1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector(2,1)(1), 1.);
+
+   // 3-vector
+   BOOST_CHECK_EQUAL((UnitVector<3,1>())(0), 0.);
+   BOOST_CHECK_EQUAL((UnitVector<3,1>())(1), 1.);
+   BOOST_CHECK_EQUAL((UnitVector<3,1>())(2), 0.);
+
+   BOOST_CHECK_EQUAL(UnitVector<3>(1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector<3>(1)(1), 1.);
+   BOOST_CHECK_EQUAL(UnitVector<3>(1)(2), 0.);
+
+   BOOST_CHECK_EQUAL(UnitVector(3,1)(0), 0.);
+   BOOST_CHECK_EQUAL(UnitVector(3,1)(1), 1.);
+   BOOST_CHECK_EQUAL(UnitVector(3,1)(2), 0.);
+}
+
+BOOST_AUTO_TEST_CASE(test_MatrixProjector)
+{
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(0,0), 1.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(1,0), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(0,1), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2,0,0>())(1,1), 0.);
+
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(0,0), 1.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(1,0), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(0,1), 0.);
+   BOOST_CHECK_EQUAL((MatrixProjector<2,2>(0,0))(1,1), 0.);
+
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(0,0), 1.);
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(1,0), 0.);
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(0,1), 0.);
+   BOOST_CHECK_EQUAL(MatrixProjector(2,2,0,0)(1,1), 0.);
+}
+
 BOOST_AUTO_TEST_CASE(test_Print_functions)
 {
    PrintDEBUG("A debug message");
@@ -559,4 +657,9 @@ BOOST_AUTO_TEST_CASE(test_Print_functions)
    PrintWARNING("A warning message");
 
    BOOST_CHECK_THROW(PrintFATAL("A fatal message"), flexiblesusy::FatalError);
+}
+
+BOOST_AUTO_TEST_CASE(test_FSThrow)
+{
+   BOOST_CHECK_THROW(FSThrow("msg"), flexiblesusy::PhysicalError);
 }

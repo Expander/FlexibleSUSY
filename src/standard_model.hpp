@@ -28,21 +28,22 @@
 
 #include "betafunction.hpp"
 #include "standard_model_physical.hpp"
-#include "two_loop_corrections.hpp"
+#include "loop_corrections.hpp"
+#include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
 #include "config.h"
 #include "physical_input.hpp"
 
+#include <array>
 #include <iosfwd>
 #include <string>
 
-#include <gsl/gsl_vector.h>
 #include <Eigen/Core>
 
 namespace softsusy {
    class QedQcd;
-}
+} // namespace softsusy
 
 namespace flexiblesusy {
 
@@ -50,15 +51,15 @@ class EWSB_solver;
 
 namespace standard_model_info {
 
-   enum Particles : unsigned {VG, Hp, Fv, Ah, hh, VP, VZ, Fd, Fu, Fe, VWp,
+   enum Particles : int {VG, Hp, Fv, Ah, hh, VP, VZ, Fd, Fu, Fe, VWp,
       NUMBER_OF_PARTICLES};
 
-   enum Parameters : unsigned {g1, g2, g3, Lambdax, Yu0_0, Yu0_1, Yu0_2, Yu1_0,
+   enum Parameters : int {g1, g2, g3, Lambdax, Yu0_0, Yu0_1, Yu0_2, Yu1_0,
       Yu1_1, Yu1_2, Yu2_0, Yu2_1, Yu2_2, Yd0_0, Yd0_1, Yd0_2, Yd1_0, Yd1_1, Yd1_2
       , Yd2_0, Yd2_1, Yd2_2, Ye0_0, Ye0_1, Ye0_2, Ye1_0, Ye1_1, Ye1_2, Ye2_0,
       Ye2_1, Ye2_2, mu2, v, NUMBER_OF_PARAMETERS};
 
-   enum Mixings : unsigned {ReVd00, ImVd00, ReVd01, ImVd01, ReVd02, ImVd02,
+   enum Mixings : int {ReVd00, ImVd00, ReVd01, ImVd01, ReVd02, ImVd02,
       ReVd10, ImVd10, ReVd11, ImVd11, ReVd12, ImVd12, ReVd20, ImVd20, ReVd21,
       ImVd21, ReVd22, ImVd22, ReUd00, ImUd00, ReUd01, ImUd01, ReUd02, ImUd02,
       ReUd10, ImUd10, ReUd11, ImUd11, ReUd12, ImUd12, ReUd20, ImUd20, ReUd21,
@@ -76,14 +77,39 @@ namespace standard_model_info {
    extern const double normalization_g2;
    extern const double normalization_g3;
 
-   extern const unsigned particle_multiplicities[NUMBER_OF_PARTICLES];
-   extern const char* particle_names[NUMBER_OF_PARTICLES];
-   extern const char* particle_latex_names[NUMBER_OF_PARTICLES];
-   extern const char* parameter_names[NUMBER_OF_PARAMETERS];
-   extern const char* particle_mixing_names[NUMBER_OF_MIXINGS];
-   extern const char* model_name;
+   extern const std::array<int, NUMBER_OF_PARTICLES> particle_multiplicities;
+   extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_names;
+   extern const std::array<std::string, NUMBER_OF_PARTICLES> particle_latex_names;
+   extern const std::array<std::string, NUMBER_OF_PARAMETERS> parameter_names;
+   extern const std::array<std::string, NUMBER_OF_MIXINGS> particle_mixing_names;
+   extern const std::string model_name;
    constexpr bool is_low_energy_model = false;
    constexpr bool is_supersymmetric_model = false;
+
+   class Standard_model_particle_names : public Names {
+   public:
+      virtual ~Standard_model_particle_names() = default;
+      virtual const std::string& get(int index) const override {
+         return particle_names[index];
+      }
+      virtual int size() const override {
+         return NUMBER_OF_PARAMETERS;
+      }
+   };
+
+   class Standard_model_parameter_names : public Names {
+   public:
+      virtual ~Standard_model_parameter_names() = default;
+      virtual const std::string& get(int index) const override {
+         return parameter_names[index];
+      }
+      virtual int size() const override {
+         return NUMBER_OF_PARTICLES;
+      }
+   };
+
+   const Standard_model_particle_names  particle_names_getter{};
+   const Standard_model_parameter_names parameter_names_getter{};
 
 } // namespace standard_model_info
 
@@ -104,43 +130,45 @@ public:
    , double g1_, double g2_, double g3_, double Lambdax_, const Eigen::Matrix<
    double,3,3>& Yu_, const Eigen::Matrix<double,3,3>& Yd_, const Eigen::Matrix<
    double,3,3>& Ye_, double mu2_, double v_);
+   Standard_model(const Standard_model&) = default;
+   Standard_model(Standard_model&&) = default;
 
-   virtual ~Standard_model();
+   virtual ~Standard_model() = default;
+
+   Standard_model& operator=(const Standard_model&) = default;
+   Standard_model& operator=(Standard_model&&) = default;
 
    /// number of EWSB equations
-   static const std::size_t number_of_ewsb_equations = 1;
+   static const int number_of_ewsb_equations = 1;
 
    void calculate_DRbar_masses();
-   void calculate_DRbar_parameters();
    void calculate_pole_masses();
    void check_pole_masses_for_tachyons();
    void do_force_output(bool);
    bool do_force_output() const;
    void set_ewsb_iteration_precision(double);
-   void set_ewsb_loop_order(unsigned);
-   void set_two_loop_corrections(const Two_loop_corrections&);
-   const Two_loop_corrections& get_two_loop_corrections() const;
-   void set_number_of_ewsb_iterations(std::size_t);
-   void set_number_of_mass_iterations(std::size_t);
-   std::size_t get_number_of_ewsb_iterations() const;
-   std::size_t get_number_of_mass_iterations() const;
-   void set_pole_mass_loop_order(unsigned);
-   unsigned get_pole_mass_loop_order() const;
+   void set_ewsb_loop_order(int);
+   void set_loop_corrections(const Loop_corrections&);
+   const Loop_corrections& get_loop_corrections() const;
+   void set_threshold_corrections(const Threshold_corrections&);
+   const Threshold_corrections& get_threshold_corrections() const;
+   void set_pole_mass_loop_order(int);
+   int get_pole_mass_loop_order() const;
    void set_physical(const Standard_model_physical&);
    double get_ewsb_iteration_precision() const;
    double get_ewsb_loop_order() const;
    const Standard_model_physical& get_physical() const;
    Standard_model_physical& get_physical();
-   const Problems<standard_model_info::NUMBER_OF_PARTICLES>& get_problems() const;
-   Problems<standard_model_info::NUMBER_OF_PARTICLES>& get_problems();
+   const Problems& get_problems() const;
+   Problems& get_problems();
    int solve_ewsb_tree_level();
    int solve_ewsb_one_loop();
    int solve_ewsb();            ///< solve EWSB at ewsb_loop_order level
 
-   virtual Eigen::ArrayXd beta() const;
-   virtual Eigen::ArrayXd get() const;
-   void print(std::ostream& out = std::cout) const;
-   virtual void set(const Eigen::ArrayXd&);
+   virtual Eigen::ArrayXd beta() const override;
+   virtual Eigen::ArrayXd get() const override;
+   void print(std::ostream& out = std::cerr) const;
+   virtual void set(const Eigen::ArrayXd&) override;
 
    Standard_model calc_beta() const;
    void clear();
@@ -150,7 +178,7 @@ public:
 
    void calculate_spectrum();
    std::string name() const;
-   void run_to(double scale, double eps = -1.0);
+   virtual void run_to(double scale, double eps = -1.0) override;
    void set_precision(double);
    double get_precision() const;
 
@@ -262,10 +290,10 @@ public:
    double CpconjHpVZHp() const;
    double CpHpconjHpconjVWpVWp() const;
    std::complex<double> CpHpconjHpVZVZ() const;
-   std::complex<double> CpconjHpbarFdFuPR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CpconjHpbarFdFuPL(unsigned gI1, unsigned gI2) const;
-   double CpconjHpbarFeFvPR(unsigned , unsigned ) const;
-   std::complex<double> CpconjHpbarFeFvPL(unsigned gI1, unsigned gI2) const;
+   std::complex<double> CpconjHpbarFdFuPR(int gI1, int gI2) const;
+   std::complex<double> CpconjHpbarFdFuPL(int gI1, int gI2) const;
+   double CpconjHpbarFeFvPR(int , int ) const;
+   std::complex<double> CpconjHpbarFeFvPL(int gI1, int gI2) const;
    double CpAhhhAh() const;
    std::complex<double> CpAhbargWpgWp() const;
    std::complex<double> CpAhbargWpCgWpC() const;
@@ -276,12 +304,12 @@ public:
    std::complex<double> CpAhconjVWpHp() const;
    double CpAhAhconjVWpVWp() const;
    std::complex<double> CpAhAhVZVZ() const;
-   std::complex<double> CpAhbarFdFdPR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CpAhbarFdFdPL(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CpAhbarFeFePR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CpAhbarFeFePL(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CpAhbarFuFuPR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CpAhbarFuFuPL(unsigned gI1, unsigned gI2) const;
+   std::complex<double> CpAhbarFdFdPR(int gI1, int gI2) const;
+   std::complex<double> CpAhbarFdFdPL(int gI1, int gI2) const;
+   std::complex<double> CpAhbarFeFePR(int gI1, int gI2) const;
+   std::complex<double> CpAhbarFeFePL(int gI1, int gI2) const;
+   std::complex<double> CpAhbarFuFuPR(int gI1, int gI2) const;
+   std::complex<double> CpAhbarFuFuPL(int gI1, int gI2) const;
    double CphhAhAh() const;
    double Cphhhhhh() const;
    double CphhVZVZ() const;
@@ -297,12 +325,12 @@ public:
    double CphhconjVWpHp() const;
    double CphhhhconjVWpVWp() const;
    std::complex<double> CphhhhVZVZ() const;
-   std::complex<double> CphhbarFdFdPR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CphhbarFdFdPL(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CphhbarFeFePR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CphhbarFeFePL(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CphhbarFuFuPR(unsigned gI1, unsigned gI2) const;
-   std::complex<double> CphhbarFuFuPL(unsigned gI1, unsigned gI2) const;
+   std::complex<double> CphhbarFdFdPR(int gI1, int gI2) const;
+   std::complex<double> CphhbarFdFdPL(int gI1, int gI2) const;
+   std::complex<double> CphhbarFeFePR(int gI1, int gI2) const;
+   std::complex<double> CphhbarFeFePL(int gI1, int gI2) const;
+   std::complex<double> CphhbarFuFuPR(int gI1, int gI2) const;
+   std::complex<double> CphhbarFuFuPL(int gI1, int gI2) const;
    std::complex<double> CpVZhhAh() const;
    double CpVZVZhh() const;
    double CpVZbargWpgWp() const;
@@ -313,14 +341,14 @@ public:
    std::complex<double> CpVZVZhhhh() const;
    std::complex<double> CpVZVZconjHpHp() const;
    double CpVZconjVWpVWp() const;
-   double CpVZbarFdFdPL(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFdFdPR(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFeFePL(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFeFePR(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFuFuPL(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFuFuPR(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFvFvPL(unsigned gI1, unsigned gI2) const;
-   double CpVZbarFvFvPR(unsigned , unsigned ) const;
+   double CpVZbarFdFdPL(int gI1, int gI2) const;
+   double CpVZbarFdFdPR(int gI1, int gI2) const;
+   double CpVZbarFeFePL(int gI1, int gI2) const;
+   double CpVZbarFeFePR(int gI1, int gI2) const;
+   double CpVZbarFuFuPL(int gI1, int gI2) const;
+   double CpVZbarFuFuPR(int gI1, int gI2) const;
+   double CpVZbarFvFvPL(int gI1, int gI2) const;
+   double CpVZbarFvFvPR(int , int ) const;
    double CpVZVZconjVWpVWp1() const;
    double CpVZVZconjVWpVWp2() const;
    double CpVZVZconjVWpVWp3() const;
@@ -338,10 +366,10 @@ public:
    double CpVWpconjVWpconjHpHp() const;
    double CpconjVWpVWpVP() const;
    double CpconjVWpVZVWp() const;
-   std::complex<double> CpconjVWpbarFdFuPL(unsigned gI1, unsigned gI2) const;
-   double CpconjVWpbarFdFuPR(unsigned , unsigned ) const;
-   std::complex<double> CpconjVWpbarFeFvPL(unsigned gI1, unsigned gI2) const;
-   double CpconjVWpbarFeFvPR(unsigned , unsigned ) const;
+   std::complex<double> CpconjVWpbarFdFuPL(int gI1, int gI2) const;
+   double CpconjVWpbarFdFuPR(int , int ) const;
+   std::complex<double> CpconjVWpbarFeFvPL(int gI1, int gI2) const;
+   double CpconjVWpbarFeFvPR(int , int ) const;
    double CpVWpconjVWpVPVP1() const;
    double CpVWpconjVWpVPVP2() const;
    double CpVWpconjVWpVPVP3() const;
@@ -351,113 +379,124 @@ public:
    double CpVWpconjVWpconjVWpVWp1() const;
    double CpVWpconjVWpconjVWpVWp2() const;
    double CpVWpconjVWpconjVWpVWp3() const;
-   std::complex<double> CpbarUFdFdAhPL(unsigned gO2, unsigned gI1) const;
-   std::complex<double> CpbarUFdFdAhPR(unsigned gO1, unsigned gI1) const;
-   std::complex<double> CpbarUFdhhFdPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFdhhFdPR(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFdVGFdPR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFdVGFdPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFdVPFdPR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFdVPFdPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFdVZFdPR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFdVZFdPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFdconjHpFuPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFdconjHpFuPR(unsigned gO1, unsigned gI2) const;
-   double CpbarUFdconjVWpFuPR(unsigned , unsigned ) const;
-   std::complex<double> CpbarUFdconjVWpFuPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFuFuAhPL(unsigned gO2, unsigned gI1) const;
-   std::complex<double> CpbarUFuFuAhPR(unsigned gO1, unsigned gI1) const;
-   std::complex<double> CpbarUFuhhFuPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFuhhFuPR(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFuHpFdPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFuHpFdPR(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFuVGFuPR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFuVGFuPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFuVPFuPR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFuVPFuPL(unsigned gO1, unsigned gI2) const;
-   double CpbarUFuVWpFdPR(unsigned , unsigned ) const;
-   std::complex<double> CpbarUFuVWpFdPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFuVZFuPR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFuVZFuPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFeFeAhPL(unsigned gO2, unsigned gI1) const;
-   std::complex<double> CpbarUFeFeAhPR(unsigned gO1, unsigned gI1) const;
-   std::complex<double> CpbarUFehhFePL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFehhFePR(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFeVPFePR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFeVPFePL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFeVZFePR(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarUFeVZFePL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarUFeconjHpFvPL(unsigned gO2, unsigned gI2) const;
-   double CpbarUFeconjHpFvPR(unsigned , unsigned ) const;
-   double CpbarUFeconjVWpFvPR(unsigned , unsigned ) const;
-   double CpbarUFeconjVWpFvPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarFdFdAhPL(unsigned gO2, unsigned gI1) const;
-   std::complex<double> CpbarFdFdAhPR(unsigned gO1, unsigned gI1) const;
-   std::complex<double> CpbarFdhhFdPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarFdhhFdPR(unsigned gO1, unsigned gI2) const;
-   double CpbarFdVZFdPR(unsigned gO2, unsigned gI2) const;
-   double CpbarFdVZFdPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarFdconjHpFuPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarFdconjHpFuPR(unsigned gO1, unsigned gI2) const;
-   double CpbarFdconjVWpFuPR(unsigned , unsigned ) const;
-   std::complex<double> CpbarFdconjVWpFuPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarFeFeAhPL(unsigned gO2, unsigned gI1) const;
-   std::complex<double> CpbarFeFeAhPR(unsigned gO1, unsigned gI1) const;
-   std::complex<double> CpbarFehhFePL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarFehhFePR(unsigned gO1, unsigned gI2) const;
-   double CpbarFeVZFePR(unsigned gO2, unsigned gI2) const;
-   double CpbarFeVZFePL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarFeconjHpFvPL(unsigned gO2, unsigned gI2) const;
-   double CpbarFeconjHpFvPR(unsigned , unsigned ) const;
-   double CpbarFeconjVWpFvPR(unsigned , unsigned ) const;
-   std::complex<double> CpbarFeconjVWpFvPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarFuFuAhPL(unsigned gO2, unsigned gI1) const;
-   std::complex<double> CpbarFuFuAhPR(unsigned gO1, unsigned gI1) const;
-   std::complex<double> CpbarFuhhFuPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarFuhhFuPR(unsigned gO1, unsigned gI2) const;
-   std::complex<double> CpbarFuHpFdPL(unsigned gO2, unsigned gI2) const;
-   std::complex<double> CpbarFuHpFdPR(unsigned gO1, unsigned gI2) const;
-   double CpbarFuVPFuPR(unsigned gO2, unsigned gI2) const;
-   double CpbarFuVPFuPL(unsigned gO1, unsigned gI2) const;
-   double CpbarFuVWpFdPR(unsigned , unsigned ) const;
-   std::complex<double> CpbarFuVWpFdPL(unsigned gO1, unsigned gI2) const;
-   double CpbarFuVZFuPR(unsigned gO2, unsigned gI2) const;
-   double CpbarFuVZFuPL(unsigned gO1, unsigned gI2) const;
-   std::complex<double> self_energy_Hp(double p ) const;
-   std::complex<double> self_energy_Ah(double p ) const;
-   std::complex<double> self_energy_hh(double p ) const;
-   std::complex<double> self_energy_VZ(double p ) const;
-   std::complex<double> self_energy_VWp(double p ) const;
-   std::complex<double> self_energy_Fd_1(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fd_PR(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fd_PL(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_1(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_PR(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_PL(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fe_1(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fe_PR(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fe_PL(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_VZ_heavy(double p ) const;
-   std::complex<double> self_energy_VWp_heavy(double p ) const;
-   std::complex<double> self_energy_Fd_1_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fd_PR_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fd_PL_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fe_1_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fe_PR_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fe_PL_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_1_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_PR_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_PL_heavy_rotated(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_1_heavy(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_PR_heavy(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> self_energy_Fu_PL_heavy(double p , unsigned gO1, unsigned gO2) const;
-   std::complex<double> tadpole_hh() const;
+   std::complex<double> CpbarUFdFdAhPL(int gO2, int gI1) const;
+   std::complex<double> CpbarUFdFdAhPR(int gO1, int gI1) const;
+   std::complex<double> CpbarUFdhhFdPL(int gO2, int gI2) const;
+   std::complex<double> CpbarUFdhhFdPR(int gO1, int gI2) const;
+   std::complex<double> CpbarUFdVGFdPR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFdVGFdPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFdVPFdPR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFdVPFdPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFdVZFdPR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFdVZFdPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFdconjHpFuPL(int gO2, int gI2) const;
+   std::complex<double> CpbarUFdconjHpFuPR(int gO1, int gI2) const;
+   double CpbarUFdconjVWpFuPR(int , int ) const;
+   std::complex<double> CpbarUFdconjVWpFuPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFuFuAhPL(int gO2, int gI1) const;
+   std::complex<double> CpbarUFuFuAhPR(int gO1, int gI1) const;
+   std::complex<double> CpbarUFuhhFuPL(int gO2, int gI2) const;
+   std::complex<double> CpbarUFuhhFuPR(int gO1, int gI2) const;
+   std::complex<double> CpbarUFuHpFdPL(int gO2, int gI2) const;
+   std::complex<double> CpbarUFuHpFdPR(int gO1, int gI2) const;
+   std::complex<double> CpbarUFuVGFuPR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFuVGFuPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFuVPFuPR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFuVPFuPL(int gO1, int gI2) const;
+   double CpbarUFuVWpFdPR(int , int ) const;
+   std::complex<double> CpbarUFuVWpFdPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFuVZFuPR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFuVZFuPL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFeFeAhPL(int gO2, int gI1) const;
+   std::complex<double> CpbarUFeFeAhPR(int gO1, int gI1) const;
+   std::complex<double> CpbarUFehhFePL(int gO2, int gI2) const;
+   std::complex<double> CpbarUFehhFePR(int gO1, int gI2) const;
+   std::complex<double> CpbarUFeVPFePR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFeVPFePL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFeVZFePR(int gO2, int gI2) const;
+   std::complex<double> CpbarUFeVZFePL(int gO1, int gI2) const;
+   std::complex<double> CpbarUFeconjHpFvPL(int gO2, int gI2) const;
+   double CpbarUFeconjHpFvPR(int , int ) const;
+   double CpbarUFeconjVWpFvPR(int , int ) const;
+   double CpbarUFeconjVWpFvPL(int gO1, int gI2) const;
+   std::complex<double> CpbarFdFdAhPL(int gO2, int gI1) const;
+   std::complex<double> CpbarFdFdAhPR(int gO1, int gI1) const;
+   std::complex<double> CpbarFdhhFdPL(int gO2, int gI2) const;
+   std::complex<double> CpbarFdhhFdPR(int gO1, int gI2) const;
+   double CpbarFdVZFdPR(int gO2, int gI2) const;
+   double CpbarFdVZFdPL(int gO1, int gI2) const;
+   std::complex<double> CpbarFdconjHpFuPL(int gO2, int gI2) const;
+   std::complex<double> CpbarFdconjHpFuPR(int gO1, int gI2) const;
+   double CpbarFdconjVWpFuPR(int , int ) const;
+   std::complex<double> CpbarFdconjVWpFuPL(int gO1, int gI2) const;
+   std::complex<double> CpbarFeFeAhPL(int gO2, int gI1) const;
+   std::complex<double> CpbarFeFeAhPR(int gO1, int gI1) const;
+   std::complex<double> CpbarFehhFePL(int gO2, int gI2) const;
+   std::complex<double> CpbarFehhFePR(int gO1, int gI2) const;
+   double CpbarFeVZFePR(int gO2, int gI2) const;
+   double CpbarFeVZFePL(int gO1, int gI2) const;
+   std::complex<double> CpbarFeconjHpFvPL(int gO2, int gI2) const;
+   double CpbarFeconjHpFvPR(int , int ) const;
+   double CpbarFeconjVWpFvPR(int , int ) const;
+   std::complex<double> CpbarFeconjVWpFvPL(int gO1, int gI2) const;
+   std::complex<double> CpbarFuFuAhPL(int gO2, int gI1) const;
+   std::complex<double> CpbarFuFuAhPR(int gO1, int gI1) const;
+   std::complex<double> CpbarFuhhFuPL(int gO2, int gI2) const;
+   std::complex<double> CpbarFuhhFuPR(int gO1, int gI2) const;
+   std::complex<double> CpbarFuHpFdPL(int gO2, int gI2) const;
+   std::complex<double> CpbarFuHpFdPR(int gO1, int gI2) const;
+   double CpbarFuVPFuPR(int gO2, int gI2) const;
+   double CpbarFuVPFuPL(int gO1, int gI2) const;
+   double CpbarFuVWpFdPR(int , int ) const;
+   std::complex<double> CpbarFuVWpFdPL(int gO1, int gI2) const;
+   double CpbarFuVZFuPR(int gO2, int gI2) const;
+   double CpbarFuVZFuPL(int gO1, int gI2) const;
+   std::complex<double> self_energy_Hp_1loop(double p ) const;
+   std::complex<double> self_energy_Ah_1loop(double p ) const;
+   std::complex<double> self_energy_hh_1loop(double p ) const;
+   std::complex<double> self_energy_VZ_1loop(double p ) const;
+   std::complex<double> self_energy_VWp_1loop(double p ) const;
+   std::complex<double> self_energy_Fd_1loop_1(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PR(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PL(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_1(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PR(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PL(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_1(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PR(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PL(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fd_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fe_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_1_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PR_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PL_heavy_rotated(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_1_heavy(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PR_heavy(double p , int gO1, int gO2) const;
+   std::complex<double> self_energy_Fu_1loop_PL_heavy(double p , int gO1, int gO2) const;
+
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1loop_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1loop_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fd_1loop_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1loop_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1loop_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fu_1loop_PL(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1loop_1(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1loop_PR(double p) const;
+   Eigen::Matrix<std::complex<double>,3,3> self_energy_Fe_1loop_PL(double p) const;
+
+   std::complex<double> tadpole_hh_1loop() const;
 
    /// calculates the tadpoles at current loop order
    Eigen::Matrix<double, number_of_ewsb_equations, 1> tadpole_equations() const;
 
    /// calculates Higgs 2-loop self-energy
-   double self_energy_hh_2loop() const;
+   double self_energy_hh_2loop(double p) const;
+   /// calculates Higgs 3-loop self-energy
+   double self_energy_hh_3loop() const;
 
    void calculate_MVG_pole();
    void calculate_MFv_pole();
@@ -495,34 +534,34 @@ public:
 protected:
 
    // Running parameters
-   double g1;
-   double g2;
-   double g3;
-   double Lambdax;
-   Eigen::Matrix<double,3,3> Yu;
-   Eigen::Matrix<double,3,3> Yd;
-   Eigen::Matrix<double,3,3> Ye;
-   double mu2;
-   double v;
+   double g1{};
+   double g2{};
+   double g3{};
+   double Lambdax{};
+   Eigen::Matrix<double,3,3> Yu{Eigen::Matrix<double,3,3>::Zero()};
+   Eigen::Matrix<double,3,3> Yd{Eigen::Matrix<double,3,3>::Zero()};
+   Eigen::Matrix<double,3,3> Ye{Eigen::Matrix<double,3,3>::Zero()};
+   double mu2{};
+   double v{};
 
 private:
 
    static const int numberOfParameters = 33;
 
    struct Beta_traces {
-      double traceYdAdjYd;
-      double traceYeAdjYe;
-      double traceYuAdjYu;
-      double traceYdAdjYdYdAdjYd;
-      double traceYeAdjYeYeAdjYe;
-      double traceYuAdjYuYuAdjYu;
-      double traceYdAdjYuYuAdjYd;
-      double traceYdAdjYdYdAdjYdYdAdjYd;
-      double traceYdAdjYdYdAdjYuYuAdjYd;
-      double traceYdAdjYuYuAdjYdYdAdjYd;
-      double traceYdAdjYuYuAdjYuYuAdjYd;
-      double traceYeAdjYeYeAdjYeYeAdjYe;
-      double traceYuAdjYuYuAdjYuYuAdjYu;
+      double traceYdAdjYd{};
+      double traceYeAdjYe{};
+      double traceYuAdjYu{};
+      double traceYdAdjYdYdAdjYd{};
+      double traceYeAdjYeYeAdjYe{};
+      double traceYuAdjYuYuAdjYu{};
+      double traceYdAdjYuYuAdjYd{};
+      double traceYdAdjYdYdAdjYdYdAdjYd{};
+      double traceYdAdjYdYdAdjYuYuAdjYd{};
+      double traceYdAdjYuYuAdjYdYdAdjYd{};
+      double traceYdAdjYuYuAdjYuYuAdjYd{};
+      double traceYeAdjYeYeAdjYeYeAdjYe{};
+      double traceYuAdjYuYuAdjYuYuAdjYu{};
    };
    void calc_beta_traces(Beta_traces&) const;
 
@@ -554,37 +593,35 @@ private:
    double calc_beta_v_two_loop(const Beta_traces&) const;
    double calc_beta_v_three_loop(const Beta_traces&) const;
 
-   struct EWSB_args {
-      Standard_model* model;
-      unsigned ewsb_loop_order;
-   };
+   using EWSB_vector_t = Eigen::Matrix<double,number_of_ewsb_equations,1>;
 
    class EEWSBStepFailed : public Error {
    public:
-      virtual ~EEWSBStepFailed() {}
-      virtual std::string what() const { return "Could not perform EWSB step."; }
+      virtual ~EEWSBStepFailed() = default;
+      virtual std::string what() const override { return "Could not perform EWSB step."; }
    };
 
-   std::size_t number_of_ewsb_iterations;
-   std::size_t number_of_mass_iterations;
-   unsigned ewsb_loop_order;
-   unsigned pole_mass_loop_order;
-   bool force_output;             ///< switch to force output of pole masses
-   double precision;              ///< RG running precision
-   double ewsb_iteration_precision;
-   Standard_model_physical physical; ///< contains the pole masses and mixings
-   Problems<standard_model_info::NUMBER_OF_PARTICLES> problems;
-   Two_loop_corrections two_loop_corrections; ///< used 2-loop corrections
-   Physical_input input;
+   int ewsb_loop_order{2};
+   int pole_mass_loop_order{2};
+   bool force_output{false};      ///< switch to force output of pole masses
+   double precision{1e-3};        ///< RG running precision
+   double ewsb_iteration_precision{1e-5};
+   Standard_model_physical physical{}; ///< contains the pole masses and mixings
+   Problems problems{standard_model_info::model_name,
+                     &standard_model_info::particle_names_getter,
+                     &standard_model_info::parameter_names_getter};
+   Loop_corrections loop_corrections{}; ///< used loop pole mass corrections
+   Threshold_corrections threshold_corrections{}; ///< used low-energy threshold corrections
+   Physical_input input{};
 
+   int get_number_of_ewsb_iterations() const;
+   int get_number_of_mass_iterations() const;
    int solve_ewsb_iteratively();
-   int solve_ewsb_iteratively(unsigned);
+   int solve_ewsb_iteratively(int);
    int solve_ewsb_iteratively_with(EWSB_solver*, const Eigen::Matrix<double, number_of_ewsb_equations, 1>&);
    int solve_ewsb_tree_level_custom();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_initial_guess();
-   Eigen::Matrix<double, number_of_ewsb_equations, 1> ewsb_step() const;
-   static int ewsb_step(const gsl_vector*, void*, gsl_vector*);
-   static int tadpole_equations(const gsl_vector*, void*, gsl_vector*);
+   EWSB_vector_t ewsb_initial_guess();
+   EWSB_vector_t ewsb_step() const;
    void copy_DRbar_masses_to_pole_masses();
 
    void initial_guess_for_parameters(const softsusy::QedQcd&);
@@ -601,27 +638,27 @@ private:
    double G0(double, double, double) const;
 
    // DR-bar masses
-   double MVG;
-   double MHp;
-   Eigen::Array<double,3,1> MFv;
-   double MAh;
-   double Mhh;
-   double MVP;
-   double MVZ;
-   Eigen::Array<double,3,1> MFd;
-   Eigen::Array<double,3,1> MFu;
-   Eigen::Array<double,3,1> MFe;
-   double MVWp;
-   Eigen::Array<double,2,1> MVPVZ;
+   double MVG{};
+   double MHp{};
+   Eigen::Array<double,3,1> MFv{Eigen::Array<double,3,1>::Zero()};
+   double MAh{};
+   double Mhh{};
+   double MVP{};
+   double MVZ{};
+   Eigen::Array<double,3,1> MFd{Eigen::Array<double,3,1>::Zero()};
+   Eigen::Array<double,3,1> MFu{Eigen::Array<double,3,1>::Zero()};
+   Eigen::Array<double,3,1> MFe{Eigen::Array<double,3,1>::Zero()};
+   double MVWp{};
+   Eigen::Array<double,2,1> MVPVZ{Eigen::Array<double,2,1>::Zero()};
 
    // DR-bar mixing matrices
-   Eigen::Matrix<std::complex<double>,3,3> Vd;
-   Eigen::Matrix<std::complex<double>,3,3> Ud;
-   Eigen::Matrix<std::complex<double>,3,3> Vu;
-   Eigen::Matrix<std::complex<double>,3,3> Uu;
-   Eigen::Matrix<std::complex<double>,3,3> Ve;
-   Eigen::Matrix<std::complex<double>,3,3> Ue;
-   Eigen::Matrix<double,2,2> ZZ;
+   Eigen::Matrix<std::complex<double>,3,3> Vd{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Ud{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Vu{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Uu{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Ve{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> Ue{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<double,2,2> ZZ{Eigen::Matrix<double,2,2>::Zero()};
 
 
 };

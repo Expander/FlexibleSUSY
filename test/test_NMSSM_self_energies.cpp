@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE( test_NMSSM_self_energy_neutral_higgs )
    s.higgs(accuracy, piWWT, pizztMS, physical); // does one iteration
    s.setPhys(physical); // now modified
 
-   m.set_number_of_mass_iterations(1);
+   m.set_precision(std::pow(10,-0.1)); // performs 1 iteration
    m.calculate_Mhh_pole();
    m.calculate_MAh_pole();
 

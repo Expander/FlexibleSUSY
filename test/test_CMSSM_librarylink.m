@@ -1,3 +1,25 @@
+(* :Copyright:
+
+   ====================================================================
+   This file is part of FlexibleSUSY.
+
+   FlexibleSUSY is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published
+   by the Free Software Foundation, either version 3 of the License,
+   or (at your option) any later version.
+
+   FlexibleSUSY is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with FlexibleSUSY.  If not, see
+   <http://www.gnu.org/licenses/>.
+   ====================================================================
+
+*)
+
 Needs["TestSuite`", "TestSuite.m"];
 Needs["ReadSLHA`", "ReadSLHA.m"];
 
@@ -52,8 +74,10 @@ handle = FSCMSSMOpenHandle[
         m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
 ];
 
-specML = FSCMSSMCalculateSpectrum[handle];
-obsML = FSCMSSMCalculateObservables[handle];
+specML = CMSSM /. FSCMSSMCalculateSpectrum[handle];
+obsML  = CMSSM /. FSCMSSMCalculateObservables[handle];
+probML = FSCMSSMGetProblems[handle];
+warnML = FSCMSSMGetWarnings[handle];
 
 FSCMSSMCloseHandle[handle];
 
@@ -92,7 +116,8 @@ parameters = {
     {CpHGG1, {0}, {EFFHIGGSCOUPLINGS, 25, 21, 21}},
     {CpHGG2, {0}, {EFFHIGGSCOUPLINGS, 35, 21, 21}},
     {CpAPP, {0}, {EFFHIGGSCOUPLINGS, 36, 22, 22}},
-    {CpAGG, {0}, {EFFHIGGSCOUPLINGS, 36, 21, 21}}
+    {CpAGG, {0}, {EFFHIGGSCOUPLINGS, 36, 21, 21}},
+    {aMuon, {0}, {FlexibleSUSYLowEnergy, 21}}
 };
 
 slhaData = ReadSLHAString[slhaStr, parameters];
@@ -126,6 +151,10 @@ TestCloseRel[{CpHPP1, CpHPP2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsPho
 TestCloseRel[{CpHGG1, CpHGG2} /. slhaData, Abs[FlexibleSUSYObservable`CpHiggsGluonGluon] /. obsML, delta];
 TestCloseRel[CpAPP  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton  /. obsML], delta];
 TestCloseRel[CpAGG  /. slhaData, Abs[FlexibleSUSYObservable`CpPseudoScalarGluonGluon /. obsML], delta];
+TestCloseRel[aMuon  /. slhaData, FlexibleSUSYObservable`aMuon /. obsML, delta];
+
+TestEquality[CMSSM /. probML, {}];
+TestEquality[CMSSM /. warnML, {}];
 
 Print["Check re-calculation of spectrum yields the same"];
 
@@ -137,7 +166,7 @@ CalcMh[TB_] :=
                fsModelParameters -> {
                    m0 -> 125, m12 -> 500, TanBeta -> TB, SignMu -> 1, Azero -> 0 }
            ];
-           spec = FSCMSSMCalculateSpectrum[handle];
+           spec = CMSSM /. FSCMSSMCalculateSpectrum[handle];
            FSCMSSMCloseHandle[handle];
            If[spec === $Failed, 0,
               (Pole[M[hh]] /. spec)[[1]]
@@ -153,7 +182,7 @@ Print["Testing Set[] function"];
 
 CalcMh[handle_] :=
     Module[{spec},
-           spec = FSCMSSMCalculateSpectrum[handle];
+           spec = CMSSM /. FSCMSSMCalculateSpectrum[handle];
            If[spec === $Failed, 0,
               (Pole[M[hh]] /. spec)[[1]]
              ]

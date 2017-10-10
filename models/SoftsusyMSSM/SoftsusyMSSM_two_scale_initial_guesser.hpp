@@ -19,10 +19,9 @@
 #ifndef SoftsusyMSSM_TWO_SCALE_INITIAL_GUESSER_H
 #define SoftsusyMSSM_TWO_SCALE_INITIAL_GUESSER_H
 
-#include "two_scale_initial_guesser.hpp"
+#include "initial_guesser.hpp"
 #include "SoftsusyMSSM_parameter_point.hpp"
-#include "lowe.h"
-#include "linalg.h"
+#include "lowe_legacy.h"
 
 namespace flexiblesusy {
 
@@ -33,7 +32,7 @@ class SoftsusyMSSM_low_scale_constraint;
 class SoftsusyMSSM_susy_scale_constraint;
 class SoftsusyMSSM_sugra_constraint;
 
-class SoftsusyMSSM_initial_guesser : public Initial_guesser<Two_scale> {
+class SoftsusyMSSM_initial_guesser : public Initial_guesser {
 public:
    SoftsusyMSSM_initial_guesser(SoftsusyMSSM<Two_scale>*, const SoftsusyMSSM_parameter_point&,
                         const SoftsusyMSSM_low_scale_constraint&,
@@ -41,11 +40,11 @@ public:
                         const SoftsusyMSSM_sugra_constraint&);
    virtual ~SoftsusyMSSM_initial_guesser();
    virtual void guess();
-   void set_QedQcd(const softsusy::QedQcd& qedqcd) { oneset = qedqcd; }
+   void set_QedQcd(const softsusy::QedQcd_legacy& qedqcd) { oneset = qedqcd; }
 
 private:
    SoftsusyMSSM<Two_scale>* mssm;     ///< Mssm model
-   softsusy::QedQcd oneset;           ///< low-energy parameters
+   softsusy::QedQcd_legacy oneset;    ///< low-energy parameters
    SoftsusyMSSM_parameter_point pp;   ///< Mssm parameter point
    bool ewsbBCscale;          ///< EWSB at susy scale
 };

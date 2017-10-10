@@ -5,10 +5,11 @@
 #include "sum.hpp"
 #include "stopwatch.hpp"
 #include <complex>
+#include <Eigen/Core>
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE(test_SUM_unsigned)
+BOOST_AUTO_TEST_CASE(test_SUM_int)
 {
    BOOST_CHECK_EQUAL(SUM(i,1,0,1), 0);
    BOOST_CHECK_EQUAL(SUM(i,1,1,1), 1);
@@ -47,6 +48,7 @@ BOOST_AUTO_TEST_CASE(test_SUM_double)
    BOOST_CHECK_EQUAL(SUM(i,1,3,1.*i), 6.);
 
    BOOST_CHECK_EQUAL(SUM(i,1,2,SUM(k,1,2,1.5*k*i)), 13.5);
+   BOOST_CHECK_EQUAL(SUM(i,1,2,SUM(k,i,3*(i+1),1.5*k*i)), 163.5);
 }
 
 BOOST_AUTO_TEST_CASE(test_SUM_complex)
@@ -78,11 +80,11 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_large_sum)
    stopwatch.stop();
    const double time_loop = stopwatch.get_time_in_seconds();
 
-   BOOST_MESSAGE("SUM  took " << time_SUM  << " seconds");
-   BOOST_MESSAGE("loop took " << time_loop << " seconds");
+   BOOST_TEST_MESSAGE("SUM  took " << time_SUM  << " seconds");
+   BOOST_TEST_MESSAGE("loop took " << time_loop << " seconds");
 
    BOOST_CHECK_EQUAL(result_loop, result_SUM);
-   BOOST_CHECK_LT(10*time_loop, time_SUM);
+   // BOOST_CHECK_LT(10*time_loop, time_SUM);
 }
 
 BOOST_AUTO_TEST_CASE(test_SUM_benchmark_small_sum)
@@ -107,12 +109,27 @@ BOOST_AUTO_TEST_CASE(test_SUM_benchmark_small_sum)
    stopwatch.stop();
    const double time_loop = stopwatch.get_time_in_seconds();
 
-   BOOST_MESSAGE("SUM  took " << time_SUM  << " seconds");
-   BOOST_MESSAGE("loop took " << time_loop << " seconds");
+   BOOST_TEST_MESSAGE("SUM  took " << time_SUM  << " seconds");
+   BOOST_TEST_MESSAGE("loop took " << time_loop << " seconds");
 
    BOOST_CHECK_EQUAL(result_loop, result_SUM);
 
    // If the following test passes, we should use the SUM() macro
    // instead of an explicit sum over Feynman diagrams.
-   BOOST_CHECK_LT(10*time_SUM, time_loop);
+   BOOST_CHECK_LE(10*time_SUM, time_loop);
+}
+
+BOOST_AUTO_TEST_CASE(test_sum_eigen_vector)
+{
+#define UVec(i) (Eigen::Matrix<double,2,1>::Unit(i))
+
+   Eigen::Matrix<double,2,1> v;
+   v.setZero();
+
+   v += SUM(i,0,1, 2*(i+1)*UVec(i));
+
+   BOOST_CHECK_EQUAL(v(0), 2.);
+   BOOST_CHECK_EQUAL(v(1), 4.);
+
+#undef UVec
 }
