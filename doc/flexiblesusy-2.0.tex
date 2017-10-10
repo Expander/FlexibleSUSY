@@ -1259,7 +1259,7 @@ Higgs mass included by \fs read
 \end{align}
 %
 with $h\equiv m_h^2$.  Note that the 3-loop Higgs mass calculation in
-the \MSbar scheme in \fs is only complete at $O(\at\as^2)$.  The
+the \MSbar scheme in \fsbreak is only complete at $O(\at\as^2)$.  The
 3-loop contributions of $O(\at^3 + \at^2 \as)$ are currently incomplete
 because they would require the \MSbar top Yukawa coupling to be determined
 from the top pole mass at the 2-loop $O(\at^2 + \at\as)$.
@@ -1391,11 +1391,13 @@ taken into account only if the model is \MSbar renormalized.  To take
 this 3-loop correction into account at runtime, the following flags
 should be set in the SLHA input file:
 %
+\\\begin{minipage}{\linewidth}
 \begin{lstlisting}
 Block FlexibleSUSY
     7   3         # threshold corrections loop order
    24   123111221 # individual threshold correction loop orders
 \end{lstlisting}
+\end{minipage}
 %
 In \fs's \mathematica interface, the above SLHA configuration options
 correspond to
@@ -1787,10 +1789,12 @@ UseMSSM3LoopRGEs = True;
 To use 3-loop running at runtime, the following flag should also be set in
 the SLHA input file:
 %
+\\\begin{minipage}{\linewidth}
 \begin{lstlisting}
 Block FlexibleSUSY
     6   3         # beta-functions loop order
 \end{lstlisting}
+\end{minipage}
 %
 In \fs's \mathematica interface, the above SLHA configuration
 corresponds to
@@ -1976,6 +1980,7 @@ Block FlexibleSUSY
 In \fs's \mathematica interface, the above SLHA configuration options
 correspond to
 %
+\\\begin{minipage}{\linewidth}
 \begin{lstlisting}[language=Mathematica]
 handle = FS<model>OpenHandle[
     fsSettings -> {poleMassLoopOrder -> 3,
@@ -1985,6 +1990,7 @@ handle = FS<model>OpenHandle[
                    higgs3loopCorrectionAtAsAs -> 1}
     ...];
 \end{lstlisting}
+\end{minipage}
 
 \subsection{New features for definition of boundary conditions}
 In \fstwo, the expressions to define boundary conditions are allowed
@@ -3479,11 +3485,13 @@ apart from those already present in the SM
 For simplicity,
 the gaugino masses are assumed to have an equal (complex) value
 $\mhalf$, and both soft masses of the left- and right-handed
-selectron shall be $\mzero$.
+selectron as well as the approximate tree-level heavy Higgs masses%
+\footnote{$\sqrt{\re\!B\mu / (\cos\!\beta \sin\!\beta)}$.}
+shall be $\mzero$.
 The moduli of $\mu$, $\mhalf$, $\mzero$, and $A_e$
 are specified at the SUSY scale,
 all of which including the scale are set to $2\unit{TeV}$.
-Finally, we set $\tan\beta = 10$ at the SUSY scale.
+Finally, we set $\tan\beta = 10$ at the $M_Z$ scale.
 
 The resulting electron EDM is displayed as contours in
 \figref{fig:EDM plots}.
@@ -5580,7 +5588,7 @@ Currently, the models and scenarios which can be constructed with
   supported.  As a workaround, the rank 3 tensor-like couplings could
   be decomposed into a sum of terms with rank 2 matrix-like couplings.
 \item The extraction of the running Yukawa couplings in models where
-  a 4th generation of fermions mixes with the SM fermions is currently
+  a 4$^\text{th}$ generation of fermions mixes with the SM fermions is currently
   not supported.  As a workaround, the running Yukawa couplings can
   manually be fixed by using the running SM fermion masses, which can
   be accessed in the model file via the \code{upQuarksDRbar} =
@@ -5719,7 +5727,7 @@ SM parameters can be given in four different input blocks:
 \item The block \texttt{SMINPUTS} contains the electromagnetic and
   strong coupling, the Fermi constant and the masses of SM
   particles, as defined in the SLHA-2 standard \cite{Allanach:2008qq}.
-  The definition of the individual block entries are shown in the
+  The definitions of the individual block entries are shown in the
   first part of \tabref{tab:sm_mma_options}.  If a parameter is
   omitted from the \texttt{SMINPUTS} block, then it is set to the
   default value defined in \tabref{tab:sm_mma_options}.
@@ -5754,7 +5762,7 @@ Block SMINPUTS               # Standard Model inputs
     9   8.038500000e+01      # MW pole
    11   5.109989020e-04      # melectron(pole)
    12   0.000000000e+00      # mnu1(pole)
-   13   1.056583570e-01      # mmuon(pole)
+   13   1.056583715e-01      # mmuon(pole)
    14   0.000000000e+00      # mnu2(pole)
    21   4.750000000e-03      # md(2 GeV) MS-bar
    22   2.400000000e-03      # mu(2 GeV) MS-bar
@@ -5781,7 +5789,10 @@ In \fs's \mathematica interface, the SM parameters must be
 passed to the \code{FS<model>OpenHandle[fsSMParameters -> \{...\}]}
 function in the form of replacement rules.  The symbols associated to the
 SM input parameters are given in
-\tabref{tab:sm_mma_options}.  Unset parameters are set to their
+\tabref{tab:sm_mma_options}.\footnote{Note that in \fs's \mathematica
+  interface, the fine structure constant $\aem^{\SM(5)}(M_Z)$ is input,
+  not its inverse as in the SLHA standard.}
+Unset parameters are set to their
 default values defined in the table.  Note that in the \mathematica
 interface of \fs, the CKM matrix parameters are given in the
 exact parametrization in terms of the angles $\theta_{12}$,
@@ -5846,7 +5857,7 @@ handle = FS<model>OpenHandle[
     11 & \code{Me} & $0.000510998902$ & electron pole mass, $M_e/\text{GeV}$ \\
     12 & \code{Mv1} & $0$ & lightest neutrino pole mass, $M_{\nu_1}/\text{GeV}$ \\
     13 & \code{Mm} & $0.1056583715$ & muon pole mass, $M_\mu/\text{GeV}$ \\
-    14 & \code{Mv2} & $0$ & 2nd lightest neutrino pole mass, $M_{\nu_2}/\text{GeV}$ \\
+    14 & \code{Mv2} & $0$ & 2$^\text{nd}$ lightest neutrino pole mass, $M_{\nu_2}/\text{GeV}$ \\
     21 & \code{md2GeV} & $0.00475$ & running down mass, $m_d(2\unit{GeV})/\text{GeV}$ \\
     22 & \code{mu2GeV} & $0.0024$ & running up mass, $m_u(2\unit{GeV})/\text{GeV}$ \\
     23 & \code{ms2GeV} & $0.104$ & running strange mass, $m_s(2\unit{GeV})/\text{GeV}$ \\
@@ -5896,7 +5907,7 @@ configuration options are listed in \tabref{tab:sg_mma_options}.
 In the SLHA interface of \fs, the configuration options are read from
 the \fs block.  In addition, some information is also read
 from the \texttt{MODSEL} block, see below.  In the SLHA format all \fs
-configuration blocks with their respective default values read:
+configuration entries with their respective default values read:
 %
 \begin{lstlisting}
 Block MODSEL
@@ -5934,15 +5945,13 @@ Block FlexibleSUSY
    27   1            # Higgs 3L corrections O(alpha_b alpha_s^2)
    28   1            # Higgs 3L corrections O(alpha_t^2 alpha_s)
    29   1            # Higgs 3L corrections O(alpha_t^3)
-   28   1            # Higgs 3L corrections O(alpha_t^2 alpha_s)
-   29   1            # Higgs 3L corrections O(alpha_t^3)
 \end{lstlisting}
 %
 In the \mathematica interface of \fs, the configuration options are
 passed to the function \code{FS<model>OpenHandle[fsSettings ->
   \{...\}]} in form of replacement rules.  The symbols associated to
 the configuration options are given in \tabref{tab:sg_mma_options}.
-Unset parameters are set to their default values defined in the table.
+Unset options are set to their default values defined in the table.
 A call of \code{FS<model>OpenHandle[]} with all configuration options
 set to their default values would read:
 %
@@ -6016,7 +6025,7 @@ handle = FS<model>OpenHandle[
     10 & \code{higgs2loopCorrectionAtAt}      & \code{1} &
     enable/disable 2-loop corrections $O(\at^2)$ to $M_{h,H,A}$\\
     11 & \code{higgs2loopCorrectionAtauAtau}  & \code{1} &
-    enable/disable 2-loop corrections $O(\atau\atau)$ to $M_{h,H,A}$\\
+    enable/disable 2-loop corrections $O(\atau^2)$ to $M_{h,H,A}$\\
     12 & \code{forceOutput}                   & \code{0} &
     force output, even if problems occurred\\
     13 & \code{topPoleQCDCorrections}         & \code{1} &
@@ -6043,8 +6052,8 @@ handle = FS<model>OpenHandle[
     24 & \code{thresholdCorrections}          & \code{123111321} &
     individual threshold correction loop orders, see \tabref{tab:sg_mma_tc}\\
     25 & \code{higgs3loopCorrectionRenScheme} & \code{0} &
-    renormalization scheme for 3-loop MSSM Higgs corrections:
-    0 = \DRbar, 1 = \MDRbar\\
+    renormalization scheme for 3-loop MSSM Higgs corrections
+    (0 = \DRbar, 1 = \MDRbar)\\
     26 & \code{higgs3loopCorrectionAtAsAs}    & \code{1} &
     enable/disable 3-loop corrections $O(\at\as^2)$ to $M_{h,H,A}$\\
     27 & \code{higgs3loopCorrectionAbAsAs}    & \code{1} &
@@ -6102,7 +6111,7 @@ The individual configuration options have the following meaning:
   running, the mass spectrum calculation, the electroweak symmetry
   breaking and the calculation of the observables.  For most models a
   precision of $10^{-4}$ is sufficient.  For models with various
-  3-loop corrections, like \HSSUSY or an MSSM spectrum generator, a
+  3-loop corrections, like \HSSUSY or MSSM-like models, a
   precision of $10^{-5}$ might be better.
 
 \item[\texttt{FlexibleSUSY[1]},] \texttt{maxIterations}: This option
@@ -6118,9 +6127,9 @@ The individual configuration options have the following meaning:
   the BVP solver to be used.  If set to $0$, all
   solvers that have been enabled in the model file (see
   \secref{sec:chosing_SAS}) are used, starting with the two-scale
-  solver.  If set to $1$, the two-scale solver is used, if it has been
+  solver.  If set to $1$, the two-scale solver is used if it has been
   enabled in the model file.  If set to $2$, then the semi-analytic
-  solver is used, if it has been enabled in the model file.  If a
+  solver is used if it has been enabled in the model file.  If a
   solver that has not been enabled in the model file is chosen, \fs
   stops with an error.
 
@@ -6136,7 +6145,7 @@ The individual configuration options have the following meaning:
   masses are calculated.  If set to $0$, the running tree-level masses
   are output.  If set to $1$, the pole masses are calculated at the
   1-loop level.  If set to $2$ or $3$, then model-specific 2-loop or
-  3-loop corrections are taken into account, respectively, if they are
+  3-loop corrections are taken into account, respectively, if they have been
   enabled in the model file (see
   \secref{sec:model_specific_contributions}).  \textbf{Important
     note:} In order to obtain a consistent pole mass spectrum, the
@@ -6147,10 +6156,10 @@ The individual configuration options have the following meaning:
 \item[\texttt{FlexibleSUSY[5]},] \texttt{ewsbLoopOrder}: This option
   allows the user to select the loop order at which the electroweak
   symmetry breaking (EWSB) equations are solved.  If set to $0$, the
-  EWSB equations are solved at the tree-level.  If set to $1$, the
+  EWSB equations are solved at the tree level.  If set to $1$, the
   EWSB equations are solved at the 1-loop level.  If set to $2$ or
   $3$, then model-specific 2-loop or 3-loop corrections are taken into
-  account, respectively, if they are enabled in the model file (see
+  account, respectively, if they have been enabled in the model file (see
   \secref{sec:model_specific_contributions}).  \textbf{Important
     note:} In order to obtain a consistent pole mass spectrum, the
   loop order of the electroweak symmetry breaking must be set to the
@@ -6261,7 +6270,7 @@ The individual configuration options have the following meaning:
   \secref{sec:Mathematica_interface}.
 
 \item[\texttt{FlexibleSUSY[16]},] \texttt{forcePositiveMasses}: With
-  this option, the masses of Majorana fermions can be forced to be
+  this option the masses of Majorana fermions can be forced to be
   positive in the SLHA output of \fs.  If set to $1$, then Majorana
   masses are always positive, but the corresponding mixing matrices
   are in general complex (note that this violates the SLHA
@@ -6277,7 +6286,7 @@ The individual configuration options have the following meaning:
   masses in the \emph{full} \BSM model are calculated.  To vary the
   scale at which the pole masses in the effective theory (the
   SM) are calculated, use \texttt{FlexibleSUSY[18]} or
-  \texttt{eftPoleMassScale} in the SLHA or Mathematica interfaces,
+  \texttt{eftPoleMassScale} in the SLHA or \mathematica interface,
   respectively.
 
 \item[\texttt{FlexibleSUSY[18]},] \texttt{eftPoleMassScale}: This
@@ -6328,7 +6337,7 @@ The individual configuration options have the following meaning:
   are calculated.  This option is useful in \feft for example: If one
   is only interested in the prediction of the SM-like Higgs pole mass,
   then this option can be set to $0$ to suppress the calculation of
-  the heavy Higgs bosons, the charginos, neutralinos and sfermions.
+  the masses of the heavy Higgs bosons, the charginos, neutralinos and sfermions.
 
 \item[\texttt{FlexibleSUSY[24]},] \texttt{thresholdCorrections}: With
   this option the user has a finer control over the threshold
@@ -6336,7 +6345,7 @@ The individual configuration options have the following meaning:
   to this option is an integer number, where each digit (with respect to base
   $10$) represents the threshold correction loop order for a
   particular running \BSM parameter.  The association between the
-  digits and the parameters as well as the default loop orders is
+  digits and the parameters as well as the default loop orders are
   shown in \tabref{tab:sg_mma_tc}.
   %
   \begin{example}
@@ -6348,18 +6357,18 @@ The individual configuration options have the following meaning:
       \toprule
       integer & used threshold corrections \\
       \midrule
-      0       & no threshold corrections, everything at tree-level \\
-      1       & only $\Delta\aem^{1L}$, everything else at tree-level \\
-      100     & only $\Delta\as^{1L}$, everything else at tree-level \\
-      101     & only $\Delta\aem^{1L}$ and  $\Delta\as^{1L}$, everything else at tree-level \\
-      3000101 & only $\Delta\aem^{1L}$ and  $\Delta\as^{1L}$ and  $\Delta y_t^{3L}$, everything else at tree-level \\
+      0       & no threshold corrections, everything at tree level \\
+      1       & only $\Delta\aem^{1L}$, everything else at tree level \\
+      100     & only $\Delta\as^{1L}$, everything else at tree level \\
+      101     & only $\Delta\aem^{1L}$ and  $\Delta\as^{1L}$, everything else at tree level \\
+      3000101 & only $\Delta\aem^{1L}$ and  $\Delta\as^{1L}$ and  $\Delta y_t^{3L}$, everything else at tree level \\
       \bottomrule
     \end{tabular}
   \end{center}
   \end{example}
   %
   If the field \texttt{FlexibleSUSY[24]} or the symbol
-  \texttt{thresholdCorrections} is omitted, then the whole field is
+  \texttt{thresholdCorrections} is omitted, then the whole option is
   set to the default value given in \tabref{tab:sg_mma_tc}.  If the
   field is not omitted, then all loop orders must be given.  Note
   that setting the loop orders larger than the value set in
@@ -6367,7 +6376,7 @@ The individual configuration options have the following meaning:
   has no effect, see above.
   %
   \begin{example}[label=ex:HSSUSY_thresholds]
-    In the model file of \HSSUSY 3-loop QCD corrections to the running
+    In the model file of \HSSUSY, 3-loop QCD corrections to the running
     top Yukawa coupling $y_t$ are enabled (\code{UseYukawa3LoopQCD =
       True}).  Switching between the 2-loop and 3-loop QCD corrections
     to $y_t$ can be used to estimate a partial uncertainty of
@@ -6379,7 +6388,7 @@ The individual configuration options have the following meaning:
     \end{align*}
     respectively, and setting each time
     \code{thresholdCorrectionsLoopOrder -> 3} to enable the 3-loop
-    corrections globally.  Note that the digit at the $6$th position
+    corrections globally.  Note that the digit at the 6$^\text{th}$ position
     from the right (the prefactor of $10^6$) has been changed from $3$
     to $2$ to change the threshold correction loop order of $y_t$ from
     3-loop to 2-loop.  \exref{ex:HSSUSY_uncertainty} makes use
@@ -6402,7 +6411,7 @@ The individual configuration options have the following meaning:
   With this option the user can enable/disable 3-loop contributions to
   the Higgs pole mass(es) of $O(\at\as^2)$.  Note that this option
   has an effect only if model-specific 3-loop contributions to the
-  Higgs pole mass(es) are enabled in the \fs model file.  See
+  Higgs pole mass(es) of this order have been enabled in the \fs model file.  See
   \secref{sec:model_specific_contributions} on how to enable 3-loop
   contributions of this order in the SM and in the MSSM\@.
 
@@ -6410,7 +6419,7 @@ The individual configuration options have the following meaning:
   With this option the user can enable/disable 3-loop contributions to
   the Higgs pole mass(es) of $O(\ab\as^2)$.  Note that this option
   has an effect only if model-specific 3-loop contributions to the
-  Higgs pole mass(es) of this order are enabled in the \fs model file.
+  Higgs pole mass(es) of this order have been enabled in the \fs model file.
   See \secref{sec:model_specific_contributions} on how to enable
   3-loop contributions of this order in the SM and in the
   MSSM\@.
@@ -6419,7 +6428,7 @@ The individual configuration options have the following meaning:
   With this option the user can enable/disable 3-loop contributions to
   the Higgs pole mass(es) of $O(\at^2\as)$.  Note that this option
   has an effect only if model-specific 3-loop contributions to the
-  Higgs pole mass(es) of this order are enabled in the \fs model file.
+  Higgs pole mass(es) of this order have been enabled in the \fs model file.
   See \secref{sec:model_specific_contributions} on how to enable
   3-loop contributions of this order in the SM\@.
 
@@ -6427,7 +6436,7 @@ The individual configuration options have the following meaning:
   With this option the user can enable/disable 3-loop contributions to
   the Higgs pole mass(es) of $O(\at^3)$.  Note that this option has
   an effect only if model-specific 3-loop contributions to the Higgs
-  pole mass(es) of this order are enabled in the \fs model file.  See
+  pole mass(es) of this order have been enabled in the \fs model file.  See
   \secref{sec:model_specific_contributions} on how to enable 3-loop
   contributions of this order in the SM\@.
 
