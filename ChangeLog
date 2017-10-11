@@ -175,7 +175,7 @@ FlexibleSUSY 2.0.0 [October, 10 2017]
  * Feature: In the MSSM, the 3-loop corrections O(alpha_t*alpha_s^2)
    and O(alpha_b*alpha_s^2) to the Higgs pole mass from Ref.
    [arxiv:hep-ph/1005.5709] can be taken into account.  The
-   corrections are taken from the Himalaya package [arxiv:XXXX.YYYY].
+   corrections are taken from the Himalaya package [arxiv:1708.05720].
    Himalaya can be downloaded from
 
       https://github.com/jklappert/Himalaya
