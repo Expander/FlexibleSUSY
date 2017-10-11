@@ -2,15 +2,8 @@ Get["models/HSSUSY/HSSUSY_librarylink.m"];
 
 (* generate logarithmically spaced range [start, stop] *)
 LogRange[start_, stop_, steps_] :=
-    Module[{i, result = {}},
-           For[i = 0, i <= steps, i++,
-               result = AppendTo[
-                  result,
-                  Exp[Log[start] + (Log[stop] - Log[start]) i/steps]
-               ];
-              ];
-           result
-          ];
+    Exp /@ Range[Log[start], Log[stop],
+                 (Log[stop] - Log[start])/steps];
 
 (* generate logarithmically spaced range [2 Q, Q / 2] *)
 GenerateScales[Q_] := LogRange[Q/2, 2 Q, 10];
