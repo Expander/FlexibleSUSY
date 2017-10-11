@@ -368,15 +368,6 @@ FlexibleSUSY 2.0.0 [October, 10 2017]
    renamed to MatchingScaleInput, to express that it is imposed at the
    matching scale, which is in general not equal to the SUSYScale.
 
- * Change (commit d738afc): The W boson pole mass is calculated at the
-   same scale as the other pole masses.  By default this is the value
-   given by the SUSYScale model file variable.  At run-time the scale
-   can be changed using the SLHA input field FlexibleSUSY[17] or the
-   `poleMassScale' symbol in the Mathematica interface.  Note, that
-   the W pole mass is only written to the output if the SLHA input
-   field FlexibleSUSY[3] is non-zero or `calculateStandardModelMasses'
-   is non-zero in the Mathematica interface.
-
  * Change: Update to GM2Calc 1.3.3.
 
  * Bugfix (commits be8f35b, 3432967): Improve the stability of the
