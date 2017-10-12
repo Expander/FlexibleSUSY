@@ -1,3 +1,11 @@
+FlexibleSUSY 2.0.1 [not released yet]
+
+ * Bugfix (commit 682de11c): Include 2-loop gluino contribution in the
+   extraction of yt from the top pole mass in the split-MSSM, Eq.(4.7)
+   of arxiv:1312.5220, if UseHiggs3LoopSplit == True.
+
+   Thanks to Pietro Slavich.
+
 FlexibleSUSY 2.0.0 [October, 10 2017]
 
  * Feature: The weak mixing angle can now be calculated from the muon
