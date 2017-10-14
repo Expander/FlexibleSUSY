@@ -2227,6 +2227,9 @@ EOF
         result "ok (version ${MATH_VERSION} for ${MATH_SYSTEMID} in ${MATH_INSTDIR})"
     else
         result "not ok (version ${MATH_VERSION} for ${MATH_SYSTEMID} in ${MATH_INSTDIR})"
+	MATH=""
+	[ "${enable_meta}" = "yes" -o "$enable_librarylink" = "yes" ] || return
+
         message "Error: Mathematica ${required_mathematica_version} or higher needs to be installed!"
         exit 1
     fi
