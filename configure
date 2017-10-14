@@ -2213,7 +2213,7 @@ Quit[error];
 EOF
 
     checking_msg "Mathematica version >= ${required_mathematica_version}"
-    "$MATH" -run "Get[\"${_math_info_check_progr}\"]" > /dev/null 2>&1 &&
+    echo "Get[\"${_math_info_check_progr}\"]" | "$MATH" > /dev/null 2>&1 &&
 	_ok=true
     if test -r "${mathconfig}"; then
         MATH_VERSION=$(sed -n '1p' "${mathconfig}")
