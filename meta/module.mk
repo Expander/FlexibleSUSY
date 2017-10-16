@@ -31,6 +31,7 @@ META_MSSM_SRC:= \
 		$(DIR)/MSSM/gamma_SlL.m \
 		$(DIR)/MSSM/gamma_SqL.m \
 		$(DIR)/MSSM/gamma_SuR.m \
+		$(DIR)/MSSM/Mh2_3loop_DR_SQCD.m \
 		$(DIR)/MSSM/das2.m \
 		$(DIR)/MSSM/dmtauas2.m \
 		$(DIR)/MSSM/bquark_2loop_sqcd_decoupling.m \
