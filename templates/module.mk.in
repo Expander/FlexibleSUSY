@@ -26,7 +26,7 @@ WITH_$(MODNAME) := yes
 @SLHA_INPUT@
 
 @CLASSNAME@_REFERENCES := \
-		$(DIR)/@CLASSNAME@_references.bib
+		$(DIR)/@CLASSNAME@_references.tex
 
 @CLASSNAME@_GNUPLOT := \
 		$(DIR)/@CLASSNAME@_plot_rgflow.gnuplot \

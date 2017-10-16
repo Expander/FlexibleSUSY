@@ -3521,8 +3521,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating list of references to be cited ..."];
            WriteReferences[
-               {{FileNameJoin[{$flexiblesusyTemplateDir, "references.bib.in"}],
-                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_references.bib"}]}}
+               {{FileNameJoin[{$flexiblesusyTemplateDir, "references.tex.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_references.tex"}]}}
            ];
 
            Print["Creating plot scripts ..."];
