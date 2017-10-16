@@ -78,6 +78,7 @@ META_SRC     := \
 		$(DIR)/Parameters.m \
 		$(DIR)/Phases.m \
 		$(DIR)/ReadSLHA.m \
+		$(DIR)/References.m \
 		$(DIR)/RGIntegrator.m \
 		$(DIR)/SelfEnergies.m \
 		$(DIR)/SemiAnalytic.m \
