@@ -2785,8 +2785,12 @@ check_solvers
 check_install
 check_install_dir
 
-check_math_cmd
-check_mathematica_info
+if [ "$enable_meta" = yes -o "$enable_librarylink" != no ]; then
+    check_math_cmd
+    check_mathematica_info
+else
+    MATH=""
+fi
 
 if test "x${enable_meta}" = "xyes"; then
     check_sarah
