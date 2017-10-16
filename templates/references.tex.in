@@ -18,6 +18,14 @@
 
 % File generated at @DateAndTime@
 
+% Below all references are listed that should be cited when the
+% @ModelName@ is used in a publication.  Send this file to
+%
+%    https://inspirehep.net/submit?doctype=bibtex&act=SBI
+%
+% to obtain an up-to date list of bibiography items, for example in
+% BibTeX format.
+
 %%% FlexibleSUSY
 \cite{Athron:2014yba,Athron:2017fvs}
 
@@ -27,5 +35,5 @@
 %%% SOFTSUSY
 \cite{Allanach:2001kg,Allanach:2013kza}
 
-%%% Used components
+%%% Used components / higher-order corrections
 @referencesForComponents@
