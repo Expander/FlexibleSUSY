@@ -2207,14 +2207,15 @@ Put[\$VersionNumber,
     OutputForm[\$InstallationDirectory],
     "${mathconfig}"];
 If[\$VersionNumber < ${required_mathematica_version},
-   error = 1;
+   error = 2;
   ];
 Quit[error];
 EOF
 
     checking_msg "Mathematica version >= ${required_mathematica_version}"
-    "$MATH" -run "Get[\"${_math_info_check_progr}\"]" > /dev/null 2>&1 &&
+    echo "Get[\"${_math_info_check_progr}\"]" | "$MATH" > /dev/null 2>&1 &&
 	_ok=true
+    local _exit_status="$?"
     if test -r "${mathconfig}"; then
         MATH_VERSION=$(sed -n '1p' "${mathconfig}")
 	MATH_SYSTEMID=$(sed -n '2p' "${mathconfig}")
@@ -2226,7 +2227,14 @@ EOF
     if $_ok; then
         result "ok (version ${MATH_VERSION} for ${MATH_SYSTEMID} in ${MATH_INSTDIR})"
     else
-        result "not ok (version ${MATH_VERSION} for ${MATH_SYSTEMID} in ${MATH_INSTDIR})"
+	if [ "$_exit_status" = 2 ]; then
+	    result "not ok (version ${MATH_VERSION} for ${MATH_SYSTEMID} in ${MATH_INSTDIR})"
+	else
+	    result "not ok"
+	fi
+	MATH=""
+	[ "${enable_meta}" = "yes" -o "$enable_librarylink" = "yes" ] || return
+
         message "Error: Mathematica ${required_mathematica_version} or higher needs to be installed!"
         exit 1
     fi
@@ -2777,8 +2785,12 @@ check_solvers
 check_install
 check_install_dir
 
-check_math_cmd
-check_mathematica_info
+if [ "$enable_meta" = yes -o "$enable_librarylink" != no ]; then
+    check_math_cmd
+    check_mathematica_info
+else
+    MATH=""
+fi
 
 if test "x${enable_meta}" = "xyes"; then
     check_sarah
