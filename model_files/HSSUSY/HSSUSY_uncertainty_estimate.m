@@ -157,10 +157,12 @@ CalcHSSUSYDMh[args__] :=
            varyQmatch = CalcHSSUSYMh[2, 0, #, 0, 0, args]& /@
                         LogRange[MS/2, 2 MS, 10];
            (* combine uncertainty estimates *)
-           DMhSM   = Abs[Min[varyQpole] - Max[varyQpole]] +
+           DMhSM   = Max[Abs[Max[varyQpole] - Mh],
+                         Abs[Min[varyQpole] - Mh]] +
                      Abs[Mh - MhYt3L];
            DMhEFT  = Abs[Mh - MhEFT];
-           DMhSUSY = Abs[Min[varyQmatch] - Max[varyQmatch]] +
+           DMhSUSY = Max[Abs[Max[varyQmatch] - Mh],
+                         Abs[Min[varyQmatch] - Mh]] +
                      Abs[Mh - MhYtMSSM];
            { Mh, DMhSM + DMhEFT + DMhSUSY }
           ];
