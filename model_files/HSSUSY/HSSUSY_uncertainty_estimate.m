@@ -59,7 +59,7 @@ Example: Peform a parameter scan over the SUSY scale in the interval
 Get[\"models/HSSUSY/HSSUSY_librarylink.m\"];
 Get[\"model_files/HSSUSY/HSSUSY_uncertainty_estimate.m\"];
 
-CalcMh[MS_, TB_, Xt_] :=
+CalcMh[MS_, TB_, Xtt_] :=
     CalcHSSUSYDMh[
         fsSettings -> {
             precisionGoal -> 1.*^-5,
@@ -75,7 +75,7 @@ CalcMh[MS_, TB_, Xt_] :=
             M3Input -> MS,
             MuInput -> MS,
             mAInput -> MS,
-            AtInput -> (Xt + 1/TB) MS,
+            AtInput -> (Xtt + 1/TB) MS,
             msq2 -> MS^2 IdentityMatrix[3],
             msu2 -> MS^2 IdentityMatrix[3],
             msd2 -> MS^2 IdentityMatrix[3],
