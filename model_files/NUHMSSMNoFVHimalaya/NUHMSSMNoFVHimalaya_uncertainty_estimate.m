@@ -103,7 +103,7 @@ LogRange[start_, stop_, steps_] :=
 CalcNUHMSSMNoFVHimalayaMh[a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List, r___] :=
     CalcNUHMSSMNoFVHimalayaMh[a, Sequence @@ s, r];
 
-CalcNUHMSSMNoFVHimalayaMh[asLoops_?NumericQ, Qpole_?NumericQ, args__] :=
+CalcNUHMSSMNoFVHimalayaMh[asLoops_?NumericQ, ytLoops_?NumericQ, Qpole_?NumericQ, args__] :=
     Module[{handle, spec, tc},
            tc = thresholdCorrections /. { args };
            tc = If[IntegerQ[tc], tc,
@@ -115,7 +115,7 @@ CalcNUHMSSMNoFVHimalayaMh[asLoops_?NumericQ, Qpole_?NumericQ, args__] :=
                    calculateBSMMasses -> 1,
                    thresholdCorrectionsLoopOrder -> 3,
                    poleMassScale -> Qpole,
-                   thresholdCorrections -> SetDigit[tc, 2, asLoops]
+                   thresholdCorrections -> SetDigit[SetDigit[tc, 2, asLoops], 6, ytLoops]
                }
            ];
            spec = FSNUHMSSMNoFVHimalayaCalculateSpectrum[handle];
@@ -129,18 +129,22 @@ CalcNUHMSSMNoFVHimalayaDMh[a___, (fsSettings | fsSMParameters | fsModelParameter
     CalcNUHMSSMNoFVHimalayaDMh[a, Sequence @@ s, r];
 
 CalcNUHMSSMNoFVHimalayaDMh[args__] :=
-    Module[{Mh, MhAs2L, varyQpole, DMh,
+    Module[{Mh, MhAs, MhYt, varyQpole, DMh,
+            mhLoops = poleMassLoopOrder /. { args }, ytLoops, asLoops,
             MS = Qin /. { args }},
-           Mh         = CalcNUHMSSMNoFVHimalayaMh[1, 0, args];
-           MhAs2L     = CalcNUHMSSMNoFVHimalayaMh[2, 0, args];
-           varyQpole  = CalcNUHMSSMNoFVHimalayaMh[1, #, args]& /@
+           ytLoops    = Max[mhLoops - 1, 1];
+           asLoops    = Max[mhLoops - 2, 1];
+           Mh         = CalcNUHMSSMNoFVHimalayaMh[asLoops    , ytLoops    , 0, args];
+           MhAs       = CalcNUHMSSMNoFVHimalayaMh[asLoops + 1, ytLoops    , 0, args];
+           MhYt       = CalcNUHMSSMNoFVHimalayaMh[asLoops    , ytLoops + 1, 0, args];
+           varyQpole  = CalcNUHMSSMNoFVHimalayaMh[asLoops    , ytLoops    , #, args]& /@
                         LogRange[MS/2, 2 MS, 10];
            If[Mh === $Failed, Return[{ $Failed, $Failed }]];
-           If[MhAs2L === $Failed || MemberQ[varyQpole, $Failed],
+           If[MhAs === $Failed || MhYt === $Failed || MemberQ[varyQpole, $Failed],
               Return[{ Mh, $Failed }]];
            (* combine uncertainty estimates *)
            DMh   = Max[Abs[Max[varyQpole] - Mh],
                        Abs[Min[varyQpole] - Mh]] +
-                   Abs[Mh - MhAs2L];
+                   Abs[Mh - MhAs] + Abs[Mh - MhYt];
            { Mh, DMh }
           ];
