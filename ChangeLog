@@ -12,6 +12,13 @@ FlexibleSUSY 2.0.1 [not released yet]
 
    Thanks to Pietro Slavich.
 
+ * Bugfix (commits 88009cac, 5ac9366c): Now configure script does not
+   hang even if Mathematica fails to find a valid license.  The script
+   does not quit even if Mathematica does not meet the version
+   requirement, unless --enable-meta or --enable-librarylink is given.
+
+   Thanks to Anders Kvellestad.
+
 FlexibleSUSY 2.0.0 [October, 10 2017]
 
  * Feature: The weak mixing angle can now be calculated from the muon
