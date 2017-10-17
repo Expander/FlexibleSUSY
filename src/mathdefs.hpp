@@ -68,6 +68,6 @@ template<class T> inline T sign(T x)
     else return -1;
 }
 
-}
+} // namespace flexiblesusy
 
 #endif // mathdefs_hpp

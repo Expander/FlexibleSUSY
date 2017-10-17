@@ -77,4 +77,4 @@ double NumericalMatching::c_wrap(double wxj, void *params)
     return self->c(&self->w[0], &self->x[0]);
 }
 
-}
+} // namespace flexiblesusy

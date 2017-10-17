@@ -56,6 +56,25 @@ void append(Eigen::ArrayXd& a, const Eigen::ArrayXd& b)
 
 } // namespace utilities
 
+namespace {
+
+std::valarray<double> to_valarray(double v)
+{
+   return std::valarray<double>(&v, 1);
+}
+
+template <class Scalar, int M, int N>
+std::valarray<double> to_valarray(const Eigen::Array<Scalar, M, N>& v)
+{
+   return std::valarray<double>(v.data(), v.size());
+}
+
+} // anonymous namespace
+
+@ModelName@_spectrum_plotter::@ModelName@_spectrum_plotter(const @ModelName@_mass_eigenstates& model)
+{
+   extract_spectrum(model);
+}
 
 void @ModelName@_spectrum_plotter::extract_spectrum(const @ModelName@_mass_eigenstates& model)
 {
@@ -118,15 +137,10 @@ void @ModelName@_spectrum_plotter::write_spectrum(const TSpectrum& spectrum, std
                  << std::left << std::setw(width) << masses[i]
                  << std::left << std::setw(width) << name
                  << std::left << std::setw(2*width) << lname
-                 << std::left << std::setw(2*width) << lname_with_index.str()
+                 << std::left << lname_with_index.str()
                  << '\n';
       }
    }
-}
-
-std::valarray<double> @ModelName@_spectrum_plotter::to_valarray(double v)
-{
-   return std::valarray<double>(&v, 1);
 }
 
 namespace @ModelName@_database {

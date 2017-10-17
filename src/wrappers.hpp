@@ -253,6 +253,9 @@ inline constexpr int Delta(int i, int j) noexcept
    return i == j;
 }
 
+#define FSFlagProblem(p) [&](){ (p); return 0.; }()
+#define FSFlagWarning(p) [&](){ (p); return 0.; }()
+
 template <typename T>
 constexpr T If(bool c, T a, T b) noexcept { return c ? a : b; }
 
@@ -323,8 +326,7 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
 
 inline std::complex<double> ComplexLog(double a) noexcept
 {
-   std::complex<double> z(a,0.);
-   return fast_log(z);
+   return fast_log(std::complex<double>(a,0.));
 }
 
 inline std::complex<double> ComplexLog(const std::complex<double>& z) noexcept
@@ -950,6 +952,6 @@ Derived ZeroSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.unaryExpr([](double a){ return ZeroSqrt(a); });
 }
 
-}
+} // namespace flexiblesusy
 
 #endif

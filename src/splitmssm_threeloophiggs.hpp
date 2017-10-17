@@ -16,29 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef PARALLEL_H
-#define PARALLEL_H
-
-#include "config.h"
-
-#ifdef ENABLE_THREADS
-
-#include <future>
-#include <utility>
+#ifndef SPLIT_THREELOOPHIGGS_H
+#define SPLIT_THREELOOPHIGGS_H
 
 namespace flexiblesusy {
+namespace splitmssm_threeloophiggs {
 
-template<typename F, typename... Ts>
-inline std::future<typename std::result_of<F(Ts...)>::type>
-run_async(F&& f, Ts&&... params)
-{
-   return std::async(std::launch::async,
-                     std::forward<F>(f),
-                     std::forward<Ts>(params)...);
-}
+/// Higgs self-energy 3-loop, gluino contribution O(alpha_t alpha_s^2)
+double delta_mh_3loop_gluino_split(
+   double scale, double mt, double yt, double g3, double mg);
 
+} // namespace splitmssm_threeloophiggs
 } // namespace flexiblesusy
-
-#endif
 
 #endif

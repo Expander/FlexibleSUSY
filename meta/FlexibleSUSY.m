@@ -40,6 +40,7 @@ BeginPackage["FlexibleSUSY`",
               "ThresholdCorrections`",
               "ConvergenceTester`",
               "Utils`",
+              "References`",
               "SemiAnalytic`",
               "ThreeLoopSM`",
               "ThreeLoopMSSM`",
@@ -144,6 +145,12 @@ LowEnergyConstant;
 LowEnergyGaugeCoupling;
 FSMinimize;
 FSFindRoot;
+FSFlagProblem;       (* flag a problem *)
+FSFlagWarning;       (* flag a problem *)
+(* potential problems *)
+{ FSNoProblem, FSNonPerturbativeParameter, FSInvalidInputParameter };
+FSRestrictParameter; (* restrict parameter to interval *)
+FSInitialSetting;    (* set parameter before calculating masses *)
 FSSolveEWSBFor;
 FSSolveEWSBTreeLevelFor = {};
 Temporary;
@@ -723,7 +730,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                      {minimumScale_, maximumScale_}, files_List] :=
    Module[{applyConstraint = "", calculateScale, scaleGuess,
            restrictScale,
-           temporarySetting = "",
+           initialSetting,
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -736,7 +743,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
-          temporarySetting   = Constraint`SetTemporarily[settings];
+          initialSetting  = Constraint`InitialApplyConstraint[settings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
@@ -785,7 +792,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@calculateScale@"       -> IndentText[WrapLines[calculateScale]],
                    "@scaleGuess@"           -> IndentText[WrapLines[scaleGuess]],
                    "@restrictScale@"        -> IndentText[WrapLines[restrictScale]],
-                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@initialSetting@"       -> IndentText[WrapLines[initialSetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
                    "@calculateDeltaAlphaS@"  -> IndentText[WrapLines[calculateDeltaAlphaS]],
@@ -817,7 +824,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
    Module[{innerSettings = {}, outerSettings = {}, innerInitialGuessSettings = {},
            applyConstraint = "", applyOuterConstraint = "", calculateScale, scaleGuess,
            restrictScale, calculateOuterScale, outerScaleGuess, restrictOuterScale,
-           temporarySetting = "", temporaryResetting = "",
+           initialSetting, temporaryResetting = "",
            setDRbarYukawaCouplings,
            calculateDRbarMasses,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
@@ -849,7 +856,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
           calculateScale  = Constraint`CalculateScale[condition, "scale"];
           scaleGuess      = Constraint`CalculateScale[scaleFirstGuess, "initial_scale_guess"];
           restrictScale   = Constraint`RestrictScale[{minimumScale, maximumScale}];
-          temporarySetting   = Constraint`SetTemporarily[innerSettings];
+          initialSetting  = Constraint`InitialApplyConstraint[innerSettings];
           calculateDeltaAlphaEm   = ThresholdCorrections`CalculateDeltaAlphaEm[FlexibleSUSY`FSRenormalizationScheme];
           calculateDeltaAlphaS    = ThresholdCorrections`CalculateDeltaAlphaS[FlexibleSUSY`FSRenormalizationScheme];
           calculateGaugeCouplings = ThresholdCorrections`CalculateGaugeCouplings[];
@@ -917,7 +924,7 @@ WriteSemiAnalyticConstraintClass[condition_, settings_List, initialGuessSettings
                    "@calculateOuterScale@"       -> IndentText[WrapLines[calculateOuterScale]],
                    "@outerScaleGuess@"           -> IndentText[WrapLines[outerScaleGuess]],
                    "@restrictOuterScale@"        -> IndentText[WrapLines[restrictOuterScale]],
-                   "@temporarySetting@"     -> IndentText[WrapLines[temporarySetting]],
+                   "@initialSetting@"       -> IndentText[WrapLines[initialSetting]],
                    "@temporaryResetting@"   -> IndentText[WrapLines[temporaryResetting]],
                    "@calculateGaugeCouplings@" -> IndentText[WrapLines[calculateGaugeCouplings]],
                    "@calculateDeltaAlphaEm@" -> IndentText[WrapLines[calculateDeltaAlphaEm]],
@@ -1480,7 +1487,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
              ];
            If[FlexibleSUSY`UseHiggs3LoopSplit === True,
               {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSplit[{SARAH`HiggsBoson}];
-              threeLoopHiggsHeaders = "#include \"split_threeloophiggs.hpp\"\n";
+              threeLoopHiggsHeaders = "#include \"splitmssm_threeloophiggs.hpp\"\n";
              ];
            If[SARAH`UseHiggs2LoopMSSM === True,
               {twoLoopTadpolePrototypes, twoLoopTadpoleFunctions} = SelfEnergies`CreateTwoLoopTadpolesMSSM[SARAH`HiggsBoson];
@@ -2263,6 +2270,14 @@ WriteUtilitiesClass[massMatrices_List, betaFun_List, inputParameters_List, extra
                           } ];
           ];
 
+WriteReferences[files_List] :=
+    Module[{},
+           WriteOut`ReplaceInFiles[files,
+               { "@referencesForComponents@" -> References`CreateCitation[],
+                 Sequence @@ GeneralReplacementRules[]
+               } ];
+          ];
+
 FilesExist[fileNames_List] :=
     And @@ (FileExistsQ /@ fileNames);
 
@@ -2415,68 +2430,105 @@ FSCheckFlags[] :=
               FlexibleSUSY`UseSM3LoopRGEs = True;
              ];
 
+           If[FlexibleSUSY`FlexibleEFTHiggs,
+              References`AddReference["Athron:2016fuq"];
+             ];
+
            If[FlexibleSUSY`UseYukawa3LoopQCD || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM QCD corrections to yt from ",
                     "[arxiv:hep-ph/9911434, arxiv:hep-ph/9912391]"];
+              References`AddReference["Chetyrkin:1999qi"];
+              References`AddReference["Melnikov:2000qh"];
              ];
 
            If[FlexibleSUSY`UseSMAlphaS3Loop || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM QCD threshold corrections to alpha_s ",
                     "[arxiv:hep-ph/0004189]"];
+              References`AddReference["Chetyrkin:2000yt"];
              ];
 
            If[FlexibleSUSY`UseMSSMYukawa2Loop,
               Print["Adding 2-loop MSSM SQCD threshold corrections for yt and yb from ",
                     "[arxiv:hep-ph/0210258, arxiv:hep-ph/0507139, arxiv:hep-ph/0707.0650]"];
+              References`AddReference["Bednyakov:2002sf"];
+              References`AddReference["Bednyakov:2005kt"];
+              References`AddReference["Bednyakov:2007vm"];
              ];
 
            If[FlexibleSUSY`UseMSSMAlphaS2Loop,
               Print["Adding 2-loop MSSM SQCD threshold corrections for \[Alpha]_s from ",
-                    "[arxiv:hep-ph/0509048, arXiv:0810.5101, arXiv:1009.5455]"];
+                    "[arxiv:hep-ph/0509048, arxiv:0810.5101, arxiv:1009.5455]"];
+              References`AddReference["Harlander:2005wm"];
+              References`AddReference["Bauer:2008bj"];
+              References`AddReference["Bednyakov:2010ni"];
              ];
 
            If[FlexibleSUSY`UseHiggs2LoopSM || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 2-loop SM Higgs mass contributions from ",
                     "[arxiv:1205.6497, arxiv:1407.4336]"];
+              References`AddReference["Degrassi:2012ry"];
+              References`AddReference["Martin:2014cxa"];
              ];
 
            If[SARAH`UseHiggs2LoopMSSM,
               Print["Adding 2-loop MSSM Higgs mass contributions from ",
                     "[arxiv:hep-ph/0105096, arxiv:hep-ph/0112177, arxiv:hep-ph/0212132,",
                     " arxiv:hep-ph/0206101, arxiv:hep-ph/0305127]"];
+              References`AddReference["Degrassi:2001yf"];
+              References`AddReference["Brignole:2001jy"];
+              References`AddReference["Dedes:2002dy"];
+              References`AddReference["Brignole:2002bz"];
+              References`AddReference["Dedes:2003km"];
              ];
 
            If[FlexibleSUSY`UseHiggs2LoopNMSSM,
               Print["Adding 2-loop NMSSM Higgs mass contributions from ",
                     "[arxiv:hep-ph/0105096, arxiv:hep-ph/0112177, arxiv:hep-ph/0212132,",
-                    " arxiv:hep-ph/0206101, arxiv:hep-ph/0305127, arXiv:0907.4682]"];
+                    " arxiv:hep-ph/0206101, arxiv:hep-ph/0305127, arxiv:0907.4682]"];
+              References`AddReference["Degrassi:2001yf"];
+              References`AddReference["Brignole:2001jy"];
+              References`AddReference["Dedes:2002dy"];
+              References`AddReference["Brignole:2002bz"];
+              References`AddReference["Dedes:2003km"];
+              References`AddReference["Degrassi:2009yq"];
              ];
 
            If[FlexibleSUSY`UseHiggs3LoopSM || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM Higgs mass contributions from ",
                     "[arxiv:1407.4336]"];
+              References`AddReference["Martin:2014cxa"];
              ];
 
            If[FlexibleSUSY`UseHiggs3LoopSplit,
               Print["Adding 3-loop split-MSSM Higgs mass contributions from ",
                     "[arxiv:1312.5220]"];
+              References`AddReference["Benakli:2013msa"];
              ];
 
            If[FlexibleSUSY`UseHiggs3LoopMSSM,
               Print["Adding 3-loop MSSM Higgs mass contributions from ",
                     "[arxiv:hep-ph/0803.0672, arxiv:hep-ph/1005.5709,",
                     " arxiv:1409.2297, arxiv:1708.05720]"];
+              References`AddReference["Harlander:2008ju"];
+              References`AddReference["Kant:2010tf"];
+              References`AddReference["Kunz:2014gya"];
+              References`AddReference["Harlander:2017kuc"];
              ];
 
            If[FlexibleSUSY`UseSM3LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 3-loop SM beta-functions from ",
-                    "[arxiv:1303.4364v2, arXiv:1307.3536v4,",
-                    " arXiv:1504.05200 (SUSYHD v1.0.1)]"];
+                    "[arxiv:1303.4364, arxiv:1307.3536,",
+                    " arxiv:1504.05200 (SUSYHD v1.0.1)]"];
+              References`AddReference["Bednyakov:2013eba"];
+              References`AddReference["Buttazzo:2013uya"];
+              References`AddReference["Vega:2015fna"];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
               Print["Adding 3-loop MSSM beta-functions from ",
                     "[arxiv:hep-ph/0308231, arxiv:hep-ph/0408128]"];
+              References`AddReference["Jack:2003sx"];
+              References`AddReference["Jack:2004ch"];
              ];
           ];
 
@@ -3466,6 +3518,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                    FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_standard_model_matching.cpp"}]}
                                  }];
              ];
+
+           Print["Creating list of references to be cited ..."];
+           WriteReferences[
+               {{FileNameJoin[{$flexiblesusyTemplateDir, "references.tex.in"}],
+                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_references.tex"}]}}
+           ];
 
            Print["Creating plot scripts ..."];
            WritePlotScripts[{{FileNameJoin[{$flexiblesusyTemplateDir, "plot_spectrum.gnuplot.in"}],

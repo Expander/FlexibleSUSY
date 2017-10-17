@@ -70,7 +70,7 @@ void @ModelName@_high_scale_constraint<Semi_analytic>::apply()
 {
    check_model_ptr();
 
-@temporarySetting@
+@initialSetting@
 
    update_scale();
 

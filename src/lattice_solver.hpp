@@ -287,6 +287,6 @@ public:
     void sort_rows();
 };
 
-}
+} // namespace flexiblesusy
 
 #endif // lattice_solver_hpp

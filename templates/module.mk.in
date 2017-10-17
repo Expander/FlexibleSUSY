@@ -25,6 +25,9 @@ WITH_$(MODNAME) := yes
 		$(DIR)/LesHouches.in.@CLASSNAME@_generated \
 @SLHA_INPUT@
 
+@CLASSNAME@_REFERENCES := \
+		$(DIR)/@CLASSNAME@_references.tex
+
 @CLASSNAME@_GNUPLOT := \
 		$(DIR)/@CLASSNAME@_plot_rgflow.gnuplot \
 		$(DIR)/@CLASSNAME@_plot_spectrum.gnuplot
@@ -185,6 +188,7 @@ install-src::
 ifneq ($(@CLASSNAME@_SLHA_INPUT),)
 		install -m u=rw,g=r,o=r $(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_INSTALL_DIR)
 endif
+		install -m u=rw,g=r,o=r $(@CLASSNAME@_REFERENCES) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(@CLASSNAME@_GNUPLOT) $(@CLASSNAME@_INSTALL_DIR)
 endif
 
@@ -212,6 +216,7 @@ clean-$(MODNAME)-src:
 		-rm -f $(METACODE_STAMP_@CLASSNAME@)
 		-rm -f $(@CLASSNAME@_INCLUDE_MK)
 		-rm -f $(@CLASSNAME@_SLHA_INPUT)
+		-rm -f $(@CLASSNAME@_REFERENCES)
 		-rm -f $(@CLASSNAME@_GNUPLOT)
 
 distclean-$(MODNAME): clean-$(MODNAME)-src
@@ -237,7 +242,8 @@ pack-$(MODNAME)-src:
 		$(EXE@CLASSNAME@_SRC) \
 		$(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 		$(@CLASSNAME@_MK) $(@CLASSNAME@_INCLUDE_MK) \
-		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_GNUPLOT)
+		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_REFERENCES) \
+		$(@CLASSNAME@_GNUPLOT)
 
 $(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 : run-metacode-$(MODNAME)

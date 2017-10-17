@@ -816,6 +816,19 @@ Format[CConversion`ElementwiseProd[HoldPattern[fac__]],CForm] :=
          ] <> ")"
         , OutputForm];
 
+Format[FlexibleSUSY`FSNonPerturbativeParameter[p_],CForm] :=
+    Format[
+        "(MODEL->get_problems().flag_non_perturbative_parameter(" <>
+        FlexibleSUSY`FSModelName <> "_info::" <> ToString[CForm[p]] <> ", " <>
+        ToString[CForm[p]] <> ", SCALE))"
+        , OutputForm];
+
+Format[FlexibleSUSY`FSInvalidInputParameter[p_],CForm] :=
+    Format[
+        "(throw PhysicalError(\"invalid input parameter [" <>
+        ToString[CForm[p]] <> " = \" + ToString(" <> ToString[CForm[p]] <> ") + \"]\"))"
+        , OutputForm];
+
 (* Finds all Greek symbols in an expression.
    Note: All arguments of Which and If are evaluated.
  *)

@@ -227,6 +227,11 @@ Do1DimFermion[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], mas
                              Simplify @ N[ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
                                           Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
                              0];
+           (* adding split-MSSM contributions if enabled *)
+           If[FlexibleSUSY`UseHiggs3LoopSplit === True,
+              qcdTwoLoop = N[Expand[qcdTwoLoop - GetMtPoleOverMtMSbarSplitMSSM2L[particle, Global`currentScale]]] /.
+                  Log[m_/Global`currentScale^2] :> -Log[Sqr[Global`currentScale]/m];
+             ];
            AddMtPoleQCDCorrections[1, qcdOneLoop] <> "\n" <>
            AddMtPoleQCDCorrections[2, qcdTwoLoop] <> "\n" <>
            AddMtPoleQCDCorrections[3, qcdThreeLoop] <> "
@@ -568,6 +573,11 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
               thirdGenMass = TreeMasses`GetThirdGenerationMass[particle];
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
+              (* adding split-MSSM contributions if enabled *)
+              If[FlexibleSUSY`UseHiggs3LoopSplit === True,
+                 qcdTwoLoop = N[Expand[qcdTwoLoop - GetMtPoleOverMtMSbarSplitMSSM2L[particle, Global`currentScale]]] /.
+                     Log[m_/Global`currentScale^2] :> -Log[Sqr[Global`currentScale]/m];
+                ];
               qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
                                 (* contribution to self-energy => neg. sign *)
                                 Simplify @ N[-ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
@@ -1122,6 +1132,21 @@ const double q_2l = mssm_twoloop_mt::dMt_over_mt_2loop(pars);
 
 " <> result <> " = -q_2l + qcd_1l * qcd_1l;";
 
+(* 2L QCD contribution from gluino in the split-MSSM,
+   Eq. (4.7) of arxiv:1312.5220
+ *)
+GetMtPoleOverMtMSbarSplitMSSM2L[particle_, scale_] :=
+    Module[{mg = FlexibleSUSY`M[SARAH`Gluino]},
+           SARAH`strongCoupling^4/(4 Pi)^4 (
+               89/9
+               + 4 Log[mg^2/scale^2] (
+                   13/3
+                   + Log[mg^2/scale^2]
+                   - 2 Log[FlexibleSUSY`M[particle]^2/scale^2]
+               )
+           )
+          ];
+
 CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], _] :=
     Module[{result, body, selfEnergyFunctionS, selfEnergyFunctionPL,
             selfEnergyFunctionPR, name, qcdOneLoop, qcdTwoLoop, qcdThreeLoop = 0,
@@ -1141,6 +1166,11 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               ,
               qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
               qcdTwoLoop = N[Expand[TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme] /. Log[m_/Global`currentScale^2] :> -Log[Sqr[Global`currentScale]/m]]];
+              (* adding split-MSSM contributions if enabled *)
+              If[FlexibleSUSY`UseHiggs3LoopSplit === True,
+                 qcdTwoLoop = N[Expand[qcdTwoLoop - GetMtPoleOverMtMSbarSplitMSSM2L[particle, Global`currentScale]]] /.
+                     Log[m_/Global`currentScale^2] :> -Log[Sqr[Global`currentScale]/m];
+                ];
               If[FlexibleSUSY`UseYukawa3LoopQCD === True &&
                  FlexibleSUSY`FSRenormalizationScheme =!= FlexibleSUSY`MSbar,
                  Print["Warning: UseYukawa3LoopQCD == True, but the renormalization scheme is not MSbar!"];

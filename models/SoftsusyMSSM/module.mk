@@ -6,6 +6,7 @@ LIBSoftsusyMSSM_HDR  := \
 		$(DIR)/conversion.hpp \
 		$(DIR)/def.h \
 		$(DIR)/diagonalization.hpp \
+		$(DIR)/gut_scale_calculator.hpp \
 		$(DIR)/linalg.h \
 		$(DIR)/lowe_legacy.h \
 		$(DIR)/mycomplex.h \

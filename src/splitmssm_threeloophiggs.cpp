@@ -16,11 +16,11 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "split_threeloophiggs.hpp"
+#include "splitmssm_threeloophiggs.hpp"
 #include "wrappers.hpp"
 
 namespace flexiblesusy {
-namespace split_threeloophiggs {
+namespace splitmssm_threeloophiggs {
 
 /**
  * Split-SUSY Higgs self-energy 3-loop contribution from a gluino,
@@ -56,5 +56,5 @@ double delta_mh_3loop_gluino_split(
    return result * threeLoop;
 }
 
-} // namespace split_threeloophiggs
+} // namespace splitmssm_threeloophiggs
 } // namespace flexiblesusy

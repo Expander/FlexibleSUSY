@@ -94,6 +94,10 @@ LowScale = LowEnergyConstant[MZ];
 LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
+   FSRestrictParameter[vu, {0, 3000}, FSFlagProblem[FSNonPerturbativeParameter[vu]],
+                       LowEnergyConstant[vev] Sin[ArcTan[TanBeta]]],
+   FSRestrictParameter[vd, {0, 3000}, FSFlagProblem[FSNonPerturbativeParameter[vd]],
+                       LowEnergyConstant[vev] Cos[ArcTan[TanBeta]]],
    {Yu, Automatic},
    {Yd, Automatic},
    {Ye, Automatic},
