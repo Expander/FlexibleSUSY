@@ -1,3 +1,23 @@
+FlexibleSUSY 2.0.2 [not released yet]
+
+ * Feature: Allow user to perform replacements on beta functions,
+   self-energies/tadpoles and vertices.  The replacement rules are
+   specified as:
+
+   FSBetaFunctionRules = {
+       {g1 -> 0, g2 -> 0}, (* applied to 1L beta functions *)
+       {g1 -> 0, g2 -> 0}, (* applied to 2L beta functions *)
+       {g1 -> 0, g2 -> 0}  (* applied to 3L beta functions *)
+   };
+
+   FSSelfEnergyRules = {
+       (* applied to 1L self-energies/tadpoles *)
+       { (Mass|Mass2)[VZ|gZ] -> 0 }
+   };
+
+   (* applied to all vertices *)
+   FSVertexRules = { g1 -> 0, g2 -> 0 };
+
 FlexibleSUSY 2.0.1 [October, 20 2017]
 
  * Feature: For each FlexibleSUSY <model> the TeX file
