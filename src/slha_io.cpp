@@ -416,10 +416,8 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
    using namespace softsusy;
    std::ostringstream ss;
 
-   const double alphaEmInv = 1./qedqcd.displayAlphaEmInput();
-
    ss << "Block SMINPUTS\n";
-   ss << FORMAT_ELEMENT( 1, alphaEmInv                       , "alpha_em^(-1)(MZ) SM(5) MSbar");
+   ss << FORMAT_ELEMENT( 1, 1./qedqcd.displayAlphaEmInput()  , "alpha_em^(-1)(MZ) SM(5) MSbar");
    ss << FORMAT_ELEMENT( 2, qedqcd.displayFermiConstant()    , "G_Fermi");
    ss << FORMAT_ELEMENT( 3, qedqcd.displayAlphaSInput()      , "alpha_s(MZ) SM(5) MSbar");
    ss << FORMAT_ELEMENT( 4, qedqcd.displayPoleMZ()           , "MZ(pole)");
