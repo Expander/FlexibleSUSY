@@ -887,6 +887,11 @@ RValueToCFormString[expr_] :=
                     FlexibleSUSY`M[a_[idx_]]     :> ToValidCSymbol[FlexibleSUSY`M[a]][idx] /.
                     FlexibleSUSY`M[a_]           :> ToValidCSymbol[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`BETA[l_,p_]     :> FlexibleSUSY`BETA1[l,p] /.
+                    SARAH`Adj[0]                 -> 0 /.
+                    SARAH`Conj[0]                -> 0 /.
+                    SARAH`Tp[0]                  -> 0 /.
+                    SARAH`trace[a__]  /; MemberQ[{a}, 0] -> 0 /.
+                    SARAH`MatMul[a__] /; MemberQ[{a}, 0] -> 0 /.
                     Susyno`LieGroups`conj    -> SARAH`Conj //.
                     conjSimplification /.
                     Times[fac__] :> FactorElementwiseProd[fac] /.

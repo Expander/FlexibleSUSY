@@ -70,6 +70,7 @@ model_files/SMHighScale         export-ignore
 model_files/SMHighPrecision     export-ignore
 model_files/SMnoGUT             export-ignore
 model_files/SMNoRGEs            export-ignore
+model_files/SMRules             export-ignore
 model_files/SMSemiAnalytic      export-ignore
 model_files/SSMSemiAnalytic     export-ignore
 model_files/SMThrow             export-ignore
