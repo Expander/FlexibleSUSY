@@ -185,3 +185,8 @@ DefaultPoleMassPrecision = HighPrecision;
 HighPoleMassPrecision    = {hh, Ah, Hpm};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYLowEnergy,
+           {{21, FlexibleSUSYObservable`aMuon} } }
+};
