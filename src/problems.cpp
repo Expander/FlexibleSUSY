@@ -115,6 +115,8 @@ std::vector<std::string> Problems::get_problem_strings() const
       strings.push_back(str);
    }
 
+   strings.shrink_to_fit();
+
    return strings;
 }
 
