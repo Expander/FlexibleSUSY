@@ -1164,6 +1164,43 @@ Example: In the MSSM the lightest supersymmetric particles might be
 PotentialLSPParticles = { Chi, Sv, Su, Sd, Se, Cha, Glu };
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+\section custon_repl_rules User-defined replacement rules
+
+User-defined replacement rules can be applied to the beta functions,
+self-energies/ tadpoles and vertices.  The rules are specified by the
+`FSBetaFunctionRules`, `FSSelfEnergyRules` and `FSVertexRules`
+variables, respectively.
+
+Example: Set the gauge couplings `g1` and `g2` to zero in all 1-loop,
+2-loop and 3-loop beta functions:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSBetaFunctionRules = {
+    {g1 -> 0, g2 -> 0}, (* applied to 1L beta functions *)
+    {g1 -> 0, g2 -> 0}, (* applied to 2L beta functions *)
+    {g1 -> 0, g2 -> 0}  (* applied to 3L beta functions *)
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example: Set the mass of the Z boson and the corresponding ghost field
+to zero in the 1-loop self-energies/ tadpoles:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSSelfEnergyRules = {
+    { (Mass|Mass2)[VZ|gZ] -> 0 } (* applied to 1L self-energies/tadpoles *)
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Example: Set the gauge couplings `g1` and `g2` to zero in all
+vertices:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+FSVertexRules = {
+    g1 -> 0,
+    g2 -> 0
+};
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 \section calc_obervables Observables
 
 FlexibleSUSY can calculate various observables.  To enable the

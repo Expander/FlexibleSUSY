@@ -416,26 +416,24 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
    using namespace softsusy;
    std::ostringstream ss;
 
-   const double alphaEmInv = 1./qedqcd.displayAlpha(ALPHA);
-
    ss << "Block SMINPUTS\n";
-   ss << FORMAT_ELEMENT( 1, alphaEmInv                   , "alpha^(-1) SM MSbar(MZ)");
-   ss << FORMAT_ELEMENT( 2, qedqcd.displayFermiConstant(), "G_Fermi");
-   ss << FORMAT_ELEMENT( 3, qedqcd.displayAlpha(ALPHAS)  , "alpha_s(MZ) SM MSbar");
-   ss << FORMAT_ELEMENT( 4, qedqcd.displayPoleMZ()       , "MZ(pole)");
-   ss << FORMAT_ELEMENT( 5, qedqcd.displayMbMb()         , "mb(mb) SM MSbar");
-   ss << FORMAT_ELEMENT( 6, qedqcd.displayPoleMt()       , "mtop(pole)");
-   ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()     , "mtau(pole)");
-   ss << FORMAT_ELEMENT( 8, qedqcd.displayNeutrinoPoleMass(3), "mnu3(pole)");
-   ss << FORMAT_ELEMENT( 9, qedqcd.displayPoleMW()       , "MW(pole)");
-   ss << FORMAT_ELEMENT(11, qedqcd.displayPoleMel()      , "melectron(pole)");
-   ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "mnu1(pole)");
-   ss << FORMAT_ELEMENT(13, qedqcd.displayPoleMmuon()    , "mmuon(pole)");
-   ss << FORMAT_ELEMENT(14, qedqcd.displayNeutrinoPoleMass(2), "mnu2(pole)");
-   ss << FORMAT_ELEMENT(21, qedqcd.displayMass(mDown)    , "md");
-   ss << FORMAT_ELEMENT(22, qedqcd.displayMass(mUp)      , "mu");
-   ss << FORMAT_ELEMENT(23, qedqcd.displayMass(mStrange) , "ms");
-   ss << FORMAT_ELEMENT(24, qedqcd.displayMass(mCharm)   , "mc");
+   ss << FORMAT_ELEMENT( 1, 1./qedqcd.displayAlphaEmInput()  , "alpha_em^(-1)(MZ) SM(5) MSbar");
+   ss << FORMAT_ELEMENT( 2, qedqcd.displayFermiConstant()    , "G_Fermi");
+   ss << FORMAT_ELEMENT( 3, qedqcd.displayAlphaSInput()      , "alpha_s(MZ) SM(5) MSbar");
+   ss << FORMAT_ELEMENT( 4, qedqcd.displayPoleMZ()           , "MZ(pole)");
+   ss << FORMAT_ELEMENT( 5, qedqcd.displayMbMb()             , "mb(mb) SM(5) MSbar");
+   ss << FORMAT_ELEMENT( 6, qedqcd.displayPoleMt()           , "Mtop(pole)");
+   ss << FORMAT_ELEMENT( 7, qedqcd.displayPoleMtau()         , "Mtau(pole)");
+   ss << FORMAT_ELEMENT( 8, qedqcd.displayNeutrinoPoleMass(3), "Mv3(pole)");
+   ss << FORMAT_ELEMENT( 9, qedqcd.displayPoleMW()           , "MW(pole)");
+   ss << FORMAT_ELEMENT(11, qedqcd.displayPoleMel()          , "Melectron(pole)");
+   ss << FORMAT_ELEMENT(12, qedqcd.displayNeutrinoPoleMass(1), "Mv1(pole)");
+   ss << FORMAT_ELEMENT(13, qedqcd.displayPoleMmuon()        , "Mmuon(pole)");
+   ss << FORMAT_ELEMENT(14, qedqcd.displayNeutrinoPoleMass(2), "Mv2(pole)");
+   ss << FORMAT_ELEMENT(21, qedqcd.displayMd2GeV()           , "md(2GeV)");
+   ss << FORMAT_ELEMENT(22, qedqcd.displayMu2GeV()           , "mu(2GeV)");
+   ss << FORMAT_ELEMENT(23, qedqcd.displayMs2GeV()           , "ms(2GeV)");
+   ss << FORMAT_ELEMENT(24, qedqcd.displayMcMc()             , "mc(mc) SM(4) MSbar");
 
    set_block(ss);
 }

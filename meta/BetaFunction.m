@@ -338,25 +338,22 @@ CreateBetaFunction[betaFunctions_List] :=
  *
  * @param betaFunctions list of SARAH-like formated beta functions
  *)
-ConvertSarahRGEs[betaFunctions_List] :=
-    Module[{lst = {}, beta, i, k, name, type, expr},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               beta = betaFunctions[[i]];
-               (* extract all beta functions and guess type *)
-               For[k = 1, k <= Length[beta], k++,
-                   If[Length[beta[[k]] < 2], Continue[];];
-                   (* beta[[k,1]] == name, beta[[k,2]] == 1 loop beta function *)
-                   name = beta[[k,1]];
-                   type = GuessType[name];
-                   expr = Drop[beta[[k]], 1];
-                   (* protect tensor products *)
-                   expr = CConversion`ProtectTensorProducts[#, name]& /@ expr;
-                   (* simplify expressions *)
-                   expr = TimeConstrainedSimplify /@ expr;
-                   AppendTo[lst, BetaFunction[name, type, expr]];
-                  ];
+ConvertSarahRGEs[beta_List] :=
+    Module[{lst = {}, k, name, type, expr},
+           (* extract all beta functions and guess type *)
+           For[k = 1, k <= Length[beta], k++,
+               If[Length[beta[[k]] < 2], Continue[];];
+               (* beta[[k,1]] == name, beta[[k,2]] == 1 loop beta function *)
+               name = beta[[k,1]];
+               type = GuessType[name];
+               expr = Drop[beta[[k]], 1];
+               (* protect tensor products *)
+               expr = CConversion`ProtectTensorProducts[#, name]& /@ expr;
+               (* simplify expressions *)
+               expr = TimeConstrainedSimplify /@ expr;
+               AppendTo[lst, BetaFunction[name, type, expr]];
               ];
-           Return[lst];
+           lst
           ];
 
 (* count number of parameters in beta functions list *)

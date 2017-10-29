@@ -275,6 +275,11 @@ SUM;
 (* methods for the calculation of the weak mixing angle *)
 { FSFermiConstant, FSMassW };
 
+(* rules to apply on expressions *)
+FSSelfEnergyRules = {{}, {}}; (* 1L, 2L *)
+FSVertexRules = {};
+FSBetaFunctionRules = {{}, {}, {}}; (* 1L, 2L, 3L *)
+
 FSWeakMixingAngleInput = Automatic;
 FSWeakMixingAngleInput::usage = "Method to determine the weak mixing
  angle. Possible values = { Automatic, FSFermiConstant, FSMassW }.
@@ -2379,6 +2384,30 @@ NeedToUpdateTarget[name_String, targets_List] := Module[{
 NeedToUpdateTarget[name_String, target_] :=
     NeedToUpdateTarget[name, {target}];
 
+PrepareFSRules[] :=
+    Block[{},
+          If[Head[FlexibleSUSY`FSSelfEnergyRules]   =!= List, FlexibleSUSY`FSSelfEnergyRules   = {}];
+          If[Head[FlexibleSUSY`FSVertexRules]       =!= List, FlexibleSUSY`FSVertexRules       = {}];
+          If[Head[FlexibleSUSY`FSBetaFunctionRules] =!= List, FlexibleSUSY`FSBetaFunctionRules = {}];
+         ];
+
+ApplyRulesAtParts[orig_List, rules_List] :=
+    (#1 /. #2)& @@@ Utils`Zip[orig, PadRight[rules, Length[orig], {{}}]];
+
+ApplyFSBetaFunctionRules[betas_List] :=
+    ({ First[#],
+       Sequence @@ ApplyRulesAtParts[Drop[#,1], FlexibleSUSY`FSBetaFunctionRules] }& /@ betas) //.
+    {
+        SARAH`Adj[0] -> 0,
+        SARAH`Conj[0] -> 0,
+        SARAH`Tp[0] -> 0,
+        SARAH`trace[a__]  /; MemberQ[{a}, 0] -> 0,
+        SARAH`MatMul[a__] /; MemberQ[{a}, 0] -> 0
+    };
+
+ApplyFSSelfEnergyRules[se_List] :=
+    { First[#], Sequence @@ ApplyRulesAtParts[Drop[#,1], FlexibleSUSY`FSSelfEnergyRules] }& /@ se;
+
 FSPrepareRGEs[loopOrder_] :=
     Module[{needToCalculateRGEs, betas},
            If[loopOrder > 0,
@@ -2546,7 +2575,7 @@ PrepareSelfEnergies[eigenstates_] :=
               Quit[1];
              ];
            Print["Converting self-energies ..."];
-           ConvertSarahSelfEnergies[selfEnergies]
+           ConvertSarahSelfEnergies[ApplyFSSelfEnergyRules @ selfEnergies]
           ];
 
 PrepareTadpoles[eigenstates_] :=
@@ -2563,7 +2592,7 @@ PrepareTadpoles[eigenstates_] :=
               Quit[1];
              ];
            Print["Converting tadpoles ..."];
-           ConvertSarahTadpoles[tadpoles]
+           ConvertSarahTadpoles[ApplyFSSelfEnergyRules @ tadpoles]
           ];
 
 PrepareUnrotatedParticles[eigenstates_] :=
@@ -3045,7 +3074,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["  Model output directory: ", FSOutputDir];
 
            PrintHeadline["Reading SARAH output files"];
-           (* get RGEs *)
+           PrepareFSRules[];
            FSPrepareRGEs[FlexibleSUSY`FSRGELoopOrder];
            FSCheckLoopCorrections[FSEigenstates];
            nPointFunctions = EnforceCpColorStructures @ SortCps @
@@ -3110,8 +3139,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* filter out buggy and duplicate beta functions *)
            DeleteBuggyBetaFunctions[beta_List] :=
                DeleteDuplicates[Select[beta, (!NumericQ[#[[1]]])&], (#1[[1]] === #2[[1]])&];
-           susyBetaFunctions         = DeleteBuggyBetaFunctions /@ susyBetaFunctions;
-           susyBreakingBetaFunctions = DeleteBuggyBetaFunctions /@ susyBreakingBetaFunctions;
+
+           susyBetaFunctions         = DeleteBuggyBetaFunctions @ (Join @@ susyBetaFunctions);
+           susyBreakingBetaFunctions = DeleteBuggyBetaFunctions @ (Join @@ susyBreakingBetaFunctions);
 
            (* identify real parameters *)
            If[Head[SARAH`RealParameters] === List,
@@ -3119,16 +3149,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ];
 
            (* store all model parameters *)
-           allParameters = StripSARAHIndices[((#[[1]])& /@ Join[Join @@ susyBetaFunctions, Join @@ susyBreakingBetaFunctions])];
+           allParameters = StripSARAHIndices[((#[[1]])& /@ Join[susyBetaFunctions, susyBreakingBetaFunctions])];
            Parameters`SetModelParameters[allParameters];
            DebugPrint["model parameters: ", allParameters];
 
            anomDim = AnomalousDimension`ConvertSarahAnomDim[SARAH`Gij];
 
-           susyBetaFunctions = BetaFunction`ConvertSarahRGEs[susyBetaFunctions];
+           susyBetaFunctions = BetaFunction`ConvertSarahRGEs[ApplyFSBetaFunctionRules @ susyBetaFunctions];
            susyBetaFunctions = Select[susyBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
 
-           susyBreakingBetaFunctions = ConvertSarahRGEs[susyBreakingBetaFunctions];
+           susyBreakingBetaFunctions = ConvertSarahRGEs[ApplyFSBetaFunctionRules @ susyBreakingBetaFunctions];
            susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
 
            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
@@ -3460,6 +3490,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               vertexRules = Get[vertexRuleFileName];
               effectiveCouplings = Get[effectiveCouplingsFileName];
              ];
+
+           (* apply user-defined rules *)
+           vertexRules = vertexRules /. FlexibleSUSY`FSVertexRules;
 
            PrintHeadline["Creating model"];
            Print["Creating class for model ..."];

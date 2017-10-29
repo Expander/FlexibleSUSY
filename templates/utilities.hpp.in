@@ -54,6 +54,9 @@ private:
                 + std::to_string(static_cast<long long>(m)) + ")"));
          }
       }
+
+      masses.shrink_to_fit();
+
       return masses;
    }
 

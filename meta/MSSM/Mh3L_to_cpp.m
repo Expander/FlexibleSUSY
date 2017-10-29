@@ -28,6 +28,7 @@ Get[FileNameJoin[{"meta", "TextFormatting.m"}]];
 
 Mh3L = Get[FileNameJoin[{"meta", "MSSM", "Mh2_3loop_DR_SQCD.m"}]];
 
+M  = MR;
 z2 = zt2;
 z3 = zt3;
 mt  /: mt^n_  := mt2^(n/2)  /; EvenQ[n];
@@ -58,10 +59,21 @@ Simp[expr_] := expr //.
         Power[x_,-5]          :> 1/Symbol["pow" <> ToString[5]][x],
         Power[x_,-6]          :> 1/Symbol["pow" <> ToString[6]][x],
         Log[x_]               :> log[x],
-        PolyLog[2,x_]         :> dilog[x]
+        PolyLog[2,x_]         :> dilog[x],
+        PolyLog[4,1/2]        -> N[PolyLog[4,1/2]]
     };
 
 ToCPP[expr_] := ToString[Simp[expr], CForm];
+
+Corrections[alphaOrder_, logOrder_] := ( 
+    k^(-(alphaOrder+1)/2)(mt^2)^-1 Coefficient[
+        Coefficient[
+            Coefficient[Mh2,at,1],
+            a3, alphaOrder
+        ],
+        Log[M^2/mt^2], logOrder
+    ]
+);
 
 impl = "\
 #include \"dilog.hpp\"
@@ -98,7 +110,7 @@ double coeff_as_0_log_0(double mQ32, double mU32, double Xt, double MR2)
 {
    using std::log;
 
-   const double result = 
+   const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[Corrections[0,0]] <> ";"] <> "
    return result;
 }
@@ -116,7 +128,7 @@ double coeff_as_1_log_0(double mQ32, double mU32, double Xt, double m3, double M
    using gm2calc::dilog;
    const double m32 = pow2(m3);
 
-   const double result = 
+   const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[Corrections[1,0]] <> ";"] <> "
    return result;
 }
@@ -127,7 +139,7 @@ double coeff_as_1_log_1(double mQ32, double mU32, double Xt, double m3, double M
    using std::log;
    const double m32 = pow2(m3);
 
-   const double result = 
+   const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[Corrections[1,1]] <> ";"] <> "
    return result;
 }
@@ -144,9 +156,7 @@ double coeff_as_2_log_0(double mQ32, double mU32, double Xt, double m3, double m
    using std::log;
    using gm2calc::dilog;
    const double m32 = pow2(m3);
-
-   const double dlatas2 = 0.;
-   const double SMConstatas2 = 0.;
+   const double dlatas2 = 0.; // 3L threshold correction Δλ^(3L) O(at*as^2)
 
    const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[Corrections[2,0]] <> ";"] <> "
@@ -160,7 +170,7 @@ double coeff_as_2_log_1(double mQ32, double mU32, double Xt, double m3, double m
    using gm2calc::dilog;
    const double m32 = pow2(m3);
 
-   const double result = 
+   const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[Corrections[2,1]] <> ";"] <> "
    return result;
 }
@@ -171,7 +181,7 @@ double coeff_as_2_log_2(double mQ32, double mU32, double Xt, double m3, double m
    using std::log;
    const double m32 = pow2(m3);
 
-   const double result = 
+   const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[Corrections[2,2]] <> ";"] <> "
    return result;
 }
@@ -182,13 +192,13 @@ double coeff_as_2_log_3()
    return " <> ToCPP[Corrections[2,3]] <> ";
 }
 
+/// 1-loop correction O(at), at = yt^2 Sin[beta]^2/(4 Pi)
 double Mh2_EFT_1loop(
-   double yt, double mt, double mQ32, double mU32,
+   double at, double mt, double mQ32, double mU32,
    double Xt, double MR2)
 {
    const double mt2 = pow2(mt);
    const double L = std::log(MR2/mt2);
-   const double at = pow2(yt)/(4*Pi);
    const double oneLoop = 1./(4*Pi);
 
    return oneLoop * mt2 * at * (
@@ -197,13 +207,14 @@ double Mh2_EFT_1loop(
    );
 }
 
+/// 2-loop correction O(at*as)
+/// at = yt^2 Sin[beta]^2/(4 Pi), as = g3^2/(4 Pi), 
 double Mh2_EFT_2loop(
-   double yt, double mt, double mQ32, double mU32,
+   double at, double mt, double mQ32, double mU32,
    double Xt, double MR2, double g3, double m3)
 {
    const double mt2 = pow2(mt);
    const double L = std::log(MR2/mt2);
-   const double at = pow2(yt)/(4*Pi);
    const double as = pow2(g3)/(4*Pi);
    const double twoLoop = 1./pow2(4*Pi);
 
@@ -214,13 +225,14 @@ double Mh2_EFT_2loop(
    );
 }
 
+/// 3-loop correction O(at*as^2), without Δλ^(3L),
+/// at = yt^2 Sin[beta]^2/(4 Pi), as = g3^2/(4 Pi), 
 double Mh2_EFT_3loop(
-   double yt, double mt, double mQ32, double mU32,
+   double at, double mt, double mQ32, double mU32,
    double Xt, double MR2, double g3, double m3, double msq2)
 {
    const double mt2 = pow2(mt);
    const double L = std::log(MR2/mt2);
-   const double at = pow2(yt)/(4*Pi);
    const double as = pow2(g3)/(4*Pi);
    const double threeLoop = 1./pow3(4*Pi);
 

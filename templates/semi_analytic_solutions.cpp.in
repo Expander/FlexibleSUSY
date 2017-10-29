@@ -76,6 +76,10 @@ std::map<int,@ModelName@_semi_analytic_solutions::Data_vector_t> @ModelName@_sem
          datasets[idx].push_back(&point);
       }
    }
+
+   for (auto& d: datasets)
+      d.second.shrink_to_fit();
+
    return datasets;
 }
 

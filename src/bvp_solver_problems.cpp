@@ -51,6 +51,8 @@ std::vector<std::string> BVP_solver_problems::get_problem_strings() const
    if (no_convergence())
       result.push_back(name + " no convergence");
 
+   result.shrink_to_fit();
+
    return result;
 }
 
