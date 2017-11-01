@@ -200,6 +200,12 @@ inline std::complex<double> Conj(const std::complex<double>& a) noexcept
    return std::conj(a);
 }
 
+template<typename Scalar, int M, int N>
+Eigen::Matrix<Scalar,M,N> Conj(const Eigen::Matrix<Scalar,M,N>& a) noexcept
+{
+   return a.conjugate();
+}
+
 template <class T>
 T Conjugate(T a) noexcept
 {
