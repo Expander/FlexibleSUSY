@@ -60,9 +60,9 @@ HighScaleFirstGuess = MSUSY;
 HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[LambdaLoopOrder-1] (
-                    + lambda1LReg + lambda1LPhi
-                    + lambda1LChi1 + lambda1LChi2
-                    + lambda1Lbottom + lambda1Ltau)
+                    + 0 lambda1LReg + lambda1LPhiGaugeless
+                    + 0 lambda1LChi1 + 0 lambda1LChi2
+                    + 0 lambda1Lbottom + 0 lambda1Ltau)
                 + UnitStep[LambdaLoopOrder-2] (
                     If[TwoLoopAtAs >= 1, (
                         Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
@@ -83,7 +83,7 @@ HighScaleInput = {
                               lambda2LPhiHSSAlphaTAlphaSFull
                              ]
                       ), 0]
-                    + If[TwoLoopAtAt >= 1, (
+                    + 0 If[TwoLoopAtAt >= 1, (
                         Which[IsCloseRel[msu2[3,3],msq2[3,3],0.01] &&
                               IsCloseRel[mAInput^2,msu2[3,3],0.01],
                               lambda2LHSSAlphaT2,
@@ -91,7 +91,7 @@ HighScaleInput = {
                               lambda2LHSSAlphaT2Generic
                              ]
                       ), 0]
-                    + If[TwoLoopAbAs >= 1, (
+                    + 0 If[TwoLoopAbAs >= 1, (
                         Which[IsCloseRel[msu2[3,3],msq2[3,3],0.01] &&
                               IsCloseRel[Sqrt[msu2[3,3]],M3Input,0.01],
                               lambda2LPhiHSSAlphaBAlphaSDegenerate,
@@ -101,7 +101,7 @@ HighScaleInput = {
                               lambda2LPhiHSSAlphaBAlphaSFull
                              ]
                       ), 0]
-                    + If[TwoLoopAtAb >= 1, (
+                    + 0 If[TwoLoopAtAb >= 1, (
                         Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
                               IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
                               IsCloseRel[SCALE^2,msd2[3,3],0.01] &&
@@ -112,7 +112,7 @@ HighScaleInput = {
                               lambda2LHSSAlphaTAlphaBGeneric
                              ]
                       ), 0]
-                    + If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
+                    + 0 If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
                 )
     }
 };
@@ -167,6 +167,8 @@ SARAH`ParameterDefinitions = Append[
 ];
 
 Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_corrections.m"}]];
+
+lambda1LPhiGaugeless = lambda1LPhi /. { g1 -> 0, g2 -> 0 };
 
 (* enable only O(at*(1 + as + as^2)) *)
 
