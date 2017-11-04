@@ -143,8 +143,8 @@ InitialGuessAtLowScale = {
    {Ye, Automatic}
 };
 
-DefaultPoleMassPrecision = HighPrecision;
-HighPoleMassPrecision    = {hh};
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 

@@ -163,6 +163,11 @@ ExtraSLHAOutputBlocks = {
             {49, SignedAbsSqrt[md2[3,3]]} } }
 };
 
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {};
+MediumPoleMassPrecision  = {};
+LowPoleMassPrecision     = {};
+
 (* enable only O(at*(1 + as + as^2)) *)
 
 ZM33 = ZEROMATRIX[3,3];
