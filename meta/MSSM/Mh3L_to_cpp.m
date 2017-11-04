@@ -25,8 +25,7 @@
  *)
 
 Get[FileNameJoin[{"meta", "TextFormatting.m"}]];
-
-Mh3L = Get[FileNameJoin[{"meta", "MSSM", "Mh2_3loop_DR_SQCD.m"}]];
+Get[FileNameJoin[{"meta", "MSSM", "Mh2_3loop_DR_SQCD_program.m"}]];
 
 M  = MR;
 z2 = zt2;
@@ -65,15 +64,10 @@ Simp[expr_] := expr //.
 
 ToCPP[expr_] := ToString[Simp[expr], CForm];
 
-Corrections[alphaOrder_, logOrder_] := ( 
-    k^(-(alphaOrder+1)/2)(mt^2)^-1 Coefficient[
-        Coefficient[
-            Coefficient[Mh2,at,1],
-            a3, alphaOrder
-        ],
-        Log[M^2/mt^2], logOrder
-    ]
-);
+Corrections[alphaSOrder_, logOrder_] :=
+    k^((alphaSOrder-1)/2) deltamh2[alphaSOrder, logOrder] /.
+    SM3LoopConst /.
+    Inactive -> Identity;
 
 impl = "\
 #include \"dilog.hpp\"
@@ -249,3 +243,4 @@ double Mh2_EFT_3loop(
 ";
 
 Export["Mh2_EFT.cpp",impl, "String"];
+Print["FINISHED"];
