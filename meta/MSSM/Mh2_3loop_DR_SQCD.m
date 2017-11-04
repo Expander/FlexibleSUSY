@@ -35,7 +35,11 @@ dlatas2        : Threshold correction of the SM self-interaction coupling of O(a
 
 *)
 
-SMConstatas2 = (-(3776/9)-2048/3 Inactive[PolyLog][4,1/2]+320 Zeta[3]+(2816 Inactive[Zeta][2]^2)/15+256/9 Log[2]^2 (-Log[2]^2+6 Inactive[Zeta][2]));
+SMConstatas2 = (-3776/9
+                -2048/3 PolyLog[4,1/2]
+                +320 Zeta[3]
+                +(2816 Zeta[2]^2)/15
+                +256/9 Log[2]^2 (-Log[2]^2 + 6 Zeta[2]));
 
 Mh2=( 
 (-4*a3^2*at*k^(3/2)*mt^2*(128*m3^16 - 550*m3^14*mQ3^2 + 506*m3^12*mQ3^4 - 
