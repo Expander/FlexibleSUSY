@@ -47,6 +47,7 @@ model_files/CMSSMSemiAnalytic   export-ignore
 model_files/CMSSMYt2L           export-ignore
 model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
+model_files/HSSUSYSQCD          export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/LRLR                export-ignore
@@ -62,6 +63,8 @@ model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
 model_files/NUHMSSMNoFV         export-ignore
+model_files/NUHMSSMNoFVSQCD     export-ignore
+model_files/NUHMSSMNoFVHimalayaSQCD export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
