@@ -880,6 +880,14 @@ RValueToCFormString[expr_] :=
                     SARAH`sum -> FlexibleSUSY`SUM /.
                     SARAH`Mass -> FlexibleSUSY`M /.
                     SARAH`A0[0]              -> 0 /.
+                    SARAH`B0[0,0,0]          -> 0 /.
+                    SARAH`B1[0,0,0]          -> 0 /.
+                    SARAH`F0[0,0,0]          -> 0 /.
+                    SARAH`G0[0,0,0]          -> 0 /.
+                    SARAH`H0[0,0,0]          -> 0 /.
+                    SARAH`B00[0,0,0]         -> 0 /.
+                    SARAH`B11[0,0,0]         -> 0 /.
+                    SARAH`B22[0,0,0]         -> 0 /.
                     SARAH`Mass2[a_?NumberQ]  :> Sqr[a] /.
                     SARAH`Mass2[a_]          :> Sqr[FlexibleSUSY`M[a]] /.
                     FlexibleSUSY`M[a_?NumberQ]   :> a /.
