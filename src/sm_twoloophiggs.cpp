@@ -140,7 +140,6 @@ double self_energy_higgs_2loop_at_as_sm(
    const double yt2 = Sqr(yt);
    const double g32 = Sqr(g3);
    const double t = Sqr(mt);
-   const double s = p2;
    const double q = Sqr(scale);
    const double lnt = std::log(t/q);
 
