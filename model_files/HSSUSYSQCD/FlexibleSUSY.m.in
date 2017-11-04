@@ -182,8 +182,10 @@ FSSelfEnergyRules = {
     (* 1L *)
     {
         p -> 0,
-        (Mass|Mass2)[VZ|gZ] -> 0,
-        (Mass|Mass2)[VWp|gW] -> 0,
+        (Mass|Mass2)[VZ|gZ|SARAH`VectorV] -> 0,
+        (Mass|Mass2)[VWp|gWp|gWpC|SARAH`VectorW] -> 0,
+        (Mass|Mass2)[VG|gG|SARAH`VectorG] -> 0,
+        (Mass|Mass2)[VP|gP|SARAH`VectorP] -> 0,
         (Mass|Mass2)[hh|Ah|Hp] -> 0,
         (Mass|Mass2)[(Fd|Fe)[_]] -> 0
     }
