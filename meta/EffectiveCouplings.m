@@ -207,13 +207,6 @@ CalculatePartialWidths[couplings_List] :=
            Utils`StringJoinWithSeparator[#, "\n"]& /@ {prototypes, functions}
           ];
 
-(* @todo much of this is either identical or very similar to required functions
-   for the GMuonMinus2 branch, and will be required again for decays, it might
-   be a good idea to make them general (e.g. defined in Vertices?).             *)
-AntiParticle[p_] := If[TreeMasses`IsScalar[p] || TreeMasses`IsVector[p],
-                       Susyno`LieGroups`conj[p],
-                       SARAH`bar[p]];
-
 NonZeroVertexQ[vertex_] := MemberQ[vertex[[2 ;;]][[All, 1]], Except[0]];
 
 (* @todo extend to multiple non-Abelian groups *)
@@ -239,8 +232,8 @@ GetTwoBodyDecays[particle_] :=
     Module[{i, j, allParticles, combinations, vertex, fields, couplings,
             candidate, found = {}, decays = {}},
            allParticles = Select[TreeMasses`GetParticles[], !TreeMasses`IsGhost[#]&];
-           combinations = Table[Sort[{AntiParticle[particle],
-                                      AntiParticle[allParticles[[i]]],
+           combinations = Table[Sort[{SARAH`AntiField[particle],
+                                      SARAH`AntiField[allParticles[[i]]],
                                       allParticles[[j]]}],
                                 {i, 1, Length[allParticles]}, {j, 1, Length[allParticles]}];
            combinations = DeleteDuplicates[Flatten[combinations, 1]];
@@ -253,10 +246,10 @@ GetTwoBodyDecays[particle_] :=
                      coupling = Vertices`SortCp[SARAH`Cp @@ (StripColorAndLorentzIndices @ fields)][SARAH`PL];,
                      coupling = Vertices`SortCp[SARAH`Cp @@ (StripColorAndLorentzIndices @ fields)];
                     ];
-                  candidate = Append[DeleteCases[fields /. head_[{__}] :> head, p_ /; p === AntiParticle[particle], {0, Infinity}, 1], coupling];
+                  candidate = Append[DeleteCases[fields /. head_[{__}] :> head, p_ /; p === SARAH`AntiField[particle], {0, Infinity}, 1], coupling];
                   If[FreeQ[found, C[candidate[[1]], candidate[[2]]]] &&
-                     FreeQ[found, C[AntiParticle[candidate[[1]]], AntiParticle[candidate[[2]]]]] ||
-                     AntiParticle[particle] =!= particle,
+                     FreeQ[found, C[SARAH`AntiField[candidate[[1]]], SARAH`AntiField[candidate[[2]]]]] ||
+                     SARAH`AntiField[particle] =!= particle,
                      If[((!TreeMasses`IsMassless[candidate[[1]]] || !TreeMasses`IsVector[candidate[[1]]]) &&
                         (!TreeMasses`IsMassless[candidate[[2]]] || !TreeMasses`IsVector[candidate[[2]]])) ||
                         !FreeQ[SARAH`AllowDecaysMasslessVectors, SARAH`RE[particle]],
@@ -277,7 +270,7 @@ GetParticlesCouplingToVectorBoson[vector_] :=
                   (* @note could use defined functions in e.g. TreeMasses, plus check
                      for undefined group factors, but will do it this way for now
                      to ensure consistency with SARAH                                  *)
-                  charge = SARAH`Vertex[{AntiParticle[allParticles[[i]]],
+                  charge = SARAH`Vertex[{SARAH`AntiField[allParticles[[i]]],
                                          allParticles[[i]], SARAH`VectorG},
                                         UseDependences -> True][[2,1]];
                   If[charge =!= 0,
@@ -286,11 +279,11 @@ GetParticlesCouplingToVectorBoson[vector_] :=
                   charge = TreeMasses`GetElectricCharge[allParticles[[i]]];
                   If[NumericQ[charge],
                      charge = {charge},
-                     charge = Cases[SARAH`Vertex[{AntiParticle[allParticles[[i]]],
+                     charge = Cases[SARAH`Vertex[{SARAH`AntiField[allParticles[[i]]],
                                                   allParticles[[i]], SARAH`VectorP},
                                                  UseDependences -> True][[2,1]], _?NumberQ];
                     ];
-                  If[charge =!= {} && AntiParticle[allParticles[[i]]] =!= allParticles[[i]] &&
+                  If[charge =!= {} && SARAH`AntiField[allParticles[[i]]] =!= allParticles[[i]] &&
                      charge =!= {0},
                      particles = Append[particles, allParticles[[i]]];
                     ];
@@ -326,8 +319,8 @@ InitializeEffectiveCouplings[] :=
                 neededCoups = Select[neededTwoBodyDecays[[2]],
                                     (MemberQ[neededVectorBosonInteractions[[2]], #[[1]]] ||
                                      MemberQ[neededVectorBosonInteractions[[2]], #[[2]]])&];
-                (* only keep vertices of the form pD -> p AntiParticle[p] *)
-                neededCoups = Cases[neededCoups, {p1_, p2_, _} /; p1 === AntiParticle[p2]];
+                (* only keep vertices of the form pD -> p SARAH`AntiField[p] *)
+                neededCoups = Cases[neededCoups, {p1_, p2_, _} /; p1 === SARAH`AntiField[p2]];
                 (* filter out massless states and Goldstones *)
                 neededCoups = Select[neededCoups, (!IsMasslessOrGoldstone[#[[1]]] && !IsMasslessOrGoldstone[#[[2]]])&];
                 result = Append[result, {couplings[[i]], #[[3]]& /@ neededCoups}];
