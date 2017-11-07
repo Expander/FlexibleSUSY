@@ -269,23 +269,6 @@ GetTwoBodyDecays[particle_] :=
            decays
           ];
 
-GetElectricCharge[p_] :=
-    Module[{charge},
-           If[p === AntiParticle[p],
-              charge = 0;,
-              charge = SARAH`getElectricCharge[p];
-              If[!NumericQ[charge],
-                 charge = Cases[-I SARAH`Vertex[{AntiParticle[p], p, SARAH`VectorP},
-                                                UseDependences -> True][[2,1]], _?NumberQ];
-                 If[charge === {},
-                    charge = 0;,
-                    charge = First[charge];
-                   ];
-                ];
-             ];
-           charge
-          ];
-
 GetParticlesCouplingToVectorBoson[vector_] :=
     Module[{i, charge, allParticles, particles = {}},
            allParticles = Select[TreeMasses`GetParticles[], !TreeMasses`IsGhost[#]&];
@@ -300,7 +283,7 @@ GetParticlesCouplingToVectorBoson[vector_] :=
                   If[charge =!= 0,
                      particles = Append[particles, allParticles[[i]]];
                     ];,
-                  charge = GetElectricCharge[allParticles[[i]]];
+                  charge = TreeMasses`GetElectricCharge[allParticles[[i]]];
                   If[NumericQ[charge],
                      charge = {charge},
                      charge = Cases[SARAH`Vertex[{AntiParticle[allParticles[[i]]],
@@ -678,7 +661,7 @@ CreateCouplingContribution[particle_, vectorBoson_, coupling_] :=
                    ];
                 ];
            If[vectorBoson === SARAH`VectorP,
-              factor = factor * GetElectricCharge[internal]^2 GetMultiplicity[vectorBoson, internal];
+              factor = factor * TreeMasses`GetElectricCharge[internal]^2 GetMultiplicity[vectorBoson, internal];
              ];
            indices = GetParticleIndicesInCoupling[coupling];
            particleIndex = GetParticleGenerationIndex[particle, coupling];

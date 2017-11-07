@@ -223,7 +223,7 @@ RhoZero[] :=
            (*extract isospin from SU(2)_left representation and its third component from
                 Gell-Mann-Nishijima formula with given hypercharge and electric charge = 0*)
            vevlist = vevlist /. {fieldname_Symbol, vevinfo_List, comp1_List, __} :>
-                        Flatten[{vevinfo Boole[ReleaseHold[SARAH`getElectricCharge[comp1[[1]]]] == 0],
+                        Flatten[{vevinfo Boole[ReleaseHold[TreeMasses`GetElectricCharge[comp1[[1]]]] == 0],
                                  (SA`DimensionGG[fieldname, leftPos] - 1) / 2,
                                  -SA`ChargeGG[fieldname, hyperchargePos]}];
            If[!FreeQ[vevlist, None],

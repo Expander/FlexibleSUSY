@@ -81,7 +81,7 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
                If[coupling === SARAH`electricCharge,
                   casimir = SA`Casimir[particle, SARAH`color];
                   nc = If[NumericQ[casimir] && casimir =!= 0, 3, 1];
-                  dynkin = SARAH`getElectricCharge[particle]^2 nc;
+                  dynkin = TreeMasses`GetElectricCharge[particle]^2 nc;
                   ,
                   dynkin = SA`Dynkin[particle, Position[SARAH`Gauge, name][[1, 1]]];
                  ];
