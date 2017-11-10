@@ -2606,3 +2606,20 @@ lambda2LPhiHSSAlphaBAlphaSDegenerateSquark = With[{
        3*MS2^3*(-g + MS2)*Log[q2])) + 24*g^(3/2)*MS2^3*(Sqrt[g] - 2*sgn*Xb)*
     PolyLog[2, 1 - g/MS2]))/(3*(g - MS2)^2*MS2^3)
 ];
+
+lambda3LATASASDegenerate = With[{
+    k = 1/(4*Pi)^2,
+    gt = Yu[3,3],
+    MR = SCALE,
+    MS = Sqrt[Sqrt[Abs[msq2[3,3] msu2[3,3]]]],
+    Xtt = xt/Sqrt[Sqrt[Abs[msq2[3,3] msu2[3,3]]]]
+    },
+    (1/2)*k^3*(gt^4 g3^4) (
+    (* 16/27 Xtt^3 (3568 - 1664 Log[MS^2/MR^2] + 444 Log[MS^2/MR^2]^2 - 2259 Zeta[3]) +  *)
+     8/9 Xtt^2 (149 - 448 Log[MS^2/MR^2] + 912 Log[MS^2/MR^2]^2 - 990 Zeta[3]) - 
+     64/27 Xtt (823 - 200 Log[MS^2/MR^2] + 954 Log[MS^2/MR^2]^2 - 477 Zeta[3]) - 
+     4/135 (176 \[Pi]^4 + 960 \[Pi]^2 Log[2]^2 + 9900 Log[MS^2/MR^2]^2 - 24840 Log[MS^2/MR^2]^3 - 
+        5 (4577 + 192 Log[2]^4 + 4608 PolyLog[4, 1/2] - 9864 Zeta[3]) + 
+        10 Log[MS^2/MR^2] (-877 + 432 Zeta[3]))
+    ) /. { a:PolyLog[__] :> N[a], a:Zeta[__] :> N[a] }
+];

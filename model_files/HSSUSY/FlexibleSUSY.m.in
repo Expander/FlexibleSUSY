@@ -114,6 +114,7 @@ HighScaleInput = {
                       ), 0]
                     + If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
                 )
+                + If[LambdaLoopOrder >= 3, lambda3LATASASDegenerate, 0]
     }
 };
 
