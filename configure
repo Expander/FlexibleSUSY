@@ -1078,6 +1078,35 @@ check_optional_modules() {
 }
 
 #_____________________________________________________________________
+check_librarylink_libs() {
+    # do not overwrite user supplied flags
+    if test "x$LLLIBS" = "x" ; then
+        # checks for any explicit linker flags required for LibraryLink
+        local default_lllibdir="${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/CompilerAdditions"
+        local mathlink_lib_flags=""
+
+        case "$operating_system" in
+            Darwin)
+                check_library "libMLi4" "$default_lllibdir" "$default_lib_paths"
+                if test "x$found_lib" = "x" ; then
+                    check_library "libMLi3" "$default_lllibdir" "$default_lib_paths"
+                    if test "x$found_lib" = "x" ; then
+                        message "Error: MathLink libraries must be installed to enable LibraryLink"
+                        message "   You can use --with-lllibs= to specify the required"
+                        message "   flags for linking MathLink libraries, or reconfigure"
+                        message "   with \`--disable-librarylink' to disable LibraryLink"
+                        exit 1
+                    fi
+                fi
+                local mathlink_lib=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+                mathlink_lib_flags="-L${default_lllibdir} ${mathlink_lib} -lc++ -framework Foundation"
+                ;;
+        esac
+        LLLIBS="$mathlink_lib_flags"
+    fi
+}
+
+#_____________________________________________________________________
 check_librarylink() {
     if [ "x$enable_librarylink" = "xautomatic" ] ; then
         checking_msg "LibraryLink"
@@ -1089,6 +1118,10 @@ check_librarylink() {
             result "no"
             enable_librarylink=no
         fi
+    fi
+
+    if [ "x$enable_librarylink" = "xyes" ] ; then
+        check_librarylink_libs
     fi
 }
 
@@ -2637,7 +2670,7 @@ Package directories, compilation settings and model selection
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
   --with-lapack-libs=       LAPACK libraries to be linked
-  --with-lllibs=            Libraries to be linked for LibraryLink (default: $LLLIBS)
+  --with-lllibs=            Linker flags for linking LibraryLink libraries (default: $LLLIBS)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
 EOF
