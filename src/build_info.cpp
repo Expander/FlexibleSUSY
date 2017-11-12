@@ -91,6 +91,7 @@ void print_build_info(std::ostream& ostr)
       "GSL flags (GSLFLAGS):                   " GSLFLAGS "\n"
       "GSL libraries (GSLLIBS):                " GSLLIBS "\n"
       "LAPACK library (LAPACKLIBS):            " LAPACKLIBS "\n"
+      "LibraryLink library (LLLIBS):           " LLLIBS "\n"
       "Loop function flags (LOOPFUNCFLAGS):    " LOOPFUNCFLAGS "\n"
       "Loop function libraries (LOOPFUNCLIBS): " LOOPFUNCLIBS "\n"
       "Additional flags (LDFLAGS):             " LDFLAGS "\n"

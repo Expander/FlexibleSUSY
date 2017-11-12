@@ -199,6 +199,7 @@ LOOPFUNCFLAGS=""
 LOOPFUNCLIBS=""
 LDFLAGS="$SHARED_LDFLAGS"
 LDLIBS="$SHARED_LDLIBS"
+LLLIBS=""
 himalaya_lib_dir=""
 himalaya_inc_dir=""
 sqlite_lib_dir=""
@@ -2536,6 +2537,7 @@ replace_markers() {
 	-e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
         -e "s|@LDFLAGS@|$LDFLAGS|"         \
         -e "s|@LDLIBS@|$LDLIBS|"           \
+        -e "s|@LLLIBS@|$LLLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COLORS@|$enable_colors|" \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
@@ -2635,6 +2637,7 @@ Package directories, compilation settings and model selection
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
   --with-lapack-libs=       LAPACK libraries to be linked
+  --with-lllibs=            Libraries to be linked for LibraryLink (default: $LLLIBS)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
 EOF
@@ -2752,6 +2755,7 @@ if test $# -gt 0 ; then
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
+            --with-lllibs=*)         LLLIBS=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
@@ -2894,6 +2898,7 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"                 \
     -e "s|@LDFLAGS@|$LDFLAGS|"                       \
     -e "s|@LDLIBS@|$LDLIBS|"                         \
+    -e "s|@LLLIBS@|$LLLIBS|"                         \
     -e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"             \
     -e "s|@LOOPFUNCFLAGS@|$LOOPFUNCFLAGS|"           \
     -e "s|@MATH_VERSION@|$MATH_VERSION|"             \

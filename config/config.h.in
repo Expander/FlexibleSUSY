@@ -46,6 +46,7 @@
 #define LAPACKLIBS            "@LAPACKLIBS@"
 #define LDFLAGS               "@LDFLAGS@"
 #define LDLIBS                "@LDLIBS@"
+#define LLLIBS                "@LLLIBS@"
 #define LOOPFUNCFLAGS         "@LOOPFUNCFLAGS@"
 #define LOOPFUNCLIBS          "@LOOPFUNCLIBS@"
 #define SQLITELIBS            "@SQLITELIBS@"
