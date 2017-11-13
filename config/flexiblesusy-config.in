@@ -169,8 +169,8 @@ Options:
   --with-<addon>        Test if <addon> is compiled in
   --with-<solver>       Test if BVP <solver> is compiled in
   --with-<model>        Test if <model> is compiled in
-  --version             Print the $packagename version
-  --help                Print this message
+  --version, -v         Print the $packagename version
+  --help, -h            Print this message
 EOF
 }
 
@@ -256,8 +256,8 @@ while test $# -gt 0; do
         --enable-tsil)                out="$out @ENABLE_TSIL@" ;;
         --enable-verbose)             out="$out @ENABLE_VERBOSE@" ;;
 
-        --version)                    out="$out $version"  ;;
-        --help)
+        --version|-v)                 out="$out $version"  ;;
+        --help|-h)
             help
             exit 0
             ;;
