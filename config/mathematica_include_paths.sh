@@ -21,6 +21,8 @@ find_math_dirs() {
 }
 
 get_librarylink_incpath() {
+    find_math_dirs
+
     for p in \
         "$topdir/SystemFiles/IncludeFiles/C" ; do
         test -d "$p" && break
@@ -30,6 +32,8 @@ get_librarylink_incpath() {
 }
 
 get_mathlink_incpath() {
+    find_math_dirs
+
     for p in \
         "$topdir/SystemFiles/Links/MathLink/DeveloperKit/$sysid/CompilerAdditions" \
         "$topdir/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions" \
@@ -52,8 +56,6 @@ Options:
   --help,-h         Print this help message.
 EOF
 }
-
-find_math_dirs
 
 if test $# -gt 0 ; then
     while test ! "x$1" = "x" ; do
