@@ -1082,9 +1082,12 @@ check_librarylink_libs() {
     # do not overwrite user supplied flags
     if test "x$LLLIBS" = "x" ; then
         # checks for any explicit linker flags required for LibraryLink
-        local default_lllibdir="${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/CompilerAdditions"
+        local default_lllibdir="\
+${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/CompilerAdditions:\
+${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions"
         local mathlink_lib_flags=""
 
+        echo $default_lllibdir
         case "$operating_system" in
             Darwin)
                 check_library "libMLi4" "$default_lllibdir" "$default_lib_paths"
