@@ -22,6 +22,9 @@ FlexibleSUSY 2.0.2 [not released yet]
    particle-anti-particle-photon vertex if the user has not defined
    the electric charge in SARAH's particles.m file.
 
+ * Bugfix (commit 398bb00): Correcting CKM mixing of up-type quarks at
+   the low-energy scale in the CMSSMCKM.
+
 FlexibleSUSY 2.0.1 [October, 20 2017]
 
  * Feature: For each FlexibleSUSY <model> the TeX file
