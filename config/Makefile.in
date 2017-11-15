@@ -61,6 +61,7 @@ LDFLAGS            := @LDFLAGS@
 LDLIBS             := @LDLIBS@
 LIBLNK_LIBEXT      := @LIBLNK_LIBEXT@
 LIBLNK_MAKE_LIB_CMD:= @LIBLNK_MAKE_LIB_CMD@
+LLFLAGS            := @LLFLAGS@
 LLLIBS             := @LLLIBS@
 BLASLIBS           := @BLASLIBS@
 BOOSTTESTLIBS      := @BOOSTTESTLIBS@
@@ -247,6 +248,7 @@ showbuild:
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "LDFLAGS            = $(LDFLAGS)"
 	@echo "LDLIBS             = $(LDLIBS)"
+	@echo "LLFLAGS            = $(LLFLAGS)"
 	@echo "LLLIBS             = $(LLLIBS)"
 	@echo "BLASLIBS           = $(BLASLIBS)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"

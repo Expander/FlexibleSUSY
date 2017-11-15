@@ -274,7 +274,7 @@ $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME
 endif
 
 $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
-	CPPFLAGS += $(shell $(MATH_INC_PATHS) --math-cmd="$(MATH)" -I --librarylink --mathlink)
+	CPPFLAGS += $(shell $(MATH_INC_PATHS) --math-cmd="$(MATH)" -I --librarylink --mathlink) $(LLFLAGS)
 
 $(LIB@CLASSNAME@): $(LIB@CLASSNAME@_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^

@@ -29,6 +29,7 @@ himalayalibs="@HIMALAYALIBS@"
 lapacklibs="@LAPACKLIBS@"
 ldflags="@LDFLAGS@"
 ldlibs="@LDLIBS@"
+llflags="@LLFLAGS@"
 lllibs="@LLLIBS@"
 loopfuncflags="@LOOPFUNCFLAGS@"
 loopfunclibs="@LOOPFUNCLIBS@"
@@ -152,6 +153,7 @@ Options:
   --ldflags             Print flags for optional libraries, LDFLAGS
   --ldlibs              Print optional libraries, LDLIBS
   --libs                Print all libraries linked to an executable
+  --llflags             Print preprocessor commands for LibraryLink, LLFLAGS
   --lllibs              Print flags for LibraryLink libraries, LLLIBS
   --loopfuncflags       Print compiler flags for loop function library, LOOPFUNCFLAGS
   --loopfunclibs        Print loop function libraries, LOOPFUNCLIBS
@@ -209,6 +211,7 @@ while test $# -gt 0; do
         --ldflags)               out="$out $ldflags" ;;
         --ldlibs)                out="$out $ldlibs" ;;
         --libs)                  out="$out $libs" ;;
+        --llflags)               out="$out $llflags" ;;
         --lllibs)                out="$out $lllibs" ;;
         --loopfuncflags)         out="$out $loopfuncflags" ;;
         --loopfunclibs)          out="$out $loopfunclibs" ;;
