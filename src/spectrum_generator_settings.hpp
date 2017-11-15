@@ -24,6 +24,7 @@
 #include <array>
 #include <iosfwd>
 #include <string>
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
@@ -71,11 +72,15 @@ public:
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 
+   using Settings_t = Eigen::Array<double,NUMBER_OF_OPTIONS,1>;
+
    Spectrum_generator_settings();
 
    double get(Settings) const; ///< get value of spectrum generator setting
+   Settings_t get() const;     ///< get all spectrum generator settings
    std::string get_description(Settings) const; ///< get description of spectrum generator setting
    void set(Settings, double); ///< set value of spectrum generator setting
+   void set(const Settings_t&);///< set all spectrum generator settings
    void reset();               ///< resets all settings to their defaults
 
    Loop_corrections get_loop_corrections() const;

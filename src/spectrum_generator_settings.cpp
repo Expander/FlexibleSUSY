@@ -73,6 +73,12 @@ double Spectrum_generator_settings::get(Settings o) const
    return values.at(o);
 }
 
+Spectrum_generator_settings::Settings_t Spectrum_generator_settings::get() const
+{
+   Settings_t s(&values[0]);
+   return s;
+}
+
 std::string Spectrum_generator_settings::get_description(Settings o) const
 {
    return descriptions.at(o);
@@ -81,6 +87,11 @@ std::string Spectrum_generator_settings::get_description(Settings o) const
 void Spectrum_generator_settings::set(Settings o, double value)
 {
    values.at(o) = value;
+}
+
+void Spectrum_generator_settings::set(const Spectrum_generator_settings::Settings_t& s)
+{
+   std::copy(s.data(), s.data() + s.size(), values.begin());
 }
 
 /**
