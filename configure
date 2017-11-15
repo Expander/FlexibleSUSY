@@ -1087,7 +1087,6 @@ ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/Compile
 ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions"
         local mathlink_lib_flags=""
 
-        echo $default_lllibdir
         case "$operating_system" in
             Darwin)
                 check_library "libMLi4" "$default_lllibdir" "$default_lib_paths"
