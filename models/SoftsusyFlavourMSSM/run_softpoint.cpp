@@ -95,6 +95,7 @@ int main(int argc, char *argv[]) {
 
   QedQcd_legacy oneset;
   MssmSoftsusy m;
+  FlavourMssmSoftsusy k;
   NmssmSoftsusy nmssm;
   MssmSoftsusy * r = &m; 
   // RpvNeutrino kw;
@@ -105,6 +106,8 @@ int main(int argc, char *argv[]) {
   softsusy::GUTmuPrime = true;
   softsusy::GUTxiF = true;
   softsusy::GUTsVev = true;
+
+  k.setInitialData(oneset);
 
   try {
   if (argc !=1 && strcmp(argv[1],"leshouches") != 0) {
@@ -448,11 +451,12 @@ int main(int argc, char *argv[]) {
                           cout << "# Warning: flavour violation is currtently"
                              " not supported in the NMSSM\n";
                        } else {
-                          // r = &k; 
+                          r = &k; 
                           flavourViolation = true;
-                          if (boundaryCondition != & amsbBcs) {
+                          if (boundaryCondition != & amsbBcs && 
+			      boundaryCondition != & gmsbBcs) {
                              pars.setEnd(64);
-                             // boundaryCondition = &flavourBcs;
+                             boundaryCondition = &flavourBcs;
                           }
                        }
                     }
@@ -692,16 +696,20 @@ int main(int argc, char *argv[]) {
                       nmssm.setSetTbAtMX(true);
 		    } 
 		    else if (i == 23 || i == 26) {
-		      r->useAlternativeEwsb(); 
+		      m.useAlternativeEwsb();
+		      k.useAlternativeEwsb();
 		      if (i == 23) {
                          r->setMuCond(d); r->setSusyMu(d);
+                         k.setMuCond(d); k.setSusyMu(d);
                          if (susy_model == NMSSM) {
                            if (pars.displayEnd() < 56) pars.setEnd(56);
                            nmssm_input.set(NMSSM_input::mu, d);
                            pars(54) = d;
                          }
                       }
-		      if (i == 26) r->setMaCond(d); 
+		      if (i == 26) {
+			r->setMaCond(d); k.setMaCond(d);
+		      }
 		    }
 		    else if (!flavourViolation) {
 		      if ((i > 0 && i <=  3) || (i >= 11 && i <= 13) || 
@@ -873,9 +881,9 @@ int main(int argc, char *argv[]) {
 		else if (block == "UMNSIN") {
 		  int i; double d; kk >> i >> d;
 		  switch(i) {
-		  // case 1: k.setThetaB12(asin(d)); break;
-		  // case 2: k.setThetaB23(asin(d)); break;
-		  // case 3: k.setThetaB13(asin(d)); break;
+		  case 1: k.setThetaB12(asin(d)); break;
+		  case 2: k.setThetaB23(asin(d)); break;
+		  case 3: k.setThetaB13(asin(d)); break;
 		  case 4: cout << "# Cannot yet do complex phases: ";
 		    cout << "setting it to zero" << endl; break;
 		  case 5: cout << "# Cannot yet do complex phases: ";
@@ -901,24 +909,24 @@ int main(int argc, char *argv[]) {
 		  case 6: oneset.setPoleMt(d); break;
 		  case 7: oneset.setMass(mTau, d); 
 		    oneset.setPoleMtau(d); break;
-		  case 8: // k.setMnuTau(d);
+		  case 8: k.setMnuTau(d);
                      break;
 		  case 11: oneset.setMass(mElectron, d);
-                     // k.setPoleMe(d);
+                     k.setPoleMe(d);
                      break;
-		  case 12: // k.setMnuMu(d);
+		  case 12: k.setMnuMu(d);
                      break;
-		  case 13: oneset.setMass(mMuon, d); // k.setPoleMmu(d);
+		  case 13: oneset.setMass(mMuon, d); k.setPoleMmu(d);
                      break;
-		  case 14: // k.setMnuTau(d);
+		  case 14: k.setMnuTau(d);
                      break;
-		  case 21: oneset.setMass(mDown, d); // k.setMd2GeV(d);
+		  case 21: oneset.setMass(mDown, d); k.setMd2GeV(d);
 		    break;
-		  case 22: oneset.setMass(mUp, d); // k.setMu2GeV(d);
+		  case 22: oneset.setMass(mUp, d); k.setMu2GeV(d);
                      break;
-		  case 23: oneset.setMass(mStrange, d); // k.setMs2GeV(d);
+		  case 23: oneset.setMass(mStrange, d); k.setMs2GeV(d);
                      break;
-		  case 24: oneset.setMass(mCharm, d); // k.setMcMc(d);
+		  case 24: oneset.setMass(mCharm, d); k.setMcMc(d);
                      break;
 		  default: 
 		    cout << "# WARNING: Don't understand data input " << i 
@@ -1227,8 +1235,8 @@ int main(int argc, char *argv[]) {
       }
 
       /// prepare CKM angles
-      // if (flavourViolation || RPVflag) k.setAngles(lambdaW, aCkm, rhobar,
-      //   					   etabar);
+      if (flavourViolation || RPVflag) k.setAngles(lambdaW, aCkm, rhobar,
+        					   etabar);
       
       if (r->displayAltEwsb()) {
 	if (strcmp(modelIdent, "splitgmsb")) {
@@ -1336,7 +1344,12 @@ int main(int argc, char *argv[]) {
       }
       
       oneset.toMz();
-      
+      /// Set quark mixing correctly
+      // r->setMixing(MIXING); k.setMixing(MIXING); nmssm.setMixing(MIXING);
+      // r->setQewsb(qewsb); k.setQewsb(qewsb); nmssm.setQewsb(qewsb);
+      if (USE_THREE_LOOP_RGE) {
+	r->setLoops(3); k.setLoops(3); nmssm.setLoops(3);
+      }
     switch (susy_model) {
     case MSSM:
       r->fixedPointIteration(boundaryCondition, mgutGuess, pars, sgnMu, tanb, 

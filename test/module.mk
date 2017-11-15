@@ -146,6 +146,8 @@ TEST_SRC += \
 		$(DIR)/test_CMSSMCKM_high_scale_constraint.cpp \
 		$(DIR)/test_CMSSMCKM_low_scale_constraint.cpp \
 		$(DIR)/test_CMSSMCKM_tree_level_spectrum.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSMCKM_spectrum.sh
 endif
 
 ifeq ($(WITH_SoftsusyNMSSM) $(WITH_NMSSM),yes yes)

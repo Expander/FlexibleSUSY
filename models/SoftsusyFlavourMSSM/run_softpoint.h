@@ -17,6 +17,7 @@
 #include "lowe_legacy.h"
 #include "rge.h"
 #include "softsusy.h"
+#include "flavoursoft.h"
 #include "nmssmsoftsusy.h"
 #include "softpars.h"
 #include "physpars.h"
