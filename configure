@@ -1133,7 +1133,7 @@ check_librarylink_libs() {
     # do not overwrite user supplied flags
     if test "x$LLLIBS" = "x" ; then
         # checks for any explicit linker flags required for LibraryLink
-        local default_lllibdir="\
+        local default_lllibdirs="\
 ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/CompilerAdditions:\
 ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions"
         local mathlink_lib_flags=""
@@ -1152,7 +1152,7 @@ ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions"
                 fi
 
                 for ll in $mathlink_search_libs ; do
-                    check_library "$ll" "$default_lllibdir" "$default_lib_paths"
+                    check_library "$ll" "$default_lllibdirs" "$default_lib_paths"
                     if test "x$found_lib" != "x" ; then
                         break
                     fi
@@ -1167,7 +1167,7 @@ ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions"
                 fi
 
                 local mathlink_lib=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
-                mathlink_lib_flags="-L${default_lllibdir} ${mathlink_lib} -lc++ -framework Foundation"
+                mathlink_lib_flags="-L${found_dir} ${mathlink_lib} -lc++ -framework Foundation"
                 ;;
         esac
         LLLIBS="$mathlink_lib_flags"
