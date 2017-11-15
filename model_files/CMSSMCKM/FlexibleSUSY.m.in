@@ -50,7 +50,7 @@ LowScale = LowEnergyConstant[MZ];
 LowScaleFirstGuess = LowEnergyConstant[MZ];
 
 LowScaleInput = {
-   {Yu, Sqrt[2] MatMul[Tp[CKM], upQuarksDRbar] / vu},
+   {Yu, Sqrt[2] MatMul[upQuarksDRbar, CKM] / vu},
    {Yd, Sqrt[2] downQuarksDRbar / vd},
    {Ye, Sqrt[2] downLeptonsDRbar / vd},
    {vd, 2 MZDRbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2] Cos[ArcTan[TanBeta]]},
