@@ -225,4 +225,6 @@ BOOST_AUTO_TEST_CASE( test_high_scale_constraint )
    TEST_CLOSE(ToDoubleMatrix(m.get_TYu().real()), s.displayTrilinear(UA), 1.0e-6);
    TEST_CLOSE(ToDoubleMatrix(m.get_TYd().real()), s.displayTrilinear(DA), 1.0e-6);
    TEST_CLOSE(ToDoubleMatrix(m.get_TYe().real()), s.displayTrilinear(EA), 1.0e-6);
+
+   BOOST_CHECK_EQUAL(gErrors, 0);
 }
