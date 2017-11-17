@@ -30,6 +30,8 @@ EXESoftsusyFlavourMSSM_DEP  := \
 EXESoftsusyFlavourMSSM_EXE := \
 		$(EXESoftsusyFlavourMSSM_OBJ:.o=.x)
 
+RUN_SOFTPOINT_EXE := $(EXESoftsusyFlavourMSSM_EXE)
+
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
 all-$(MODNAME): $(LIBSoftsusyFlavourMSSM)
