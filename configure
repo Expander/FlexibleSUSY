@@ -1086,18 +1086,35 @@ ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/Compile
 ${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions:\
 ${MATH_INSTDIR}/AddOns/MathLink/DeveloperKit/$sysid/CompilerAdditions"
 
-    check_header "mathlink.h" "$default_llincdir" \
+    check_header "WolframLibrary.h" "$default_llincdir" \
                  "$default_inc_paths"
+    local wlib_hdr="$found_hdr"
+    local wlib_dir="$found_dir"
 
-    if test "x$found_hdr" = "x" ; then
-        message "Error: MathLink headers must be installed to enable LibraryLink"
+    if test "x$wlib_hdr" = "x" ; then
+        message "Error: WolframLibrary.h must be installed to enable LibraryLink"
         message "   Please install the MathLink development components, or reconfigure"
         message "   with \`--disable-librarylink' to disable LibraryLink"
         exit 1
-    else
-        if contains_not "$LLFLAGS" "-I$found_dir" ; then
-            LLFLAGS="${LLFLAGS} -I$found_dir"
-        fi
+    fi
+
+    check_header "mathlink.h" "$default_llincdir" \
+                 "$default_inc_paths"
+    local mathlink_hdr="$found_hdr"
+    local mathlink_dir="$found_dir"
+
+    if test "x$mathlink_hdr" = "x" ; then
+        message "Error: mathlink.h must be installed to enable LibraryLink"
+        message "   Please install the MathLink development components, or reconfigure"
+        message "   with \`--disable-librarylink' to disable LibraryLink"
+        exit 1
+    fi
+
+    if contains_not "$LLFLAGS" "-I$wlib_dir" ; then
+        LLFLAGS="${LLFLAGS} -I$wlib_dir"
+    fi
+    if contains_not "$LLFLAGS" "-I$mathlink_dir" ; then
+        LLFLAGS="${LLFLAGS} -I$mathlink_dir"
     fi
 }
 
