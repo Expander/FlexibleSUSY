@@ -26,6 +26,8 @@ FlexibleSUSY 2.0.2 [not released yet]
    quarks at the low-energy scale and of the soft-breaking parameters
    at the GUT scale in the CMSSMCKM.
 
+ * Bugfix: Fix linking error on Darwin platforms.
+
 FlexibleSUSY 2.0.1 [October, 20 2017]
 
  * Feature: For each FlexibleSUSY <model> the TeX file
