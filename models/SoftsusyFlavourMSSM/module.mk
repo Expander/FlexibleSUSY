@@ -14,12 +14,7 @@ LIBSoftsusyFlavourMSSM_DEP  := \
 
 LIBSoftsusyFlavourMSSM      := $(DIR)/lib$(MODNAME)$(MODULE_LIBEXT)
 
-EXESoftsusyFlavourMSSM_SRC  :=
-
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_SoftsusyFlavourMSSM),yes yes yes)
-EXESoftsusyFlavourMSSM_SRC  += \
-		$(DIR)/run_softpoint.cpp
-endif
+EXESoftsusyFlavourMSSM_SRC  := $(DIR)/run_softpoint.cpp
 
 EXESoftsusyFlavourMSSM_OBJ  := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(EXESoftsusyFlavourMSSM_SRC)))
