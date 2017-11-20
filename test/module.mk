@@ -503,6 +503,11 @@ TEST_SH += \
 		$(DIR)/test_MSSMEFTHiggs.sh
 endif
 
+ifeq ($(WITH_HSSUSY) $(WITH_MSSMEFTHiggs) $(WITH_NUHMSSMNoFVHimalaya),yes yes yes)
+TEST_SH += \
+		$(DIR)/test_Mh_uncertainties.sh
+endif
+
 ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
