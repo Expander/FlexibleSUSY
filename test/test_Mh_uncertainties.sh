@@ -26,7 +26,7 @@ set ylabel "M_h / GeV"
 
 set style line 1 lt 1 dt 2 lw 2 lc rgb '#0000FF'
 set style line 2 lt 1 dt 1 lw 2 lc rgb '#FF0000'
-set style line 3 lt 1 dt 4 lw 2 lc rgb '#00FF00'
+set style line 3 lt 1 dt 4 lw 2 lc rgb '#00CC00'
 set style line 4 lt 1 dt 3 lw 2 lc rgb '#000000'
 
 data = "${BASEDIR}/test_Mh_uncertainties_TB-5_Xt-${Xt}.dat"
