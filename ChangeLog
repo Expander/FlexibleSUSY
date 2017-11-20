@@ -18,6 +18,34 @@ FlexibleSUSY 2.0.2 [not released yet]
    (* applied to all vertices *)
    FSVertexRules = { g1 -> 0, g2 -> 0 };
 
+ * Feature: Adding three new input parameters to the HSSUSY model file
+   which can be used to estimate the theoretical uncertainty:
+
+   - By setting EXTPAR[201] to 0 or 1, the parametrization of the
+     2-loop threshold correction to lambda can be switched between
+     yt(SM,MS-bar) and yt(MSSM,DR-bar).
+
+   - By setting EXTPAR[202] to 0 or 1, the parametrization of the
+     2-loop threshold correction to lambda can be switched between
+     DR-bar or on-shell stop mass parameters.
+
+   - A non-zero value of EXTPAR[203] is interpreted as matching scale
+     Q_match.  EXTPAR[203] = 0 corresponds to Q_match = MSUSY.
+
+   SLHA input field | Mathematica symbol | Description
+   -----------------|--------------------|----------------------------
+   EXTPAR[201]      | DeltaYt            | 0 = yt(SM), 1 = yt(MSSM)
+   EXTPAR[202]      | DeltaOS            | 0 = OS stops, 1 = DR stops
+   EXTPAR[203]      | Qmatch             | matching scale
+
+ * Feature: The Mathematica script
+   model_files/HSSUSY/HSSUSY_uncertainty_estimate.m has been added.
+   The script defines the CalcHSSUSYDMh[] function, which performs an
+   uncertainty estimate of the predicted SM-like Higgs mass.  The
+   three sources of uncertainty defined in [1504.05200] are taken into
+   account: SM uncertainty, EFT uncertainty and SUSY uncertainty.  See
+   ?CalcHSSUSYDMh for more information.
+
  * Bugfix (commit d00b4f5): Extract electric charge from
    particle-anti-particle-photon vertex if the user has not defined
    the electric charge in SARAH's particles.m file.
