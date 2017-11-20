@@ -358,6 +358,20 @@ contains_not() {
 }
 
 #_____________________________________________________________________
+make_unique() {
+    # removes duplicate words from the string $1 (preserves order)
+    local str="$1"
+    local res=""
+
+    for s in ${str}; do
+        contains "${res}" "${s}" && continue
+        res="${res} ${s}"
+    done
+
+    echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
+}
+
+#_____________________________________________________________________
 check_library() {
     # This function will try to locate a library [$1] in the directory
     # given in $2 or in a default path [$3].
@@ -942,7 +956,7 @@ check_models() {
     for a in ${models}; do
         case "$a" in
             all)
-                MODELS=$(find "$BASEDIR"/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g')
+                MODELS="${MODELS} $(find "$BASEDIR"/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g')"
                 break ;;
             *)
                 if test -d "$BASEDIR/models/$a"; then
@@ -959,6 +973,8 @@ check_models() {
                 fi ;;
         esac
     done
+
+    MODELS=$(make_unique "${MODELS}")
 
     # test model dependencies (SoftsusyFlavourMSSM -> SoftsusyNMSSM -> SoftsusyMSSM)
     if contains "${MODELS}" "models/SoftsusyFlavourMSSM"; then
