@@ -976,25 +976,13 @@ check_models() {
 
     MODELS=$(make_unique "${MODELS}")
 
-    # test model dependencies (SoftsusyFlavourMSSM -> SoftsusyNMSSM -> SoftsusyMSSM)
-    if contains "${MODELS}" "models/SoftsusyFlavourMSSM"; then
-        if contains_not "${MODELS}" "models/SoftsusyNMSSM"; then
-            result "not ok"
-            message "Error: model SoftsusyFlavourMSSM requires SoftsusyMSSM and SoftsusyNMSSM!"
-            message "   Please select these two models as well:"
-            message "   --with-models=SoftsusyMSSM,SoftsusyNMSSM,SoftsusyFlavourMSSM"
-            exit 1
-        fi
+    # enforce model dependencies (SoftsusyFlavourMSSM -> SoftsusyNMSSM -> SoftsusyMSSM)
+    if contains "${MODELS}" "models/SoftsusyNMSSM"; then
+        MODELS=$(make_unique "models/SoftsusyMSSM models/SoftsusyNMSSM ${MODELS}")
     fi
 
-    if contains "${MODELS}" "models/SoftsusyNMSSM"; then
-        if contains_not "${MODELS}" "models/SoftsusyMSSM"; then
-            result "not ok"
-            message "Error: model SoftsusyNMSSM requires model SoftsusyMSSM !"
-            message "   Please select the model SoftsusyMSSM as well:"
-            message "   --with-models=SoftsusyMSSM,SoftsusyNMSSM"
-            exit 1
-        fi
+    if contains "${MODELS}" "models/SoftsusyFlavourMSSM"; then
+        MODELS=$(make_unique "models/SoftsusyMSSM models/SoftsusyNMSSM models/SoftsusyFlavourMSSM ${MODELS}")
     fi
 
     # check for Makefile module, start script and FlexibleSUSY model
