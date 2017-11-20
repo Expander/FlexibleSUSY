@@ -187,8 +187,6 @@ NUHMSSMNoFVHimalayaCalcMh[MS_, TB_, Xtt_] :=
    ];
 
 LaunchKernels[];
-DistributeDefinitions[MSSMEFTHiggsCalcMh, HSSUSYCalcMh,
-                      NUHMSSMNoFVCalcMh, NUHMSSMNoFVHimalayaCalcMh];
 
 (*** Xt = 0 ***)
 
