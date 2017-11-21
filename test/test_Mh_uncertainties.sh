@@ -13,10 +13,11 @@ error="$?"
 }
 
 plot() {
-    local Xt=$1
+    local Xt="$1"
+    local term="$2"
 
     cat <<EOF | gnuplot
-set terminal pdf size 3in,3in
+set terminal ${term}
 set logscale x 10
 set size square
 set key box bottom right width 0
@@ -72,7 +73,8 @@ plot \
 EOF
 }
 
-plot 0
-plot -2
+for Xtt in 0 -2 ; do
+    plot "${Xtt}" "pdf size 3in,3in"
+done
 
 echo "Test passed."
