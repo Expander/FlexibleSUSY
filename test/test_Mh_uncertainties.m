@@ -186,8 +186,6 @@ NUHMSSMNoFVHimalayaCalcMh[MS_, TB_, Xtt_] :=
         }
    ];
 
-LaunchKernels[];
-
 (*** Xt = 0 ***)
 
 TB  = 5;
