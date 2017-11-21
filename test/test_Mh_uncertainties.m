@@ -193,7 +193,7 @@ LaunchKernels[];
 TB  = 5;
 Xtt = 0;
 
-data = ParallelMap[
+data = Map[
     { N[#],
       Sequence @@ NUHMSSMNoFVCalcMh[#, TB, Xtt],
       Sequence @@ NUHMSSMNoFVHimalayaCalcMh[#, TB, Xtt],
@@ -209,7 +209,7 @@ Export["test/test_Mh_uncertainties_TB-5_Xt-0.dat", data];
 
 Xtt = -2;
 
-data = ParallelMap[
+data = Map[
     { N[#],
       Sequence @@ NUHMSSMNoFVCalcMh[#, TB, Xtt],
       Sequence @@ NUHMSSMNoFVHimalayaCalcMh[#, TB, Xtt],
