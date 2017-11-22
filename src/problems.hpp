@@ -83,8 +83,8 @@ public:
    bool have_warning() const;         ///< warnings
    std::vector<std::string> get_problem_strings() const;
    std::vector<std::string> get_warning_strings() const;
-   std::string get_problem_string() const;
-   std::string get_warning_string() const;
+   std::string get_problem_string(const std::string& sep = "\n") const;
+   std::string get_warning_string(const std::string& sep = "\n") const;
    void print_problems(std::ostream& = std::cerr) const;
    void print_warnings(std::ostream& = std::cerr) const;
    const std::string& get_model_name() const;
