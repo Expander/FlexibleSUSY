@@ -58,6 +58,11 @@ public:
    @ModelName@_slha<@ModelName@<T>> get_model_slha() const
    { return @ModelName@_slha<@ModelName@<T>>(model, settings.get(Spectrum_generator_settings::force_positive_masses) == 0.); }
 
+   const standard_model::StandardModel<T>& get_sm() const
+   { return eft; }
+   standard_model::StandardModel<T>& get_sm()
+   { return eft; }
+
    Spectrum_generator_problems get_problems() const { return problems; }
    int get_exit_code() const { return problems.have_problem(); }
    double get_reached_precision() const { return reached_precision; }
