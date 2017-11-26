@@ -199,6 +199,8 @@ LOOPFUNCFLAGS=""
 LOOPFUNCLIBS=""
 LDFLAGS="$SHARED_LDFLAGS"
 LDLIBS="$SHARED_LDLIBS"
+LLFLAGS=""
+LLLIBS=""
 himalaya_lib_dir=""
 himalaya_inc_dir=""
 sqlite_lib_dir=""
@@ -353,6 +355,20 @@ contains_not() {
         return 1
     fi
     ! contains "$1" "$2"
+}
+
+#_____________________________________________________________________
+make_unique() {
+    # removes duplicate words from the string $1 (preserves order)
+    local str="$1"
+    local res=""
+
+    for s in ${str}; do
+        contains "${res}" "${s}" && continue
+        res="${res} ${s}"
+    done
+
+    echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
 }
 
 #_____________________________________________________________________
@@ -940,7 +956,7 @@ check_models() {
     for a in ${models}; do
         case "$a" in
             all)
-                MODELS=$(find "$BASEDIR"/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g')
+                MODELS="${MODELS} $(find "$BASEDIR"/models/* -maxdepth 0 -type d -print0 | tr '\0' ' ' | sed -e 's|^\./||' -e 's| \./| |g' -e 's| *$||g')"
                 break ;;
             *)
                 if test -d "$BASEDIR/models/$a"; then
@@ -958,15 +974,15 @@ check_models() {
         esac
     done
 
-    # test model dependencies (SoftsusyNMSSM depends on SoftsusyMSSM)
+    MODELS=$(make_unique "${MODELS}")
+
+    # enforce model dependencies (SoftsusyFlavourMSSM -> SoftsusyNMSSM -> SoftsusyMSSM)
     if contains "${MODELS}" "models/SoftsusyNMSSM"; then
-        if contains_not "${MODELS}" "models/SoftsusyMSSM"; then
-            result "not ok"
-            message "Error: model SoftsusyNMSSM requires model SoftsusyMSSM !"
-            message "   Please select the model SoftsusyMSSM as well:"
-            message "   --with-models=SoftsusyMSSM,SoftsusyNMSSM"
-            exit 1
-        fi
+        MODELS=$(make_unique "models/SoftsusyMSSM models/SoftsusyNMSSM ${MODELS}")
+    fi
+
+    if contains "${MODELS}" "models/SoftsusyFlavourMSSM"; then
+        MODELS=$(make_unique "models/SoftsusyMSSM models/SoftsusyNMSSM models/SoftsusyFlavourMSSM ${MODELS}")
     fi
 
     # check for Makefile module, start script and FlexibleSUSY model
@@ -1077,6 +1093,119 @@ check_optional_modules() {
 }
 
 #_____________________________________________________________________
+check_librarylink_incl() {
+    local default_llincdir="\
+${MATH_INSTDIR}/SystemFiles/IncludeFiles/C:\
+${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/CompilerAdditions:\
+${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions:\
+${MATH_INSTDIR}/AddOns/MathLink/DeveloperKit/$sysid/CompilerAdditions"
+
+    check_header "WolframLibrary.h" "$default_llincdir" \
+                 "$default_inc_paths"
+    local wlib_hdr="$found_hdr"
+    local wlib_dir="$found_dir"
+
+    if test "x$wlib_hdr" = "x" ; then
+        message "Error: WolframLibrary.h must be installed to enable LibraryLink"
+        message "   Please install the MathLink development components, or reconfigure"
+        message "   with \`--disable-librarylink' to disable LibraryLink"
+        exit 1
+    fi
+
+    check_header "mathlink.h" "$default_llincdir" \
+                 "$default_inc_paths"
+    local mathlink_hdr="$found_hdr"
+    local mathlink_dir="$found_dir"
+
+    if test "x$mathlink_hdr" = "x" ; then
+        message "Error: mathlink.h must be installed to enable LibraryLink"
+        message "   Please install the MathLink development components, or reconfigure"
+        message "   with \`--disable-librarylink' to disable LibraryLink"
+        exit 1
+    fi
+
+    if contains_not "$LLFLAGS" "-I$wlib_dir" ; then
+        LLFLAGS="${LLFLAGS} -I$wlib_dir"
+    fi
+    if contains_not "$LLFLAGS" "-I$mathlink_dir" ; then
+        LLFLAGS="${LLFLAGS} -I$mathlink_dir"
+    fi
+}
+
+#_____________________________________________________________________
+check_librarylink_interface_version() {
+    found_llinterface_version=""
+
+    try_compile_run_cpp_program "#include <iostream>
+#include <mathlink.h>
+int main() {
+   int mathlink_interface_version = MLINTERFACE;
+   std::cout << mathlink_interface_version << '\n';
+   return 0;
+}" "$CXX" "${LLFLAGS}" && [ $cpp_exit = 0 ] || {
+        message "Warning: could not determine MathLink interface version because"
+        message "   compilation or execution of the MathLink test program failed."
+        found_llinterface_version="unknown"
+    }
+
+    if test "x$found_llinterface_version" != "xunknown" ; then
+        found_llinterface_version="$cpp_output"
+    fi
+
+    if test "x$found_llinterface_version" = "x" ; then
+        message "Warning: failed to determine MathLink interface version from"
+        message "   MathLink test program."
+        found_llinterface_version="unknown"
+    fi
+}
+
+#_____________________________________________________________________
+check_librarylink_libs() {
+    # do not overwrite user supplied flags
+    if test "x$LLLIBS" = "x" ; then
+        # checks for any explicit linker flags required for LibraryLink
+        local default_lllibdirs="\
+${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/${MATH_SYSTEMID}/CompilerAdditions:\
+${MATH_INSTDIR}/SystemFiles/Links/MathLink/DeveloperKit/CompilerAdditions"
+        local mathlink_lib_flags=""
+
+        case "$operating_system" in
+            Darwin)
+                check_librarylink_interface_version
+
+                local mlinterface_version="$found_llinterface_version"
+                local mathlink_search_libs=""
+
+                if test "x$mlinterface_version" != "xunknown" ; then
+                    mathlink_search_libs="libMLi$mlinterface_version"
+                else
+                    mathlink_search_libs="libMLi4 libMLi3"
+                fi
+
+                for ll in $mathlink_search_libs ; do
+                    check_library "$ll" "$default_lllibdirs" "$default_lib_paths"
+                    if test "x$found_lib" != "x" ; then
+                        break
+                    fi
+                done
+
+                if test "x$found_lib" = "x" ; then
+                    message "Error: MathLink libraries must be installed to enable LibraryLink"
+                    message "   You can use --with-lllibs= to specify the required"
+                    message "   flags for linking MathLink libraries, or reconfigure"
+                    message "   with \`--disable-librarylink' to disable LibraryLink"
+                    exit 1
+                fi
+
+                local mathlink_lib=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+                mathlink_lib_flags="-L${found_dir} ${mathlink_lib} -lc++ -framework Foundation"
+                ;;
+        esac
+        LLLIBS="$mathlink_lib_flags"
+    fi
+}
+
+#_____________________________________________________________________
 check_librarylink() {
     if [ "x$enable_librarylink" = "xautomatic" ] ; then
         checking_msg "LibraryLink"
@@ -1088,6 +1217,11 @@ check_librarylink() {
             result "no"
             enable_librarylink=no
         fi
+    fi
+
+    if [ "x$enable_librarylink" = "xyes" ] ; then
+        check_librarylink_incl
+        check_librarylink_libs
     fi
 }
 
@@ -2536,6 +2670,8 @@ replace_markers() {
 	-e "s|@LAPACKLIBS@|$LAPACKLIBS|"   \
         -e "s|@LDFLAGS@|$LDFLAGS|"         \
         -e "s|@LDLIBS@|$LDLIBS|"           \
+        -e "s|@LLFLAGS@|$LLFLAGS|"         \
+        -e "s|@LLLIBS@|$LLLIBS|"           \
 	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COLORS@|$enable_colors|" \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
@@ -2635,6 +2771,8 @@ Package directories, compilation settings and model selection
   --with-install-dir=       Path to source code installation directory
   --with-lapack-libdir=     Path to search for LAPACK library
   --with-lapack-libs=       LAPACK libraries to be linked
+  --with-llflags=           Preprocessor flags for compiling with LibraryLink (default: $LLFLAGS)
+  --with-lllibs=            Linker flags for linking LibraryLink libraries (default: $LLLIBS)
   --with-looptools-libdir=  Path to search for LoopTools libraries
   --with-looptools-incdir=  Path to search for LoopTools headers
 EOF
@@ -2752,6 +2890,8 @@ if test $# -gt 0 ; then
             --with-install-dir=*)    INSTALL_DIR=$optarg ;;
             --with-lapack-libdir=*)  lapack_lib_dir=$optarg ;;
             --with-lapack-libs=*)    LAPACKLIBS=$optarg ;;
+            --with-llflags=*)        LLFLAGS=$optarg ;;
+            --with-lllibs=*)         LLLIBS=$optarg ;;
             --with-looptools-libdir=*) looptools_lib_dir=$optarg ;;
             --with-looptools-incdir=*) looptools_inc_dir=$optarg ;;
             --with-math-cmd=*)       MATH=$optarg ;;
@@ -2801,7 +2941,6 @@ fi
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
-    check_librarylink
     check_cxx
     check_cxx_compiler_type
     check_cxx_compiler_version
@@ -2810,6 +2949,7 @@ if test "x${enable_compile}" = "xyes"; then
     check_fc
     check_fflags
     check_linking
+    check_librarylink
     check_boost
     check_boost_version
     check_boost_test_incl
@@ -2894,6 +3034,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@LAPACKLIBS@|$LAPACKLIBS|"                 \
     -e "s|@LDFLAGS@|$LDFLAGS|"                       \
     -e "s|@LDLIBS@|$LDLIBS|"                         \
+    -e "s|@LLFLAGS@|$LLFLAGS|"                        \
+    -e "s|@LLLIBS@|$LLLIBS|"                         \
     -e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"             \
     -e "s|@LOOPFUNCFLAGS@|$LOOPFUNCFLAGS|"           \
     -e "s|@MATH_VERSION@|$MATH_VERSION|"             \

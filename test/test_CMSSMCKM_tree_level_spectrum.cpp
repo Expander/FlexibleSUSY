@@ -196,6 +196,20 @@ void setup(CMSSMCKM_mass_eigenstates& m, FlavourMssmSoftsusy& s)
    s.setMw(s.displayMwRun());
 }
 
+DoubleMatrix get_CKM(const FlavourMssmSoftsusy& s)
+{
+   DoubleMatrix Ud(3, 3), Vd(3, 3), Uu(3, 3), Vu(3, 3);
+   DoubleVector yu(3), yd(3);
+
+   s.displayYukawaMatrix(YU).diagonalise(Vu, Uu, yu);
+   s.displayYukawaMatrix(YD).diagonalise(Vd, Ud, yd);
+   ckmNormalise(Vu, Vd, Uu, Ud);
+
+   DoubleMatrix CKM(Vu.transpose() * Vd);
+
+   return CKM;
+}
+
 BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
 {
    // This test compares the DR-bar spectrum of Softsusy (in the
@@ -331,10 +345,24 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    const DoubleVector MFd(ToDoubleVector(m.get_MFd()));
    BOOST_CHECK_CLOSE(MFd(3), s.displayDrBarPars().mb, 1.0e-12);
 
+   // compare CKM matrices
+
+   const auto VCKM = m.get_ckm_matrix();
+   const auto VCKM_SS = get_CKM(s);
+
+   BOOST_TEST_MESSAGE("CKM(FS): " << VCKM);
+   BOOST_TEST_MESSAGE("CKM(SS): " << VCKM_SS);
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE(std::real(VCKM(i,k)), std::real(VCKM_SS(i+1,k+1)), 1e-10);
+         BOOST_CHECK_CLOSE(std::imag(VCKM(i,k)), std::imag(VCKM_SS(i+1,k+1)), 1e-10);
+      }
+   }
+
    // Now set CMSSMCKM up-type sfermion masses to super-CKM basis, as
    // in Eq. (11) of SLHA-2.
 
-   const auto VCKM = m.get_ckm_matrix();
    const auto mq2_super_CKM = m.get_mq2();
    const auto mq2_up = VCKM * mq2_super_CKM * VCKM.adjoint();
 

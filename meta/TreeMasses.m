@@ -214,7 +214,7 @@ GetSMTauLeptonMultiplet::usage      = "Returns multiplet containing the tau lept
 
 GetMass::usage="wraps M[] head around particle";
 
-GetElectricCharge::usage="Returns electric charge";
+GetElectricCharge::usage="Returns electric charge defined in the SARAH particle.m file";
 
 StripGenerators::usage="removes all generators Lam, Sig, fSU2, fSU3
 and removes Delta with the given indices";
@@ -506,7 +506,22 @@ GetSMTauLeptonMultiplet[]      := GetDownLepton[3] /. head_[_] :> head;
 GetMass[particle_[idx__]] := GetMass[particle][idx];
 GetMass[particle_Symbol] := FlexibleSUSY`M[particle];
 
-GetElectricCharge[par_] := SARAH`getElectricCharge[par];
+GetElectricCharge[p_] :=
+    Module[{charge},
+           If[p === SARAH`AntiField[p],
+              charge = 0;,
+              charge = SARAH`getElectricCharge[p];
+              If[!NumericQ[charge],
+                 charge = Cases[-I SARAH`Vertex[{SARAH`AntiField[p], p, SARAH`VectorP},
+                                                UseDependences -> True][[2,1]], _?NumberQ];
+                 If[charge === {},
+                    charge = 0;,
+                    charge = First[charge];
+                   ];
+                ];
+             ];
+           charge
+          ];
 
 (* Returns list of pairs {p,v}, where p is the given golstone
    boson and v is the corresponding vector boson.

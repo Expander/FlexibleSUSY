@@ -133,14 +133,14 @@ std::vector<std::string> Problems::get_warning_strings() const
    return strings;
 }
 
-std::string Problems::get_problem_string() const
+std::string Problems::get_problem_string(const std::string& sep) const
 {
-   return concat(get_problem_strings(), '\n');
+   return concat(get_problem_strings(), sep);
 }
 
-std::string Problems::get_warning_string() const
+std::string Problems::get_warning_string(const std::string& sep) const
 {
-   return concat(get_warning_strings(), '\n');
+   return concat(get_warning_strings(), sep);
 }
 
 void Problems::print_problems(std::ostream& ostr) const

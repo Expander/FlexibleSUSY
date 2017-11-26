@@ -124,14 +124,14 @@ std::vector<std::string> Spectrum_generator_problems::get_warning_strings() cons
    return result;
 }
 
-std::string Spectrum_generator_problems::get_problem_string() const
+std::string Spectrum_generator_problems::get_problem_string(const std::string& sep) const
 {
-   return concat(get_problem_strings(), '\n');
+   return concat(get_problem_strings(), sep);
 }
 
-std::string Spectrum_generator_problems::get_warning_string() const
+std::string Spectrum_generator_problems::get_warning_string(const std::string& sep) const
 {
-   return concat(get_warning_strings(), '\n');
+   return concat(get_warning_strings(), sep);
 }
 
 void Spectrum_generator_problems::print_problems(std::ostream& ostr) const

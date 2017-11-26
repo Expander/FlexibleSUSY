@@ -306,9 +306,9 @@ BOOST_AUTO_TEST_CASE( test_low_energy_constraint_with_flavour_mixing )
          if (i == k)
             continue;
          BOOST_TEST_MESSAGE("testing yukawa elements " << i << ", " << k);
-         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(i-1,k-1)), s.displayYukawaMatrix(YU)(i,k), 0.0001);
-         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(i-1,k-1)), s.displayYukawaMatrix(YD)(i,k), 0.00001);
-         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(i-1,k-1)), s.displayYukawaMatrix(YE)(i,k), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yu()(i-1,k-1)), s.displayYukawaMatrix(YU)(k,i), 0.0001);
+         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Yd()(i-1,k-1)), s.displayYukawaMatrix(YD)(k,i), 0.00001);
+         BOOST_CHECK_CLOSE_FRACTION(Re(m.get_Ye()(i-1,k-1)), s.displayYukawaMatrix(YE)(k,i), 0.00001);
          BOOST_CHECK_SMALL(Im(m.get_Yu()(i-1,k-1)), 1e-10);
          BOOST_CHECK_SMALL(Im(m.get_Yd()(i-1,k-1)), 1e-10);
          BOOST_CHECK_SMALL(Im(m.get_Ye()(i-1,k-1)), 1e-10);

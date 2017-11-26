@@ -51,7 +51,11 @@ META_SM_SRC  := \
 		$(DIR)/SM/beta_gt.m \
 		$(DIR)/SM/beta_lambda.m \
 		$(DIR)/SM/beta_m2.m \
-		$(DIR)/SM/HSSUSY_corrections.m
+		$(DIR)/SM/HSSUSY_corrections.m \
+		$(DIR)/SM/HSSUSY_scale_variation.m \
+		$(DIR)/SM/HSSUSY_scale_variation_1L.m \
+		$(DIR)/SM/HSSUSY_scale_variation_2L.m \
+		$(DIR)/SM/HSSUSY_scale_variation_3L.m
 
 META_THDM_SRC:= \
 		$(DIR)/THDM/Thresholds_1L_full.m
