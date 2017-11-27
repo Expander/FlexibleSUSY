@@ -2843,8 +2843,10 @@ lambda2LAtAtYtShift = With[{
     -computegtStopShift[] /. replaceThresholdLoopFunctions
     ];
 
-(* 3-loop shift O(at*as^2) when re-parametrizing 1- and 2-loop contribution in terms of yt^MSSM *)
-(* degenerate mass case *)
+(* 3-loop shift O(at*as^2) when re-parametrizing 1- and 2-loop contribution 
+   in terms of yt^MSSM and g3^MSSM
+   [degenerate mass case]
+ *)
 lambda3LAtAsAsYtShiftDeg = With[{
     MR = SCALE,
     MS = Sqrt[msq2[3,3]],
@@ -2863,8 +2865,10 @@ lambda3LAtAsAsYtShiftDeg = With[{
     )
     ];
 
-(* 3-loop shift O(at*as^2) when re-parametrizing 1- and 2-loop contribution in terms of yt^MSSM *)
-(* general case *)
+(* 3-loop shift O(at*as^2) when re-parametrizing 1- and 2-loop contribution
+   in terms of yt^MSSM
+   [general mass case]
+ *)
 lambda3LAtAsAsYtShift = With[{
     MR = SCALE,
     mQ3 = Sqrt[msq2[3,3]],
