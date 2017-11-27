@@ -2857,5 +2857,5 @@ lambda3LATASASDegenerate = With[{
      4/135 (176 \[Pi]^4 + 960 \[Pi]^2 Log[2]^2 + 9900 Log[MS^2/MR^2]^2 - 24840 Log[MS^2/MR^2]^3 - 
         5 (4577 + 192 Log[2]^4 + 4608 PolyLog[4, 1/2] - 9864 Zeta[3]) + 
         10 Log[MS^2/MR^2] (-877 + 432 Zeta[3]))
-    ) /. { a:PolyLog[__] :> N[a], a:Zeta[__] :> N[a] }
+    ) /. { a:PolyLog[_,_] :> N[a], a:Zeta[__] :> N[a] }
 ];
