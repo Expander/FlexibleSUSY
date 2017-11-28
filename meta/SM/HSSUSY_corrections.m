@@ -2871,8 +2871,8 @@ lambda3LAtAsAsYtShiftDeg = With[{
  *)
 lambda3LAtAsAsYtShift = With[{
     MR = SCALE,
-    mQ3 = Sqrt[msq2[3,3]],
-    mU3 = Sqrt[msu2[3,3]],
+    mQ3 = Sqrt[msq2[3,3] (1 + 0.02)],
+    mU3 = Sqrt[msu2[3,3] (1 - 0.02)],
     m3  = M3Input,
     msq = (msq2[1,1] msu2[1,1] msd2[1,1]
            msq2[2,2] msu2[2,2] msd2[2,2])^(1/12),
