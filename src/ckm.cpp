@@ -209,27 +209,70 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& 
    to_pdg_convention(ckm, Vu, Vd, Uu, Ud);
 }
 
+template<typename T>
+std::complex<T> phase(const std::complex<T>& z)
+{
+   T r = abs(z);
+   return r == 0 ? 1 : z/r;
+}
+
+void calc_phase_factors
+(const Eigen::Matrix<std::complex<double>,3,3>& ckm,
+ const std::complex<double>& p,
+ std::complex<double>& o,
+ Eigen::DiagonalMatrix<std::complex<double>,3>& l,
+ Eigen::DiagonalMatrix<std::complex<double>,3>& r)
+{
+   o = std::conj(phase(p * ckm(0,2)));
+   l.diagonal().bottomRightCorner<2,1>() = (o * ckm.bottomRightCorner<2,1>()).
+      unaryExpr(std::ptr_fun(phase<double>)).conjugate();
+   r.diagonal().topLeftCorner<2,1>() = (o * ckm.topLeftCorner<1,2>()).
+      unaryExpr(std::ptr_fun(phase<double>)).adjoint();
+}
+
 void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& ckm,
                                        Eigen::Matrix<std::complex<double>,3,3>& Vu,
                                        Eigen::Matrix<std::complex<double>,3,3>& Vd,
                                        Eigen::Matrix<std::complex<double>,3,3>& Uu,
                                        Eigen::Matrix<std::complex<double>,3,3>& Ud)
 {
-   // currently we convert only real part of mixing matrices
+   std::complex<double> o;
+   Eigen::DiagonalMatrix<std::complex<double>,3> l(1,1,1), r(1,1,1);
 
-   Eigen::Matrix<double,3,3> ckm_real(ckm.real());
-   Eigen::Matrix<double,3,3> Vu_real(Vu.real());
-   Eigen::Matrix<double,3,3> Vd_real(Vd.real());
-   Eigen::Matrix<double,3,3> Uu_real(Uu.real());
-   Eigen::Matrix<double,3,3> Ud_real(Ud.real());
+   double s13 = std::abs(ckm(0,2));
+   double c13 = std::sqrt(1 - Sqr(s13));
+   if (c13 == 0) {
+      o = std::conj(phase(ckm(0,2)));
+      r.diagonal().block<2,1>(0,0) = (o * ckm.block<1,2>(1,0)).adjoint();
+      l.diagonal()[2] = std::conj(phase(o * r.diagonal()[1] * ckm(2,1)));
+   }
+   else {
+      double s12 = std::abs(ckm(0,1)) / c13;
+      double c12 = std::sqrt(1 - Sqr(s12));
+      double s23 = std::abs(ckm(1,2)) / c13;
+      double c23 = std::sqrt(1 - Sqr(s23));
+      double side1 = s12*s23;
+      double side2 = c12*c23*s13;
+      double cosdelta;
+      if (side1*side2 == 0)	// delta is removable
+	 cosdelta = 1;
+      else
+	 cosdelta = (Sqr(side1)+Sqr(side2)-std::norm(ckm(2,0))) /
+		    (2*side1*side2);
+      double sindelta = std::sqrt(1 - Sqr(cosdelta));
+      std::complex<double> p(cosdelta, sindelta); // Exp[I delta]
+      calc_phase_factors(ckm, p, o, l, r);
+      Eigen::Array<double,2,2>
+	 imagBL{(o * l * ckm * r).bottomLeftCorner<2,2>().imag()};
+      if (!((imagBL <= 0).all() || (imagBL >= 0).all()))
+	 calc_phase_factors(ckm, std::conj(p), o, l, r);
+   }
 
-   to_pdg_convention(ckm_real, Vu_real, Vd_real, Uu_real, Ud_real);
-
-   ckm.real() = ckm_real;
-   Vu.real() = Vu_real;
-   Vd.real() = Vd_real;
-   Uu.real() = Uu_real;
-   Ud.real() = Ud_real;
+   Vu.transpose() *= l * o;
+   Vd.transpose() *= r.diagonal().conjugate().asDiagonal();
+   Uu.transpose() *= (l * o).diagonal().conjugate().asDiagonal();
+   Ud.transpose() *= r;
+   ckm = Vu * Vd.adjoint();
 }
 
 } // namespace flexiblesusy

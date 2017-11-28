@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( test_CKM_unitarity_from_angles )
    BOOST_CHECK(is_unitary(ckm_cmpl));
 }
 
-BOOST_AUTO_TEST_CASE( test_CKM_pdg_convention )
+BOOST_AUTO_TEST_CASE( test_real_CKM_pdg_convention )
 {
    // fermion mass matrices
    const Eigen::Matrix<double,3,3>
@@ -132,4 +132,41 @@ BOOST_AUTO_TEST_CASE( test_CKM_pdg_convention )
          }
       }
    }
+}
+
+BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention )
+{
+   // fermion mass matrices
+   const Eigen::Matrix<std::complex<double>,3,3>
+      mu(Eigen::Matrix<std::complex<double>,3,3>::Random()),
+      md(Eigen::Matrix<std::complex<double>,3,3>::Random());
+
+   // mass eigenvalues
+   Eigen::Array<double,3,1> su, sd;
+
+   // mixing matrices
+   Eigen::Matrix<std::complex<double>,3,3> vu, vd, uu, ud;
+
+   fs_svd(mu, su, uu, vu);
+   fs_svd(md, sd, ud, vd);
+
+   BOOST_CHECK(is_equal(mu, uu.transpose() * su.matrix().asDiagonal() * vu, 1.e-10));
+   BOOST_CHECK(is_equal(md, ud.transpose() * sd.matrix().asDiagonal() * vd, 1.e-10));
+
+   Eigen::Matrix<std::complex<double>,3,3> ckm(vu*vd.adjoint());
+
+   CKM_parameters::to_pdg_convention(ckm, vu, vd, uu, ud);
+
+   BOOST_CHECK(is_unitary(ckm, 1.e-10));
+
+   BOOST_CHECK(is_equal(mu, uu.transpose() * su.matrix().asDiagonal() * vu, 1.e-10));
+   BOOST_CHECK(is_equal(md, ud.transpose() * sd.matrix().asDiagonal() * vd, 1.e-10));
+
+   // check signs of sij & cij
+   BOOST_CHECK_LT(std::abs(std::arg(ckm(0,0))), 1e-15);
+   BOOST_CHECK_LT(std::abs(std::arg(ckm(0,1))), 1e-15);
+   BOOST_CHECK_LT(std::abs(std::arg(ckm(1,2))), 1e-15);
+   BOOST_CHECK_LT(std::abs(std::arg(ckm(2,2))), 1e-15);
+   BOOST_CHECK((ckm.bottomLeftCorner<2,2>().imag().array() <= 0).all() ||
+	       (ckm.bottomLeftCorner<2,2>().imag().array() >= 0).all());
 }
