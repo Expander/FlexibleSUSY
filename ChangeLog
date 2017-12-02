@@ -58,6 +58,12 @@ FlexibleSUSY 2.0.2 [not released yet]
    couplings in models with scalar color triplets due to an unresolved
    SARAH Clebsch-Gordan coefficient CG[__][__].
 
+ * Bugfix (commit c053fbab): Adding missing particle multiplicity
+   factor w.r.t. unbroken non-abelian non-SM gauge groups in the
+   low-energy 1-loop threshold corrections for alpha_em and alpha_s.
+   This bugfix affects BSM models with additional unbroken non-abelian
+   gauge groups.
+
  * Bugfix: Fix linking error on Darwin platforms.
 
 FlexibleSUSY 2.0.1 [October, 20 2017]
