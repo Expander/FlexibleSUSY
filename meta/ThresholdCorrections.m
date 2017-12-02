@@ -62,6 +62,14 @@ CalculateElectromagneticCoupling[scheme_] :=
 CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
+GetLorentzRepresentationFactor[particle_] :=
+    Which[IsMajoranaFermion[particle], 2/3,
+          IsDiracFermion[   particle], 4/3,
+          IsRealScalar[     particle], 1/6,
+          IsComplexScalar[  particle], 1/3,
+          IsVector[         particle], 1/3,
+          True                       , 1];
+
 (* Calculate threshold correction for a gauge coupling from SM
    (MS-bar) to a given renormalization scheme in the given model. *)
 CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
@@ -72,12 +80,7 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
                particle = susyParticles[[i]];
                dim = GetDimension[particle];
                dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
-               Which[IsMajoranaFermion[particle], prefactor = 2/3,
-                     IsDiracFermion[   particle], prefactor = 4/3,
-                     IsRealScalar[     particle], prefactor = 1/6,
-                     IsComplexScalar[  particle], prefactor = 1/3,
-                     IsVector[         particle], prefactor = 1/3,
-                     True                       , prefactor = 1];
+               prefactor = GetLorentzRepresentationFactor[particle];
                If[coupling === SARAH`electricCharge,
                   casimir = SA`Casimir[particle, SARAH`color];
                   nc = If[NumericQ[casimir] && casimir =!= 0, 3, 1];
