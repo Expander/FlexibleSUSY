@@ -54,6 +54,10 @@ FlexibleSUSY 2.0.2 [not released yet]
    quarks at the low-energy scale and of the soft-breaking parameters
    at the GUT scale in the CMSSMCKM.
 
+ * Bugfix (commit c95a9b81): Fix compilation error in 4-scalar
+   couplings in models with scalar color triplets due to an unresolved
+   SARAH Clebsch-Gordan coefficient CG[__][__].
+
  * Bugfix: Fix linking error on Darwin platforms.
 
 FlexibleSUSY 2.0.1 [October, 20 2017]
