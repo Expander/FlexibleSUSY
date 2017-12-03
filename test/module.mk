@@ -427,6 +427,11 @@ TEST_SRC += \
 		$(DIR)/test_SMHighPrecision_two_loop_spectrum.cpp
 endif
 
+ifeq ($(WITH_SMSU3),yes)
+TEST_SRC += \
+		$(DIR)/test_SMSU3_low_scale_constraint.cpp
+endif
+
 ifeq ($(WITH_NSM),yes)
 TEST_SRC += \
 		$(DIR)/test_NSM_low_scale_constraint.cpp
@@ -954,6 +959,8 @@ $(DIR)/test_SM_weinberg_angle_meta.x: $(LIBSM) $(LIBFLEXI) $(filter-out -%,$(LOO
 $(DIR)/test_CMSSMNoFV_weinberg_angle_meta.x: $(LIBCMSSM) $(LIBCMSSMNoFV) $(LIBFLEXI) $(LIBTEST)
 
 $(DIR)/test_SMHighPrecision_two_loop_spectrum.x: $(LIBSMHighPrecision) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+
+$(DIR)/test_SMSU3_low_scale_constraint.x: $(LIBSMSU3) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 
 $(DIR)/test_NSM_low_scale_constraint.x: $(LIBNSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 

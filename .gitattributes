@@ -72,6 +72,7 @@ model_files/SMnoGUT             export-ignore
 model_files/SMNoRGEs            export-ignore
 model_files/SMRules             export-ignore
 model_files/SMSemiAnalytic      export-ignore
+model_files/SMSU3               export-ignore
 model_files/SSMSemiAnalytic     export-ignore
 model_files/SMThrow             export-ignore
 model_files/TensorCoupling      export-ignore
@@ -97,6 +98,7 @@ sarah/NSM                       export-ignore
 sarah/UnbrokenMSSM              export-ignore
 sarah/SMnoGUT                   export-ignore
 sarah/SM2                       export-ignore
+sarah/SMSU3                     export-ignore
 sarah/TensorCoupling            export-ignore
 
 src/SM.cpp                           export-ignore
