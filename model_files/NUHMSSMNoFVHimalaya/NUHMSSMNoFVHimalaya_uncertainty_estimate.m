@@ -40,6 +40,8 @@ CalcMh[MS_, TB_, Xtt_] :=
     CalcNUHMSSMNoFVHimalayaDMh[
         fsSettings -> {
             precisionGoal -> 1.*^-5,
+            poleMassLoopOrder -> 3,
+            ewsbLoopOrder -> 3,
             thresholdCorrectionsLoopOrder -> 2,
             thresholdCorrections -> 122111121
         },
