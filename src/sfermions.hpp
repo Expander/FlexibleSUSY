@@ -41,16 +41,16 @@ extern const std::array<double, NUMBER_OF_MSSM_SPARTICLES> Hypercharge_right;
  * parameters needed to fill 2 x 2 sfermion mass matrix
  */
 struct Mass_data {
-   double ml2;    ///< soft mass of left-handed sfermion
-   double mr2;    ///< soft mass of right-handed sfermion
-   double yf;     ///< Yukawa coupling
-   double vd, vu; ///< Higgs VEVs
-   double gY, g2; ///< gauge couplings (not GUT normalized)
-   double Tyf;    ///< trilinear coupling
-   double mu;     ///< Superpotential parameter
-   double T3;     ///< weak isospin
-   double Yl;     ///< Hypercharge of left-handed sfermion
-   double Yr;     ///< Hypercharge of right-handed sfermion
+   double ml2{};      ///< soft mass of left-handed sfermion
+   double mr2{};      ///< soft mass of right-handed sfermion
+   double yf{};       ///< Yukawa coupling
+   double vd{}, vu{}; ///< Higgs VEVs
+   double gY{}, g2{}; ///< gauge couplings (not GUT normalized)
+   double Tyf{};      ///< trilinear coupling
+   double mu{};       ///< Superpotential parameter
+   double T3{};       ///< weak isospin
+   double Yl{};       ///< Hypercharge of left-handed sfermion
+   double Yr{};       ///< Hypercharge of right-handed sfermion
 };
 
 double diagonalize_sfermions_2x2(const Mass_data&,
