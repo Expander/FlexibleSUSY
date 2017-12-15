@@ -17,8 +17,8 @@
 // ====================================================================
 
 #include <algorithm>
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <functional>
@@ -34,8 +34,9 @@ namespace flexiblesusy {
 std::string directory(const std::string& file_name)
 {
    const std::size_t pos = file_name.find_last_of("/\\");
-   if (pos == std::string::npos)
+   if (pos == std::string::npos) {
       return ".";
+}
    return file_name.substr(0,pos);
 }
 
@@ -97,14 +98,14 @@ std::vector<std::string> delete_duplicates(
 /// replace file name extension by `ext'
 std::string replace_extension(const std::string& str, const std::string& ext)
 {
-   const std::string no_ext(str.substr(0, str.find_last_of(".")));
+   const std::string no_ext(str.substr(0, str.find_last_of('.')));
    return no_ext + '.' + ext;
 }
 
 /// tests whether `str' starts with `prefix'
 bool starts_with(const std::string& str, const std::string& prefix)
 {
-   return !str.compare(0, prefix.size(), prefix);
+   return str.compare(0, prefix.size(), prefix) == 0;
 }
 
 /// removes whitespace from left side of string
@@ -112,7 +113,7 @@ void trim_left(std::string& str)
 {
    str.erase(str.begin(),
              std::find_if(str.begin(), str.end(),
-                          [] (std::string::value_type c) { return !std::isspace(c); }));
+                          [] (std::string::value_type c) { return std::isspace(c) == 0; }));
 }
 
 /// returns copy of s with whitespace removed from left side of string
@@ -152,8 +153,9 @@ void print_dependencies(const std::string& target_name,
 {
    ostr << target_name << ':';
 
-   for (const auto& d: dependencies)
+   for (const auto& d: dependencies) {
       ostr << ' ' << d;
+}
 
    ostr << '\n';
 }
@@ -162,8 +164,9 @@ void print_dependencies(const std::string& target_name,
 void print_empty_phony_targets(const std::vector<std::string>& dependencies,
                                std::ostream& ostr)
 {
-   for (const auto& d: dependencies)
+   for (const auto& d: dependencies) {
       ostr << '\n' << d << ":\n";
+}
 }
 
 /// returns file name from include "..." statement
@@ -171,27 +174,31 @@ std::string get_filename_from_include(std::string line)
 {
    trim_left(line);
 
-   if (line.empty() || line[0] != '#')
+   if (line.empty() || line[0] != '#') {
       return "";
+}
 
    // skip `#' and following whitespace
    line = trim_left_copy(line.substr(std::strlen("#")));
 
-   if (!starts_with(line, "include"))
+   if (!starts_with(line, "include")) {
       return "";
+}
 
    // skip `include'
    line = trim_left_copy(line.substr(std::strlen("include")));
 
    // extract file name from "file-name"
    std::size_t pos1 = line.find_first_of('"');
-   if (pos1 == std::string::npos)
+   if (pos1 == std::string::npos) {
       return "";
+}
    pos1++;
 
    std::size_t pos2 = line.find_first_of('"', pos1);
-   if (pos2 == std::string::npos)
+   if (pos2 == std::string::npos) {
       return "";
+}
    pos2--;
 
    return line.substr(pos1, pos2);
@@ -206,8 +213,9 @@ std::vector<std::string> get_included_files(const std::string& file_name)
 
    while (std::getline(istr, line)) {
       std::string file(get_filename_from_include(line));
-      if (!file.empty())
+      if (!file.empty()) {
          includes.push_back(std::move(file));
+}
    }
 
    return includes;
@@ -219,8 +227,9 @@ std::vector<std::string> prepend(const std::string& str,
 {
    std::vector<std::string> result(strings);
 
-   for (auto& s: result)
+   for (auto& s: result) {
       s = str + s;
+}
 
    return result;
 }
@@ -249,8 +258,9 @@ std::vector<std::string> search_includes(const std::string& file_name,
                                          bool ignore_non_existing = true,
                                          unsigned max_depth = 10)
 {
-   if (max_depth == 0)
+   if (max_depth == 0) {
       return std::vector<std::string>();
+}
 
    // find included files from #include statements
    const std::vector<std::string> includes(get_included_files(file_name));
@@ -309,8 +319,9 @@ int main(int argc, char* argv[])
 
    for (int i = 1; i < argc; i++) {
       const std::string arg(argv[i]);
-      if (starts_with(arg, "-D"))
+      if (starts_with(arg, "-D")) {
          continue;
+}
       if (starts_with(arg, "-I") && arg.length() > 2) {
          paths.push_back(arg.substr(std::strlen("-I")));
          continue;
@@ -377,7 +388,7 @@ int main(int argc, char* argv[])
 
    // include paths
    paths.insert(paths.begin(), directory(file_name));
-   paths.push_back(".");
+   paths.emplace_back(".");
    paths = delete_duplicates(paths);
 
    // search for header inclusions in file
@@ -390,14 +401,16 @@ int main(int argc, char* argv[])
    std::vector<std::string> dependencies_and_main(dependencies);
    dependencies_and_main.insert(dependencies_and_main.begin(), file_name);
 
-   if (target_name.empty())
+   if (target_name.empty()) {
       target_name = replace_extension(filename(file_name), "o");
+}
 
    // output
    print_dependencies(target_name, dependencies_and_main, *ostr);
 
-   if (add_empty_phony_targets)
+   if (add_empty_phony_targets) {
       print_empty_phony_targets(dependencies, *ostr);
+}
 
    return EXIT_SUCCESS;
 }
