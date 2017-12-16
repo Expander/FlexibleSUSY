@@ -91,7 +91,7 @@ flags="-MM"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/comment.cpp"
 
 # test circular dependence
-run_depgens "$CXX -MM" "$DEPGEN -MM" "${BASEDIR}/depgen/circular.cpp"
+run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/circular.cpp"
 
 rm -f ${OUTPUT}*
 
