@@ -212,7 +212,7 @@ std::vector<std::string> get_included_files(const std::string& file_name)
    std::string line;
 
    while (std::getline(istr, line)) {
-      std::string file(get_filename_from_include(line));
+      auto file = get_filename_from_include(line);
       if (!file.empty()) {
          includes.push_back(std::move(file));
 }
@@ -225,11 +225,21 @@ std::vector<std::string> get_included_files(const std::string& file_name)
 std::vector<std::string> prepend(const std::string& str,
                                  const std::vector<std::string>& strings)
 {
-   std::vector<std::string> result(strings);
+   auto result = strings;
 
-   for (auto& s: result) {
+   for (auto& s: result)
       s = str + s;
+
+   return result;
 }
+
+/// insert `str' at the beginning of vector
+std::vector<std::string> insert_at_front(
+   const std::vector<std::string>& strings,
+   const std::string& str)
+{
+   auto result = strings;
+   result.insert(result.begin(), str);
 
    return result;
 }
@@ -241,7 +251,7 @@ std::vector<std::string> filter(const std::string& dir,
                                 const Predicate& pred)
 {
    const std::string dirname(dir.empty() || dir == "." ? "" : dir + '/');
-   const std::vector<std::string> files_in_dir(prepend(dirname, files));
+   const auto files_in_dir = prepend(dirname, files);
 
    std::vector<std::string> existing_files;
 
@@ -258,37 +268,36 @@ std::vector<std::string> search_includes(const std::string& file_name,
                                          bool ignore_non_existing = true,
                                          unsigned max_depth = 10)
 {
-   if (max_depth == 0) {
+   if (max_depth == 0)
       return std::vector<std::string>();
-}
 
    // find included files from #include statements
-   const std::vector<std::string> includes(get_included_files(file_name));
+   const auto includes = get_included_files(file_name);
 
    // select only files that exist in paths
    std::vector<std::string> existing;
    for (const auto& p: paths) {
-      const std::vector<std::string> existing_in_path(filter(p, includes, file_exists));
+      const auto existing_in_path = filter(p, includes, file_exists);
       existing.insert(existing.end(), existing_in_path.begin(), existing_in_path.end());
    }
 
    // search recursively for included files in existing headers
-   const std::vector<std::string> tmp_existing(existing);
+   const auto tmp_existing = existing;
    for (const auto& f: tmp_existing) {
-      const std::vector<std::string> sub_existing(
-         search_includes(f, paths, ignore_non_existing, max_depth - 1));
+      const auto sub_existing =
+         search_includes(f, paths, ignore_non_existing, max_depth - 1);
       existing.insert(existing.end(), sub_existing.begin(), sub_existing.end());
    }
 
    // search for non-existing headers
    if (!ignore_non_existing) {
-      std::vector<std::string> includes_without_path(filenames(includes));
+      auto includes_without_path = filenames(includes);
       std::sort(includes_without_path.begin(), includes_without_path.end());
 
-      std::vector<std::string> existing_without_path(filenames(existing));
+      auto existing_without_path = filenames(existing);
       std::sort(existing_without_path.begin(), existing_without_path.end());
 
-      std::vector<std::string> non_existing;
+      decltype(includes_without_path) non_existing;
       std::set_difference(includes_without_path.begin(), includes_without_path.end(),
                           existing_without_path.begin(), existing_without_path.end(),
                           std::back_inserter(non_existing));
@@ -392,21 +401,19 @@ int main(int argc, char* argv[])
    paths = delete_duplicates(paths);
 
    // search for header inclusions in file
-   const std::vector<std::string> dependencies
+   const auto dependencies
       = delete_duplicates(
            search_includes(file_name, paths, ignore_non_existing),
            Is_not_duplicate_ignore_path());
 
    // prepend file itself to dependency list
-   std::vector<std::string> dependencies_and_main(dependencies);
-   dependencies_and_main.insert(dependencies_and_main.begin(), file_name);
+   const auto dependencies_and_self = insert_at_front(dependencies, file_name);
 
-   if (target_name.empty()) {
+   if (target_name.empty())
       target_name = replace_extension(filename(file_name), "o");
-}
 
    // output
-   print_dependencies(target_name, dependencies_and_main, *ostr);
+   print_dependencies(target_name, dependencies_and_self, *ostr);
 
    if (add_empty_phony_targets) {
       print_empty_phony_targets(dependencies, *ostr);
