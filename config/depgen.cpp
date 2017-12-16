@@ -282,11 +282,13 @@ std::vector<std::string> search_includes(const std::string& file_name,
    }
 
    // search recursively for included files in existing headers
-   const auto tmp_existing = existing;
-   for (const auto& f: tmp_existing) {
-      const auto sub_existing =
-         search_includes(f, paths, ignore_non_existing, max_depth - 1);
-      existing.insert(existing.end(), sub_existing.begin(), sub_existing.end());
+   {
+      const auto tmp_existing = existing;
+      for (const auto& f: tmp_existing) {
+         const auto sub_existing =
+            search_includes(f, paths, ignore_non_existing, max_depth - 1);
+         existing.insert(existing.end(), sub_existing.begin(), sub_existing.end());
+      }
    }
 
    // search for non-existing headers
