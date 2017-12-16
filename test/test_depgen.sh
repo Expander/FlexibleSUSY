@@ -90,7 +90,7 @@ run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/subdir/base.cpp"
 flags="-MM"
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/comment.cpp"
 
-# fails with g++, clang++, icpc
+# test circular dependence
 run_depgens "$CXX -MM" "$DEPGEN -MM" "${BASEDIR}/depgen/circular.cpp"
 
 rm -f ${OUTPUT}*
