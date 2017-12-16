@@ -34,9 +34,8 @@ namespace flexiblesusy {
 std::string directory(const std::string& file_name)
 {
    const std::size_t pos = file_name.find_last_of("/\\");
-   if (pos == std::string::npos) {
+   if (pos == std::string::npos)
       return ".";
-}
    return file_name.substr(0,pos);
 }
 
@@ -147,26 +146,23 @@ void print_usage(const std::string& program_name)
 }
 
 /// print dependency list
-void print_dependencies(const std::string& target_name,
-                        const std::vector<std::string>& dependencies,
-                        std::ostream& ostr)
+void print_dependencies(std::ostream& ostr,
+                        const std::string& target_name,
+                        const std::vector<std::string>& dependencies)
 {
    ostr << target_name << ':';
 
-   for (const auto& d: dependencies) {
+   for (const auto& d: dependencies)
       ostr << ' ' << d;
-}
 
    ostr << '\n';
 }
 
 /// print empty phony targets for each dependency
-void print_empty_phony_targets(const std::vector<std::string>& dependencies,
-                               std::ostream& ostr)
+void print_empty_phony_targets(std::ostream& ostr, const std::vector<std::string>& dependencies)
 {
-   for (const auto& d: dependencies) {
+   for (const auto& d: dependencies)
       ostr << '\n' << d << ":\n";
-}
 }
 
 /// returns file name from include "..." statement
@@ -174,31 +170,29 @@ std::string get_filename_from_include(std::string line)
 {
    trim_left(line);
 
-   if (line.empty() || line[0] != '#') {
+   if (line.empty() || line[0] != '#')
       return "";
-}
 
    // skip `#' and following whitespace
    line = trim_left_copy(line.substr(std::strlen("#")));
 
-   if (!starts_with(line, "include")) {
+   if (!starts_with(line, "include"))
       return "";
-}
 
    // skip `include'
    line = trim_left_copy(line.substr(std::strlen("include")));
 
    // extract file name from "file-name"
    std::size_t pos1 = line.find_first_of('"');
-   if (pos1 == std::string::npos) {
+   if (pos1 == std::string::npos)
       return "";
-}
+
    pos1++;
 
    std::size_t pos2 = line.find_first_of('"', pos1);
-   if (pos2 == std::string::npos) {
+   if (pos2 == std::string::npos)
       return "";
-}
+
    pos2--;
 
    return line.substr(pos1, pos2);
@@ -213,9 +207,8 @@ std::vector<std::string> get_included_files(const std::string& file_name)
 
    while (std::getline(istr, line)) {
       auto file = get_filename_from_include(line);
-      if (!file.empty()) {
+      if (!file.empty())
          includes.push_back(std::move(file));
-}
    }
 
    return includes;
@@ -332,7 +325,7 @@ int main(int argc, char* argv[])
       const std::string arg(argv[i]);
       if (starts_with(arg, "-D")) {
          continue;
-}
+      }
       if (starts_with(arg, "-I") && arg.length() > 2) {
          paths.push_back(arg.substr(std::strlen("-I")));
          continue;
@@ -408,18 +401,14 @@ int main(int argc, char* argv[])
            search_includes(file_name, paths, ignore_non_existing),
            Is_not_duplicate_ignore_path());
 
-   // prepend file itself to dependency list
-   const auto dependencies_and_self = insert_at_front(dependencies, file_name);
-
    if (target_name.empty())
       target_name = replace_extension(filename(file_name), "o");
 
    // output
-   print_dependencies(target_name, dependencies_and_self, *ostr);
+   print_dependencies(*ostr, target_name, insert_at_front(dependencies, file_name));
 
-   if (add_empty_phony_targets) {
-      print_empty_phony_targets(dependencies, *ostr);
-}
+   if (add_empty_phony_targets)
+      print_empty_phony_targets(*ostr, dependencies);
 
    return EXIT_SUCCESS;
 }
