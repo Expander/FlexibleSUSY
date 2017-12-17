@@ -29,6 +29,7 @@
 #include <vector>
 
 namespace flexiblesusy {
+namespace depgen {
 
 /// returns directory from file name
 std::string directory(const std::string& file_name)
@@ -323,11 +324,12 @@ std::vector<std::string> search_includes(const std::string& file_name,
    return existing;
 }
 
+} // namespace depgen
 } // namespace flexiblesusy
 
 int main(int argc, char* argv[])
 {
-   using namespace flexiblesusy;
+   using namespace flexiblesusy::depgen;
 
    if (argc < 2) {
       std::cerr << "Error: no file given\n";
