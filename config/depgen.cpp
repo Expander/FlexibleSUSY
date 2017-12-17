@@ -420,10 +420,10 @@ int main(int argc, char* argv[])
    }
 
    // select output stream
+   std::ofstream fstr(output_file);
    std::ostream* ostr = &std::cout;
 
    if (!output_file.empty()) {
-      std::ofstream fstr(output_file);
       if (!fstr.good()) {
          std::cerr << "Error: cannot write to file " << output_file << '\n';
          return EXIT_FAILURE;
