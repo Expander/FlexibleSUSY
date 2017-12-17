@@ -411,7 +411,7 @@ int main(int argc, char* argv[])
    }
 
    // include paths
-   paths.insert(paths.begin(), directory(file_name));
+   paths = insert_at_front(paths, directory(file_name));
    paths.emplace_back(".");
    paths = delete_duplicates(paths);
 
