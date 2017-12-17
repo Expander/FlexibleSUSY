@@ -264,6 +264,25 @@ std::vector<std::string> filter_files(
    return filter(files_in_dir, pred);
 }
 
+std::vector<std::string> complement(
+   const std::vector<std::string>& v1,
+   const std::vector<std::string>& v2)
+{
+   auto tv1 = v1;
+   auto tv2 = v2;
+
+   std::sort(tv1.begin(), tv1.end());
+   std::sort(tv2.begin(), tv2.end());
+
+   std::vector<std::string> diff;
+
+   std::set_difference(tv1.begin(), tv1.end(),
+                       tv2.begin(), tv2.end(),
+                       std::back_inserter(diff));
+
+   return diff;
+}
+
 /// search recursively for include statments in `file_name'
 /// taking into account only directories given in `paths'
 std::vector<std::string> search_includes(const std::string& file_name,
@@ -296,17 +315,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
 
    // search for non-existing headers
    if (!ignore_non_existing) {
-      auto includes_without_path = filenames(includes);
-      std::sort(includes_without_path.begin(), includes_without_path.end());
-
-      auto existing_without_path = filenames(existing);
-      std::sort(existing_without_path.begin(), existing_without_path.end());
-
-      decltype(includes_without_path) non_existing;
-      std::set_difference(includes_without_path.begin(), includes_without_path.end(),
-                          existing_without_path.begin(), existing_without_path.end(),
-                          std::back_inserter(non_existing));
-
+      const auto non_existing = complement(filenames(includes), filenames(existing));
       existing.insert(existing.end(), non_existing.begin(), non_existing.end());
    }
 
