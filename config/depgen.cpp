@@ -237,21 +237,31 @@ std::vector<std::string> insert_at_front(
    return result;
 }
 
-/// returns files in directory `dir' which fulfill the predicate
+/// returns elements of `vec' for which pred(f) == true
 template <class Predicate>
-std::vector<std::string> filter(const std::string& dir,
-                                const std::vector<std::string>& files,
-                                const Predicate& pred)
+std::vector<std::string> filter(
+   const std::vector<std::string>& vec,
+   const Predicate& pred)
+{
+   std::vector<std::string> match;
+
+   std::copy_if(vec.begin(), vec.end(),
+                std::back_inserter(match), pred);
+
+   return match;
+}
+
+/// returns files in directory `dir' for which pred(f) == true
+template <class Predicate>
+std::vector<std::string> filter_files(
+   const std::string& dir,
+   const std::vector<std::string>& files,
+   const Predicate& pred)
 {
    const std::string dirname(dir.empty() || dir == "." ? "" : dir + '/');
    const auto files_in_dir = prepend(dirname, files);
 
-   std::vector<std::string> existing_files;
-
-   std::copy_if(files_in_dir.begin(), files_in_dir.end(),
-                std::back_inserter(existing_files), pred);
-
-   return existing_files;
+   return filter(files_in_dir, pred);
 }
 
 /// search recursively for include statments in `file_name'
@@ -270,7 +280,7 @@ std::vector<std::string> search_includes(const std::string& file_name,
    // select only files that exist in paths
    std::vector<std::string> existing;
    for (const auto& p: paths) {
-      const auto existing_in_path = filter(p, includes, file_exists);
+      const auto existing_in_path = filter_files(p, includes, file_exists);
       existing.insert(existing.end(), existing_in_path.begin(), existing_in_path.end());
    }
 
