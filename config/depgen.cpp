@@ -289,9 +289,9 @@ std::vector<std::string> complement(
 std::vector<std::string> search_includes(const std::string& file_name,
                                          const std::vector<std::string>& paths,
                                          bool ignore_non_existing = true,
-                                         unsigned max_depth = 10)
+                                         int max_depth = 10)
 {
-   if (max_depth == 0)
+   if (max_depth <= 0)
       return std::vector<std::string>();
 
    // find included files from #include statements
