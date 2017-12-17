@@ -20,6 +20,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -285,11 +286,23 @@ std::vector<std::string> complement(
    return diff;
 }
 
+/// concatenate strings with separator
+template <typename T>
+std::string concat(const std::vector<std::string>& strings, const T& separator)
+{
+   std::string result;
+
+   for (const auto& s: strings)
+      result += s + separator;
+
+   return result;
+}
+
 /// search recursively for include statments in `file_name'
 /// taking into account only directories given in `paths'
 std::vector<std::string> search_includes(const std::string& file_name,
                                          const std::vector<std::string>& paths,
-                                         bool ignore_non_existing = true,
+                                         bool include_non_existing = false,
                                          int max_depth = 10)
 {
    if (max_depth <= 0)
@@ -310,16 +323,22 @@ std::vector<std::string> search_includes(const std::string& file_name,
       const auto tmp_existing = existing;
       for (const auto& f: tmp_existing) {
          const auto sub_existing =
-            search_includes(f, paths, ignore_non_existing, max_depth - 1);
+            search_includes(f, paths, include_non_existing, max_depth - 1);
          existing.insert(existing.end(), sub_existing.cbegin(), sub_existing.cend());
       }
    }
 
    // search for non-existing headers
-   if (!ignore_non_existing) {
-      const auto non_existing = complement(filenames(includes), filenames(existing));
-      existing.insert(existing.end(), non_existing.cbegin(), non_existing.cend());
+   const auto non_existing = complement(filenames(includes), filenames(existing));
+
+   if (!include_non_existing && !non_existing.empty()) {
+      throw std::runtime_error(
+         "Error: cannot find the following header file(s): "
+         + concat(non_existing, ' '));
    }
+
+   if (include_non_existing)
+      existing.insert(existing.end(), non_existing.cbegin(), non_existing.cend());
 
    return existing;
 }
@@ -340,7 +359,7 @@ int main(int argc, char* argv[])
    // include paths
    std::vector<std::string> paths;
    std::string file_name, target_name, output_file;
-   bool ignore_non_existing = true; // -MG
+   bool include_non_existing = false; // -MG
    bool add_empty_phony_targets = false; // -MP
 
    for (int i = 1; i < argc; i++) {
@@ -353,7 +372,7 @@ int main(int argc, char* argv[])
          continue;
       }
       if (arg == "-MG") {
-         ignore_non_existing = false;
+         include_non_existing = true;
          continue;
       }
       if (arg == "-MM") {
@@ -417,20 +436,25 @@ int main(int argc, char* argv[])
    paths.emplace_back(".");
    paths = delete_duplicates(paths);
 
-   // search for header inclusions in file
-   const auto dependencies
-      = delete_duplicates(
-           search_includes(file_name, paths, ignore_non_existing),
-           Is_not_duplicate_ignore_path());
+   try {
+      // search for header inclusions in file
+      const auto dependencies
+         = delete_duplicates(
+            search_includes(file_name, paths, include_non_existing),
+            Is_not_duplicate_ignore_path());
 
-   if (target_name.empty())
-      target_name = replace_extension(filename(file_name), "o");
+      if (target_name.empty())
+         target_name = replace_extension(filename(file_name), "o");
 
-   // output
-   print_dependencies(*ostr, target_name, insert_at_front(dependencies, file_name));
+      // output
+      print_dependencies(*ostr, target_name, insert_at_front(dependencies, file_name));
 
-   if (add_empty_phony_targets)
-      print_empty_phony_targets(*ostr, dependencies);
+      if (add_empty_phony_targets)
+         print_empty_phony_targets(*ostr, dependencies);
+   } catch (const std::exception& e) {
+      std::cerr << e.what() << '\n';
+      return EXIT_FAILURE;
+   }
 
    return EXIT_SUCCESS;
 }
