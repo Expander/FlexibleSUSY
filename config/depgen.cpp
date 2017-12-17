@@ -264,6 +264,7 @@ std::vector<std::string> filter_files(
    return filter(files_in_dir, pred);
 }
 
+/// returns all elements of `v1', which are not `v2'
 std::vector<std::string> complement(
    const std::vector<std::string>& v1,
    const std::vector<std::string>& v2)
