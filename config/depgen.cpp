@@ -300,33 +300,33 @@ std::string concat(const std::vector<std::string>& strings, const T& separator)
 
 /// search recursively for include statments in `file_name'
 /// taking into account only directories given in `paths'
-std::vector<std::string> search_includes(const std::string& file_name,
-                                         const std::vector<std::string>& paths,
-                                         bool include_non_existing = false,
-                                         int max_depth = 10)
+void search_includes(const std::string& file_name,
+                     const std::vector<std::string>& paths,
+                     std::vector<std::string>& result,
+                     bool include_non_existing,
+                     int max_depth)
 {
-   if (max_depth <= 0)
-      return std::vector<std::string>();
+   if (max_depth <= 0) {
+      throw std::runtime_error(
+         "Error: #include nested too deeply (maximum depth: "
+         + std::to_string(max_depth) + "): " + file_name);
+   }
 
-   // find included files from #include statements
-   const auto includes = get_included_files(file_name);
+   // find included files from #include statements, that are not
+   // already in result
+   const auto includes = complement(get_included_files(file_name), filenames(result));
 
    // select only files that exist in paths
    std::vector<std::string> existing;
    for (const auto& p: paths) {
       const auto existing_in_path = filter_files(p, includes, file_exists);
       existing.insert(existing.end(), existing_in_path.cbegin(), existing_in_path.cend());
+      result.insert(result.end(), existing_in_path.cbegin(), existing_in_path.cend());
    }
 
    // search recursively for included files in existing headers
-   {
-      const auto tmp_existing = existing;
-      for (const auto& f: tmp_existing) {
-         const auto sub_existing =
-            search_includes(f, paths, include_non_existing, max_depth - 1);
-         existing.insert(existing.end(), sub_existing.cbegin(), sub_existing.cend());
-      }
-   }
+   for (const auto& f: existing)
+      search_includes(f, paths, result, include_non_existing, max_depth - 1);
 
    // search for non-existing headers
    const auto non_existing = complement(filenames(includes), filenames(existing));
@@ -338,9 +338,21 @@ std::vector<std::string> search_includes(const std::string& file_name,
    }
 
    if (include_non_existing)
-      existing.insert(existing.end(), non_existing.cbegin(), non_existing.cend());
+      result.insert(result.end(), non_existing.cbegin(), non_existing.cend());
 
-   return existing;
+   return;
+}
+
+/// search recursively for include statments in `file_name'
+/// taking into account only directories given in `paths'
+std::vector<std::string> search_includes(const std::string& file_name,
+                                         const std::vector<std::string>& paths,
+                                         bool include_non_existing = false,
+                                         int max_depth = 100)
+{
+   std::vector<std::string> result;
+   search_includes(file_name, paths, result, include_non_existing, max_depth);
+   return result;
 }
 
 } // namespace depgen
