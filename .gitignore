@@ -72,6 +72,8 @@ release/*.*.*
 test/*.db
 test/*.log
 test/*.out
+test/*.pdf
 test/*.spc
 test/*.spc.*
 test/LesHouches.out.*
+test/test_*.callgrind.out*

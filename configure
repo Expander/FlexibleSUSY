@@ -1941,7 +1941,7 @@ check_himalaya_libs() {
             return 1
         fi
     else
-        local HIMALAYALIBS_="-lHimalaya"
+        local HIMALAYALIBS_="-lHimalaya -lDSZ"
         if [ -z "$himalaya_lib_dir" ]; then
             # assume that the linker will look in the default paths
             HIMALAYALIBS="$HIMALAYALIBS_"

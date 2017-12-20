@@ -334,7 +334,10 @@ StripGroupStructure[expr_, indices_List] := Module[{
 	SARAH`Lam[__] -> 2,
 	SARAH`Sig[__] -> 2,
 	SARAH`fSU2[__] -> 1,
-	SARAH`fSU3[__] -> 1
+	SARAH`fSU3[__] -> 1,
+	SARAH`CG[SARAH`SU[3], {{1,0},{0,1},{1,0},{0,1}}][a_,b_,c_,d_] -> SARAH`Delta[a,b] SARAH`Delta[c,d],
+	SARAH`CG[SARAH`SU[3], {{0,1},{1,0},{0,1},{1,0}}][a_,b_,c_,d_] -> SARAH`Delta[a,b] SARAH`Delta[c,d],
+	SARAH`Generator[SARAH`SU[3],___][___] -> 2
     }
 ];
 

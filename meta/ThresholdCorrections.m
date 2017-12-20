@@ -62,35 +62,39 @@ CalculateElectromagneticCoupling[scheme_] :=
 CalculateCoupling::UnknownRenormalizationScheme = "Unknown\
  renormalization scheme `1`.";
 
+GetLorentzRepresentationFactor[particle_] :=
+    Which[IsMajoranaFermion[particle], 2/3,
+          IsDiracFermion[   particle], 4/3,
+          IsRealScalar[     particle], 1/6,
+          IsComplexScalar[  particle], 1/3,
+          IsVector[         particle], 1/3,
+          True                       , 1];
+
+GetMultiplicityForUnbrokenGroups[particle_, group_] :=
+    Times @@ Cases[SARAH`getIndizesWI[particle], {Except[SARAH`generation | group], i_} :> i];
+
 (* Calculate threshold correction for a gauge coupling from SM
    (MS-bar) to a given renormalization scheme in the given model. *)
 CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
-    Module[{susyParticles, prefactor, i, result = 0, particle, dynkin,
-            dim, dimStart, nc, casimir, conversion},
+    Module[{susyParticles, prefactor, i, result = 0, particle,
+            conversion},
            susyParticles = TreeMasses`GetSusyParticles[];
            For[i = 1, i <= Length[susyParticles], i++,
                particle = susyParticles[[i]];
-               dim = GetDimension[particle];
-               dimStart = TreeMasses`GetDimensionStartSkippingGoldstones[particle];
-               Which[IsMajoranaFermion[particle], prefactor = 2/3,
-                     IsDiracFermion[   particle], prefactor = 4/3,
-                     IsRealScalar[     particle], prefactor = 1/6,
-                     IsComplexScalar[  particle], prefactor = 1/3,
-                     IsVector[         particle], prefactor = 1/3,
-                     True                       , prefactor = 1];
-               If[coupling === SARAH`electricCharge,
-                  casimir = SA`Casimir[particle, SARAH`color];
-                  nc = If[NumericQ[casimir] && casimir =!= 0, 3, 1];
-                  dynkin = TreeMasses`GetElectricCharge[particle]^2 nc;
-                  ,
-                  dynkin = SA`Dynkin[particle, Position[SARAH`Gauge, name][[1, 1]]];
-                 ];
-               (* some dynkin indices are not defined in SARAH *)
-               If[!NumericQ[dynkin], dynkin = 0];
-               If[dim == 1,
-                  result -= prefactor dynkin Global`FiniteLog[Abs[FlexibleSUSY`M[particle]/Global`currentScale]];,
-                  result -= Sum[prefactor dynkin Global`FiniteLog[Abs[FlexibleSUSY`M[particle][i-1]/Global`currentScale]],
-                                {i,dimStart,dim}];
+               (* Eq.(11) and (13) of arXiv:1406.2319 *)
+               prefactor =
+                  GetLorentzRepresentationFactor[particle] \
+                  GetMultiplicityForUnbrokenGroups[particle,name] \
+                  If[coupling === SARAH`electricCharge,
+                     TreeMasses`GetElectricCharge[particle]^2,
+                     SA`Dynkin[particle, Position[SARAH`Gauge, name][[1, 1]]]
+                    ];
+               If[!NumericQ[prefactor], prefactor = 0];
+               (* sum over generations *)
+               If[GetDimension[particle] == 1,
+                  result -= prefactor Global`FiniteLog[Abs[FlexibleSUSY`M[particle]/Global`currentScale]];,
+                  result -= Sum[prefactor Global`FiniteLog[Abs[FlexibleSUSY`M[particle][i-1]/Global`currentScale]],
+                                {i,TreeMasses`GetDimensionStartSkippingSMGoldstones[particle],GetDimension[particle]}];
                  ];
               ];
            conversion = Switch[scheme,
@@ -98,7 +102,7 @@ CalculateCoupling[{coupling_, name_, group_}, scheme_] :=
                                FlexibleSUSY`MSbar, 0,
                                _, Message[CalculateCoupling::UnknownRenormalizationScheme, scheme]; 0
                               ];
-           Return[result + conversion];
+           result + conversion
           ];
 
 CalculateDeltaAlphaEm[renormalizationScheme_] :=

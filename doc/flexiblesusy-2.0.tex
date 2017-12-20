@@ -291,8 +291,8 @@ sparticle,
 supersymmetry,
 Higgs,
 renormalization group equations
-\PACS 12.60.Jv
-\PACS 14.80.Ly
+\PACS 12.60.Cn, 12.60.Fr, 12.60.Jv, 12.60.-i
+\PACS 14.80.Bn, 14.80.Da, 14.80.Ec, 14.80.Fd, 14.80.Ly, 14.80.Nb, 14.80.Sv
 \end{keyword}
 \end{frontmatter}
 
@@ -594,9 +594,9 @@ To download and install \fstwo as a gzipped tarball run at the command
 line:
 %
 \begin{lstlisting}[language=bash]
-$ wget https://www.hepforge.org/archive/flexiblesusy/FlexibleSUSY-2.0.0.tar.gz
-$ tar -xf FlexibleSUSY-2.0.0.tar.gz
-$ cd FlexibleSUSY-2.0.0
+$ wget https://www.hepforge.org/archive/flexiblesusy/FlexibleSUSY-2.0.1.tar.gz
+$ tar -xf FlexibleSUSY-2.0.1.tar.gz
+$ cd FlexibleSUSY-2.0.1
 \end{lstlisting}%% $
 %
 \fstwo is distributed with a huge selection of predefined models
@@ -1087,7 +1087,7 @@ using the \code{FS<model>ToSLHA[]} function.
 \begin{lstlisting}
 Block SPINFO
      1   FlexibleSUSY
-     2   2.0.0
+     2   2.0.1
      5   CMSSM
      9   4.11.0
 Block MASS
@@ -1129,9 +1129,7 @@ enabled in models beyond their scope of application.
   \multicolumn{4}{c}{\textit{SM}}\\
   \midrule
   \code{UseHiggs2LoopSM} & \code{False} & \code{True} or \code{False}
-  & 2-loop contributions $O(\at^2 + \at \as)$ to $M_h$
-  in
-  the SM \\
+  & 2-loop contributions $O(\at^2 + \at \as)$ to $M_h$ in the SM \\
   %
   \code{UseHiggs3LoopSM} & \code{False} & \code{True} or \code{False} &
   3-loop contributions $O(\at^3 + \at^2 \as \allowbreak + \at \as^2)$ to $M_h$ in
@@ -1146,7 +1144,7 @@ enabled in models beyond their scope of application.
   \code{UseSMAlphaS3Loop} & \code{False} & \code{True} or \code{False}
   & 2-loop and 3-loop QCD threshold corrections
   $O(\as^2 + \as^3)$
-  to $\as$ in the SM \\
+  to the \MSbar $\as$ in the SM \\
   %
   \midrule
   \multicolumn{4}{c}{\textit{MSSM}}\\
@@ -1171,7 +1169,7 @@ enabled in models beyond their scope of application.
   \code{UseMSSMAlphaS2Loop} & \code{False} & \code{True} or
   \code{False} & 2-loop \SQCD contribution
   $O(\as^2 + \as\at + \as\ab)$
-  to $\as$ in the MSSM \\
+  to the \DRbar $\as$ in the MSSM \\
   %
   \midrule
   \multicolumn{4}{c}{\textit{NMSSM}}\\
@@ -1234,7 +1232,8 @@ $O(\at^2 + \at \as)$ to the Higgs mass read
 %
 In Eqs.~\eqref{eq:2L_Mh_atat} ff.\ the abbreviations
 $t \equiv m_t^2$ and $\barlog(t) \equiv \log(t/Q^2)$ have been used
-for brevity, analogous to the notation of Ref.~\cite{Martin:2014cxa}.  Note
+for brevity, analogous to the notation of Ref.~\cite{Martin:2014cxa},
+where $m_t$ is the \MSbar top mass in the SM\@.  Note
 that the momentum dependence is included in the 2-loop expression of
 Eq.~\eqref{eq:2L_Mh_atas} in order to generate implicit 3-loop
 $O(\at^2\as)$ terms.
@@ -1244,21 +1243,20 @@ $O(\at^3 + \at^2 \as + \at \as^2)$ to the
 Higgs mass included by \fs read
 %
 \begin{align}
-\begin{split}
   (\Delta m_h^2)_{3L} &=
   \frac{m_t^2}{(4\pi)^6} \Bigg[
-     g_3^4 y_t^2 \left(248.122 + 839.197 \;\barlog(t) + 160 \;\barlog^2(t) - 736 \;\barlog^3(t)\right) \\
+     g_3^4 y_t^2 \left(248.122 + 839.197 \;\barlog(t) + 160 \;\barlog^2(t) - 736 \;\barlog^3(t)\right) \nonumber \\
      &\phantom{=\frac{m_t^2}{(4\pi)^6} \Bigg[}
-     + g_3^2 y_t^4 \left(2764.365 + 1283.716 \;\barlog(t) - 360 \;\barlog^2(t) + 240 \;\barlog^3(t)\right) \\
+     + g_3^2 y_t^4 \left(2764.365 + 1283.716 \;\barlog(t) - 360 \;\barlog^2(t) + 240 \;\barlog^3(t)\right) \nonumber \\
      &\phantom{=\frac{m_t^2}{(4\pi)^6} \Bigg[}
-     + y_t^6 \Big(-3199.017 + 36 \;\barlog(h) - 2653.511 \;\barlog(t) + 756 \;\barlog(h) \;\barlog(t)\\
+     + y_t^6 \Big(-3199.017 + 36 \;\barlog(h) - 2653.511 \;\barlog(t) + 756 \;\barlog(h) \;\barlog(t) \nonumber \\
      &\phantom{=\frac{m_t^2}{(4\pi)^6} \Bigg[}\qquad~~
      + \frac{27}{2} \;\barlog^2(t) + 324 \;\barlog(h) \;\barlog^2(t) - 225 \;\barlog^3(t)\Big)
   \Bigg]
-\end{split}
 \end{align}
 %
-with $h\equiv m_h^2$.  Note that the 3-loop Higgs mass calculation in
+where $h\equiv m_h^2$ is the squared \MSbar Higgs mass in the SM\@.
+Note that the 3-loop Higgs mass calculation in
 the \MSbar scheme in \fsbreak is only complete at $O(\at\as^2)$.  The
 3-loop contributions of $O(\at^3 + \at^2 \as)$ are currently incomplete
 because they would require the \MSbar top Yukawa coupling to be determined
@@ -1420,7 +1418,7 @@ The 3-loop QCD contribution is combined with the full 1-loop and QCD
   &\phantom{={} + M_t \Big[}
     + \Delta m_t^{(1),\text{qcd}}(Q) + \Delta m_t^{(2),\text{qcd}}(Q) + \Delta m_t^{(3),\text{qcd}}(Q) \Big]
   \,,
-\end{split}
+\end{split} \label{eq:mt_MSbar}
 \end{align}
 %
 where $\Sigma_t^{S,L,R}(p^2,Q)$ denote the scalar, left- and
@@ -1572,7 +1570,7 @@ These flags can be enabled in all real (N)MSSM-like models with 2(3)
 \CP-even Higgs bosons, 1(2) \CP-odd Higgs boson(s) and 1 electrically neutral
 Goldstone boson.  In addition to these flags, the (effective) $\mu$
 parameter in the convention of Ref.~\cite{Haber:1984rc} and the effective
-squared \CP-odd Higgs mass $m_A^2$ of the model must be identified.
+squared \CP-odd Higgs tree-level mass $m_A^2$ of the model must be identified.
 In the \modelname{NMSSM} model file of \sarah they would read for
 example:
 %
@@ -1718,7 +1716,7 @@ chosen such that all soft-breaking \DRbar mass parameters, the
 superpotential
 $\mu$ parameter and the \DRbar \CP-odd Higgs mass are equal to the SUSY
 scale $\MS$ at the scale $Q =
-\MS$ and all sfermion mixing parameters
+\MS$ and all \DRbar sfermion mixing parameters
 $X_f$ are set to zero, except for the stop mixing parameter
 $X_t$.  Furthermore, we set $M_t =
 173.34\unit{GeV}$, $\as^{\SM(5)}(M_Z) =
@@ -1961,12 +1959,30 @@ Higgs boson and a gluino.  The enabled 3-loop Higgs pole mass
 contribution reads
 %
 \begin{align}
-  (\Delta m_h^2)_{3L} &= \frac{64 g_3^4 y_t^2}{(4\pi)^6} m_t^2 \log^3\frac{m_{\tilde{g}}^2}{Q^2} \,,
+  (\Delta m_h^2)_{3L} &= \frac{64 g_3^4 y_t^2}{(4\pi)^6} m_t^2\;\barlog^3(g) \,,
 \end{align}
 %
-where $m_{\tilde{g}}$ is the \MSbar gluino mass.  To take this
-contribution into account at runtime, the following flags should also be
-set in the SLHA input file:
+where $g = m_{\tilde{g}}^2$ and $m_{\tilde{g}}$ is the \MSbar gluino
+mass.  Furthermore, for consistency the 2-loop gluino contribution in
+the calculation of the \MSbar top mass from Ref.\
+\cite{Benakli:2013msa} is taken into account by adding the following
+term to Eq.\ \eqref{eq:mt_MSbar} or \eqref{eq:mt_MSbar_default},
+respectively:
+%
+\begin{align}
+  \Delta m_t^{(2),\text{split-qcd}}(Q) =
+  -\frac{g_3^4}{(4\pi)^4} M_t \left\{
+     \frac{89}{9}
+     + 4\;\barlog(g) \left[
+        \frac{13}{3}
+        + \barlog(g)
+        - 2\;\barlog(t)
+     \right]
+  \right\} \,.
+\end{align}
+%
+To take these contributions into account at runtime, the following flags
+should also be set in the SLHA input file:
 %
 \begin{lstlisting}
 Block FlexibleSUSY
@@ -2175,7 +2191,7 @@ scheme.
 \label{sec:determination_of_g_Y}
 
 If the considered BSM model has a gauge symmetry with the SM gauge group $SU(3)_C\times SU(2)_L\times U(1)_Y$ as a factor,
-then \fs automatically fixes the three corresponding normalized gauge
+then \fs automatically fixes the three corresponding normalized running gauge
 couplings $g_1$, $g_2$ and $g_3$ at the low-energy boundary condition
 from the given input parameters $M_Z$, $\aem^{\SM(5)}(M_Z)$,
 $\as^{\SM(5)}(M_Z)$ and $G_F$ or $M_W$ as
@@ -2218,8 +2234,9 @@ The threshold corrections $\Delta\alpha_i(Q)$ have the form
   \frac{\as}{2\pi} \sum_i C_i^{\text{s}} \log\frac{m_i}{Q} \,,
 \end{align}
 %
-where the sum runs over all non-SM particles plus the top quark and
-the constants $C_i^{\text{em}}$ and $C_i^{\text{s}}$ depend on the
+where the sum runs over all non-SM particles plus the top quark
+with running \MSbar masses $m_i(Q)$.
+The constants $C_i^{\text{em}}$ and $C_i^{\text{s}}$ depend on the
 representation of the particle $i$ with respect to the Lorentz and gauge group.
 %
 The \MSbar\ weak mixing angle $\theta_W$ in the non-SUSY model is
@@ -2244,8 +2261,8 @@ input parameters.
 \begin{example}
   In a left-right-symmetric model with the gauge group $SU(3)_C\times
   SU(2)_L\times SU(2)_R\times U(1)_L\times U(1)_R$, one could for
-  example fix the BSM gauge couplings $g_3$, $g_L$, $g_R$, $g_{1L}$
-  and $g_{1R}$ by SM-like gauge couplings $g_3^\SM$,
+  example fix the running BSM gauge couplings $g_3$, $g_L$, $g_R$, $g_{1L}$
+  and $g_{1R}$ by the running SM-like gauge couplings $g_3^\SM$,
   $g_2^\SM$ and $g_1^\SM$ which are given as input via the
   \code{EXTPAR} block:
 %
@@ -2280,7 +2297,7 @@ relation. For example, in the SM this relation reads
   y_f^{\SM}(Q) = \frac{\sqrt{2} m_f^{\SM}(Q)}{v^{\SM}(Q)} \,,
 \end{align}
 %
-with $f = u,d,c,s,t,b,e,\mu,\tau$.
+with $f = u,d,c,s,t,b,e,\mu,\tau$ and the \MSbar vacuum expectation value $v^{\SM}(Q)$.
 The running top quark \MSbar\ mass in the non-SUSY model, $m_t(Q)$, is
 calculated from the top pole mass $M_t$
 using the full 1-loop self energy plus 2-loop SM QCD
@@ -2294,7 +2311,7 @@ corrections,
   &\phantom{={} + M_t \Big[}
     + \Delta m_t^{(1),\text{qcd}}(Q) + \Delta m_t^{(2),\text{qcd}}(Q) \Big]
   \,,
-\end{split}
+\end{split} \label{eq:mt_MSbar_default}
 \end{align}
 %
 where $\Sigma_{t}^{S,L,R}$ denote the scalar, left- and right-handed
@@ -2706,8 +2723,8 @@ can be estimated.\footnote{The example scripts can be found in the
 \begin{example}[label=ex:HSSUSY_parallel]
   For illustration, we show in this example the Higgs mass prediction
   in the MSSM with \HSSUSY.  In the following example script, a scan
-  over the relative stop mixing parameter $X_t/\MS$ is performed for
-  $\tan\beta = 5$ and three different values of the SUSY scale $\MS$.
+  over the relative \DRbar stop mixing parameter $X_t/\MS$ is performed for
+  $\tan\beta(\MS) = 5$ and three different values of the SUSY scale $\MS$.
   This is done in parallel on all available CPU cores.
   %
 \begin{lstlisting}
@@ -2977,8 +2994,9 @@ We have performed various direct and indirect tests of \fbsm and its
 components to ensure the correctness of the code:
 %
 \begin{itemize}
-\item We have performed an analytic comparison of the split-MSSM RGEs
-  generated with \sarah 4.5.3 against the RGEs presented in
+\item We have performed an analytic comparison of the RGEs generated
+  with \sarah 4.5.3 for \fs's split-MSSM model file
+  (\modelname{SplitMSSM}) against the RGEs presented in
   Ref.~\cite{Benakli:2013msa} and we found exact agreement.
 \item We have performed a detailed numerical comparison of \fs's
   \HSSUSY model against \susyhd 1.0.1 and found excellent agreement
@@ -3062,7 +3080,7 @@ Refs.~\cite{Stockinger:2006zn,Martin:2001st,Fargnoli:2013zia},
   \right) \,,
 \end{align}
 %
-where $x=m_F^2/m_{S}^2$, $M_\mu$ is the muon pole mass,
+where $x=m_F^2/m_{S}^2$ is the squared running mass ratio between $F$ and $S$, $M_\mu$ is the muon pole mass,
 $m_\mu$ is the muon \MSbar/\DRbar mass and $c$ denotes the electric charge of
 the particle coupling to the photon divided by the muon charge.  The
 $A_{SF}$ and $B_{SF}$ constants are defined as
@@ -3076,7 +3094,7 @@ $A_{SF}$ and $B_{SF}$ constants are defined as
 %
 where $z_L$ and $z_R$ are the left- and right-handed components of the
 scalar--fermion--muon vertex, $\Gamma_{SF\mu} =
-ie(z_L P_L + z_R P_R)$.
+ie(z_L P_L + z_R P_R)$ with $e$ being the \MSbar/\DRbar electromagnetic coupling constant.
 %
 The loop functions $F_i^C(x)$ and $F_i^N(x)$ read
 %
@@ -3410,7 +3428,8 @@ More precisely,
   a_f = - \frac{2 M_f}{e} \re D_f, \qquad
   \edm{f} = \im D_f,
 \end{equation}
-where $M_f$ is the pole mass of $f$.
+where $M_f$ is the pole mass of $f$
+and $e$ is the running electromagnetic coupling constant in the BSM model.
 It is then obvious that
 the EDM is given by the sum of all FFS-type and SSF-type diagrams,
 \begin{align}
@@ -3442,6 +3461,9 @@ the coupling factor is instead
 There are no imaginary parts corresponding to
 the first terms of Eq.\ \eqref{eq:amu BSM 1L FFS} and Eq.\ \eqref{eq:amu BSM 1L SSF}
 as can be guessed from Eq.\ \eqref{eq:ASF}.
+The calculation is performed at the renormalization scale $\MS$ specified
+in the model file, which is typically set to the stop mass scale
+in supersymmetric models.
 
 One can have the EDM of particle \code{f} calculated
 by adding to an output block the form: \code{FlexibleSUSYObservable`EDM[f_]}.
@@ -3642,11 +3664,13 @@ The running weak mixing angle is extracted from the relation
 \begin{align}
   \sin^2\theta_W \cos^2\theta_W =
   \frac{\pi\,\aem}
-   {\sqrt{2}\,M_Z^2\,G_F\,\hat\rho_\text{tree} \left(1-\Delta\hat{r}\right)}\,,
+   {\sqrt{2}\,M_Z^2\,G_F\,\hat\rho_\text{tree} \left(1-\Delta\hat{r}\right)}\,
   \label{eq:muon_decay_master}
 \end{align}
 %
-where
+at the scale $M_Z$,
+where $\aem$ is the electromagnetic coupling of the \BSM model in the
+\MSbar/\DRbar scheme and
 %
 \begin{align}
   \Delta\hat{r} &= \Delta\hat{r}_\text{1L} + \Delta\hat{r}_\text{2L}^\SM \\
@@ -3661,7 +3685,7 @@ where
 \end{align}
 %
 In the occurring self energies $\Sigma$, the top quark mass is chosen
-to be the pole mass in order to include partial 2-loop corrections not
+to be the pole mass $M_t$ in order to include partial 2-loop corrections not
 contained in $\Delta\hat{r}_\text{2L}^\SM$ and $\Delta\hat\rho_\text{2L}^\SM$
 \cite{Fanchiotti:1992tu}.
 Since $\Delta\hat{r}$ and $\Delta\hat\rho$ themselves depend
@@ -3715,7 +3739,8 @@ Eqs.~\eqref{eq:Delta_r_hat} and \eqref{eq:Delta_rho_hat}.}
   \label{eq:Delta_rho_hat_SM_2L}
 \end{align}
 %
-where we have generalized the Higgs dependent part as
+where the SM strong coupling $\as^{\SM(5)}$ is taken at the scale $M_t$ and
+we have generalized the Higgs dependent part as
 %
 \begin{align}
    \delta_\text{Higgs} &= 3 \left(\frac{G_F \,M_t \,v_\SM}{8 \pi^2 \sqrt{2}}\right)^2
@@ -3894,7 +3919,7 @@ line in the left panel of \figref{fig:FlexibleMW_vs_SPheno}.
 After fixing these issues within the \sarah/\spheno and \spheno code,
 we get the modified results illustrated by the green dotted and
 dashed-dotted line, respectively. These show good agreement with the
-values from \fmw for both the CMSSM and MRSSM.
+values from \fmw for both the CMSSM and MRSSM\@.
 The remaining small discrepancies are well
 understood and mainly caused by minor differences in the implemented
 formulas and the various utilized \DRbar parameters. In addition,
@@ -4738,7 +4763,7 @@ by each solver are plotted in the $\mzero - \mu$ plane.
     $\mzero \in [0, 6]\unit{TeV}$ with $\sign \mu = 1$, and those for the
     semi-analytic solver are found by randomly sampling $\mu \in [0,1150]
     \unit{GeV}$.  Right panel: Change in the calculated lightest \CP-even
-    Higgs mass $M_{h_1}$ from a reference value of $121$ GeV as a
+    Higgs pole mass $M_{h_1}$ from a reference value of $121$ GeV as a
     function of $\mu$ at fixed $\mzero = 4$ TeV for the two solvers.  The
     solutions shown correspond to a vertical slice at fixed $\mzero$ in the
     left-hand plot; $\mhalf$ is again varied in $[0,1]\unit{TeV}$,
@@ -4834,8 +4859,9 @@ and the log likelihood function provided to \multinest was defined to be
 \begin{equation*}
   \log L = -\frac{1}{5}({M_h^{\SM}}/{\unit{GeV}} - 125.09)^2 ,
 \end{equation*}
-where $M_h^{\SM}$ is the SM-like Higgs mass.  In this way the scan is directed
-towards solutions with the observed Higgs mass of $125.09$ GeV\@.
+where $M_h^{\SM}$ is the SM-like Higgs pole mass.  In this way the
+scan is directed towards solutions with the observed Higgs mass of
+$125.09$ GeV\@.
 
 \begin{figure}[tbh]
   \centering
@@ -4847,13 +4873,15 @@ towards solutions with the observed Higgs mass of $125.09$ GeV\@.
     doc/plots/CNMSSM/cnmssm_4D-full-squark_mass_m0sqgtr0_m0_m12.pdf}
    \includegraphics[width=0.48\textwidth]{%
     doc/plots/CNMSSM/cnmssm_4D-m0sqgtr0-full-msu6.pdf}
-   \caption{CNMSSM solutions obtained using \fstwo and \multinest 3.10 shown in
-     the $\mzero-\mhalf$ plane with $\azero$ as a color contour (top left
-     panel); $\mhalf-\lambda$ plane with the Higgs masses satisfying
-     $M_h^{\SM} > 100$ GeV shown as a color contour (top right
-     panel); $\mzero-\mhalf$ plane with the mass of the lightest up-type squark, which is
-     predominantly stop (bottom left panel), and the $\mhalf-\azero$ plane with
-     the heaviest up-type squark mass (bottom right panel).}
+   \caption{CNMSSM solutions obtained using \fstwo and \multinest 3.10
+     shown in the $\mzero-\mhalf$ plane with $\azero$ as a color
+     contour (top left panel); $\mhalf-\lambda$ plane showing the
+     SM-like Higgs pole mass $M_h^{\SM} $, as a color contour, with
+     the range restricted to $M_h^{\SM} > 100$ GeV for clarity (top
+     right panel); $\mzero-\mhalf$ plane with the mass of the lightest
+     up-type squark, which is predominantly stop (bottom left panel),
+     and the $\mhalf-\azero$ plane with the heaviest up-type squark
+     mass (bottom right panel).}
    \label{fig:cnmssm_solutions}
 \end{figure}
 
@@ -4906,7 +4934,7 @@ lighter than the gluino, which has a mass $\approx 2\, \mhalf$.
    \includegraphics[width=0.48\textwidth]{%
     doc/plots/CE6SSM/ce6ssm_tb10-scan-l-k-vs_combined_m0_m12_cckap.pdf}
    \caption{C\ESSM solutions obtained using \fstwo and \multinest 3.10 shown in
-     the $\mzero-\mhalf$ plane with $\azero$, the lightest up-type squark mass
+     the $\mzero-\mhalf$ plane with $\azero$, the lightest up-type squark pole mass
      $M_{\tilde{u}_1}$,  $|\lambda|$ and $|\kappa|$ as color contours.}
   \label{fig:ce6ssm_solutions}
 \end{figure}
@@ -5109,9 +5137,13 @@ right-hand side of Eq.~\eqref{eq:Higgs_pole_mass_matching} are of the form
   \label{eq:Mh_top_BSM}
 \end{align}
 %
-where the matching scale $Q$ is of the order $\MS$.
-If Eq.\ \eqref{eq:Mh_top_SM} and Eq.\ \eqref{eq:Mh_top_BSM} are set equal and
-the relation Eq.\ \eqref{eq:yt_SM_BSM} is inserted, potentially
+where the matching scale $Q$ is of the order $\MS$ and we have also
+introduced $m_h^\SM$, $m_t^\SM$ and $m_t^\BSM$ for the running SM
+Higgs mass, running SM top mass and running BSM top mass,
+keeping our convention of using an upper case `$M$' for pole masses
+and lower case `$m$' for running tree-level masses.  If
+Eq.\ \eqref{eq:Mh_top_SM} and Eq.\ \eqref{eq:Mh_top_BSM} are set equal
+and the relation Eq.\ \eqref{eq:yt_SM_BSM} is inserted, potentially
 large 2-loop terms for example of the form
 %
 \begin{align}
@@ -5193,7 +5225,7 @@ the matching scale is now calculated as
 where the self energy momentum is set to the tree-level
 \MSbar/\DRbar Higgs mass $m_h^\BSM$ in the \BSM model at the matching
 scale, which is calculated in terms of running \BSM parameters which
-have been obtained by a tree-level matching.
+have been obtained by a tree level matching.
 %
 A similar expression is used to calculate the Higgs pole mass in the
 \BSM model $M_h^\BSM$, where we also insert $p^2 = (m_h^\BSM)^2$ as the
@@ -5295,8 +5327,8 @@ which is set to the \code{SUSYScale} by default.  In this matching,
 the running normalized gauge couplings $g_i^\BSM(\Qmatch)$
 ($i=1,2,3$), the Yukawa coupling matrices $Y_f^\BSM(\Qmatch)$
 ($f=u,d,e$) and the SM-like vacuum expectation value $v^\BSM(\Qmatch)$
-of the \BSM model are determined automatically from the matching
-conditions
+of the \BSM model are determined automatically from the following matching
+conditions on pole masses and running couplings
 %
 \begin{subequations}
 \begin{align}
@@ -5455,12 +5487,12 @@ value in the SLHA input file.  Similarly, in the \mathematica interface
 $\QpoleBSM$ can be changed by setting \code{poleMassScale} to a
 non-zero value.
 %
-The pole masses of the SM particles are calculated at the
-scale $\QpoleSM$, which is set to $M_t$ by default.  The scale
-$\QpoleSM$ can be changed by setting the entry \code{FlexibleSUSY[18]}
-to a non-zero value in the SLHA input file.  In the \mathematica
-interface, $\QpoleSM$ can be changed by setting \code{eftPoleMassScale}
-to a non-zero value.
+The pole masses of the SM particles are calculated at the scale
+$\QpoleSM$, which is set to the top pole mass $M_t$ by default.  The
+scale $\QpoleSM$ can be changed by setting the entry
+\code{FlexibleSUSY[18]} to a non-zero value in the SLHA input file.
+In the \mathematica interface, $\QpoleSM$ can be changed by setting
+\code{eftPoleMassScale} to a non-zero value.
 %
 The matching scale $\Qmatch$ is set to the \code{SUSYScale} by
 default.  It can be changed by setting the entry \code{FlexibleSUSY[19]} to a
@@ -5560,7 +5592,7 @@ Print["Mh = (", Mh, " +- ", DMh, ") GeV"];
   \end{lstlisting}
   The output of the script could read
   \begin{lstlisting}
-Mh = (125.047 \pm 1.52741) GeV
+Mh = (125.047 +- 1.52741) GeV
   \end{lstlisting}
 \end{example}
 
@@ -5710,7 +5742,7 @@ supported by the Australian Research Council Future Fellowship grant
 FT160100274.  The work of D.H.\ was supported by the University of Adelaide,
 and through an Australian Government Research Training Program Scholarship.
 D.H.\ also acknowledges financial support from the Grant Agency of the Czech
-Republic (GACR), contract 17-04902S.  This work has also been supported by the
+Republic (GACR), contract 17-04902S\@.  This work has also been supported by the
 German Research Foundation DFG through Grant No.~STO876/2.
 
 \appendix
@@ -6071,7 +6103,8 @@ handle = FS<model>OpenHandle[
   \end{tabularx}}
   \caption{SLHA input block entries and corresponding \mathematica
     symbols to specify the configuration options for \fs's spectrum
-    generators.}
+    generators.  The symbols $M_{h,H,A}$ and $M_t$ denote the Higgs
+    and top quark pole masses, respectively.}
   \label{tab:sg_mma_options}
 \end{table}
 %
@@ -6094,8 +6127,9 @@ handle = FS<model>OpenHandle[
     \bottomrule
   \end{tabular}
   \caption{Specification of individual loop orders of threshold
-    corrections for the model parameters at the low-energy scale using
-    the field \texttt{FlexibleSUSY[24]} in the SLHA interface or the
+    corrections for extracting the running masses, couplings and
+    Weinberg angle in the BSM model at the low-energy scale using the
+    field \texttt{FlexibleSUSY[24]} in the SLHA interface or the
     symbol \texttt{thresholdCorrections} in the \mathematica
     interface, respectively.  The digit position is counted from the
     right, starting at $0$.  Setting all loop orders to their default

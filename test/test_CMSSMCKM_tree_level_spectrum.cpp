@@ -356,7 +356,8 @@ BOOST_AUTO_TEST_CASE( test_CMSSMCKM_tree_level_masses )
    for (int i = 0; i < 3; i++) {
       for (int k = 0; k < 3; k++) {
          BOOST_CHECK_CLOSE(std::real(VCKM(i,k)), std::real(VCKM_SS(i+1,k+1)), 1e-10);
-         BOOST_CHECK_CLOSE(std::imag(VCKM(i,k)), std::imag(VCKM_SS(i+1,k+1)), 1e-10);
+         BOOST_CHECK_SMALL(std::imag(VCKM(i,k)), 1e-7);
+         BOOST_CHECK_SMALL(std::imag(VCKM_SS(i+1,k+1)), 1e-10);
       }
    }
 
