@@ -371,7 +371,7 @@ TEST_PV_EXE := \
 		$(DIR)/test_pv_looptools.x \
 		$(DIR)/test_pv_softsusy.x
 
-$(DIR)/test_pv_crosschecks.sh.log: $(TEST_PV_EXE)
+$(DIR)/test_pv_crosschecks.sh.xml: $(TEST_PV_EXE)
 
 ifneq (,$(findstring test,$(MAKECMDGOALS)))
 ALLDEP += $(LIBFFLITE_DEP)
@@ -596,16 +596,18 @@ TEST_DEP := \
 TEST_EXE := \
 		$(TEST_OBJ:.o=.x)
 
-TEST_EXE_LOG  := $(TEST_EXE:.x=.x.log)
+TEST_EXE_XML  := $(TEST_EXE:.x=.x.xml)
 
-TEST_SH_LOG   := $(TEST_SH:.sh=.sh.log)
+TEST_SH_XML   := $(TEST_SH:.sh=.sh.xml)
 
-TEST_META_LOG := $(TEST_META:.m=.m.log)
+TEST_META_XML := $(TEST_META:.m=.m.xml)
 
-TEST_LOG      := $(TEST_EXE_LOG) $(TEST_SH_LOG)
+TEST_XML      := $(TEST_EXE_XML) $(TEST_SH_XML)
 ifeq ($(ENABLE_META),yes)
-TEST_LOG      += $(TEST_META_LOG)
+TEST_XML      += $(TEST_META_XML)
 endif
+
+TEST_LOG      := $(TEST_XML:.xml=.log)
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 TEST_EXE += $(TEST_PV_EXE)
@@ -621,7 +623,7 @@ endif
 		execute-tests execute-meta-tests execute-compiled-tests \
 		execute-shell-tests
 
-all-$(MODNAME): $(LIBTEST) $(TEST_EXE) $(TEST_LOG)
+all-$(MODNAME): $(LIBTEST) $(TEST_EXE) $(TEST_XML)
 		@true
 
 clean-$(MODNAME)-dep:
@@ -636,6 +638,7 @@ clean-$(MODNAME)-obj:
 		-rm -f $(LIBTEST_OBJ)
 
 clean-$(MODNAME)-log:
+		-rm -f $(TEST_XML)
 		-rm -f $(TEST_LOG)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
@@ -651,19 +654,26 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-execute-tests:  $(TEST_LOG)
+execute-tests:  $(TEST_XML)
 
 ifeq ($(ENABLE_META),yes)
-execute-meta-tests: $(TEST_META_LOG)
+execute-meta-tests: $(TEST_META_XML)
 else
 execute-meta-tests:
 endif
 
-execute-compiled-tests: $(TEST_EXE_LOG)
+execute-compiled-tests: $(TEST_EXE_XML)
 
-execute-shell-tests: $(TEST_SH_LOG)
+execute-shell-tests: $(TEST_SH_XML)
 
-PTR = print_test_result() { \
+# creates .xml file with test result
+PTR = write_test_result_file() { \
+	echo "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<test name=\"$$2\">\n\
+\t<status>$$1</status>\n\
+\t<logfile>$$4</logfile>\n\
+</test>" > "$$3" ; \
 	if [ $$1 = 0 ]; then \
 		printf "%-66s %4s\n" "$$2" "OK"; \
 	else \
@@ -671,27 +681,27 @@ PTR = print_test_result() { \
 	fi \
 }
 
-$(DIR)/%.x.log: $(DIR)/%.x
-		@rm -f $@
+$(DIR)/%.x.xml: $(DIR)/%.x
+		@rm -f $@ $(@:.xml=.log)
 		@$(PTR); \
 		BOOST_TEST_CATCH_SYSTEM_ERRORS="no" \
-		$< --log_level=test_suite >> $@ 2>&1; \
-		print_test_result $$? $<
+		$< --log_level=test_suite >> $(@:.xml=.log) 2>&1; \
+		write_test_result_file $$? $< $@ $(@:.xml=.log)
 
-$(DIR)/%.m.log: $(DIR)/%.m $(META_SRC)
-		@rm -f $@
+$(DIR)/%.m.xml: $(DIR)/%.m $(META_SRC)
+		@rm -f $@ $(@:.xml=.log)
 		@$(PTR); \
 		"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; \
-		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $@ 2>&1; \
-		print_test_result $$? $<
+		Quit[TestSuite\`GetNumberOfFailedTests[]]" >> $(@:.xml=.log) 2>&1; \
+		write_test_result_file $$? $< $@ $(@:.xml=.log)
 
-$(DIR)/%.sh.log: $(DIR)/%.sh
-		@rm -f $@
+$(DIR)/%.sh.xml: $(DIR)/%.sh
+		@rm -f $@ $(@:.xml=.log)
 		@$(PTR); \
-		MATH_CMD="$(MATH)" $< >> $@ 2>&1; \
-		print_test_result $$? $<
+		MATH_CMD="$(MATH)" $< >> $(@:.xml=.log) 2>&1; \
+		write_test_result_file $$? $< $@ $(@:.xml=.log)
 
-$(DIR)/test_lowMSSM.sh.log: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
+$(DIR)/test_lowMSSM.sh.xml: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 
 $(DIR)/test_cast_model.x: $(DIR)/test_cast_model.o $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
