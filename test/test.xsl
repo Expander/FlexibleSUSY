@@ -68,7 +68,7 @@
 	<h1>FlexibleSUSY test results</h1>
         <table>
           <tr>
-            <th>Test name</th>
+            <th>Test</th>
             <th>Status</th>
             <th>Date</th>
             <th>Commit</th>
