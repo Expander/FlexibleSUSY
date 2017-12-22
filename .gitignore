@@ -75,5 +75,6 @@ test/*.out
 test/*.pdf
 test/*.spc
 test/*.spc.*
+test/*.xml
 test/LesHouches.out.*
 test/test_*.callgrind.out*

@@ -596,18 +596,16 @@ TEST_DEP := \
 TEST_EXE := \
 		$(TEST_OBJ:.o=.x)
 
+TEST_XML      := $(DIR)/test.xml
 TEST_EXE_XML  := $(TEST_EXE:.x=.x.xml)
-
 TEST_SH_XML   := $(TEST_SH:.sh=.sh.xml)
-
 TEST_META_XML := $(TEST_META:.m=.m.xml)
-
-TEST_XML      := $(TEST_EXE_XML) $(TEST_SH_XML)
+TEST_ALL_XML  := $(TEST_EXE_XML) $(TEST_SH_XML)
 ifeq ($(ENABLE_META),yes)
-TEST_XML      += $(TEST_META_XML)
+TEST_ALL_XML  += $(TEST_META_XML)
 endif
 
-TEST_LOG      := $(TEST_XML:.xml=.log)
+TEST_ALL_LOG  := $(TEST_ALL_XML:.xml=.log)
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 TEST_EXE += $(TEST_PV_EXE)
@@ -639,7 +637,8 @@ clean-$(MODNAME)-obj:
 
 clean-$(MODNAME)-log:
 		-rm -f $(TEST_XML)
-		-rm -f $(TEST_LOG)
+		-rm -f $(TEST_ALL_XML)
+		-rm -f $(TEST_ALL_LOG)
 
 clean-$(MODNAME): clean-$(MODNAME)-dep clean-$(MODNAME)-obj \
                   clean-$(MODNAME)-lib clean-$(MODNAME)-log
@@ -669,10 +668,12 @@ execute-shell-tests: $(TEST_SH_XML)
 # creates .xml file with test result
 PTR = write_test_result_file() { \
 	echo "\
-<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
-<test name=\"$$2\">\n\
+<test>\n\
+\t<name>$$2</name>\n\
+\t<date>$$(date)</date>\n\
+\t<commit>$$(git describe --tags 2> /dev/null || echo unknown)</commit>\n\
 \t<status>$$1</status>\n\
-\t<logfile>$$4</logfile>\n\
+\t<logfile>$$(basename $$4)</logfile>\n\
 </test>" > "$$3" ; \
 	if [ $$1 = 0 ]; then \
 		printf "%-66s %4s\n" "$$2" "OK"; \
@@ -700,6 +701,15 @@ $(DIR)/%.sh.xml: $(DIR)/%.sh
 		@$(PTR); \
 		MATH_CMD="$(MATH)" $< >> $(@:.xml=.log) 2>&1; \
 		write_test_result_file $$? $< $@ $(@:.xml=.log)
+
+$(TEST_XML): $(TEST_ALL_XML)
+		@echo "Creating $@"
+		@echo "\
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<?xml-stylesheet type=\"text/xsl\" href=\"test.xsl\"?>\n\
+<tests>\n\
+$$(for f in $^ ; do echo "\t<test filename=\"$$(basename $$f)\"/>"; done)\n\
+</tests>" > $@
 
 $(DIR)/test_lowMSSM.sh.xml: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
 
