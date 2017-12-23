@@ -96,6 +96,9 @@ ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
 ADDONLIBS:=
 
+# set default shell
+SHELL = /bin/sh
+
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
