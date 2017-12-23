@@ -43,7 +43,6 @@ TEST_SRC := \
 		$(DIR)/test_sminput.cpp \
 		$(DIR)/test_slha_io.cpp \
 		$(DIR)/test_sum.cpp \
-		$(DIR)/test_thread_pool.cpp \
 		$(DIR)/test_threshold_corrections.cpp \
 		$(DIR)/test_threshold_loop_functions.cpp \
 		$(DIR)/test_spectrum_generator_settings.cpp \
@@ -81,6 +80,12 @@ TEST_META := \
 		$(DIR)/test_TreeMasses.m \
 		$(DIR)/test_Vertices_SortCp.m \
 		$(DIR)/test_Vertices_colorsum.m
+
+
+ifeq ($(ENABLE_THREADS),yes)
+TEST_SRC += \
+		$(DIR)/test_thread_pool.cpp
+endif
 
 ifneq ($(findstring lattice,$(SOLVERS)),)
 TEST_SRC +=
