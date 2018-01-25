@@ -46,6 +46,25 @@ FlexibleSUSY 2.0.2 [not released yet]
    account: SM uncertainty, EFT uncertainty and SUSY uncertainty.  See
    ?CalcHSSUSYDMh for more information.
 
+ * Feature: The Mathematica script
+   model_files/MSSMEFTHiggs/MSSMEFTHiggs_uncertainty_estimate.m has
+   been added.  The script defines the CalcMSSMEFTHiggsDMh[] function,
+   which performs an uncertainty estimate of the predicted SM-like
+   Higgs mass.  Two sources of uncertainty defined in [1609.00371] are
+   taken into account: SM uncertainty and SUSY uncertainty.  See
+   ?CalcMSSMEFTHiggsDMh for more information.  Note, that there is no
+   "EFT uncertainty" in MSSMEFTHiggs, because all 1-loop v^n/MS^n
+   terms are included.
+
+ * Feature: The Mathematica script
+   model_files/NUHMSSMNoFVHimalaya/NUHMSSMNoFVHimalaya_uncertainty_estimate.m
+   has been added.  The script defines the
+   CalcNUHMSSMNoFVHimalayaDMh[] function, which performs an
+   uncertainty estimate of the predicted SM-like Higgs mass.  The
+   uncertainty is estimated by: 1) varying the renormalisation scale,
+   2) changing the top Yukawa coupling by higher orders (if available)
+   and 3) changing the stong coupling by higher orders.
+
  * Bugfix (commit d00b4f5): Extract electric charge from
    particle-anti-particle-photon vertex if the user has not defined
    the electric charge in SARAH's particles.m file.
