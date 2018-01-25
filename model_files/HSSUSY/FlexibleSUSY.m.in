@@ -120,11 +120,8 @@ HighScaleInput = {
                          If[TwoLoopAtAs >= 1, lambda2LDRtoOSAtAs, 0] +
                          If[TwoLoopAtAt >= 1, lambda2LDRtoOSAtAt, 0],
                          0]
-                    + If[DeltaYt >= 1,
-                         If[TwoLoopAtAs >= 1, lambda2LAtAsYtShift, 0] +
-                         If[TwoLoopAtAt >= 1, lambda2LAtAtYtShift, 0],
-                         0]
                 )
+                (* contributions for uncertainty estimation *)
                 + If[Abs[Qmatch] > 1,
                      Which[LambdaLoopOrder < 1, deltaLambdaQmatch1L,
                            LambdaLoopOrder < 2, deltaLambdaQmatch2L,
@@ -133,6 +130,20 @@ HighScaleInput = {
                           ],
                      0
                     ]
+                + If[LambdaLoopOrder < 2 && DeltaYt >= 1,
+                     (* 2L counter term when expressing lambda^{1L}(yt^MSSM) *)
+                     lambda2LAtAsYtShift + lambda2LAtAtYtShift,
+                     0]
+                + If[LambdaLoopOrder < 3 && DeltaYt >= 1,
+                     (* 3L counter term when expressing lambda^{1L+2L}(yt^MSSM, g3^MSSM) *)
+                     Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
+                           IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
+                           IsCloseRel[SCALE,Abs[M3Input],0.01],
+                           lambda3LAtAsAsYtShiftDeg,
+                           True,
+                           lambda3LAtAsAsYtShift
+                          ],
+                     0]
     }
 };
 
