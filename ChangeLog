@@ -83,7 +83,7 @@ FlexibleSUSY 2.0.2 [not released yet]
    This bugfix affects BSM models with additional unbroken non-abelian
    gauge groups.
 
- * Bugfix: Fix linking error on Darwin platforms.
+ * Bugfix (commit c275b60): Fix linking error on Darwin platforms.
 
  * Bugfix (commit dd4292a): Adding the user-defined $(CXXFLAGS) to the
    command that creates config/depgen.x in order to avoid linking
