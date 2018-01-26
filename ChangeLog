@@ -85,6 +85,11 @@ FlexibleSUSY 2.0.2 [not released yet]
 
  * Bugfix: Fix linking error on Darwin platforms.
 
+ * Bugfix (commit dd4292a): Adding the user-defined $(CXXFLAGS) to the
+   command that creates config/depgen.x in order to avoid linking
+   errors on machines where the -parallel flag is needed during
+   linking.
+
 FlexibleSUSY 2.0.1 [October, 20 2017]
 
  * Feature: For each FlexibleSUSY <model> the TeX file
