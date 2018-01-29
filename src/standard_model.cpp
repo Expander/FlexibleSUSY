@@ -1154,7 +1154,7 @@ Eigen::ArrayXd Standard_model::beta() const
    return calc_beta().get().unaryExpr(Chop<double>(get_zero_threshold()));
 }
 
-Standard_model Standard_model::calc_beta() const
+Standard_model Standard_model::calc_beta(int loops) const
 {
    double beta_g1 = 0.;
    double beta_g2 = 0.;
@@ -1166,7 +1166,7 @@ Standard_model Standard_model::calc_beta() const
    double beta_mu2 = 0.;
    double beta_v = 0.;
 
-   if (get_loops() > 0) {
+   if (loops > 0) {
       Beta_traces traces;
       calc_beta_traces(traces);
 
@@ -1180,7 +1180,7 @@ Standard_model Standard_model::calc_beta() const
       beta_mu2 += calc_beta_mu2_one_loop(traces);
       beta_v += calc_beta_v_one_loop(traces);
 
-      if (get_loops() > 1) {
+      if (loops > 1) {
          beta_g1 += calc_beta_g1_two_loop(traces);
          beta_g2 += calc_beta_g2_two_loop(traces);
          beta_g3 += calc_beta_g3_two_loop(traces);
@@ -1191,7 +1191,7 @@ Standard_model Standard_model::calc_beta() const
          beta_mu2 += calc_beta_mu2_two_loop(traces);
          beta_v += calc_beta_v_two_loop(traces);
 
-         if (get_loops() > 2) {
+         if (loops > 2) {
             beta_g1 += calc_beta_g1_three_loop(traces);
             beta_g2 += calc_beta_g2_three_loop(traces);
             beta_g3 += calc_beta_g3_three_loop(traces);
@@ -1205,9 +1205,14 @@ Standard_model Standard_model::calc_beta() const
       }
    }
 
-   return Standard_model(get_scale(), get_loops(), get_thresholds(),
+   return Standard_model(get_scale(), loops, get_thresholds(),
                          beta_g1, beta_g2, beta_g3, beta_Lambdax, beta_Yu, beta_Yd, beta_Ye,
                          beta_mu2, beta_v);
+}
+
+Standard_model Standard_model::calc_beta() const
+{
+   return calc_beta(get_loops());
 }
 
 void Standard_model::calc_beta_traces(Beta_traces& traces) const

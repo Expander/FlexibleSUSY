@@ -171,6 +171,7 @@ public:
    virtual void set(const Eigen::ArrayXd&) override;
 
    Standard_model calc_beta() const;
+   Standard_model calc_beta(int) const;
    void clear();
    void clear_running_parameters();
    void clear_DRbar_parameters();
