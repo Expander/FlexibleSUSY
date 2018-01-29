@@ -75,6 +75,15 @@ FlexibleSUSY 2.0.2 [not released yet]
 
    in the corresponding model file.
 
+ * Feature: Implementing 4-loop contributions to the Higgs pole mass
+   in the Standard Model from [arxiv:1508.00912].  The 4-loop
+   contributions are enabled in all FlexibleEFTHiggs models by default
+   and can be enabled in other SM-like models by setting the flag
+
+      UseHiggs4LoopSM = True
+
+   in the corresponding model file.
+
  * Bugfix (commit d00b4f5): Extract electric charge from
    particle-anti-particle-photon vertex if the user has not defined
    the electric charge in SARAH's particles.m file.
