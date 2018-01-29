@@ -182,6 +182,7 @@ OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
 UseHiggs3LoopSM = True;
 UseSM3LoopRGEs = True;
+UseSM4LoopRGEs = True;
 UseYukawa3LoopQCD = True;
 UseSMAlphaS3Loop = True;
 

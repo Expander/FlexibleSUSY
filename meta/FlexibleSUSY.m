@@ -171,6 +171,7 @@ UseHiggs3LoopMSSM = False;
 EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
+UseSM4LoopRGEs = False;
 UseSMAlphaS3Loop = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2Loop = False;
@@ -2553,6 +2554,12 @@ FSCheckFlags[] :=
               References`AddReference["Vega:2015fna"];
              ];
 
+           If[FlexibleSUSY`UseSM4LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
+              Print["Adding 4-loop SM beta-function from ",
+                    "[arxiv:1508.00912]"];
+              References`AddReference["Martin:2015eia"];
+             ];
+
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
               Print["Adding 3-loop MSSM beta-functions from ",
                     "[arxiv:hep-ph/0308231, arxiv:hep-ph/0408128]"];
@@ -2916,8 +2923,10 @@ GetVEVPhases[eigenstates_:FlexibleSUSY`FSEigenstates] :=
 AddSM3LoopRGE[beta_List, couplings_List] :=
     Module[{rules, MakeRule},
            MakeRule[coupling_] := {
-               RuleDelayed[{coupling         , b1_, b2_}, {coupling       , b1, b2, Last[ThreeLoopSM`BetaSM[coupling]]}],
-               RuleDelayed[{coupling[i1_,i2_], b1_, b2_}, {coupling[i1,i2], b1, b2, Last[ThreeLoopSM`BetaSM[coupling]] CConversion`PROJECTOR}]
+               RuleDelayed[{coupling         , b1_, b2_},
+                           {coupling         , b1 , b2, Part[ThreeLoopSM`BetaSM[coupling], 3]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_},
+                           {coupling[i1,i2]  , b1 , b2, Part[ThreeLoopSM`BetaSM[coupling], 3] CConversion`PROJECTOR}]
            };
            rules = Flatten[MakeRule /@ couplings];
            beta /. rules
@@ -2937,6 +2946,22 @@ AddSM3LoopRGEs[] := Module[{
     SARAH`BetaYijk  = AddSM3LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaLijkl = AddSM3LoopRGE[SARAH`BetaLijkl, quart];
     SARAH`BetaBij   = AddSM3LoopRGE[SARAH`BetaBij  , bilin];
+    ];
+
+AddSM4LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_, b3_},
+                           {coupling         , b1 , b2 , b3, Part[ThreeLoopSM`BetaSM[coupling], 4]}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
+AddSM4LoopRGEs[] := Module[{
+    quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] }
+    },
+    SARAH`BetaLijkl = AddSM4LoopRGE[SARAH`BetaLijkl, quart];
     ];
 
 AddMSSM3LoopRGE[beta_List, couplings_List] :=
@@ -3098,6 +3123,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[FlexibleSUSY`UseSM3LoopRGEs,
               AddSM3LoopRGEs[];
+             ];
+
+           If[FlexibleSUSY`UseSM4LoopRGEs,
+              AddSM4LoopRGEs[];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,

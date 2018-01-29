@@ -79,25 +79,26 @@ GuessType[sym_[_?IsBetaIdx]] :=
 GuessType[sym_] :=
     Parameters`GetType[sym];
 
+CreateSingleBetaFunctionDecl[par_, loops_] :=
+    CConversion`CreateCType[GetType[par]] <>
+    " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[par]] <>
+    "_" <> ToString[loops] <> "_loop(const TRACE_STRUCT_TYPE&) const;\n";
+
 CreateSingleBetaFunctionDecl[betaFun_List] :=
-    Module[{result = ""},
-           (result = result <> CConversion`CreateCType[GetType[#]] <>
-                     " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_1_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
-                     CConversion`CreateCType[GetType[#]] <>
-                     " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_2_loop(const TRACE_STRUCT_TYPE&) const;\n" <>
-                     CConversion`CreateCType[GetType[#]] <>
-                     " calc_beta_" <> CConversion`ToValidCSymbolString[GetName[#]] <>
-                     "_3_loop(const TRACE_STRUCT_TYPE&) const;\n";)& /@ betaFun;
-           Return[result];
-          ];
+    StringJoin[
+        (
+            CreateSingleBetaFunctionDecl[#, 1] <> 
+            CreateSingleBetaFunctionDecl[#, 2] <> 
+            CreateSingleBetaFunctionDecl[#, 3] <> 
+            CreateSingleBetaFunctionDecl[#, 4]
+        )& /@ betaFun
+    ];
 
 CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List] :=
     Module[{b, para, type, paraStr, typeStr, files = {},
             inputFile, outputFile,
-            localDeclOneLoop, localDeclTwoLoop, localDeclThreeLoop,
-            betaOneLoop, betaTwoLoop, betaThreeLoop},
+            localDeclOneLoop, localDeclTwoLoop, localDeclThreeLoop, localDeclFourLoop,
+            betaOneLoop, betaTwoLoop, betaThreeLoop, betaFourLoop},
            For[b = 1, b <= Length[betaFun], b++,
                para = GetName[betaFun[[b]]];
                type = GetType[betaFun[[b]]];
@@ -111,6 +112,7 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
                {localDeclOneLoop, betaOneLoop} = CreateBetaFunction[betaFun[[b]], 1, sarahTraces];
                {localDeclTwoLoop, betaTwoLoop} = CreateBetaFunction[betaFun[[b]], 2, sarahTraces];
                {localDeclThreeLoop, betaThreeLoop} = CreateBetaFunction[betaFun[[b]], 3, sarahTraces];
+               {localDeclFourLoop, betaFourLoop}   = CreateBetaFunction[betaFun[[b]], 4, sarahTraces];
                WriteOut`ReplaceInFiles[{{inputFile, outputFile}},
                      { "@ModelName@"     -> FlexibleSUSY`FSModelName,
                        "@parameterType@" -> typeStr,
@@ -118,9 +120,11 @@ CreateSingleBetaFunctionDefs[betaFun_List, templateFile_String, sarahTraces_List
                        "@localDeclOneLoop@" -> WrapLines[IndentText[localDeclOneLoop]],
                        "@localDeclTwoLoop@" -> WrapLines[IndentText[localDeclTwoLoop]],
                        "@localDeclThreeLoop@" -> WrapLines[IndentText[localDeclThreeLoop]],
+                       "@localDeclFourLoop@"  -> WrapLines[IndentText[localDeclFourLoop]],
                        "@betaOneLoop@"   -> WrapLines[IndentText[betaOneLoop]],
                        "@betaTwoLoop@"   -> WrapLines[IndentText[betaTwoLoop]],
                        "@betaThreeLoop@" -> WrapLines[IndentText[betaThreeLoop]],
+                       "@betaFourLoop@"  -> WrapLines[IndentText[betaFourLoop]],
                        "@DateAndTime@"   -> DateString[]
                      } ];
                AppendTo[files, outputFile];
@@ -301,10 +305,11 @@ CreateBetaFunctionCalls[betaFunctions_List, loopOrder_Integer, parallel_:False] 
       ];
 
 CreateBetaFunction[betaFunctions_List] :=
-    Module[{allBeta1L, allBeta2L, allBeta3L, allBeta3LParallel},
+    Module[{allBeta1L, allBeta2L, allBeta3L, allBeta3LParallel, allBeta4L},
            allBeta1L = CreateBetaFunctionCalls[betaFunctions,1];
            allBeta2L = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,2];
            allBeta3L = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,3];
+           allBeta4L = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,4];
            (* only parallelization of 3L betas leads to a speed-up *)
            allBeta3LParallel = TextFormatting`IndentText @ CreateBetaFunctionCalls[betaFunctions,3,True];
            StringJoin[DeclareBetaFunction /@ betaFunctions] <> "\n" <>
@@ -321,6 +326,12 @@ CreateBetaFunction[betaFunctions_List] :=
                    "#else\n" <>
                    allBeta3L <>
                    "#endif\n" <>
+                   "\n" <>
+                   TextFormatting`IndentText[
+                       "if (loops > 3) {\n" <>
+                       allBeta4L <>
+                       "\n}"
+                   ] <>
                    "\n}"
                ] <>
                "\n}"

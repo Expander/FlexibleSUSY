@@ -1201,6 +1201,9 @@ Standard_model Standard_model::calc_beta(int loops) const
             beta_Ye += calc_beta_Ye_three_loop(traces);
             beta_mu2 += calc_beta_mu2_three_loop(traces);
 
+            if (loops > 3) {
+               beta_Lambdax += calc_beta_Lambdax_four_loop(traces);
+            }
          }
       }
    }
@@ -1448,6 +1451,16 @@ double Standard_model::calc_beta_Lambdax_three_loop(const Beta_traces&) const
       Cube(Lambdax)*Sqr(Yu(2,2)) + 8*Quad(g3)*(50201*Quad(Yu(2,2)) - 178484*
       Lambdax*Sqr(Yu(2,2))) - 4*Sqr(g3)*(500988*Power6(Yu(2,2)) - 662866*
       Lambdax*Quad(Yu(2,2)) + 80385*Sqr(Lambdax)*Sqr(Yu(2,2))))));
+
+   return beta_Lambdax;
+}
+
+double Standard_model::calc_beta_Lambdax_four_loop(const Beta_traces&) const
+{
+   double beta_Lambdax;
+
+   beta_Lambdax = Re(16616.34*Power6(g3)*Quad(oneOver16PiSqr)*Quad(Yu(2,2
+      )));
 
    return beta_Lambdax;
 }

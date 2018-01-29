@@ -8,9 +8,10 @@ HSSUSY (high scale supersymmetry) is an implementation of the Standard
 Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$.  At
 the SUSY scale, the quartic Higgs coupling,
 \f$\lambda(M_\text{SUSY})\f$ is predicted from the matching to the
-MSSM using the 1- and 2-loop threshold corrections of [arXiv:1407.4081,
-arxiv:1504.05200, arXiv:1703.08166].  The 3-loop renormalization group
-equations of [arxiv:1504.05200, arxiv:1303.4364] are used to run
+MSSM using the 1- and 2-loop threshold corrections of
+[arXiv:1407.4081, arxiv:1504.05200, arXiv:1703.08166].  The 3- and
+partial 4-loop renormalization group equations of [arxiv:1504.05200,
+arxiv:1303.4364, arxiv:1508.00912] are used to run
 \f$\lambda(M_\text{SUSY})\f$ down to the electroweak scale.  At the
 electroweak scale, the gauge and Yukawa couplings as well as the SM
 vacuum expectation value (VEV) are calculated at the 1-loop level from

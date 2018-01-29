@@ -41,7 +41,7 @@ fsDefaultSettings = {
       calculateStandardModelMasses -> 0, (* FlexibleSUSY[3] *)
       poleMassLoopOrder -> 2,            (* FlexibleSUSY[4] *)
       ewsbLoopOrder -> 2,                (* FlexibleSUSY[5] *)
-      betaFunctionLoopOrder -> 3,        (* FlexibleSUSY[6] *)
+      betaFunctionLoopOrder -> 4,        (* FlexibleSUSY[6] *)
       thresholdCorrectionsLoopOrder -> 2,(* FlexibleSUSY[7] *)
       higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
       higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)

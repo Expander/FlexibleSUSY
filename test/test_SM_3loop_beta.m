@@ -33,7 +33,7 @@ TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`strongCoupling     ]], 3];
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`UpYukawa           ]], 3];
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`DownYukawa         ]], 3];
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`ElectronYukawa     ]], 3];
-TestEquality[Length[ThreeLoopSM`BetaSM[\[Lambda]                ]], 3];
+TestEquality[Length[ThreeLoopSM`BetaSM[\[Lambda]                ]], 4];
 
 Print["checking BetaSM[] and SM[] ..."];
 

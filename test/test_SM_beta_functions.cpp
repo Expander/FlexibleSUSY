@@ -4,8 +4,6 @@
 
 #include <boost/test/unit_test.hpp>
 
-#define private public
-
 #include "SM_two_scale_model.hpp"
 #include "standard_model.hpp"
 #include "wrappers.hpp"
@@ -43,7 +41,7 @@ std::pair<SM_mass_eigenstates, standard_model::Standard_model> make_point()
    return std::make_pair(m1, m2);
 }
 
-}
+} // anonymous namespace
 
 BOOST_AUTO_TEST_CASE( test_SM_beta_functions_literature )
 {
@@ -90,6 +88,15 @@ void compare_SM_pars(const SM_soft_parameters& m1, const standard_model::Standar
    BOOST_CHECK_CLOSE_FRACTION(m1.get_g3()     , m2.get_g3()     , eps);
    BOOST_CHECK_CLOSE_FRACTION(m1.get_mu2()    , m2.get_mu2()    , eps);
    BOOST_CHECK_CLOSE_FRACTION(m1.get_Lambdax(), m2.get_Lambdax(), eps);
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE_FRACTION(m1.get_Yu(i,k), m2.get_Yu(i,k), eps);
+         BOOST_CHECK_CLOSE_FRACTION(m1.get_Yd(i,k), m2.get_Yd(i,k), eps);
+         BOOST_CHECK_CLOSE_FRACTION(m1.get_Ye(i,k), m2.get_Ye(i,k), eps);
+      }
+   }
+
 }
 
 BOOST_AUTO_TEST_CASE( test_SM_beta_functions )
