@@ -16,33 +16,17 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-// File generated at @DateAndTime@
-
-/**
- * @file loop_corrections.hpp
- * @brief contains struct for selection of loop corrections from the
- * literature
- */
-
-#ifndef LOOP_CORRECTIONS_H
-#define LOOP_CORRECTIONS_H
+#ifndef SM_FOURLOOPHIGGS_H
+#define SM_FOURLOOPHIGGS_H
 
 namespace flexiblesusy {
+namespace sm_fourloophiggs {
 
-struct Loop_corrections {
-   bool higgs_at_as{true};
-   bool higgs_ab_as{true};
-   bool higgs_at_at{true};
-   bool higgs_atau_atau{true};
-   bool higgs_at_as_as{true};
-   bool higgs_ab_as_as{true};
-   bool higgs_at_at_as{true};
-   bool higgs_at_at_at{true};
-   bool higgs_at_as_as_as{true};
-   int higgs_3L_mdr_scheme{1};
-   int top_qcd{1}; ///< top pole mass QCD corrections
-};
+/// SM Higgs mass 4-loop contribution, only O(alpha_t alpha_s^3)
+double delta_mh_4loop_at_as_as_as_sm(
+   double scale, double mt, double yt, double g3);
 
+} // namespace sm_fourloophiggs
 } // namespace flexiblesusy
 
 #endif

@@ -69,6 +69,7 @@ public:
       higgs_3loop_correction_ab_as2, ///< [27] Higgs 3-loop correction O(alpha_b alpha_s^2)
       higgs_3loop_correction_at2_as, ///< [28] Higgs 3-loop correction O(alpha_t^2 alpha_s)
       higgs_3loop_correction_at3,    ///< [29] Higgs 3-loop correction O(alpha_t^3)
+      higgs_4loop_correction_at_as3, ///< [30] Higgs 4-loop correction O(alpha_t alpha_s^3)
       NUMBER_OF_OPTIONS      ///< number of possible options
    };
 

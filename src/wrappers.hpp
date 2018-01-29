@@ -50,6 +50,7 @@ static constexpr double oneOver16PiSqr = 1./(16. * Pi * Pi);
 static constexpr double oneLoop = oneOver16PiSqr;
 static constexpr double twoLoop = oneOver16PiSqr * oneOver16PiSqr;
 static constexpr double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16PiSqr;
+static constexpr double fourLoop = twoLoop * twoLoop;
 static constexpr bool True = true;
 
 template <typename T>

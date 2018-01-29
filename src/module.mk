@@ -39,6 +39,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
+		$(DIR)/sm_fourloophiggs.cpp \
 		$(DIR)/sm_threeloop_as.cpp \
 		$(DIR)/sm_threeloophiggs.cpp \
 		$(DIR)/sm_twoloophiggs.cpp \
@@ -123,6 +124,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/single_scale_constraint.hpp \
 		$(DIR)/single_scale_matching.hpp \
 		$(DIR)/slha_io.hpp \
+		$(DIR)/sm_fourloophiggs.hpp \
 		$(DIR)/sm_threeloop_as.hpp \
 		$(DIR)/sm_threeloophiggs.hpp \
 		$(DIR)/sm_twoloophiggs.hpp \

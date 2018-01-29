@@ -196,6 +196,9 @@ Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_Str
     If[FlexibleSUSY`UseHiggs3LoopSplit === True && particle === SARAH`HiggsBoson,
        "if (pole_mass_loop_order > 2)\n" <>
        IndentText["self_energy += self_energy_" <> particleName <> "_3loop();\n"], ""] <>
+    If[FlexibleSUSY`UseHiggs4LoopSM === True && particle === SARAH`HiggsBoson,
+       "if (pole_mass_loop_order > 3)\n" <>
+       IndentText["self_energy += self_energy_" <> particleName <> "_4loop();\n"], ""] <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy" <>
     If[tadpole == "", "", " + " <> tadpole] <> ";\n\n" <>
     "PHYSICAL(" <> massName <> ") = SignedAbsSqrt(mass_sqr);\n";

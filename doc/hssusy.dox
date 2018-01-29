@@ -91,16 +91,19 @@ hep-ph/9707474, hep-ph/0004189], see \ref FlexibleSUSY_config .
 
 __Pole masses__
 
-The Standard Model pole mass spectrum is calculated at the 1-loop
-level.  Depending on the given input flags, 2-loop corrections
-\f$O(\alpha_t\alpha_s)\f$ [arxiv:1407.4336, Eq.(2.47)] and
+The Standard Model pole mass spectrum is calculated at the full 1-loop
+level, including flavour mixing and momentum dependence.  Depending on
+the given input flags, additional 2-loop corrections to the Higgs mass
+of \f$O(\alpha_t\alpha_s)\f$ [arxiv:1407.4336, Eq.(2.47)] and
 \f$O(\alpha_t^2)\f$ [arxiv:1205.6497, Eq.(20)], as well as 3-loop
 corrections \f$O(\alpha_t^3 + \alpha_t^2\alpha_s +
-\alpha_t\alpha_s^2)\f$ [arxiv:1407.4336] are included.
+\alpha_t\alpha_s^2)\f$ [arxiv:1407.4336] and 4-loop corrections
+\f$O(\alpha_t\alpha_s^3)\f$ [arxiv:1508.00912] can be taken into
+account.
 
 @note Note, that the 3-loop contributions \f$O(\alpha_t^3 +
 \alpha_t^2\alpha_s)\f$ are incomplete, because the corresponding
-2-loop threshold corrections \f$O(\alpha_t^2 + \alpha_t\alpha_s)\f$
-for the running top Yukawa coupling are not implemented yet.
+2-loop threshold corrections \f$O(\alpha_t^2 + \alpha_t\alpha_s)\f$ to
+the running top Yukawa coupling are not implemented yet.
 
 */

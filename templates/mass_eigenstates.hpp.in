@@ -136,6 +136,7 @@ public:
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@
 @threeLoopSelfEnergyPrototypes@
+@fourLoopSelfEnergyPrototypes@
 @loopMassesPrototypes@
 @runningDRbarMassesPrototypes@
 @dependencePrototypes@

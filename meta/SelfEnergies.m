@@ -63,10 +63,13 @@ CreateTwoLoopTadpolesNMSSM::usage="Creates function prototypes and
 definitions for two-loop tadpoles in the NMSSM";
 
 CreateTwoLoopSelfEnergiesSM::usage="Creates function prototypes and
-definitions for two-loop Higgs self-energies in the SM";
+definitions for 2-loop Higgs self-energies in the SM";
 
 CreateThreeLoopSelfEnergiesSM::usage="Creates function prototypes and
-definitions for three-loop Higgs self-energies in the SM";
+definitions for 3-loop Higgs self-energies in the SM";
+
+CreateFourLoopSelfEnergiesSM::usage="Creates function prototypes and
+definitions for 4-loop Higgs self-energies in the SM";
 
 CreateTwoLoopSelfEnergiesMSSM::usage="Creates function prototypes and
 definitions for two-loop Higgs self-energies in the MSSM";
@@ -935,6 +938,34 @@ return self_energy;"
           ];
 
 GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
+                              model_String /; model === "SM", 4] :=
+    Module[{mTop, mtStr, yt, ytStr, g3Str, mHiggs, mhStr},
+           AssertFieldDimension[particle, 1, model];
+           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
+           mtStr   = CConversion`RValueToCFormString[mTop];
+           yt      = Parameters`GetThirdGeneration[SARAH`UpYukawa];
+           ytStr   = CConversion`RValueToCFormString[yt];
+           g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
+           mHiggs  = TreeMasses`GetMass[particle];
+           mhStr   = CConversion`RValueToCFormString[mHiggs];
+"\
+using namespace flexiblesusy::sm_fourloophiggs;
+
+const double mt = " <> mtStr <> ";
+const double yt = " <> ytStr <> ";
+const double gs = " <> g3Str <> ";
+const double mh = " <> mhStr <> ";
+const double scale = get_scale();
+double self_energy = 0.;
+
+if (HIGGS_4LOOP_CORRECTION_AT_AS_AS_AS) {
+   self_energy -= delta_mh_4loop_at_as_as_as_sm(scale, mt, yt, gs);
+}
+
+return self_energy;"
+          ];
+
+GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                               model_String /; model === "Split", 3] :=
     Module[{mTop, mGluino, mtStr, mgStr, yt, ytStr, g3Str},
            AssertFieldDimension[particle, 1, model];
@@ -1482,6 +1513,9 @@ CreateTwoLoopSelfEnergiesSM[particles_List] :=
 
 CreateThreeLoopSelfEnergiesSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "SM", 3];
+
+CreateFourLoopSelfEnergiesSM[particles_List] :=
+    CreateNLoopSelfEnergies[particles, "SM", 4];
 
 CreateTwoLoopSelfEnergiesMSSM[particles_List] :=
     CreateNLoopSelfEnergies[particles, "MSSM", 2];

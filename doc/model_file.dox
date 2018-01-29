@@ -1512,6 +1512,25 @@ UseYukawa3LoopQCD = True;   (* use 2- and 3-loop QCD corrections to m_t *)
 UseSM3LoopRGEs = True;      (* use 3-loop RGEs *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The Standard Model the 4-loop Higgs pole mass corrections of the order
+\f$O(\alpha_t\alpha_s^3)\f$ [arxiv:1508.00912, Eq.(5.5)] can be used
+by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs4LoopSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\note When the 4-loop corrections are used, the following switches
+will be set automatically for consistency:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopSM = True;
+UseHiggs3LoopSM = True;
+UseSMAlphaS3Loop = True;    (* use 2- and 3-loop QCD corrections to alpha_s *)
+UseYukawa3LoopQCD = True;   (* use 2- and 3-loop QCD corrections to m_t *)
+UseSM3LoopRGEs = True;      (* use 3-loop RGEs *)
+UseSM4LoopRGEs = True;      (* use 4-loop RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #### Split-MSSM (SplitMSSM) ####
 
 In the split-MSSM the two-loop Higgs pole mass corrections from

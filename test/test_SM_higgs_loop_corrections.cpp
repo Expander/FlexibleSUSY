@@ -8,6 +8,7 @@
 #include "wrappers.hpp"
 #include "pv.hpp"
 #include "SM_two_scale_model.hpp"
+#include "standard_model.hpp"
 #include "sm_twoloophiggs.hpp"
 
 using namespace flexiblesusy;
@@ -88,4 +89,92 @@ BOOST_AUTO_TEST_CASE( test_SM_1loop_full )
    const double t_fs  = -Re(m.tadpole_hh_1loop() / v);
 
    // BOOST_CHECK_CLOSE_FRACTION(se_smh, se_fs + t_fs, 1.0e-10);
+}
+
+namespace {
+
+std::pair<SM_mass_eigenstates, standard_model::Standard_model> make_point(int loops)
+{
+   SM_mass_eigenstates m1;
+   standard_model::Standard_model m2;
+
+   const double Q = 91.;
+   const double vev = 246.;
+   const double g1 = 0.4;
+   const double g2 = 0.5;
+   const double g3 = 1.1;
+
+   m1.set_scale(Q);
+   m1.set_v(vev);
+   m1.set_mu2(vev*vev);
+   m1.set_g1(g1);
+   m1.set_g2(g2);
+   m1.set_g3(g3);
+   m1.set_Yu(0, 0, 0.001   * Sqrt(2.) / vev);
+   m1.set_Yu(1, 1, 0.010   * Sqrt(2.) / vev);
+   m1.set_Yu(2, 2, 165.0   * Sqrt(2.) / vev);
+   m1.set_Yd(0, 0, 0.001   * Sqrt(2.) / vev);
+   m1.set_Yd(1, 1, 0.010   * Sqrt(2.) / vev);
+   m1.set_Yd(2, 2, 2.9     * Sqrt(2.) / vev);
+   m1.set_Ye(0, 0, 0.001   * Sqrt(2.) / vev);
+   m1.set_Ye(1, 1, 0.010   * Sqrt(2.) / vev);
+   m1.set_Ye(2, 2, 1.77699 * Sqrt(2.) / vev);
+   m1.set_Lambdax(0.2);
+
+   m2.set_scale(Q);
+   m2.set(m1.get());
+
+   m1.do_calculate_sm_pole_masses(true);
+   m1.set_loops(loops);
+   m1.set_pole_mass_loop_order(loops);
+   m1.set_ewsb_loop_order(loops);
+   m1.solve_ewsb_tree_level();
+   m1.calculate_DRbar_masses();
+   m1.solve_ewsb();
+   m1.calculate_pole_masses();
+
+   m2.set_loops(loops);
+   m2.set_pole_mass_loop_order(loops);
+   m2.set_ewsb_loop_order(loops);
+   m2.solve_ewsb_tree_level();
+   m2.calculate_DRbar_masses();
+   m2.solve_ewsb();
+   m2.calculate_pole_masses();
+
+   return std::make_pair(m1, m2);
+}
+
+void compare_Mh(int loops)
+{
+   const auto m = make_point(loops);
+
+   double Mh_1 = 0., Mh_2 = 0.;
+
+   if (loops > 0) {
+      Mh_1 = m.first.get_physical().Mhh;
+      Mh_2 = m.second.get_physical().Mhh;
+   } else {
+      Mh_1 = m.first.get_Mhh();
+      Mh_2 = m.second.get_Mhh();
+   }
+
+   BOOST_REQUIRE(!m.first.get_problems().have_problem());
+   BOOST_REQUIRE(!m.second.get_problems().have_problem());
+
+   BOOST_TEST_MESSAGE("Mh(" << loops << "L) = " << Mh_1 << " = " << Mh_2);
+   BOOST_CHECK_GT(Mh_1, 0.);
+   BOOST_CHECK_CLOSE_FRACTION(Mh_1, Mh_2, 1e-10);
+}
+
+} // anonymous namespace
+
+BOOST_AUTO_TEST_CASE( test_SM_nloop_literature )
+{
+   const double eps = 1e-10;
+
+   compare_Mh(0);
+   compare_Mh(1);
+   compare_Mh(2);
+   compare_Mh(3);
+   compare_Mh(4);
 }

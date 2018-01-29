@@ -178,6 +178,7 @@ UseMSSMYukawa2Loop = False;
 UseMSSMAlphaS2Loop = False;
 UseHiggs2LoopSM = False;
 UseHiggs3LoopSM = False;
+UseHiggs4LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
@@ -1417,6 +1418,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             twoLoopTadpolePrototypes = "", twoLoopTadpoleFunctions = "",
             twoLoopSelfEnergyPrototypes = "", twoLoopSelfEnergyFunctions = "",
             threeLoopSelfEnergyPrototypes = "", threeLoopSelfEnergyFunctions = "",
+            fourLoopSelfEnergyPrototypes = "", fourLoopSelfEnergyFunctions = "",
             secondGenerationHelperPrototypes = "", secondGenerationHelperFunctions = "",
             thirdGenerationHelperPrototypes = "", thirdGenerationHelperFunctions = "",
             phasesDefinition = "", phasesGetterSetters = "",
@@ -1441,7 +1443,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
             copyDRbarMassesToPoleMasses = "",
             reorderDRbarMasses = "", reorderPoleMasses = "",
             checkPoleMassesForTachyons = "",
-            twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "",
+            twoLoopHiggsHeaders = "", threeLoopHiggsHeaders = "", fourLoopHiggsHeaders = "",
             twoLoopThresholdHeaders = "",
             lspGetters = "", lspFunctions = "",
             convertMixingsToSLHAConvention = "",
@@ -1490,6 +1492,10 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            If[FlexibleSUSY`UseHiggs3LoopSM === True,
               {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
               threeLoopHiggsHeaders = "#include \"sm_threeloophiggs.hpp\"\n";
+             ];
+           If[FlexibleSUSY`UseHiggs4LoopSM === True,
+              {fourLoopSelfEnergyPrototypes, fourLoopSelfEnergyFunctions} = SelfEnergies`CreateFourLoopSelfEnergiesSM[{SARAH`HiggsBoson}];
+              fourLoopHiggsHeaders = "#include \"sm_fourloophiggs.hpp\"\n";
              ];
            If[FlexibleSUSY`UseHiggs3LoopSplit === True,
               {threeLoopSelfEnergyPrototypes, threeLoopSelfEnergyFunctions} = SelfEnergies`CreateThreeLoopSelfEnergiesSplit[{SARAH`HiggsBoson}];
@@ -1641,6 +1647,9 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
                             "@threeLoopSelfEnergyPrototypes@" -> IndentText[threeLoopSelfEnergyPrototypes],
                             "@threeLoopSelfEnergyFunctions@"  -> threeLoopSelfEnergyFunctions,
                             "@threeLoopHiggsHeaders@"         -> threeLoopHiggsHeaders,
+                            "@fourLoopSelfEnergyPrototypes@"  -> IndentText[fourLoopSelfEnergyPrototypes],
+                            "@fourLoopSelfEnergyFunctions@"   -> fourLoopSelfEnergyFunctions,
+                            "@fourLoopHiggsHeaders@"          -> fourLoopHiggsHeaders,
                             "@secondGenerationHelperPrototypes@"-> IndentText[secondGenerationHelperPrototypes],
                             "@secondGenerationHelperFunctions@" -> secondGenerationHelperFunctions,
                             "@thirdGenerationHelperPrototypes@" -> IndentText[thirdGenerationHelperPrototypes],
@@ -2460,6 +2469,15 @@ FSCheckFlags[] :=
               FlexibleSUSY`UseSM3LoopRGEs = True;
              ];
 
+           If[FlexibleSUSY`UseHiggs4LoopSM === True,
+              FlexibleSUSY`UseHiggs2LoopSM = True;
+              FlexibleSUSY`UseHiggs3LoopSM = True;
+              FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseYukawa3LoopQCD = True;
+              FlexibleSUSY`UseSM3LoopRGEs = True;
+              FlexibleSUSY`UseSM4LoopRGEs = True;
+             ];
+
            If[FlexibleSUSY`FlexibleEFTHiggs,
               References`AddReference["Athron:2016fuq"];
              ];
@@ -2527,6 +2545,12 @@ FSCheckFlags[] :=
               Print["Adding 3-loop SM Higgs mass contributions from ",
                     "[arxiv:1407.4336]"];
               References`AddReference["Martin:2014cxa"];
+             ];
+
+           If[FlexibleSUSY`UseHiggs4LoopSM || FlexibleSUSY`FlexibleEFTHiggs,
+              Print["Adding 4-loop SM Higgs mass contributions from ",
+                    "[arxiv:1508.00912]"];
+              References`AddReference["Martin:2015eia"];
              ];
 
            If[FlexibleSUSY`UseHiggs3LoopSplit,

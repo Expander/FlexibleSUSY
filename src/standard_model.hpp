@@ -498,6 +498,8 @@ public:
    double self_energy_hh_2loop(double p) const;
    /// calculates Higgs 3-loop self-energy
    double self_energy_hh_3loop() const;
+   /// calculates Higgs 4-loop self-energy
+   double self_energy_hh_4loop() const;
 
    void calculate_MVG_pole();
    void calculate_MFv_pole();
