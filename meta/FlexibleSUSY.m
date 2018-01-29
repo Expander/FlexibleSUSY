@@ -2580,8 +2580,9 @@ FSCheckFlags[] :=
 
            If[FlexibleSUSY`UseSM4LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 4-loop SM beta-function from ",
-                    "[arxiv:1508.00912]"];
+                    "[arxiv:1508.00912, arXiv:1604.00853]"];
               References`AddReference["Martin:2015eia"];
+              References`AddReference["Chetyrkin:2016ruf"];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,

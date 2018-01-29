@@ -65,11 +65,12 @@ FlexibleSUSY 2.0.2 [not released yet]
    2) changing the top Yukawa coupling by higher orders (if available)
    and 3) changing the stong coupling by higher orders.
 
- * Feature: Implementing the strong correction to the 4-loop beta
-   function of the quartic Higgs coupling in the SM from
-   [arxiv:1508.00912].  This 4-loop beta function contribution is
-   enabled in all FlexibleEFTHiggs models by default and can be
-   enabled in other SM-like models by setting the flag
+ * Feature: Implementing the strong corrections to the 4-loop beta
+   functions of the strong gauge and quartic Higgs couplings in the SM
+   from [arxiv:1508.00912, arXiv:1604.00853].  These 4-loop beta
+   function contributions are enabled in all FlexibleEFTHiggs models
+   by default and can be enabled in other SM-like models by setting
+   the flag
 
       UseSM4LoopRGEs = True
 
