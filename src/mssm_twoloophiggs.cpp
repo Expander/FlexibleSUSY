@@ -297,8 +297,10 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_general(
    ewsb2loop_(&mt2, &mg, &mst12, &mst22, &sxt, &cxt, &scale2,
               &mu, &tanb, &vev2, &gs, &result(0), &result(1));
 
-   if (!result.allFinite())
-      result.setZero();
+   // workaround for intel or Eigen bug causing unexpected behaviour
+   // of result.allFinite()
+   if (!std::isfinite(result(0)) || !std::isfinite(result(1)))
+       result.setZero();
 
    return -result;
 }
@@ -484,8 +486,10 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_at_mssm(
               &result(0), &result(1));
    }
 
-   if (!result.allFinite())
-      result.setZero();
+   // workaround for intel or Eigen bug causing unexpected behaviour
+   // of result.allFinite()
+   if (!std::isfinite(result(0)) || !std::isfinite(result(1)))
+       result.setZero();
 
    return -result;
 }
@@ -514,8 +518,10 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_atau_atau_mssm(
    tausqtad_(&mtau2, &mA2, &msv2, &mstau12, &mstau22, &sintau,
              &costau, &scale2, &mu, &tanb, &vev2, &result(0), &result(1));
 
-   if (!result.allFinite())
-      result.setZero();
+   // workaround for intel or Eigen bug causing unexpected behaviour
+   // of result.allFinite()
+   if (!std::isfinite(result(0)) || !std::isfinite(result(1)))
+       result.setZero();
 
    return -result;
 }
