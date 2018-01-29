@@ -100,6 +100,9 @@ FlexibleSUSY 2.0.2 [not released yet]
    errors on machines where the -parallel flag is needed during
    linking.
 
+ * Bugfix (commit 996caef): Workaround intel compiler / Eigen bug in
+   allFinite() function, which may affect FS output.
+
 FlexibleSUSY 2.0.1 [October, 20 2017]
 
  * Feature: For each FlexibleSUSY <model> the TeX file
