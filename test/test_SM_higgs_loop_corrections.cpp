@@ -7,9 +7,11 @@
 #include "test_SM.hpp"
 #include "wrappers.hpp"
 #include "pv.hpp"
+#include "scan.hpp"
 #include "SM_two_scale_model.hpp"
 #include "standard_model.hpp"
 #include "sm_twoloophiggs.hpp"
+#include <algorithm>
 
 using namespace flexiblesusy;
 using namespace passarino_veltman;
@@ -98,7 +100,7 @@ std::pair<SM_mass_eigenstates, standard_model::Standard_model> make_point(int lo
    SM_mass_eigenstates m1;
    standard_model::Standard_model m2;
 
-   const double Q = 91.;
+   const double Q = 173.34;
    const double vev = 246.;
    const double g1 = 0.4;
    const double g2 = 0.5;
@@ -148,15 +150,8 @@ void compare_Mh(int loops)
 {
    const auto m = make_point(loops);
 
-   double Mh_1 = 0., Mh_2 = 0.;
-
-   if (loops > 0) {
-      Mh_1 = m.first.get_physical().Mhh;
-      Mh_2 = m.second.get_physical().Mhh;
-   } else {
-      Mh_1 = m.first.get_Mhh();
-      Mh_2 = m.second.get_Mhh();
-   }
+   const double Mh_1 = m.first.get_physical().Mhh;
+   const double Mh_2 = m.second.get_physical().Mhh;
 
    BOOST_REQUIRE(!m.first.get_problems().have_problem());
    BOOST_REQUIRE(!m.second.get_problems().have_problem());
@@ -177,4 +172,73 @@ BOOST_AUTO_TEST_CASE( test_SM_nloop_literature )
    compare_Mh(2);
    compare_Mh(3);
    compare_Mh(4);
+}
+
+namespace {
+
+template <class T>
+double calc_Mh_at(T model, double Q)
+{
+   model.run_to(Q);
+   model.calculate_DRbar_masses();
+   model.solve_ewsb();
+   model.calculate_pole_masses();
+
+   return model.get_physical().Mhh;
+}
+
+template <class T>
+std::vector<double> vary_scale(const T& model, double factor = 2.)
+{
+   const auto Q = model.get_scale();
+   const auto scales = float_range_log(Q/factor, factor*Q, 50);
+   auto mh = scales;
+   std::transform(mh.cbegin(), mh.cend(), mh.begin(),
+                  [&model](double Q) { return calc_Mh_at(model, Q); } );
+
+   return mh;
+}
+
+std::pair<double,double> minmax(const std::vector<double>& v)
+{
+   const auto mm = std::minmax_element(v.cbegin(), v.cend());
+   return std::make_pair(*mm.first, *mm.second);
+}
+
+double distance(const std::pair<double,double>& p)
+{
+   return std::abs(p.first - p.second);
+}
+
+} // anonymous namespace
+
+BOOST_AUTO_TEST_CASE( test_scale_variation )
+{
+   const std::vector<double> DMh_1 = {
+      distance(minmax(vary_scale(make_point(0).first))),
+      distance(minmax(vary_scale(make_point(1).first))),
+      distance(minmax(vary_scale(make_point(2).first))),
+      distance(minmax(vary_scale(make_point(3).first))),
+      distance(minmax(vary_scale(make_point(4).first)))
+   };
+
+   const std::vector<double> DMh_2 = {
+      distance(minmax(vary_scale(make_point(0).second))),
+      distance(minmax(vary_scale(make_point(1).second))),
+      distance(minmax(vary_scale(make_point(2).second))),
+      distance(minmax(vary_scale(make_point(3).second))),
+      distance(minmax(vary_scale(make_point(4).second)))
+   };
+
+   for (int i = 0; i < DMh_1.size(); i++)
+      BOOST_TEST_MESSAGE("DMh(" << i << "-loop) = " << DMh_1[i]);
+
+   BOOST_REQUIRE(DMh_1.size() == DMh_2.size());
+
+   for (int i = 0; i < DMh_1.size(); i++)
+      BOOST_CHECK_CLOSE_FRACTION(DMh_1[i], DMh_2[i], 1e-10);
+
+   // check that scale variation shrinks
+   BOOST_CHECK(std::is_sorted(DMh_1.cbegin(), DMh_1.cend(),
+                              [](double a, double b) { return a > b; }));
 }
