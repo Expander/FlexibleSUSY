@@ -2580,9 +2580,10 @@ FSCheckFlags[] :=
 
            If[FlexibleSUSY`UseSM4LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 4-loop SM beta-function from ",
-                    "[arxiv:1508.00912, arXiv:1604.00853]"];
+                    "[arxiv:1508.00912, arXiv:1604.00853, 1508.02680]"];
               References`AddReference["Martin:2015eia"];
               References`AddReference["Chetyrkin:2016ruf"];
+              References`AddReference["Bednyakov:2015ooa"];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
@@ -2977,15 +2978,21 @@ AddSM4LoopRGE[beta_List, couplings_List] :=
     Module[{rules, MakeRule},
            MakeRule[coupling_] := {
                RuleDelayed[{coupling         , b1_, b2_, b3_},
-                           {coupling         , b1 , b2 , b3, Part[ThreeLoopSM`BetaSM[coupling], 4]}]
+                           {coupling         , b1 , b2 , b3, Part[ThreeLoopSM`BetaSM[coupling], 4]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_, b3_},
+                           {coupling[i1,i2]  , b1 , b2 , b3, Part[ThreeLoopSM`BetaSM[coupling], 4] CConversion`PROJECTOR}]
            };
            rules = Flatten[MakeRule /@ couplings];
            beta /. rules
           ];
 
 AddSM4LoopRGEs[] := Module[{
+    gauge = { SARAH`strongCoupling },
+    yuks  = { SARAH`UpYukawa },
     quart = { Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"] }
     },
+    SARAH`BetaGauge = AddSM4LoopRGE[SARAH`BetaGauge, gauge];
+    SARAH`BetaYijk  = AddSM4LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaLijkl = AddSM4LoopRGE[SARAH`BetaLijkl, quart];
     ];
 

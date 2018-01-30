@@ -1581,6 +1581,17 @@ in the model file
 UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+### Four-loop RGEs for specific models ###
+
+#### Standard Model ####
+
+In the Standard Model the known four-loop RGEs from [arxiv:1508.00912,
+arXiv:1604.00853, 1508.02680] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseSM4LoopRGEs = True; (* use four-loop SM RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 ### Two-loop threshold corrections ###
 
 #### SM ####

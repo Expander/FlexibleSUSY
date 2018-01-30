@@ -11,19 +11,20 @@ the SUSY scale, the quartic Higgs coupling,
 MSSM using the 1- and 2-loop threshold corrections of
 [arXiv:1407.4081, arxiv:1504.05200, arXiv:1703.08166].  The 3- and
 partial 4-loop renormalization group equations of [arxiv:1504.05200,
-arxiv:1303.4364, arxiv:1508.00912, arXiv:1604.00853] are used to run
-\f$\lambda(M_\text{SUSY})\f$ down to the electroweak scale.  At the
-electroweak scale, the gauge and Yukawa couplings as well as the SM
-vacuum expectation value (VEV) are calculated at the 1-loop level from
-the known low-energy couplings \f$\alpha_{\text{em}}(M_Z)\f$,
-\f$\alpha_s(M_Z)\f$ and Standard Model masses.  The known 2-loop and
-3-loop QCD threshold corrections for \f$\alpha_s(M_Z)\f$ can also be
-taken into account [hep-ph/9305305, hep-ph/9708255, hep-ph/9707474,
-hep-ph/0004189] by setting the threshold corrections flag
-appropriately.  The top Yukawa coupling \f$y_t(M_Z)\f$ is calculated
-at the full 1-loop level from the top pole mass, taking optionally
-2-loop [hep-ph/9803493] and 3-loop [arxiv:hep-ph/9911434] corrections
-into account, see @ref FlexibleSUSY_config .
+arxiv:1303.4364, arxiv:1508.00912, arXiv:1604.00853, arXiv:1508.02680]
+are used to run \f$\lambda(M_\text{SUSY})\f$ down to the electroweak
+scale.  At the electroweak scale, the gauge and Yukawa couplings as
+well as the SM vacuum expectation value (VEV) are calculated at the
+1-loop level from the known low-energy couplings
+\f$\alpha_{\text{em}}(M_Z)\f$, \f$\alpha_s(M_Z)\f$ and Standard Model
+masses.  The known 2-loop and 3-loop QCD threshold corrections for
+\f$\alpha_s(M_Z)\f$ can also be taken into account [hep-ph/9305305,
+hep-ph/9708255, hep-ph/9707474, hep-ph/0004189] by setting the
+threshold corrections flag appropriately.  The top Yukawa coupling
+\f$y_t(M_Z)\f$ is calculated at the full 1-loop level from the top
+pole mass, taking optionally 2-loop [hep-ph/9803493] and 3-loop
+[arxiv:hep-ph/9911434] corrections into account, see @ref
+FlexibleSUSY_config .
 
 In @ref librarylink an example Mathematica script can be found, which
 illustrates how to perform a parameter scan using the HSSUSY model.

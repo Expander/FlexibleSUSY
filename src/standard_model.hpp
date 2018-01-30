@@ -577,6 +577,7 @@ private:
    double calc_beta_g3_one_loop(const Beta_traces&) const;
    double calc_beta_g3_two_loop(const Beta_traces&) const;
    double calc_beta_g3_three_loop(const Beta_traces&) const;
+   double calc_beta_g3_four_loop(const Beta_traces&) const;
    double calc_beta_Lambdax_one_loop(const Beta_traces&) const;
    double calc_beta_Lambdax_two_loop(const Beta_traces&) const;
    double calc_beta_Lambdax_three_loop(const Beta_traces&) const;
@@ -584,6 +585,7 @@ private:
    Eigen::Matrix<double,3,3> calc_beta_Yu_one_loop(const Beta_traces&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_two_loop(const Beta_traces&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yu_three_loop(const Beta_traces&) const;
+   Eigen::Matrix<double,3,3> calc_beta_Yu_four_loop(const Beta_traces&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yd_one_loop(const Beta_traces&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yd_two_loop(const Beta_traces&) const;
    Eigen::Matrix<double,3,3> calc_beta_Yd_three_loop(const Beta_traces&) const;

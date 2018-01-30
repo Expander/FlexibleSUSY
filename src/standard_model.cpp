@@ -1204,7 +1204,9 @@ Standard_model Standard_model::calc_beta(int loops) const
             beta_mu2 += calc_beta_mu2_three_loop(traces);
 
             if (loops > 3) {
+               beta_g3 += calc_beta_g3_four_loop(traces);
                beta_Lambdax += calc_beta_Lambdax_four_loop(traces);
+               beta_Yu += calc_beta_Yu_four_loop(traces);
             }
          }
       }
@@ -1358,6 +1360,21 @@ double Standard_model::calc_beta_g3_three_loop(const Beta_traces&) const
       Sqr(g1)*(-9*Sqr(g2) + 616*Sqr(g3) - 303*Sqr(Yu(2,2))) + 15*(109*Quad(g2)
       + 3*Sqr(g2)*(56*Sqr(g3) - 31*Sqr(Yu(2,2))) + 20*(13*Quad(g3) + 6*Quad(Yu(
       2,2)) - 16*Sqr(g3)*Sqr(Yu(2,2))))));
+
+   return beta_g3;
+}
+
+double Standard_model::calc_beta_g3_four_loop(const Beta_traces&) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+   double beta_g3;
+
+   beta_g3 = Re(-2472.2837425797156*Cube(g3)*Quad(oneOver16PiSqr)*(1.*
+      Power6(g3) + 0.04569149546770327*Power6(Yu(2,2)) + 0.0060672647486441755*
+      Lambdax*Quad(Yu(2,2)) - 0.12603833934188147*Quad(Yu(2,2))*Sqr(g3) +
+      0.16927060578749137*Quad(g3)*Sqr(Yu(2,2)) - 0.003640358849186505*Sqr(
+      Lambdax)*Sqr(Yu(2,2))));
 
    return beta_g3;
 }
@@ -1529,6 +1546,17 @@ Eigen::Matrix<double,3,3> Standard_model::calc_beta_Yu_three_loop(const Beta_tra
       990000*Lambdax*Quad(Yu(2,2)) + 3637640*Quad(g3)*Sqr(Yu(2,2)) + 9375*Sqr(
       Lambdax)*Sqr(Yu(2,2)) + 10000*Sqr(g3)*(-157*Quad(Yu(2,2)) + 8*Lambdax*Sqr
       (Yu(2,2)))))*Yu(2,2)).real();
+
+   return beta_Yu;
+}
+
+Eigen::Matrix<double,3,3> Standard_model::calc_beta_Yu_four_loop(const Beta_traces&) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+   Eigen::Matrix<double,3,3> beta_Yu;
+
+   beta_Yu = (1154.09*PROJECTOR*Power8(g3)*Quad(oneOver16PiSqr)).real();
 
    return beta_Yu;
 }
