@@ -88,6 +88,9 @@ FlexibleSUSY 2.0.2 [not released yet]
 
    in the corresponding model file.
 
+ * Bugfix (commit b85e723): Fix diagonalization of complex symmetric
+   matrices when some of the eigenvalues are degenerate.
+
  * Bugfix (commit d00b4f5): Extract electric charge from
    particle-anti-particle-photon vertex if the user has not defined
    the electric charge in SARAH's particles.m file.
