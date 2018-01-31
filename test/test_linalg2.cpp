@@ -398,16 +398,11 @@ typedef boost::mpl::list<
     Test_fs<long double, long double, 6>
 > fs_diagonalize_symmetric_tests;
 
-BOOST_AUTO_TEST_CASE_TEMPLATE
-(test_fs_diagonalize_symmetric, T, fs_diagonalize_symmetric_tests)
+template<typename R, typename S, size_t N>
+void check_fs_diagonalize_symmetric(Matrix<S, N, N> m)
 {
-    typedef typename T::R R;
-    typedef typename T::S S;
-    const size_t N = T::N;
     const R eps = numeric_limits<R>::epsilon();
 
-    Matrix<S, N, N> m = Matrix<S, N, N>::Random();
-    m = ((m + m.transpose())/2).eval();
     Array<R, N, 1> s;
     Matrix<complex<R>, N, N> u;
 
@@ -427,6 +422,78 @@ BOOST_AUTO_TEST_CASE_TEMPLATE
     for (size_t i = 0; i < N; i++)
 	for (size_t j = 0; j < N; j++)
 	    BOOST_CHECK_SMALL(abs(diag(i,j) - (i==j ? s(i) : 0)), 5000*eps);
+}
+
+template<typename R> R random_angle()
+{
+    return 2 * M_PI * rand() / RAND_MAX;
+}
+
+template<typename S, int N>
+struct RandomUnitary;
+
+template<typename R>
+struct RandomUnitary<complex<R>, 2> {
+    Matrix<complex<R>, 2, 2> operator()() const {
+	R a = random_angle<R>();
+	R b = random_angle<R>();
+	R c = random_angle<R>();
+	R d = random_angle<R>();
+	complex<R> p = polar(R(1), c);
+	complex<R> q = polar(R(1), d);
+	Matrix<complex<R>, 2, 2> u;
+	u <<      p *cos(b),      q *sin(b),
+	    -conj(q)*sin(b), conj(p)*cos(b);
+	u *= polar(R(1), a);
+	return u;
+    }
+};
+
+template<typename R>
+struct RandomUnitary<R, 2> {
+    Matrix<R, 2, 2> operator()() const {
+	R b = random_angle<R>();
+	Matrix<R, 2, 2> o;
+	o << cos(b), sin(b),
+	    -sin(b), cos(b);
+	o *= 2 * (rand() % 2) - 1;
+	return o;
+    }
+};
+
+template<typename S, int N>
+struct RandomUnitary {
+    Matrix<S, N, N> operator()() const {
+	Matrix<S, N, N> u = Matrix<S, N, N>::Identity();
+	for (int i = 0; i < N-1; i++)
+	    for (int j = i+1; j < N; j++) {
+		Matrix<S, N, N> s = Matrix<S, N, N>::Identity();
+		Matrix<S, 2, 2> r = RandomUnitary<S, 2>()();
+		s(i,i) = r(0,0);
+		s(i,j) = r(0,1);
+		s(j,i) = r(1,0);
+		s(j,j) = r(1,1);
+		u *= s;
+	    }
+	return u;
+    }
+};
+
+BOOST_AUTO_TEST_CASE_TEMPLATE
+(test_fs_diagonalize_symmetric, T, fs_diagonalize_symmetric_tests)
+{
+    typedef typename T::R R;
+    typedef typename T::S S;
+    const size_t N = T::N;
+
+    Matrix<S, N, N> m = Matrix<S, N, N>::Random();
+    m = ((m + m.transpose())/2).eval();
+    check_fs_diagonalize_symmetric<R, S, N>(m);
+
+    Matrix<S, N, N> u = RandomUnitary<S, N>()();
+    Array<R, N, 1> s = Array<R, N, 1>::Constant(2);
+    m = u.transpose() * s.matrix().asDiagonal() * u;
+    check_fs_diagonalize_symmetric<R, S, N>(m);
 }
 
 using namespace boost::mpl::placeholders;
