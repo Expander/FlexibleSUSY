@@ -28,6 +28,7 @@
 #include <Eigen/Core>
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
+#include <unsupported/Eigen/MatrixFunctions>
 #include "config.h"
 
 namespace flexiblesusy {
@@ -613,12 +614,6 @@ void diagonalize_hermitian
     diagonalize_hermitian_errbd(m, w, 0, &w_errbd);
 }
 
-template<class Real>
-struct RephaseOp {
-    std::complex<Real> operator() (const std::complex<Real>& z) const
-	{ return std::polar(Real(1), std::arg(z)/2); }
-};
-
 template<class Real, int N>
 void diagonalize_symmetric_errbd
 (const Eigen::Matrix<std::complex<Real>, N, N>& m,
@@ -627,12 +622,14 @@ void diagonalize_symmetric_errbd
  Real *s_errbd = 0,
  Eigen::Array<Real, N, 1> *u_errbd = 0)
 {
-    svd_errbd(m, s, u, (Eigen::Matrix<std::complex<Real>, N, N> *)0,
-	      s_errbd, u_errbd);
-    if (!u) return;
-    Eigen::Array<std::complex<Real>, N, 1> diag =
-	(u->adjoint() * m * u->conjugate()).diagonal();
-    *u *= diag.unaryExpr(RephaseOp<Real>()).matrix().asDiagonal();
+    if (!u) {
+	svd_errbd(m, s, u, u, s_errbd, u_errbd);
+	return;
+    }
+    Eigen::Matrix<std::complex<Real>, N, N> vh;
+    svd_errbd(m, s, u, &vh, s_errbd, u_errbd);
+    // see Eq. (5) of https://doi.org/10.1016/j.amc.2014.01.170
+    *u *= (u->adjoint() * vh.transpose()).sqrt().eval();
 }
 
 /**
