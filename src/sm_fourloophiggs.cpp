@@ -49,10 +49,11 @@ double delta_mh_4loop_at_as_as_as_sm(
    const double LogT4 = Power4(LogT);
 
    const double result =
-      g36*yt2*mt2 * (95703.8949186715
-                     + 25741.284756014647*LogT
-                     - 82702.98508132841*LogT2
-                     - 13824*LogT3 + 22080*LogT4);
+      g36*yt2*mt2 * (23925.974863118638
+                     + 6435.327201984095*LogT
+                     - 20675.746270332107*LogT2
+                     - 3456*LogT3
+                     + 5520*LogT4);
 
    return result * fourLoop;
 }
