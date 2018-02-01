@@ -25,7 +25,7 @@ Needs["TestSuite`", "TestSuite.m"];
 t = (gt v / Sqrt[2])^2;
 q = Q^2;
 y = gt^2;
-g = g3^2
+g = g3^2;
 L = Log[t/q];
 
 DMh20L = \[Lambda] v^2;
