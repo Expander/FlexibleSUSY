@@ -31,10 +31,16 @@ L = Log[t/q];
 DMh20L = \[Lambda] v^2;
 DMh21L = -12 y t L;
 DMh22L = 32 y g t (3 L^2 + L);
-DMh23L = g^2 y t (248.1215180432007 + 839.1966169377614 L + 160 L^2 - 736 L^3);
+DMh23L = g^2 y t (a30 + a31 L + 160 L^2 - 736 L^3);
 DMh24L = 22080*g^3 y t (4.33441 + 1.16581 L - 3.74561 L^2 - 0.626087 L^3 + L^4);
 
 Mh24L = DMh20L + h DMh21L + h^2 DMh22L + h^3 DMh23L + h^4 DMh24L;
+
+(* Eq.(3.5) of arxiv:1407.4336 *)
+a30 = -3776/9 + 320 Zeta[3] + 704 Pi^4/135 + 256/9 Log[2]^2 (Pi^2 - Log[2]^2) -
+    2048/3 PolyLog[4,1/2];
+(* Eq.(3.6) of arxiv:1407.4336 *)
+a31 = 128 Zeta[3] + 2056/3;
 
 betaRules = {
     g1 -> 0,
@@ -118,6 +124,8 @@ TestEquality[Coefficient[deriv, h, 1], 0];
 Print["Testing 2L renormalization group invariance of Mh^2 in the SM ..."];
 TestEquality[Coefficient[deriv, h, 2], 0];
 Print["Testing 3L renormalization group invariance of Mh^2 in the SM ..."];
+TestEquality[N[a30], 248.1215180432007];
+TestEquality[N[a31], 839.1966169377614];
 TestEquality[Coefficient[deriv, h, 3], 0];
 Print["Testing 4L renormalization group invariance of Mh^2 in the SM ..."];
 TestEquality[Coefficient[deriv, h, 4], 0];
