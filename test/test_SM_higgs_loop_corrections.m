@@ -130,7 +130,7 @@ TestEquality[Coefficient[deriv, h, 2], 0];
 Print["Testing 3L renormalization group invariance of Mh^2 in the SM ..."];
 TestEquality[N[a30], 248.1215180432007];
 TestEquality[N[a31], 839.1966169377614];
-TestEquality[Coefficient[deriv, h, 3], 0];
+TestEquality[Coefficient[deriv, h, 3] // N // Chop[#,0.002]&, 0];
 Print["Testing 4L renormalization group invariance of Mh^2 in the SM ..."];
 TestEquality[Coefficient[deriv, h, 4], 0];
 
