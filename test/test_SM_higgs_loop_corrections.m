@@ -21,19 +21,23 @@
 *)
 
 Needs["TestSuite`", "TestSuite.m"];
+SMdir = FileNameJoin[{Directory[], "meta", "SM"}];
+Get[FileNameJoin[{SMdir, "Mh2_4L.m"}]];
 
 t = (gt v / Sqrt[2])^2;
 q = Q^2;
 y = gt^2;
 g = g3^2;
 L = Log[t/q];
+gs = g3;
+k = 1;
+yt = gt;
 
 DMh20L = \[Lambda] v^2;
 DMh21L = -12 y t L;
 DMh22L = 32 g y t (3 L^2 + L);
 DMh23L = g^2 y t (a30 + a31 L + 160 L^2 - 736 L^3);
-DMh24L = g^3 y t (95703.8949186715 + 25741.284756014647 L
-                  - 82702.98508132841 L^2 - 13824 L^3 + 22080 L^4)
+(* DMh24L is defined in Mh2_4L.m *)
 
 Mh24L = DMh20L + h DMh21L + h^2 DMh22L + h^3 DMh23L + h^4 DMh24L;
 
@@ -67,7 +71,6 @@ simp = {
 ass = { mt > 0, Q > 0, g3 > 0, gt > 0, v > 0 };
 
 (* beta functions *)
-SMdir = FileNameJoin[{Directory[], "meta", "SM"}];
 betag3 = Get[FileNameJoin[{SMdir, "beta_g3.m"}]] /. betaRules;
 betagt = Get[FileNameJoin[{SMdir, "beta_gt.m"}]] /. betaRules;
 betala = Get[FileNameJoin[{SMdir, "beta_lambda.m"}]] /. betaRules;
