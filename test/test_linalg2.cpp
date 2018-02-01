@@ -433,9 +433,22 @@ template<typename S, int N>
 struct RandomUnitary;
 
 template<typename R>
+struct RandomUnitary<complex<R>, 1> {
+    Matrix<complex<R>, 1, 1> operator()() const {
+	return Matrix<complex<R>, 1, 1>(polar(R(1), random_angle<R>()));
+    }
+};
+
+template<typename R>
+struct RandomUnitary<R, 1> {
+    Matrix<R, 1, 1> operator()() const {
+	return Matrix<R, 1, 1>(2 * (rand() % 2) - 1);
+    }
+};
+
+template<typename R>
 struct RandomUnitary<complex<R>, 2> {
     Matrix<complex<R>, 2, 2> operator()() const {
-	R a = random_angle<R>();
 	R b = random_angle<R>();
 	R c = random_angle<R>();
 	R d = random_angle<R>();
@@ -444,7 +457,7 @@ struct RandomUnitary<complex<R>, 2> {
 	Matrix<complex<R>, 2, 2> u;
 	u <<      p *cos(b),      q *sin(b),
 	    -conj(q)*sin(b), conj(p)*cos(b);
-	u *= polar(R(1), a);
+	u *= RandomUnitary<complex<R>, 1>()()(0,0);
 	return u;
     }
 };
@@ -456,7 +469,7 @@ struct RandomUnitary<R, 2> {
 	Matrix<R, 2, 2> o;
 	o << cos(b), sin(b),
 	    -sin(b), cos(b);
-	o *= 2 * (rand() % 2) - 1;
+	o *= RandomUnitary<R, 1>()()(0,0);
 	return o;
     }
 };
