@@ -1,0 +1,21 @@
+/**
+\page nuhmssmnofvhimalaya NUHMSSMNoFVHimalaya
+\tableofcontents
+
+\section model_nuhmssmnofvhimalaya NUHMSSMNoFVHimalaya
+
+NUHMSSMNoFVHimalaya (Non-Universal Higgs MSSM without flavour
+violation + Himalaya) is an implementation of the MSSM without flavour
+violation.  The <a href="https://github.com/Himalaya-Library">Himalaya
+library</a> [<a
+href="https://arxiv.org/abs/1708.05720">arXiv:1708.05720</a>] is
+linked to this model to include 3-loop corrections of
+\f$O(\alpha_t\alpha_s^2)\f$ [<a
+href="https://arxiv.org/abs/0803.0672">arXiv:0803.0672</a>, <a
+href="https://arxiv.org/abs/1005.5709">arXiv:1005.5709</a>] to the
+light CP-even Higgs pole mass.  The setup of NUHMSSMNoFVHimalaya is
+shown in the following figure.
+
+\image html NUHMSSMNoFVHimalaya_tower.svg
+
+*/
