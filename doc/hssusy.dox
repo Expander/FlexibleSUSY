@@ -8,7 +8,7 @@ HSSUSY (high scale supersymmetry) is an implementation of the Standard
 Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$, The
 setup of HSSUSY is shown in the following figure.
 
-\image html images/HSSUSY_tower.svg
+\image html HSSUSY_tower.svg
 
 \subsection hssusy_boundary_conditions Boundary conditions
 
@@ -226,5 +226,159 @@ handle = FSHSSUSYOpenHandle[
 In the Section @ref librarylink an example Mathematica script can be
 found, which illustrates how to perform a parameter scan using the
 HSSUSY model.
+
+\subsubsection hssusy_uncertainty Uncertainty estimate of the predicted Higgs pole mass
+
+In the file
+<code>model_files/HSSUSY/HSSUSY_uncertainty_estimate.m</code>
+FlexibleSUSY provides the Mathematica function `CalcHSSUSYDMh[]`,
+which calculates the Higgs pole mass at the 3-loop level with HSSUSY
+and performs an uncertainty estimate of missing higher order
+corrections.  Three main sources of the theory uncertainty are taken
+into account:
+
+ - _SM uncertainty_: Missing higher order corrections in the
+   calculation of the running Standard Model top Yukawa coupling and
+   in the calculation of the Higgs pole mass.  The uncertainty from
+   this source is estimated by (i) switching on/off the 3-loop QCD
+   contributions in the calculation of the running top Yukawa coupling
+   \f$y_t^{\text{SM}}(M_Z)\f$ from the top pole mass and by (ii)
+   varying the renormalization scale at which the Higgs pole mass is
+   calculated within the interval \f$[M_{\text{EWSB}}/2, 2
+   M_{\text{EWSB}}]\f$.
+
+ - _EFT uncertainty_: Missing terms of \f$O(v^2/M_{\text{SUSY}}^2)\f$.
+   These missing terms are estimated by adding 1-loop terms of the
+   form \f$v^2/M_{\text{SUSY}}^2\f$ to the quartic Higgs coupling
+   \f$\lambda(M_\text{SUSY})\f$.
+
+ - _SUSY uncertainty_: Missing higher order corrections in the
+   calculation of the quartic Higgs coupling
+   \f$\lambda(M_\text{SUSY})\f$.  This uncertainty is estimated by (i)
+   varying the matching scale within the interval
+   \f$[M_{\text{SUSY}}/2, 2 M_{\text{SUSY}}]\f$ and by (ii)
+   re-parametrization of \f$\lambda(M_\text{SUSY})\f$ in terms of
+   \f$y_t^{\text{MSSM}}(M_\text{SUSY})\f$ and
+   \f$g_3^{\text{MSSM}}(M_\text{SUSY})\f$.
+
+The following code snippet illustrates the calculation of the Higgs
+pole mass calculated at the 3-loop level with HSSUSY as a function of
+the SUSY scale (red solid line), together with the estimated
+uncertainty (grey band).
+
+~~~~~~~~~~~~~~~~~~~~~~~{.m}
+Get["models/HSSUSY/HSSUSY_librarylink.m"];
+Get["model_files/HSSUSY/HSSUSY_uncertainty_estimate.m"];
+
+settings = {
+    precisionGoal -> 1.*^-5,
+    poleMassLoopOrder -> 3,
+    ewsbLoopOrder -> 3,
+    betaFunctionLoopOrder -> 3,
+    thresholdCorrectionsLoopOrder -> 3,
+    thresholdCorrections -> 123111321
+};
+
+smpars = {
+    alphaEmMZ -> 1/127.916, (* SMINPUTS[1] *)
+    GF -> 1.166378700*^-5,  (* SMINPUTS[2] *)
+    alphaSMZ -> 0.1184,     (* SMINPUTS[3] *)
+    MZ -> 91.1876,          (* SMINPUTS[4] *)
+    mbmb -> 4.18,           (* SMINPUTS[5] *)
+    Mt -> 173.34,           (* SMINPUTS[6] *)
+    Mtau -> 1.77699,        (* SMINPUTS[7] *)
+    Mv3 -> 0,               (* SMINPUTS[8] *)
+    MW -> 80.385,           (* SMINPUTS[9] *)
+    Me -> 0.000510998902,   (* SMINPUTS[11] *)
+    Mv1 -> 0,               (* SMINPUTS[12] *)
+    Mm -> 0.1056583715,     (* SMINPUTS[13] *)
+    Mv2 -> 0,               (* SMINPUTS[14] *)
+    md2GeV -> 0.00475,      (* SMINPUTS[21] *)
+    mu2GeV -> 0.0024,       (* SMINPUTS[22] *)
+    ms2GeV -> 0.104,        (* SMINPUTS[23] *)
+    mcmc -> 1.27,           (* SMINPUTS[24] *)
+    CKMTheta12 -> 0,
+    CKMTheta13 -> 0,
+    CKMTheta23 -> 0,
+    CKMDelta -> 0,
+    PMNSTheta12 -> 0,
+    PMNSTheta13 -> 0,
+    PMNSTheta23 -> 0,
+    PMNSDelta -> 0,
+    PMNSAlpha1 -> 0,
+    PMNSAlpha2 -> 0,
+    alphaEm0 -> 1/137.035999074,
+    Mh -> 125.09
+};
+
+HSSUSYCalcMh[MS_, TB_, Xtt_] :=
+    CalcHSSUSYDMh[
+        fsSettings -> settings,
+        fsSMParameters -> smpars,
+        fsModelParameters -> {
+            TanBeta -> TB,
+            MEWSB -> 173.34,
+            MSUSY -> MS,
+            M1Input -> MS,
+            M2Input -> MS,
+            M3Input -> MS,
+            MuInput -> MS,
+            mAInput -> MS,
+            AtInput -> (Xtt + 1/TB) MS,
+            AbInput -> 0,
+            AtauInput -> 0,
+            msq2 -> MS^2 IdentityMatrix[3],
+            msu2 -> MS^2 IdentityMatrix[3],
+            msd2 -> MS^2 IdentityMatrix[3],
+            msl2 -> MS^2 IdentityMatrix[3],
+            mse2 -> MS^2 IdentityMatrix[3],
+            LambdaLoopOrder -> 2,
+            TwoLoopAtAs -> 1,
+            TwoLoopAbAs -> 1,
+            TwoLoopAtAb -> 1,
+            TwoLoopAtauAtau -> 1,
+            TwoLoopAtAt -> 1
+        }
+   ];
+
+LinearRange[start_, stop_, steps_] :=
+    Range[start, stop, (stop - start)/steps];
+
+Xtt = Sqrt[6];
+TB  = 5;
+
+data = ParallelMap[
+    { N[#], Sequence @@ HSSUSYCalcMh[#, TB, Xtt] }&,
+    LinearRange[500, 10^4, 100]
+];
+
+MhMin[{MS_, Mh_, DMh_}]  := {MS, Mh - DMh};
+MhMax[{MS_, Mh_, DMh_}]  := {MS, Mh + DMh};
+MhBest[{MS_, Mh_, DMh_}] := {MS, Mh};
+
+dataMhMin  = MhMin  /@ data;
+dataMhMax  = MhMax  /@ data;
+dataMhBest = MhBest /@ data;
+
+plot2 = ListLinePlot[dataMhBest,
+                     PlotStyle -> {Red, Thick}];
+
+plot1 = ListLinePlot[{dataMhMax, dataMhMin},
+                     PlotStyle -> LightGray,
+                     Filling -> {1 -> {{2}, LightGray}},
+                     PlotRange -> All];
+
+plot = Show[{plot1, plot2},
+            PlotLabel -> "Xt = Sqrt[6]*MS, tan\[Beta] = 5",
+            PlotRange -> Automatic,
+            Axes -> False, Frame -> True,
+            FrameLabel -> {"MS / GeV", "Mh / GeV"}];
+
+Export["Mh_MS.png", plot, ImageSize -> 600];
+~~~~~~~~~~~~~~~~~~~~~~~
+
+When this script is executed, the following figure is produced:
+
+\image html Mh_MS.png
 
 */
