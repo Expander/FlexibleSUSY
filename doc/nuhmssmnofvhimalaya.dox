@@ -4,7 +4,7 @@
 
 \section model_nuhmssmnofvhimalaya NUHMSSMNoFVHimalaya
 
-NUHMSSMNoFVHimalaya (Non-Universal Higgs MSSM without flavour
+NUHMSSMNoFVHimalaya (non-universal Higgs MSSM without flavour
 violation + Himalaya) is an implementation of the MSSM without flavour
 violation.  The <a href="https://github.com/Himalaya-Library">Himalaya
 library</a> [<a
