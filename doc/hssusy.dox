@@ -5,7 +5,7 @@
 \section model_hssusy HSSUSY
 
 HSSUSY (high scale supersymmetry) is an implementation of the Standard
-Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$, The
+Model, matched to the MSSM at the SUSY scale, \f$M_\text{SUSY}\f$. The
 setup of HSSUSY is shown in the following figure.
 
 \image html HSSUSY_tower.svg

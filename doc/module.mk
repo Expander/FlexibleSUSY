@@ -29,7 +29,8 @@ IMAGES          := $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
 		   $(IMAGE_DIR)/HSSUSY_Mh_Xt.png \
 		   $(IMAGE_DIR)/HSSUSY_tower.svg \
 		   $(IMAGE_DIR)/MSSMEFTHiggs_Mh_MS.png \
-		   $(IMAGE_DIR)/MSSMEFTHiggs_tower.svg
+		   $(IMAGE_DIR)/MSSMEFTHiggs_tower.svg \
+		   $(IMAGE_DIR)/NUHMSSMNoFVHimalaya_tower.svg
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile

@@ -6,7 +6,7 @@
 
 MSSMEFTHiggs (FlexibleEFTHiggs for the MSSM) is an implementation of
 the Standard Model, matched to the MSSM at the SUSY scale,
-\f$M_\text{SUSY}\f$, The setup of MSSMEFTHiggs is shown in the
+\f$M_\text{SUSY}\f$.  The setup of MSSMEFTHiggs is shown in the
 following figure.
 
 \image html MSSMEFTHiggs_tower.svg
