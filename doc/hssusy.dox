@@ -374,11 +374,11 @@ plot = Show[{plot1, plot2},
             Axes -> False, Frame -> True,
             FrameLabel -> {"MS / GeV", "Mh / GeV"}];
 
-Export["Mh_MS.png", plot, ImageSize -> 600];
+Export["HSSUSY_Mh_MS.png", plot, ImageSize -> 600];
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 When this script is executed, the following figure is produced:
 
-\image html Mh_MS.png
+\image html HSSUSY_Mh_MS.png
 
 */

@@ -111,12 +111,12 @@ plot = ListPlot[data,
                 Axes -> False, Frame -> True,
                 FrameLabel -> {"Xt / MS", "Mh / GeV"}];
 
-Export["Mh_Xt.png", plot, ImageSize -> 1000];
+Export["HSSUSY_Mh_Xt.png", plot, ImageSize -> 1000];
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
 
-\image html Mh_Xt.png
+\image html HSSUSY_Mh_Xt.png
 
 \subsection math_interface_defs Using the Mathematica interface functions
 

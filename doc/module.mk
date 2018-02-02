@@ -25,9 +25,10 @@ HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
 IMAGE_DIR       := $(DIR)/images
-IMAGES          := $(IMAGE_DIR)/Mh_MS.png \
-		   $(IMAGE_DIR)/Mh_Xt.png \
+IMAGES          := $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
+		   $(IMAGE_DIR)/HSSUSY_Mh_Xt.png \
 		   $(IMAGE_DIR)/HSSUSY_tower.svg \
+		   $(IMAGE_DIR)/MSSMEFTHiggs_Mh_MS.png \
 		   $(IMAGE_DIR)/MSSMEFTHiggs_tower.svg
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
