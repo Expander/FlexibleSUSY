@@ -27,7 +27,6 @@ Veff[h_] := V0L + k V1L + k^2 V2L + k^3 V3L + k^4 V4L /.
 tad = -1/v D[Veff[h], h] /. { h -> v } /. { v -> Sqrt[2] mt/yt };
 
 (* self energy *)
-(* sel = -Veff''[h] /. { h -> Sqrt[2] mt/yt }; *)
 sel = -D[Veff[h],{h,2}] /. { h -> Sqrt[2] mt/yt };
 
 (* Delta Mh^2 *)
