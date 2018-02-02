@@ -100,26 +100,47 @@ the running top Yukawa coupling are not implemented yet.
 
 \subsection hssusy_input_parameters Input parameters
 
-HSSUSY takes the following parameters as input.  The MSSM parameters
-are defined in the \f$\overline{\text{DR}}\f$ scheme at the scale
-\f$M_{\text{SUSY}}\f$:
+HSSUSY takes the following physics parameters as input:
 
- Parameter                                  | description                                                  | input block/field
---------------------------------------------|--------------------------------------------------------------|------------------
-\f$M_{\text{SUSY}}\f$                       | SUSY scale                                                   | `EXTPAR[0]`
-\f$M_1(M_\text{SUSY})\f$                    | Bino mass                                                    | `EXTPAR[1]`
-\f$M_2(M_\text{SUSY})\f$                    | Wino mass                                                    | `EXTPAR[2]`
-\f$M_3(M_\text{SUSY})\f$                    | Gluino mass                                                  | `EXTPAR[3]`
-\f$\mu(M_\text{SUSY})\f$                    | \f$\mu\f$-parameter                                          | `EXTPAR[4]`
-\f$m_A(M_\text{SUSY})\f$                    | running CP-odd Higgs mass                                    | `EXTPAR[5]`
-\f$M_{\text{EWSB}}\f$                       | scale at which the pole mass spectrum is calculated          | `EXTPAR[5]`
-\f$A_t(M_\text{SUSY})\f$                    | trililear stop coupling                                      | `EXTPAR[7]`
-\f$\tan\beta(M_\text{SUSY})\f$              | \f$\tan\beta(M_\text{SUSY})=v_u/v_d\f$                       | `EXTPAR[25]`
-\f$(m_{\tilde{q}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking left-handed squark mass parameters             | `MSQ2IN`
-\f$(m_{\tilde{u}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking right-handed up-type squark mass parameters    | `MSU2IN`
-\f$(m_{\tilde{d}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking right-handed down-type squark mass parameters  | `MSD2IN`
-\f$(m_{\tilde{l}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking left-handed slepton mass parameters            | `MSL2IN`
-\f$(m_{\tilde{e}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking right-handed down-type slepton mass parameters | `MSE2IN`
+ Parameter                                  | Description                                                          | SLHA block/field | Mathematica symbol
+--------------------------------------------|----------------------------------------------------------------------|------------------|--------------------
+\f$M_{\text{SUSY}}\f$                       | SUSY scale                                                           | `EXTPAR[0]`      | `MSUSY`
+\f$M_1(M_\text{SUSY})\f$                    | Bino mass                                                            | `EXTPAR[1]`      | `M1Input`
+\f$M_2(M_\text{SUSY})\f$                    | Wino mass                                                            | `EXTPAR[2]`      | `M2Input`
+\f$M_3(M_\text{SUSY})\f$                    | Gluino mass                                                          | `EXTPAR[3]`      | `M3Input`
+\f$\mu(M_\text{SUSY})\f$                    | \f$\mu\f$-parameter                                                  | `EXTPAR[4]`      | `MuInput`
+\f$m_A(M_\text{SUSY})\f$                    | running CP-odd Higgs mass                                            | `EXTPAR[5]`      | `mAInput`
+\f$M_{\text{EWSB}}\f$                       | scale at which the pole mass spectrum is calculated                  | `EXTPAR[5]`      | `MEWSB`
+\f$A_t(M_\text{SUSY})\f$                    | trililear stop coupling                                              | `EXTPAR[7]`      | `AtInput`
+\f$A_b(M_\text{SUSY})\f$                    | trililear sbottom coupling                                           | `EXTPAR[8]`      | `AbInput`
+\f$A_\tau(M_\text{SUSY})\f$                 | trililear stau coupling                                              | `EXTPAR[9]`      | `AtauInput`
+\f$\tan\beta(M_\text{SUSY})\f$              | \f$\tan\beta(M_\text{SUSY})=v_u(M_\text{SUSY})/v_d(M_\text{SUSY})\f$ | `EXTPAR[25]`     | `TanBeta`
+\f$(m_{\tilde{q}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking left-handed squark mass parameters                     | `MSQ2IN`         | `msq2`
+\f$(m_{\tilde{u}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking right-handed up-type squark mass parameters            | `MSU2IN`         | `msu2`
+\f$(m_{\tilde{d}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking right-handed down-type squark mass parameters          | `MSD2IN`         | `msd2`
+\f$(m_{\tilde{l}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking left-handed slepton mass parameters                    | `MSL2IN`         | `msl2`
+\f$(m_{\tilde{e}}^2)_{ij}(M_\text{SUSY})\f$ | soft-breaking right-handed down-type slepton mass parameters         | `MSE2IN`         | `mse2`
+
+The MSSM parameters are defined in the \f$\overline{\text{DR}}\f$
+scheme at the scale \f$M_{\text{SUSY}}\f$.
+
+In addition, HSSUSY defines further input parameters / flags to
+enable/disable higher order threshold corrections to the quartic Higgs
+coupling \f$\lambda(M_{\text{SUSY}})\f$ and to estimate the EFT and
+SUSY uncertainty:
+
+ Parameter                             | Description                                                                                   | Possible values | Recommended value            | SLHA block/field | Mathematica symbol
+---------------------------------------|-----------------------------------------------------------------------------------------------|-----------------|------------------------------|------------------|--------------------
+ \f$n\f$                               | loop order for \f$\lambda^{(n)}(M_{\text{SUSY}})\f$                                           | 0, 1, 2         | 2                            | `EXTPAR[100]`    | `LambdaLoopOrder`
+ \f$\Delta_{\alpha_t\alpha_s}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t\alpha_s)\f$ | 0, 1            | 1                            | `EXTPAR[101]`    | `TwoLoopAtAs`
+ \f$\Delta_{\alpha_b\alpha_s}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_b\alpha_s)\f$ | 0, 1            | 1                            | `EXTPAR[102]`    | `TwoLoopAbAs`
+ \f$\Delta_{\alpha_t\alpha_b}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t\alpha_b)\f$ | 0, 1            | 1                            | `EXTPAR[103]`    | `TwoLoopAtAb`
+ \f$\Delta_{\alpha_\tau\alpha_\tau}\f$ | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_\tau^2)\f$    | 0, 1            | 1                            | `EXTPAR[104]`    | `TwoLoopAtauAtau`
+ \f$\Delta_{\alpha_t\alpha_t}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t^2)\f$       | 0, 1            | 1                            | `EXTPAR[105]`    | `TwoLoopAtAt`
+ \f$\Delta_{\text{EFT}}\f$             | disable/enable corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(v^2/M_{\text{SUSY}}^2)\f$   | 0, 1            | 0                            | `EXTPAR[200]`    | `DeltaEFT`
+ \f$\Delta_{y_t,g_3}\f$                | disable/enable 3-loop corrections from re-parametrization of \f$\lambda(M_{\text{SUSY}})\f$ in terms of \f$y_t^{\text{MSSM}}\f$, \f$g_3^{\text{MSSM}}\f$ | 0, 1            | 0                 | `EXTPAR[201]`    | `DeltaYt`
+ \f$\Delta_{\text{OS}}\f$              | disable/enable conversion of stop masses to on-shell scheme                                   | 0, 1            | 0 (= \f$\overline{\text{DR}}\f$                  )       | `EXTPAR[202]`    | `DeltaOS`
+ \f$Q_\text{match}\f$                  | scale at which \f$\lambda(Q_\text{match})\f$ is calculated                                    | any real value  | 0 (= \f$M_{\text{SUSY}})\f$  | `EXTPAR[203]`    | `Qmatch`
 
 \subsection hssusy_running Running HSSUSY
 
