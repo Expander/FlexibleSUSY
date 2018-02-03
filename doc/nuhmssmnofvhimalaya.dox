@@ -18,4 +18,45 @@ shown in the following figure.
 
 \image html NUHMSSMNoFVHimalaya_tower.svg
 
+\subsection nuhmssmnofvhimalaya_input_parameters Input parameters
+
+NUHMSSMNoFVHimalaya takes the following physics parameters as input:
+
+ Parameter                                  | Description                                                                | SLHA block/field | Mathematica symbol
+--------------------------------------------|----------------------------------------------------------------------------|------------------|--------------------
+\f$Q_{\text{in}}\f$                         | input scale                                                                | `EXTPAR[0]`      | `Qin`
+\f$M_1(M_\text{SUSY})\f$                    | Bino mass                                                                  | `EXTPAR[1]`      | `M1`
+\f$M_2(M_\text{SUSY})\f$                    | Wino mass                                                                  | `EXTPAR[2]`      | `M2`
+\f$M_3(M_\text{SUSY})\f$                    | Gluino mass                                                                | `EXTPAR[3]`      | `M3`
+\f$A_t(M_\text{SUSY})\f$                    | trililear stop coupling                                                    | `EXTPAR[11]`     | `AtIN`
+\f$A_b(M_\text{SUSY})\f$                    | trililear sbottom coupling                                                 | `EXTPAR[12]`     | `AbIN`
+\f$A_\tau(M_\text{SUSY})\f$                 | trililear stau coupling                                                    | `EXTPAR[13]`     | `AtauIN`
+\f$A_c(M_\text{SUSY})\f$                    | trililear scharm coupling                                                  | `EXTPAR[14]`     | `AcIN`
+\f$A_s(M_\text{SUSY})\f$                    | trililear sstrange coupling                                                | `EXTPAR[15]`     | `AsIN`
+\f$A_\mu(M_\text{SUSY})\f$                  | trililear smuon coupling                                                   | `EXTPAR[16]`     | `AmuonIN`
+\f$A_u(M_\text{SUSY})\f$                    | trililear sup coupling                                                     | `EXTPAR[17]`     | `AuIN`
+\f$A_d(M_\text{SUSY})\f$                    | trililear sdown coupling                                                   | `EXTPAR[18]`     | `AdIN`
+\f$A_e(M_\text{SUSY})\f$                    | trililear selectron coupling                                               | `EXTPAR[19]`     | `AeIN`
+\f$\mu(M_\text{SUSY})\f$                    | \f$\mu\f$-parameter                                                        | `EXTPAR[23]`     | `MuIN`
+\f$m_A^2(M_\text{SUSY})\f$                  | running CP-odd Higgs mass                                                  | `EXTPAR[24]`     | `mA2IN`
+\f$(m_{\tilde{l}}^2)_{11}(M_\text{SUSY})\f$ | soft-breaking 1st generation left-handed slepton mass parameters           | `EXTPAR[31]`     | `ml11IN`
+\f$(m_{\tilde{l}}^2)_{22}(M_\text{SUSY})\f$ | soft-breaking 2nd generation left-handed slepton mass parameters           | `EXTPAR[32]`     | `ml22IN`
+\f$(m_{\tilde{l}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation left-handed slepton mass parameters           | `EXTPAR[33]`     | `ml33IN`
+\f$(m_{\tilde{e}}^2)_{11}(M_\text{SUSY})\f$ | soft-breaking 1st generation right-handed slepton mass parameters          | `EXTPAR[34]`     | `me11IN`
+\f$(m_{\tilde{e}}^2)_{22}(M_\text{SUSY})\f$ | soft-breaking 2nd generation right-handed slepton mass parameters          | `EXTPAR[35]`     | `me22IN`
+\f$(m_{\tilde{e}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation right-handed slepton mass parameters          | `EXTPAR[36]`     | `me33IN`
+\f$(m_{\tilde{q}}^2)_{11}(M_\text{SUSY})\f$ | soft-breaking 1st generation left-handed squark mass parameters            | `EXTPAR[41]`     | `mq11IN`
+\f$(m_{\tilde{q}}^2)_{22}(M_\text{SUSY})\f$ | soft-breaking 2nd generation left-handed squark mass parameters            | `EXTPAR[42]`     | `mq22IN`
+\f$(m_{\tilde{q}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation left-handed squark mass parameters            | `EXTPAR[43]`     | `mq33IN`
+\f$(m_{\tilde{u}}^2)_{11}(M_\text{SUSY})\f$ | soft-breaking 1st generation right-handed up-type squark mass parameters   | `EXTPAR[44]`     | `mu11IN`
+\f$(m_{\tilde{u}}^2)_{22}(M_\text{SUSY})\f$ | soft-breaking 2nd generation right-handed up-type squark mass parameters   | `EXTPAR[45]`     | `mu22IN`
+\f$(m_{\tilde{u}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation right-handed up-type squark mass parameters   | `EXTPAR[46]`     | `mu33IN`
+\f$(m_{\tilde{d}}^2)_{11}(M_\text{SUSY})\f$ | soft-breaking 1st generation right-handed down-type squark mass parameters | `EXTPAR[47]`     | `md11IN`
+\f$(m_{\tilde{d}}^2)_{22}(M_\text{SUSY})\f$ | soft-breaking 2nd generation right-handed down-type squark mass parameters | `EXTPAR[48]`     | `md22IN`
+\f$(m_{\tilde{d}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation right-handed down-type squark mass parameters | `EXTPAR[49]`     | `md33IN`
+\f$\tan\beta(M_Z)\f$                        | \f$\tan\beta(M_Z)=v_u(M_Z)/v_d(M_Z)\f$                                     | `MINPAR[3]`      | `TanBeta`
+
+The MSSM parameters are defined in the \f$\overline{\text{DR}}\f$
+scheme at the scale \f$M_{\text{SUSY}}\f$.
+
 */
