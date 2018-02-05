@@ -344,10 +344,12 @@ plot1 = ListLinePlot[{dataMhMax, dataMhMin},
                      PlotRange -> All];
 
 plot = Show[{plot1, plot2},
-            PlotLabel -> "Xt = Sqrt[6]*MS, tan\[Beta] = 5",
+            BaseStyle -> {FontSize -> 16, FontFamily -> "Helvetica"},
+            PlotLabel -> Style["\*SubscriptBox[X, t] = 2.44949 \*SubscriptBox[M, S], tan\[Beta] = 5"],
             PlotRange -> Automatic,
             Axes -> False, Frame -> True,
-            FrameLabel -> {"MS / GeV", "Mh / GeV"}];
+            FrameLabel -> {Style["\*SubscriptBox[M, S] / GeV"],
+                           Style["\*SubscriptBox[M, h] / GeV"]}];
 
 Export["MSSMEFTHiggs_Mh_MS.png", plot, ImageSize -> 600];
 ~~~~~~~~~~~~~~~~~~~~~~~
