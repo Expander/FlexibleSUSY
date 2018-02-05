@@ -217,6 +217,7 @@ MODELS=""
 # END:   NOT EXPORTED ##########################################
 # addons that will be compiled
 ADDONS=""
+HIGHER_ORDER_MODULES=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -369,6 +370,11 @@ make_unique() {
     done
 
     echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
+}
+
+#_____________________________________________________________________
+string_trim() {
+    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 }
 
 #_____________________________________________________________________
@@ -2442,6 +2448,55 @@ check_cygpath() {
 }
 
 #_____________________________________________________________________
+get_higher_order_corrections() {
+    local model_file="$1"
+    local ho=""
+
+    if test -e "$model_file"; then
+        grep "UseHiggs2LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "UseHiggs3LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "UseHiggs4LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "UseSMAlphaS3Loop *= *True"   "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+
+        grep "UseHiggs2LoopMSSM *= *True"  "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+        grep "UseHiggs3LoopMSSM *= *True"  "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+        grep "UseMSSMAlphaS2Loop *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+        grep "UseMSSMYukawa2Loop *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+
+        grep "UseHiggs2LoopNMSSM *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM NMSSM"
+
+        grep "UseHiggs3LoopSplit *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} SplitMSSM"
+    fi
+
+    echo "$(make_unique "${ho}")"
+}
+
+#_____________________________________________________________________
+check_higher_order_corrections() {
+    checking_msg "higher order corrections"
+    local mods=""
+
+    for m in ${MODELS}; do
+        local model_name="$(echo ${m} | sed -e 's|models/||g')"
+        local model_file="${m}/FlexibleSUSY.m"
+        local ho="$(get_higher_order_corrections "${model_file}")"
+
+        mods="${mods} ${ho}"
+    done
+
+    mods="$(make_unique "${mods}")"
+    mods="$(string_trim "${mods}")"
+
+    result "($(echo "${mods}" | sed -e 's|models/||g'))"
+
+    for m in ${mods}; do
+        HIGHER_ORDER_MODULES="${HIGHER_ORDER_MODULES} higher_order/${m}"
+    done
+
+    logmsg "Include higher order modules: ${HIGHER_ORDER_MODULES}"
+}
+
+#_____________________________________________________________________
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
         DEFINE_ENABLE_COLORS="#define ENABLE_COLORS 1"
@@ -2984,6 +3039,7 @@ fi
 check_models
 check_addons
 check_optional_modules
+check_higher_order_corrections
 
 enable_defines
 
