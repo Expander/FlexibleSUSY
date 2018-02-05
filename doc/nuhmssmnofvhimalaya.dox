@@ -56,7 +56,9 @@ NUHMSSMNoFVHimalaya takes the following physics parameters as input:
 \f$(m_{\tilde{d}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation right-handed down-type squark mass parameters | `EXTPAR[49]`     | `md33IN`
 \f$\tan\beta(M_Z)\f$                        | \f$\tan\beta(M_Z)=v_u(M_Z)/v_d(M_Z)\f$                                     | `MINPAR[3]`      | `TanBeta`
 
-The MSSM parameters are defined in the \f$\overline{\text{DR}}\f$
-scheme at the scale \f$M_{\text{SUSY}}\f$.
+All MSSM parameters, except for \f$\tan\beta\f$, are defined in the
+\f$\overline{\text{DR}}\f$ scheme at the scale \f$M_{\text{SUSY}}\f$.
+\f$\tan\beta\f$ is defined in the \f$\overline{\text{DR}}\f$ scheme at
+the scale \f$M_Z\f$.
 
 */
