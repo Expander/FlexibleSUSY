@@ -2484,6 +2484,10 @@ check_higher_order_corrections() {
         local model_file="${m}/FlexibleSUSY.m"
         local ho="$(get_higher_order_corrections "${model_file}")"
 
+        [ "x${model_name}" = "xSoftsusyMSSM" ]        && ho="${ho} MSSM NMSSM"
+        [ "x${model_name}" = "xSoftsusyNMSSM" ]       && ho="${ho} MSSM NMSSM"
+        [ "x${model_name}" = "xSoftsusyFlavourMSSM" ] && ho="${ho} MSSM NMSSM"
+
         mods="${mods} ${ho}"
     done
 
