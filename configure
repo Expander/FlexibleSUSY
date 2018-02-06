@@ -2745,6 +2745,7 @@ replace_markers() {
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
+        -e "s|@HIGHER_ORDER_MODULES@|$HIGHER_ORDER_MODULES|" \
         -e "s|@HIMALAYALIBS@|$HIMALAYALIBS|"      \
         -e "s|@HIMALAYAFLAGS@|$HIMALAYAFLAGS|"    \
 	-e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"      \

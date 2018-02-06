@@ -39,6 +39,7 @@ MODULES            := config src fflite slhaea doc
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
+MODULES            += @HIGHER_ORDER_MODULES@
 MODULES            += $(MODELS) $(ADDONS)
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += @OPTIONAL_MODULES@

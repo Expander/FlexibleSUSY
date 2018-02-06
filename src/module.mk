@@ -22,14 +22,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/gsl_vector.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
-		$(DIR)/mssm_twoloop_as.cpp \
-		$(DIR)/mssm_twoloop_mb.cpp \
-		$(DIR)/mssm_twoloop_mt.cpp \
-		$(DIR)/mssm_twoloop_mtau.cpp \
-		$(DIR)/mssm_twoloophiggs.cpp \
-		$(DIR)/mssm_twoloophiggs_impl.f \
-		$(DIR)/nmssm_twoloophiggs.cpp \
-		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
 		$(DIR)/physical_input.cpp \
@@ -39,14 +31,8 @@ LIBFLEXI_SRC := \
 		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
-		$(DIR)/sm_fourloophiggs.cpp \
-		$(DIR)/sm_threeloop_as.cpp \
-		$(DIR)/sm_threeloophiggs.cpp \
-		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/spectrum_generator_problems.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
-		$(DIR)/splitmssm_threeloophiggs.cpp \
-		$(DIR)/splitmssm_thresholds.cpp \
 		$(DIR)/standard_model.cpp \
 		$(DIR)/standard_model_effective_couplings.cpp \
 		$(DIR)/standard_model_physical.cpp \
@@ -99,14 +85,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/model.hpp \
-		$(DIR)/mssm_twoloop_as.hpp \
-		$(DIR)/mssm_twoloop_mb.hpp \
-		$(DIR)/mssm_twoloop_mt.hpp \
-		$(DIR)/mssm_twoloop_mtau.hpp \
-		$(DIR)/mssm_twoloophiggs.h \
-		$(DIR)/mssm_twoloophiggs.hpp \
-		$(DIR)/nmssm_twoloophiggs.hpp \
-		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
 		$(DIR)/physical_input.hpp \
@@ -124,12 +102,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/single_scale_constraint.hpp \
 		$(DIR)/single_scale_matching.hpp \
 		$(DIR)/slha_io.hpp \
-		$(DIR)/sm_fourloophiggs.hpp \
-		$(DIR)/sm_threeloop_as.hpp \
-		$(DIR)/sm_threeloophiggs.hpp \
-		$(DIR)/sm_twoloophiggs.hpp \
-		$(DIR)/splitmssm_threeloophiggs.hpp \
-		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
 		$(DIR)/standard_model.hpp \

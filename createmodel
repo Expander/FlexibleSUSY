@@ -183,6 +183,25 @@ is_executable () {
 }
 
 #_____________________________________________________________________
+string_trim() {
+    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+#_____________________________________________________________________
+make_unique() {
+    # removes duplicate words from the string $1 (preserves order)
+    local str="$1"
+    local res=""
+
+    for s in ${str}; do
+        contains "${res}" "${s}" && continue
+        res="${res} ${s}"
+    done
+
+    echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
+}
+
+#_____________________________________________________________________
 check_flags() {
     if test "x$enable_debug" = "xyes" ; then
         ENABLE_DEBUG_META="True"
@@ -359,6 +378,53 @@ search_default_model() {
     eval "${_output_var}=${_sarah_model}"
 }
 
+#_____________________________________________________________________
+get_higher_order_corrections() {
+    local model_file="$1"
+    local ho=""
+
+    if test -e "$model_file"; then
+        grep "UseHiggs2LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "UseHiggs3LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "UseHiggs4LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "UseSMAlphaS3Loop *= *True"   "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+
+        grep "UseHiggs2LoopMSSM *= *True"  "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+        grep "UseHiggs3LoopMSSM *= *True"  "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+        grep "UseMSSMAlphaS2Loop *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+        grep "UseMSSMYukawa2Loop *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
+
+        grep "UseHiggs2LoopNMSSM *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM NMSSM"
+
+        grep "UseHiggs3LoopSplit *= *True" "$model_file" > /dev/null 2>&1 && ho="${ho} SplitMSSM"
+    fi
+
+    echo "$(make_unique "${ho}")"
+}
+
+#_____________________________________________________________________
+check_higher_order_corrections() {
+    message -n "Searching for required higher order corrections ... "
+    local model_file="$1"
+    local ho="$(get_higher_order_corrections "${model_file}")"
+    ho="$(make_unique "${ho}")"
+    ho="$(string_trim "${ho}")"
+
+    message "(${ho})"
+
+    HIGHER_ORDER_LIBS=""
+
+    for l in ${ho}; do
+        HIGHER_ORDER_LIBS="${HIGHER_ORDER_LIBS} \$(LIB_higher_order_${l})"
+    done
+
+    HIGHER_ORDER_LIBS="$(string_trim "${HIGHER_ORDER_LIBS}")"
+
+    logmsg "Depends on higher order libraries: ${HIGHER_ORDER_LIBS}"
+}
+
+#_____________________________________________________________________
+
 trap "exit 1" INT QUIT TERM
 
 rm -f ${createmodel_log}
@@ -482,6 +548,7 @@ fi
 check_model_name "${name}"
 check_sarah_model "${sarah_model}" "${sub_model}"
 check_flags
+check_higher_order_corrections "$model_file_dir/FlexibleSUSY.m.in"
 
 if [ -n "$sub_model" ]; then
     echo "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
@@ -507,6 +574,7 @@ message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
+    -e "s|@HIGHER_ORDER_LIBS@|$HIGHER_ORDER_LIBS|g" \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"
