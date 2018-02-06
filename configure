@@ -2450,13 +2450,16 @@ check_cygpath() {
 #_____________________________________________________________________
 get_higher_order_corrections() {
     local model_file="$1"
-    local ho=""
+
+    # always build SM, because it is needed for the effective couplings module
+    local ho="SM"
 
     if test -e "$model_file"; then
         grep "UseHiggs2LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
         grep "UseHiggs3LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
         grep "UseHiggs4LoopSM *= *True"    "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
         grep "UseSMAlphaS3Loop *= *True"   "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
+        grep "FlexibleEFTHiggs *= *True"   "$model_file" > /dev/null 2>&1 && ho="${ho} SM"
 
         grep "UseHiggs2LoopMSSM *= *True"  "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"
         grep "UseHiggs3LoopMSSM *= *True"  "$model_file" > /dev/null 2>&1 && ho="${ho} MSSM"

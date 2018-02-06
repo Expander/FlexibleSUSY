@@ -33,12 +33,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/spectrum_generator_problems.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
-		$(DIR)/standard_model.cpp \
-		$(DIR)/standard_model_effective_couplings.cpp \
-		$(DIR)/standard_model_physical.cpp \
-		$(DIR)/standard_model_two_scale_convergence_tester.cpp \
-		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
-		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/string_utils.cpp \
 		$(DIR)/threshold_corrections.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
@@ -104,14 +98,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
-		$(DIR)/standard_model.hpp \
-		$(DIR)/standard_model_convergence_tester.hpp \
-		$(DIR)/standard_model_effective_couplings.hpp \
-		$(DIR)/standard_model_low_scale_constraint.hpp \
-		$(DIR)/standard_model_physical.hpp \
-		$(DIR)/standard_model_two_scale_convergence_tester.hpp \
-		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
-		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/string_utils.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/thread_pool.hpp \
