@@ -78,6 +78,7 @@ public:
    bool no_perturbative() const;
    bool no_sinThetaW_convergence() const;
 
+   void add(const Problems&);         ///< add problems from other class
    void clear();                      ///< clear all problems
    bool have_problem() const;         ///< problems which yield invalid spectrum
    bool have_warning() const;         ///< warnings
