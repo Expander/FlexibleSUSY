@@ -30,7 +30,6 @@ TEST_SRC := \
 		$(DIR)/test_gsl_vector.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
-		$(DIR)/test_MSSM_2L_limits.cpp \
 		$(DIR)/test_namespace_collisions.cpp \
 		$(DIR)/test_numerics.cpp \
 		$(DIR)/test_problems.cpp \
@@ -59,7 +58,6 @@ TEST_META := \
 		$(DIR)/test_Constraint.m \
 		$(DIR)/test_EWSB.m \
 		$(DIR)/test_LoopFunctions.m \
-		$(DIR)/test_MSSM_2L_analytic.m \
 		$(DIR)/test_MSSM_2L_mt.m \
 		$(DIR)/test_MSSM_2L_yb_softsusy.m \
 		$(DIR)/test_MSSM_2L_yt.m \
@@ -90,6 +88,13 @@ ifeq ($(WITH_higher_order_MSSM_thresholds),yes)
 TEST_SRC += \
 		$(DIR)/test_mssm_twoloop_mb.cpp \
 		$(DIR)/test_mssm_twoloop_mt.cpp
+endif
+
+ifeq ($(WITH_higher_order_MSSM_higgs),yes)
+TEST_SRC += \
+		$(DIR)/test_MSSM_2L_limits.cpp
+TEST_META += \
+		$(DIR)/test_MSSM_2L_analytic.m
 endif
 
 ifneq ($(findstring lattice,$(SOLVERS)),)
