@@ -66,6 +66,7 @@
       </head>
       <body>
 	<h1>FlexibleSUSY test results</h1>
+        <p><xsl:value-of select="/tests/@date"/></p>
         <table>
           <tr>
             <th>Test</th>

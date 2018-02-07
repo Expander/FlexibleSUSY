@@ -713,7 +713,7 @@ $(TEST_XML): $(TEST_ALL_XML)
 		@echo "\
 <?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
 <?xml-stylesheet type=\"text/xsl\" href=\"test.xsl\"?>\n\
-<tests>\n\
+<tests date=\"$$(date)\">\n\
 $$(for f in $^ ; do echo "\t<test filename=\"$$(basename $$f)\"/>"; done)\n\
 </tests>" > $@
 
