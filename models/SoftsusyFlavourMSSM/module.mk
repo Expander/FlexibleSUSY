@@ -54,7 +54,7 @@ $(LIBSoftsusyFlavourMSSM_DEP) $(LIBSoftsusyFlavourMSSM_OBJ) $(EXESoftsusyFlavour
 $(LIBSoftsusyFlavourMSSM): $(LIBSoftsusyFlavourMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(EXESoftsusyFlavourMSSM_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIB_higher_order_MSSM) $(LIB_higher_order_NMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(EXESoftsusyFlavourMSSM_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIB_higher_order_MSSM_higgs) $(LIB_higher_order_NMSSM_higgs) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyFlavourMSSM_DEP) $(EXESoftsusyFlavourMSSM_DEP)

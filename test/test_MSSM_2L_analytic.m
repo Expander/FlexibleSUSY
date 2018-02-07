@@ -133,9 +133,9 @@ int main(){
                progr, "exec",
                "CompileOptions" -> StringJoin[Riffle[
                    {"-I" <> FileNameJoin[{Directory[], "src"}],
-                    "-I" <> FileNameJoin[{Directory[], "higher_order/MSSM"}]},
+                    "-I" <> FileNameJoin[{Directory[], "higher_order", "MSSM_higgs"}]},
                    " "]],
-               "Libraries" -> {FileNameJoin[{Directory[], "higher_order", "MSSM", "libhigher_order_MSSM.a"}],
+               "Libraries" -> {FileNameJoin[{Directory[], "higher_order", "MSSM_higgs", "libhigher_order_MSSM_higgs.a"}],
                                FileNameJoin[{Directory[], "src", "libflexisusy.a"}],
                                "gfortran"}
                (* , "ShellOutputFunction"->Print, "ShellCommandFunction"->Print *)

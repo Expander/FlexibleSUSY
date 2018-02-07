@@ -30,8 +30,6 @@ TEST_SRC := \
 		$(DIR)/test_gsl_vector.cpp \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
-		$(DIR)/test_mssm_twoloop_mb.cpp \
-		$(DIR)/test_mssm_twoloop_mt.cpp \
 		$(DIR)/test_MSSM_2L_limits.cpp \
 		$(DIR)/test_namespace_collisions.cpp \
 		$(DIR)/test_numerics.cpp \
@@ -86,6 +84,12 @@ TEST_META := \
 ifeq ($(ENABLE_THREADS),yes)
 TEST_SRC += \
 		$(DIR)/test_thread_pool.cpp
+endif
+
+ifeq ($(WITH_higher_order_MSSM_thresholds),yes)
+TEST_SRC += \
+		$(DIR)/test_mssm_twoloop_mb.cpp \
+		$(DIR)/test_mssm_twoloop_mt.cpp
 endif
 
 ifneq ($(findstring lattice,$(SOLVERS)),)
@@ -519,9 +523,12 @@ TEST_SH += \
 		$(DIR)/test_Mh_uncertainties.sh
 endif
 
-ifeq ($(WITH_MSSMEFTHiggs),yes)
+ifeq ($(WITH_MSSMEFTHiggs) $(WITH_higher_order_SplitMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
+endif
+
+ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SH += \
 		$(DIR)/test_MSSMEFTHiggs_librarylink.sh \
 		$(DIR)/test_MSSMEFTHiggs_profile.sh
@@ -796,7 +803,6 @@ $(DIR)/test_CMSSMCPV_ewsb.x: $(LIBCMSSMCPV)
 
 $(DIR)/test_CMSSMCPV_tree_level_spectrum.x: $(LIBCMSSM) $(LIBCMSSMCPV)
 
-$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.x: CPPFLAGS += -Ihigher_order/SplitMSSM
 $(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.x: $(LIBMSSMEFTHiggs)
 
 $(DIR)/test_NMSSMCPV_ewsb.x: $(LIBNMSSMCPV)
@@ -940,7 +946,8 @@ $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAt
 $(DIR)/test_%.x: $(DIR)/test_%.o \
 	$(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyFlavourMSSM) \
 	$(LIB_higher_order_SM) $(LIB_higher_order_SplitMSSM) \
-	$(LIB_higher_order_MSSM) $(LIB_higher_order_NMSSM) \
+	$(LIB_higher_order_MSSM_higgs) $(LIB_higher_order_MSSM_thresholds) \
+	$(LIB_higher_order_NMSSM_higgs) \
 	$(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ -Wl,--start-group $(call abspathx,$^) -Wl,--end-group \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
