@@ -17,6 +17,8 @@ CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
+MSSMHODIR       := $(ABSBASEDIR)/higher_order/MSSM
+SMHODIR         := $(ABSBASEDIR)/higher_order/SM
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
@@ -26,11 +28,13 @@ INCSLHAEA       := -I$(SLHAEADIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
+LIBMSSMHO       := $(MSSMHODIR)/libhigher_order_MSSM$(MODULE_LIBEXT)
+LIBSMHO         := $(SMHODIR)/libhigher_order_SM$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
 CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) \
-                   $(INCSLHAEA) $(INCMODEL)
+                   $(INCSLHAEA) -I$(SMHODIR) -I$(MSSMHODIR) $(INCMODEL)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
@@ -95,7 +99,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(CUSTOMBETAS_DEP) $(CUSTOMBETAS_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBMSSMHO) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
