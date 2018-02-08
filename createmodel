@@ -389,7 +389,7 @@ search_default_model() {
 check_model_specific_corrections() {
     message -n "Searching for required higher order corrections ... "
     local model_file="$1"
-    local ho="$(get_model_specific_corrections "${model_file}")"
+    local ho="$(get_model_specific_corrections "${model_file}" "${mathematica_kernel}")"
     ho="$(make_unique "${ho}")"
     ho="$(string_trim "${ho}")"
 

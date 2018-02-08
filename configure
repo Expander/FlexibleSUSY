@@ -2459,7 +2459,7 @@ check_model_specific_corrections() {
     for m in ${MODELS}; do
         local model_name="$(echo ${m} | sed -e 's|models/||g')"
         local model_file="${m}/FlexibleSUSY.m"
-        local ho="$(get_model_specific_corrections "${model_file}")"
+        local ho="$(get_model_specific_corrections "${model_file}" "${MATH}")"
 
         [ "x${model_name}" = "xSoftsusyMSSM" ]        && ho="${ho} MSSM_higgs NMSSM_higgs"
         [ "x${model_name}" = "xSoftsusyNMSSM" ]       && ho="${ho} MSSM_higgs NMSSM_higgs"
