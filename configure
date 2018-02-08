@@ -2448,8 +2448,13 @@ check_cygpath() {
 }
 
 #_____________________________________________________________________
-check_model_specific_corrections() {
+use_all_model_specific_corrections() {
     MODEL_SPECIFIC_MODULES="$(find model_specific -mindepth 1 -maxdepth 1 -type d -print0 | tr '\0' ' ')"
+}
+
+#_____________________________________________________________________
+check_model_specific_corrections() {
+    use_all_model_specific_corrections
     logmsg "Include higher order modules: ${MODEL_SPECIFIC_MODULES}"
 }
 
@@ -2460,6 +2465,14 @@ check_model_specific_corrections() {
 
 #_____________________________________________________________________
 check_model_specific_corrections() {
+    # If Mathematica is disabled we cannot find out which modules to omit.
+    # So, let's build all modules.
+    [ "x$enable_meta" != xyes -o -z "${MATH}" -o "$(command -v "${MATH}")" = 1 ] && {
+        use_all_model_specific_corrections
+        logmsg "Include all higher order modules: ${MODEL_SPECIFIC_MODULES}"
+        return
+    }
+
     checking_msg "higher order corrections"
     local mods=""
 
