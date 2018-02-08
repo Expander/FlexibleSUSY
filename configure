@@ -2448,6 +2448,13 @@ check_cygpath() {
 }
 
 #_____________________________________________________________________
+check_model_specific_corrections() {
+    MODEL_SPECIFIC_MODULES="$(find model_specific -mindepth 1 -maxdepth 1 -type d -print0 | tr '\0' ' ')"
+    logmsg "Include higher order modules: ${MODEL_SPECIFIC_MODULES}"
+}
+
+# BEGIN: NOT EXPORTED ##########################################
+
 # include function to check for model-specific corrections
 . "${CONFIGDIR}/model_specific_corrections.sh"
 
@@ -2479,6 +2486,7 @@ check_model_specific_corrections() {
 
     logmsg "Include higher order modules: ${MODEL_SPECIFIC_MODULES}"
 }
+# END:   NOT EXPORTED ##########################################
 
 #_____________________________________________________________________
 enable_defines() {
