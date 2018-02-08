@@ -133,6 +133,10 @@ FlexibleSUSY 2.0.1 [October, 20 2017]
 
    Thanks to Pietro Slavich.
 
+ * Bugfix (commit a783e318): Distinguish between tree- and loop-level
+   EWSB failures, so problem points where only one fails (but not the
+   other) get handled properly.
+
  * Bugfix (commits 88009cac, 5ac9366c): Now configure script does not
    hang even if Mathematica fails to find a valid license.  The script
    does not quit even if Mathematica does not meet the version
