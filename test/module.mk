@@ -84,13 +84,13 @@ TEST_SRC += \
 		$(DIR)/test_thread_pool.cpp
 endif
 
-ifeq ($(WITH_higher_order_MSSM_thresholds),yes)
+ifeq ($(WITH_model_specific_MSSM_thresholds),yes)
 TEST_SRC += \
 		$(DIR)/test_mssm_twoloop_mb.cpp \
 		$(DIR)/test_mssm_twoloop_mt.cpp
 endif
 
-ifeq ($(WITH_higher_order_MSSM_higgs),yes)
+ifeq ($(WITH_model_specific_MSSM_higgs),yes)
 TEST_SRC += \
 		$(DIR)/test_MSSM_2L_limits.cpp
 TEST_META += \
@@ -528,7 +528,7 @@ TEST_SH += \
 		$(DIR)/test_Mh_uncertainties.sh
 endif
 
-ifeq ($(WITH_MSSMEFTHiggs) $(WITH_higher_order_SplitMSSM),yes yes)
+ifeq ($(WITH_MSSMEFTHiggs) $(WITH_model_specific_SplitMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
 endif
@@ -950,9 +950,9 @@ $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAt
 # general test rule
 $(DIR)/test_%.x: $(DIR)/test_%.o \
 	$(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyFlavourMSSM) \
-	$(LIB_higher_order_SM) $(LIB_higher_order_SplitMSSM) \
-	$(LIB_higher_order_MSSM_higgs) $(LIB_higher_order_MSSM_thresholds) \
-	$(LIB_higher_order_NMSSM_higgs) \
+	$(LIB_model_specific_SM) $(LIB_model_specific_SplitMSSM) \
+	$(LIB_model_specific_MSSM_higgs) $(LIB_model_specific_MSSM_thresholds) \
+	$(LIB_model_specific_NMSSM_higgs) \
 	$(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ -Wl,--start-group $(call abspathx,$^) -Wl,--end-group \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \

@@ -217,7 +217,7 @@ MODELS=""
 # END:   NOT EXPORTED ##########################################
 # addons that will be compiled
 ADDONS=""
-HIGHER_ORDER_MODULES=""
+MODEL_SPECIFIC_MODULES=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -2448,7 +2448,7 @@ check_cygpath() {
 }
 
 #_____________________________________________________________________
-get_higher_order_corrections() {
+get_model_specific_corrections() {
     local model_file="$1"
 
     # always build SM, because it is needed for the effective couplings module
@@ -2475,14 +2475,14 @@ get_higher_order_corrections() {
 }
 
 #_____________________________________________________________________
-check_higher_order_corrections() {
+check_model_specific_corrections() {
     checking_msg "higher order corrections"
     local mods=""
 
     for m in ${MODELS}; do
         local model_name="$(echo ${m} | sed -e 's|models/||g')"
         local model_file="${m}/FlexibleSUSY.m"
-        local ho="$(get_higher_order_corrections "${model_file}")"
+        local ho="$(get_model_specific_corrections "${model_file}")"
 
         [ "x${model_name}" = "xSoftsusyMSSM" ]        && ho="${ho} MSSM_higgs NMSSM_higgs"
         [ "x${model_name}" = "xSoftsusyNMSSM" ]       && ho="${ho} MSSM_higgs NMSSM_higgs"
@@ -2497,10 +2497,10 @@ check_higher_order_corrections() {
     result "($(echo "${mods}" | sed -e 's|models/||g'))"
 
     for m in ${mods}; do
-        HIGHER_ORDER_MODULES="${HIGHER_ORDER_MODULES} higher_order/${m}"
+        MODEL_SPECIFIC_MODULES="${MODEL_SPECIFIC_MODULES} model_specific/${m}"
     done
 
-    logmsg "Include higher order modules: ${HIGHER_ORDER_MODULES}"
+    logmsg "Include higher order modules: ${MODEL_SPECIFIC_MODULES}"
 }
 
 #_____________________________________________________________________
@@ -2752,7 +2752,7 @@ replace_markers() {
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
-        -e "s|@HIGHER_ORDER_MODULES@|$HIGHER_ORDER_MODULES|" \
+        -e "s|@MODEL_SPECIFIC_MODULES@|$MODEL_SPECIFIC_MODULES|" \
         -e "s|@HIMALAYALIBS@|$HIMALAYALIBS|"      \
         -e "s|@HIMALAYAFLAGS@|$HIMALAYAFLAGS|"    \
 	-e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"      \
@@ -3047,7 +3047,7 @@ fi
 check_models
 check_addons
 check_optional_modules
-check_higher_order_corrections
+check_model_specific_corrections
 
 enable_defines
 

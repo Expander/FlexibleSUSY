@@ -92,7 +92,7 @@ $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP) $(LIBSoftsusyMSSM_OBJ) $(EXESoftsu
 $(LIBSoftsusyMSSM): $(LIBSoftsusyMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIB_higher_order_MSSM_higgs) $(LIB_higher_order_NMSSM_higgs) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIB_model_specific_MSSM_higgs) $(LIB_model_specific_NMSSM_higgs) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP)

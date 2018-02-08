@@ -24,7 +24,7 @@ fflags="@FFLAGS@"
 flibs="@FLIBS@"
 gslflags="@GSLFLAGS@"
 gsllibs="@GSLLIBS@"
-higher_order_modules="@HIGHER_ORDER_MODULES@"
+model_specific_modules="@MODEL_SPECIFIC_MODULES@"
 himalayaflags="@HIMALAYAFLAGS@"
 himalayalibs="@HIMALAYALIBS@"
 lapacklibs="@LAPACKLIBS@"
@@ -50,7 +50,7 @@ tsillibs="@TSILLIBS@"
 gm2calclibs=""
 
 create_module_list() {
-    echo "config src fflite slhaea doc $models $addons $higher_order_modules $optional_modules"
+    echo "config src fflite slhaea doc $models $addons $model_specific_modules $optional_modules"
 }
 
 create_include_directives_for_FS_modules() {
@@ -90,9 +90,9 @@ create_flexiblesusy_libs() {
         flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/lib$(basename $a)${module_lib_ext}"
     done
 
-    for a in $higher_order_modules ; do
+    for a in $model_specific_modules ; do
         [ "x$(basename $a)" = "xGM2Calc" ] && continue
-        flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/libhigher_order_$(basename $a)${module_lib_ext}"
+        flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/libmodel_specific_$(basename $a)${module_lib_ext}"
     done
 
     flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/src/libflexisusy${module_lib_ext}"

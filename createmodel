@@ -379,7 +379,7 @@ search_default_model() {
 }
 
 #_____________________________________________________________________
-get_higher_order_corrections() {
+get_model_specific_corrections() {
     local model_file="$1"
 
     # always build SM, because it is needed for the effective couplings module
@@ -406,24 +406,24 @@ get_higher_order_corrections() {
 }
 
 #_____________________________________________________________________
-check_higher_order_corrections() {
+check_model_specific_corrections() {
     message -n "Searching for required higher order corrections ... "
     local model_file="$1"
-    local ho="$(get_higher_order_corrections "${model_file}")"
+    local ho="$(get_model_specific_corrections "${model_file}")"
     ho="$(make_unique "${ho}")"
     ho="$(string_trim "${ho}")"
 
     message "(${ho})"
 
-    HIGHER_ORDER_LIBS=""
+    MODEL_SPECIFIC_LIBS=""
 
     for l in ${ho}; do
-        HIGHER_ORDER_LIBS="${HIGHER_ORDER_LIBS} \$(LIB_higher_order_${l})"
+        MODEL_SPECIFIC_LIBS="${MODEL_SPECIFIC_LIBS} \$(LIB_model_specific_${l})"
     done
 
-    HIGHER_ORDER_LIBS="$(string_trim "${HIGHER_ORDER_LIBS}")"
+    MODEL_SPECIFIC_LIBS="$(string_trim "${MODEL_SPECIFIC_LIBS}")"
 
-    logmsg "Depends on higher order libraries: ${HIGHER_ORDER_LIBS}"
+    logmsg "Depends on higher order libraries: ${MODEL_SPECIFIC_LIBS}"
 }
 
 #_____________________________________________________________________
@@ -551,7 +551,7 @@ fi
 check_model_name "${name}"
 check_sarah_model "${sarah_model}" "${sub_model}"
 check_flags
-check_higher_order_corrections "$model_file_dir/FlexibleSUSY.m.in"
+check_model_specific_corrections "$model_file_dir/FlexibleSUSY.m.in"
 
 if [ -n "$sub_model" ]; then
     echo "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
@@ -577,7 +577,7 @@ message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
-    -e "s|@HIGHER_ORDER_LIBS@|$HIGHER_ORDER_LIBS|g" \
+    -e "s|@MODEL_SPECIFIC_LIBS@|$MODEL_SPECIFIC_LIBS|g" \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"

@@ -17,8 +17,8 @@ CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
-MSSMHODIR       := $(ABSBASEDIR)/higher_order/MSSM_higgs
-SMHODIR         := $(ABSBASEDIR)/higher_order/SM
+MSSMHODIR       := $(ABSBASEDIR)/model_specific/MSSM_higgs
+SMHODIR         := $(ABSBASEDIR)/model_specific/SM
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
@@ -28,8 +28,8 @@ INCSLHAEA       := -I$(SLHAEADIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
-LIBMSSMHO       := $(MSSMHODIR)/libhigher_order_MSSM_higgs$(MODULE_LIBEXT)
-LIBSMHO         := $(SMHODIR)/libhigher_order_SM$(MODULE_LIBEXT)
+LIBMSSMHO       := $(MSSMHODIR)/libmodel_specific_MSSM_higgs$(MODULE_LIBEXT)
+LIBSMHO         := $(SMHODIR)/libmodel_specific_SM$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@

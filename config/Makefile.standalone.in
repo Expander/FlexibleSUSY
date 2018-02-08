@@ -16,7 +16,7 @@ MODELDIR        := $(ABSBASEDIR)/models/$(MODEL)
 CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 FFLITEDIR       := $(ABSBASEDIR)/fflite
-SMHODIR         := $(ABSBASEDIR)/higher_order/SM
+SMHODIR         := $(ABSBASEDIR)/model_specific/SM
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
@@ -25,7 +25,7 @@ INCFFLITE       := -I$(FFLITEDIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
-LIBSMHO         := $(SMHODIR)/libhigher_order_SM$(MODULE_LIBEXT)
+LIBSMHO         := $(SMHODIR)/libmodel_specific_SM$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
