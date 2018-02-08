@@ -2471,7 +2471,7 @@ check_model_specific_corrections() {
     mods="$(make_unique "${mods}")"
     mods="$(string_trim "${mods}")"
 
-    result "($(echo "${mods}" | sed -e 's|models/||g'))"
+    result "(${mods})"
 
     for m in ${mods}; do
         MODEL_SPECIFIC_MODULES="${MODEL_SPECIFIC_MODULES} model_specific/${m}"
