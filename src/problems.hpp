@@ -46,6 +46,7 @@ public:
    void flag_pole_tachyon(int particle, bool flag = true);
    void flag_thrown(const std::string& msg = "unknown");
    void flag_no_ewsb();
+   void flag_no_ewsb_tree_level();
    void flag_no_perturbative();
    void flag_no_pole_mass_convergence(int particle);
    void flag_non_perturbative_parameter(int parameter, double value, double scale, double threshold = 0.);
@@ -58,6 +59,7 @@ public:
    void unflag_all_tachyons();
    void unflag_thrown();
    void unflag_no_ewsb();
+   void unflag_no_ewsb_tree_level();
    void unflag_no_perturbative();
    void unflag_no_pole_mass_convergence(int particle);
    void unflag_non_perturbative_parameter(int parameter);
@@ -75,6 +77,7 @@ public:
    bool have_non_perturbative_parameter() const;
    bool have_failed_pole_mass_convergence() const;
    bool no_ewsb() const;
+   bool no_ewsb_tree_level() const;
    bool no_perturbative() const;
    bool no_sinThetaW_convergence() const;
 
@@ -113,6 +116,7 @@ private:
    std::map<int, NonPerturbativeValue> non_pert_pars; ///< non-perturbative parmeters
    std::string exception_msg;          ///< exception message
    bool failed_ewsb{false};            ///< no EWSB
+   bool failed_ewsb_tree_level{false}; ///< no tree-level EWSB
    bool non_perturbative{false};       ///< non-perturbative running
    bool failed_sinThetaW_convergence{false}; ///< sinThetaW-parameter not converged
 

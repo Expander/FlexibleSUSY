@@ -68,6 +68,7 @@ void Problems::clear()
    non_pert_pars.clear();
    exception_msg = "";
    failed_ewsb = false;
+   failed_ewsb_tree_level = false;
    non_perturbative = false;
    failed_sinThetaW_convergence = false;
 }
@@ -87,13 +88,14 @@ void Problems::add(const Problems& other)
       exception_msg = other.exception_msg;
 
    failed_ewsb = failed_ewsb || other.failed_ewsb;
+   failed_ewsb_tree_level = failed_ewsb_tree_level || other.failed_ewsb_tree_level;
    non_perturbative = non_perturbative || other.non_perturbative;
    failed_sinThetaW_convergence = failed_sinThetaW_convergence || other.failed_sinThetaW_convergence;
 }
 
 bool Problems::have_problem() const
 {
-   return have_tachyon() || failed_ewsb
+   return have_tachyon() || failed_ewsb || failed_ewsb_tree_level
       || non_perturbative || failed_sinThetaW_convergence
       || have_thrown()
       || have_failed_pole_mass_convergence()
@@ -128,6 +130,8 @@ std::vector<std::string> Problems::get_problem_strings() const
    }
    if (failed_ewsb)
       strings.emplace_back("no ewsb");
+   if (failed_ewsb_tree_level)
+      strings.emplace_back("no ewsb at tree-level");
    if (non_perturbative)
       strings.emplace_back("non-perturbative");
    if (failed_sinThetaW_convergence)
@@ -237,6 +241,11 @@ void Problems::flag_no_ewsb()
    failed_ewsb = true;
 }
 
+void Problems::flag_no_ewsb_tree_level()
+{
+   failed_ewsb_tree_level = true;
+}
+
 void Problems::flag_no_perturbative()
 {
    non_perturbative = true;
@@ -297,6 +306,11 @@ void Problems::unflag_thrown()
 void Problems::unflag_no_ewsb()
 {
    failed_ewsb = false;
+}
+
+void Problems::unflag_no_ewsb_tree_level()
+{
+   failed_ewsb_tree_level = false;
 }
 
 void Problems::unflag_no_perturbative()
@@ -382,6 +396,11 @@ bool Problems::have_failed_pole_mass_convergence() const
 bool Problems::no_ewsb() const
 {
    return failed_ewsb;
+}
+
+bool Problems::no_ewsb_tree_level() const
+{
+   return failed_ewsb_tree_level;
 }
 
 bool Problems::no_perturbative() const
