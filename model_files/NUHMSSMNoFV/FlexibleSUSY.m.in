@@ -1,8 +1,5 @@
-
 FSModelName = "@CLASSNAME@";
 FSDefaultSARAHModel = MSSMNoFV;
-
-(* CMSSM input parameters *)
 
 MINPAR = {
     {3, TanBeta}
@@ -119,7 +116,7 @@ ExtraSLHAOutputBlocks = {
            {{0, Hold[HighScale]},
             {1, Hold[SUSYScale]},
             {2, Hold[LowScale]} } },
-   {FlexibleSUSYLowEnergy,
+   {FlexibleSUSYLowEnergy, NoScale,
            {{0, FlexibleSUSYObservable`aMuon},
             {1, FlexibleSUSYObservable`aMuonUncertainty},
             {2, FlexibleSUSYObservable`aMuonGM2Calc},
