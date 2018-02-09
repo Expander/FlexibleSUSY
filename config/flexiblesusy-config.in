@@ -9,7 +9,6 @@ CONFIGDIR="${BASEDIR}/config"
 packagename="@PKGNAME@"
 version="@FLEXIBLESUSY_VERSION@"
 
-solvers="@ALGORITHMS@"
 addons="@ADDONS@"
 blaslibs="@BLASLIBS@"
 boostflags="@BOOSTFLAGS@"
