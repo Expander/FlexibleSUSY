@@ -39,7 +39,6 @@ MODULES            := config src fflite slhaea doc
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += meta templates
 # END:   NOT EXPORTED ##########################################
-MODULES            += @MODEL_SPECIFIC_MODULES@
 MODULES            += $(MODELS) $(ADDONS)
 # BEGIN: NOT EXPORTED ##########################################
 MODULES            += @OPTIONAL_MODULES@
@@ -96,6 +95,8 @@ ALLLL    :=
 ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
 ADDONLIBS:=
+# the modules add dependent modules to this variable to be included in the makefile
+ALLMODDEP:=
 
 # set default shell
 SHELL = /bin/sh
@@ -163,6 +164,7 @@ endif
 
 include config/abspathx.mk
 include $(patsubst %, %/module.mk, $(MODULES))
+include $(patsubst %, %/module.mk, $(sort $(ALLMODDEP)))
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)

@@ -217,7 +217,6 @@ MODELS=""
 # END:   NOT EXPORTED ##########################################
 # addons that will be compiled
 ADDONS=""
-MODEL_SPECIFIC_MODULES=""
 
 # C++ compiler type and version
 cxx_compiler_type="unknown"
@@ -2448,60 +2447,6 @@ check_cygpath() {
 }
 
 #_____________________________________________________________________
-use_all_model_specific_corrections() {
-    MODEL_SPECIFIC_MODULES="$(find model_specific -mindepth 1 -maxdepth 1 -type d -print0 | tr '\0' ' ')"
-}
-
-#_____________________________________________________________________
-check_model_specific_corrections() {
-    use_all_model_specific_corrections
-    logmsg "Include higher order modules: ${MODEL_SPECIFIC_MODULES}"
-}
-
-# BEGIN: NOT EXPORTED ##########################################
-
-# include function to check for model-specific corrections
-. "${CONFIGDIR}/model_specific_corrections.sh"
-
-#_____________________________________________________________________
-check_model_specific_corrections() {
-    # If Mathematica is disabled we cannot find out which modules to omit.
-    # So, let's build all modules.
-    [ "x$enable_meta" != xyes -o -z "${MATH}" -o "$(command -v "${MATH}")" = 1 ] && {
-        use_all_model_specific_corrections
-        logmsg "Include all higher order modules: ${MODEL_SPECIFIC_MODULES}"
-        return
-    }
-
-    checking_msg "higher order corrections"
-    local mods=""
-
-    for m in ${MODELS}; do
-        local model_name="$(echo ${m} | sed -e 's|models/||g')"
-        local model_file="${m}/FlexibleSUSY.m"
-        local ho="$(get_model_specific_corrections "${model_file}" "${MATH}")"
-
-        [ "x${model_name}" = "xSoftsusyMSSM" ]        && ho="${ho} MSSM_higgs NMSSM_higgs"
-        [ "x${model_name}" = "xSoftsusyNMSSM" ]       && ho="${ho} MSSM_higgs NMSSM_higgs"
-        [ "x${model_name}" = "xSoftsusyFlavourMSSM" ] && ho="${ho} MSSM_higgs NMSSM_higgs"
-
-        mods="${mods} ${ho}"
-    done
-
-    mods="$(make_unique "${mods}")"
-    mods="$(string_trim "${mods}")"
-
-    result "(${mods})"
-
-    for m in ${mods}; do
-        MODEL_SPECIFIC_MODULES="${MODEL_SPECIFIC_MODULES} model_specific/${m}"
-    done
-
-    logmsg "Include higher order modules: ${MODEL_SPECIFIC_MODULES}"
-}
-# END:   NOT EXPORTED ##########################################
-
-#_____________________________________________________________________
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
         DEFINE_ENABLE_COLORS="#define ENABLE_COLORS 1"
@@ -2750,7 +2695,6 @@ replace_markers() {
 	-e "s|@ENABLE_THREADS@|$enable_threads|"  \
 	-e "s|@ENABLE_TSIL@|$enable_tsil|"        \
 	-e "s|@ENABLE_VERBOSE@|$enable_verbose|"  \
-        -e "s|@MODEL_SPECIFIC_MODULES@|$MODEL_SPECIFIC_MODULES|" \
         -e "s|@HIMALAYALIBS@|$HIMALAYALIBS|"      \
         -e "s|@HIMALAYAFLAGS@|$HIMALAYAFLAGS|"    \
 	-e "s|@LOOPFUNCLIBS@|$LOOPFUNCLIBS|"      \
@@ -3045,7 +2989,6 @@ fi
 check_models
 check_addons
 check_optional_modules
-check_model_specific_corrections
 
 enable_defines
 

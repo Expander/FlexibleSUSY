@@ -394,16 +394,9 @@ check_model_specific_corrections() {
     ho="$(string_trim "${ho}")"
 
     message "(${ho})"
+    logmsg "Depends on higher order libraries: ${ho}"
 
-    MODEL_SPECIFIC_LIBS=""
-
-    for l in ${ho}; do
-        MODEL_SPECIFIC_LIBS="${MODEL_SPECIFIC_LIBS} \$(LIB_model_specific_${l})"
-    done
-
-    MODEL_SPECIFIC_LIBS="$(string_trim "${MODEL_SPECIFIC_LIBS}")"
-
-    logmsg "Depends on higher order libraries: ${MODEL_SPECIFIC_LIBS}"
+    MODEL_SPECIFIC_MODULES="$ho"
 }
 
 #_____________________________________________________________________
@@ -557,7 +550,7 @@ message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
-    -e "s|@MODEL_SPECIFIC_LIBS@|$MODEL_SPECIFIC_LIBS|g" \
+    -e "s|@MODEL_SPECIFIC_MODULES@|$MODEL_SPECIFIC_MODULES|g" \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"
