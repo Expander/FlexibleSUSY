@@ -1,6 +1,10 @@
 DIR      := test
 MODNAME  := test
 WITH_$(MODNAME) := yes
+MODtest_MOD := SM SplitMSSM MSSM_higgs MSSM_thresholds NMSSM_higgs
+MODtest_DEP := $(patsubst %,model_specific/%,$(MODtest_MOD))
+MODtest_INC := $(patsubst %,-Imodel_specific/%,$(MODtest_MOD))
+MODtest_LIB := $(foreach M,$(MODtest_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
 
 LIBTEST_SRC := \
 		$(DIR)/error_count.cpp \
@@ -31,6 +35,9 @@ TEST_SRC := \
 		$(DIR)/test_linalg2.cpp \
 		$(DIR)/test_minimizer.cpp \
 		$(DIR)/test_namespace_collisions.cpp \
+		$(DIR)/test_mssm_twoloop_mb.cpp \
+		$(DIR)/test_mssm_twoloop_mt.cpp \
+		$(DIR)/test_MSSM_2L_limits.cpp \
 		$(DIR)/test_numerics.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_pv.cpp \
@@ -58,6 +65,7 @@ TEST_META := \
 		$(DIR)/test_Constraint.m \
 		$(DIR)/test_EWSB.m \
 		$(DIR)/test_LoopFunctions.m \
+		$(DIR)/test_MSSM_2L_analytic.m \
 		$(DIR)/test_MSSM_2L_mt.m \
 		$(DIR)/test_MSSM_2L_yb_softsusy.m \
 		$(DIR)/test_MSSM_2L_yt.m \
@@ -82,19 +90,6 @@ TEST_META := \
 ifeq ($(ENABLE_THREADS),yes)
 TEST_SRC += \
 		$(DIR)/test_thread_pool.cpp
-endif
-
-ifeq ($(WITH_model_specific_MSSM_thresholds),yes)
-TEST_SRC += \
-		$(DIR)/test_mssm_twoloop_mb.cpp \
-		$(DIR)/test_mssm_twoloop_mt.cpp
-endif
-
-ifeq ($(WITH_model_specific_MSSM_higgs),yes)
-TEST_SRC += \
-		$(DIR)/test_MSSM_2L_limits.cpp
-TEST_META += \
-		$(DIR)/test_MSSM_2L_analytic.m
 endif
 
 ifneq ($(findstring lattice,$(SOLVERS)),)
@@ -528,7 +523,7 @@ TEST_SH += \
 		$(DIR)/test_Mh_uncertainties.sh
 endif
 
-ifeq ($(WITH_MSSMEFTHiggs) $(WITH_model_specific_SplitMSSM),yes yes)
+ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
 endif
@@ -950,16 +945,13 @@ $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAt
 # general test rule
 $(DIR)/test_%.x: $(DIR)/test_%.o \
 	$(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyFlavourMSSM) \
-	$(LIB_model_specific_SM) $(LIB_model_specific_SplitMSSM) \
-	$(LIB_model_specific_MSSM_higgs) $(LIB_model_specific_MSSM_thresholds) \
-	$(LIB_model_specific_NMSSM_higgs) \
-	$(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+	$(MODtest_LIB) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ -Wl,--start-group $(call abspathx,$^) -Wl,--end-group \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
 		$(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 # add boost and eigen flags for the test object files and dependencies
-$(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(BOOSTFLAGS) $(EIGENFLAGS)
+$(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(MODtest_INC) $(BOOSTFLAGS) $(EIGENFLAGS)
 
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBTEST): $(LIBTEST_OBJ)
@@ -973,3 +965,4 @@ endif
 ALLDEP += $(LIBTEST_DEP) $(TEST_DEP)
 ALLLIB += $(LIBTEST)
 ALLTST += $(TEST_EXE)
+ALLMODDEP += $(MODtest_DEP)

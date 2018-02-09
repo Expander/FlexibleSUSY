@@ -1,6 +1,10 @@
 DIR          := model_specific/NMSSM_higgs
 MODNAME      := model_specific_NMSSM_higgs
 WITH_$(MODNAME) := yes
+MODmodel_specific_NMSSM_higgs_MOD := MSSM_higgs
+MODmodel_specific_NMSSM_higgs_DEP := $(patsubst %,model_specific/%,$(MODmodel_specific_NMSSM_higgs_MOD))
+MODmodel_specific_NMSSM_higgs_INC := $(patsubst %,-Imodel_specific/%,$(MODmodel_specific_NMSSM_higgs_MOD))
+MODmodel_specific_NMSSM_higgs_LIB := $(foreach M,$(MODmodel_specific_NMSSM_higgs_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
 
 LIB_model_specific_NMSSM_higgs_MK  := \
 		$(DIR)/module.mk
@@ -57,10 +61,12 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIB_model_specific_NMSSM_higgs_DEP) $(LIB_model_specific_NMSSM_higgs_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(SQLITEFLAGS) $(TSILFLAGS)
+$(LIB_model_specific_NMSSM_higgs_DEP) $(LIB_model_specific_NMSSM_higgs_OBJ): \
+	CPPFLAGS += $(MODmodel_specific_NMSSM_higgs_INC) $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(SQLITEFLAGS) $(TSILFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
-$(LIB_model_specific_NMSSM_higgs_DEP) $(LIB_model_specific_NMSSM_higgs_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
+$(LIB_model_specific_NMSSM_higgs_DEP) $(LIB_model_specific_NMSSM_higgs_OBJ): \
+	CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 ifeq ($(ENABLE_SHARED_LIBS),yes)
@@ -73,3 +79,4 @@ endif
 
 ALLDEP += $(LIB_model_specific_NMSSM_higgs_DEP)
 ALLLIB += $(LIB_model_specific_NMSSM_higgs)
+ALLMODDEP += $(MODmodel_specific_NMSSM_higgs_DEP)
