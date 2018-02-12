@@ -48,6 +48,7 @@ BeginPackage["FlexibleSUSY`",
               "CXXDiagrams`",
               "AMuon`",
               "EDM`",
+              "MuEGamma`",
               "EffectiveCouplings`",
               "FlexibleEFTHiggsMatching`",
               "FSMathLink`",
@@ -1909,6 +1910,33 @@ WriteEDMClass[edmFields_List,files_List] :=
     vertices
   ]
 
+(* Write the MuEGamma c++ files *)
+WriteMuEGammaClass[edmFields_List,files_List] :=
+  Module[{graphs,diagrams,vertices,
+          interfacePrototypes,interfaceDefinitions},
+    graphs = MuEGamma`MuEGammaContributingGraphs[];
+    diagrams = Outer[MuEGamma`MuEGammaContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
+    Print["diagrams: ", graphs, diagrams];
+    
+    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
+    
+    {interfacePrototypes,interfaceDefinitions} = 
+      If[diagrams === {},
+         {"",""},
+         StringJoin @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[MuEGamma`MuEGammaCreateInterfaceFunctionForField @@@ 
+            Transpose[{edmFields,Transpose[{graphs,#}] & /@ diagrams}]])];
+    
+    Print["shit!!!!", interfacePrototypes];
+    WriteOut`ReplaceInFiles[files,
+                            {"@MuEGamma_InterfacePrototypes@"       -> interfacePrototypes,
+                             "@MuEGamma_InterfaceDefinitions@"      -> interfaceDefinitions,
+                             Sequence @@ GeneralReplacementRules[]
+                            }];
+    
+    vertices
+  ]
+
 (* Write the AMuon c++ files *)
 WriteAMuonClass[files_List] :=
     Module[{graphs,diagrams,vertices,
@@ -3082,7 +3110,7 @@ Options[MakeFlexibleSUSY] :=
 
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
-            edmVertices, aMuonVertices, edmFields,
+            edmVertices, mu2egammaVertices, aMuonVertices, edmFields, mu2egammaFields,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -3964,6 +3992,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
            
+           Print["Creating MuEGamma class..."];
+           mu2egammaFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                                                FlexibleSUSYObservable`MuEGamma[p_[__]|p_] :> p];
+           mu2egammaVertices =
+             WriteMuEGammaClass[mu2egammaFields,
+                           {{FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.cpp"}]}}];
+
            Print["Creating AMuon class..."];
            aMuonVertices = 
              WriteAMuonClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
@@ -3971,7 +4009,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
            
-           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],Lat$massMatrices,
+           WriteCXXDiagramClass[Join[edmVertices,mu2egammaVertices,aMuonVertices],Lat$massMatrices,
                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
 

@@ -69,6 +69,7 @@ META_SRC     := \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/CXXDiagrams.m \
 		$(DIR)/EDM.m \
+		$(DIR)/MuEGamma.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \

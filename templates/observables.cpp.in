@@ -22,6 +22,7 @@
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_a_muon.hpp"
 #include "@ModelName@_edm.hpp"
+#include "@ModelName@_mu_to_egamma.hpp"
 #include "@ModelName@_effective_couplings.hpp"
 #include "gm2calc_interface.hpp"
 #include "eigen_utils.hpp"
@@ -37,6 +38,8 @@
 #define AMUGM2CALCUNCERTAINTY a_muon_gm2calc_uncertainty
 #define EDM0(p) edm_ ## p
 #define EDM1(p,idx) edm_ ## p ## _ ## idx
+#define MuEGamma0(p) mu_to_egamma_ ## p
+#define MuEGamma1(p,idx) mu_to_egamma_ ## p ## _ ## idx
 #define EFFCPHIGGSPHOTONPHOTON eff_cp_higgs_photon_photon
 #define EFFCPHIGGSGLUONGLUON eff_cp_higgs_gluon_gluon
 #define EFFCPPSEUDOSCALARPHOTONPHOTON eff_cp_pseudoscalar_photon_photon
