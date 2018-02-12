@@ -1,0 +1,266 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+/**
+ * @file @ModelName@_mu_to_egamma.cpp
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ */
+
+#include "@ModelName@_mu_to_egamma.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
+
+#include "@ModelName@_cxx_diagrams.hpp"
+
+#define INPUTPARAMETER(p) context.model.get_input().p
+#define MODELPARAMETER(p) context.model.get_##p()
+#define DERIVEDPARAMETER(p) context.model.p()
+#define PHASE(p) context.model.get_##p()
+
+using namespace flexiblesusy;
+using namespace cxx_diagrams;
+
+namespace {
+static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
+
+/**
+ * @class MuEGammaVertexCorrectionSF
+ * @brief A template that calculate contributions to the mu to e gamma
+ *        of a given particle in a one loop diagram specified
+ *        by a photon emitter and an exchange particle.
+ * @tparam Args Specifies in order the field of which to
+ *              calculate the electric dipole moment,
+ *              the photon emitter and the exchange particle
+ *              in a one-loop diagram where the photon emitter
+ *              is a scalar and the exchange particle a fermion.
+ *
+ * This template evaluates the contribution to the electric
+ * dipole moment of a one loop diagram with fields given by
+ * \a Args.
+ */
+template<class EDMField, class PhotonEmitter, class ExchangeParticle>
+struct EDMVertexCorrectionSF {
+   static double value(const typename field_indices<EDMField>::type& indices,
+                       EvaluationContext& context);
+};
+
+/**
+* @class EDMVertexCorrectionFS
+* @brief A template that calculate contributions to the EDM
+*        of a given particle in a one loop diagram specified
+*        by a photon emitter and an exchange particle.
+* @tparam Args Specifies in order the field of which to
+*              calculate the electric dipole moment,
+*              the photon emitter and the exchange particle
+*              in a one-loop diagram where the photon emitter
+*              is a fermion and the exchange particle a scalar.
+*
+* This template evaluates the contribution to the electric
+* dipole moment of a one loop diagram with fields given by
+* \a Args.
+*/
+#include <iostream>
+
+template<class EDMField, class PhotonEmitter, class ExchangeParticle>
+struct EDMVertexCorrectionFS {
+   static double value(const typename field_indices<EDMField>::type& indices,
+                       EvaluationContext& context);
+};
+} // anonymous namespace
+
+namespace flexiblesusy {
+namespace @ModelName@_mu_to_egamma {
+@MuEGamma_InterfaceDefinitions@
+}
+} // namespace flexiblesusy
+
+namespace {
+/**
+* @defgroup LoopFunctions Loop functions
+* @brief The loop functions necessary for edm one-loop calculations.
+*
+* These are OneLoopFunctionA(), OneLoopFunctionB()
+* as specified in arXiv:0808.1819
+*/
+
+// function from eq. 15 of hep-ph/9510309 
+double OneLoopFunctionA(double r)
+{
+   if (is_zero(1.0-r)) {
+      return 1.5;
+   } else if (is_zero(r)) {
+      return 2.0;
+   }
+   else {
+      return (2.0 - 9.0*r + 18.0*r*r - 11.0*r*r*r + 6.0*r*r*r*std::log(r))/pow(1.0-r,4);
+   }
+}
+
+double OneLoopFunctionB(double r)
+{
+   if (is_zero(1.0-r)) {
+      return 1.0/12.0;
+   }
+   else {
+      (1.0 - 6.0*r + 3.0*r*r + 2.0*r*r*r - 6.0*r*r*std::log(r))/6.0/pow(1.0-r,4);
+   }
+}
+
+double OneLoopFunctionC(double r)
+{
+   if (is_zero(1.0-r)) {
+      return 1.0/3.0;
+   } else if (is_zero(r)) {
+      return 1.0;
+   }
+   else {
+      (1.0 - r*r + 2.0*r*std::log(r))/pow(1.0-r,3);
+   }
+}
+
+double OneLoopFunctionD(double r)
+{
+   if (is_zero(1.0-r)) {
+      return -9.0/2.0;
+   }
+   else {
+      (16.0 - 45.0*r + 36.0*r*r - 7.0*r*r*r + 6.0*(2.0-3.0*r)*std::log(r))/pow(1.0-r,4);
+   }
+}
+
+double OneLoopFunctionE(double r)
+{
+   if (is_zero(1.0-r)) {
+      return 1.0/12.0;
+   } else if (is_zero(r)) {
+      return 1.0/3.0;
+   }
+   else {
+      (2.0 + 3.0*r - 6.0*r*r + r*r*r + 6.0*r*std::log(r))/6.0/pow(1.0-r,4);
+   }
+}
+
+double OneLoopFunctionF(double r)
+{
+   if (is_zero(1.0-r)) {
+      return 2.0/3.0;
+   }
+   else {
+      (-3.0 + 4.0*r - r*r - 2.0*std::log(r))/pow(1.0-r,3);
+   }
+}
+
+template<class EDMField, class PhotonEmitter, class ExchangeField>
+double EDMVertexCorrectionFS<
+EDMField, PhotonEmitter, ExchangeField
+>::value(const typename field_indices<EDMField>::type& indices, EvaluationContext& context)
+{
+   double res = 0.0;
+
+   using FermionVertex1 = Vertex<
+                         typename EDMField::lorentz_conjugate,
+                         ExchangeField,
+                         PhotonEmitter
+                         >;
+   using FermionVertex2 = Vertex<
+                         typename EDMField::lorentz_conjugate,
+                         ExchangeField,
+                         PhotonEmitter
+                         >;
+
+   constexpr auto indexBounds = FermionVertex1::index_bounds;
+
+   for (const auto& index: indexBounds) {
+      const auto edmFieldIndices = FermionVertex1::template fieldIndices<0>(index);
+
+      if (edmFieldIndices == std::array<int, 1> {2} || edmFieldIndices == std::array<int, 1> {1})
+         continue;
+
+      const auto photonEmitterIndices = FermionVertex1::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = FermionVertex1::template fieldIndices<1>(index);
+      const auto vertex = FermionVertex1::evaluate(index, context);
+
+      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
+      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
+
+      const double photonEmitterCharge =
+         PhotonEmitter::electric_charge * unit_charge(context);
+
+      constexpr double numericFactor = oneOver16PiSquared;
+      const double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
+      const double couplingFactor = 1; //(std::conj(vertex.right()) * vertex.left()).imag();
+
+      const double massRatioSquared = Sqr(photonEmitterMass/exchangeFieldMass);
+      const double loopFactor = photonEmitterCharge * OneLoopFunctionA(massRatioSquared);
+      const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+
+      res += contribution;
+   }
+
+   return res;
+}
+
+template<class EDMField, class PhotonEmitter, class ExchangeField>
+double EDMVertexCorrectionSF<
+EDMField, PhotonEmitter, ExchangeField
+>::value(const typename field_indices<EDMField>::type& indices, EvaluationContext& context)
+{
+   double res = 0.0;
+
+   using FermionVertex = Vertex<
+                         typename EDMField::lorentz_conjugate,
+                         ExchangeField,
+                         PhotonEmitter
+                         >;
+
+   constexpr auto indexBounds = FermionVertex::index_bounds;
+
+   for (const auto& index: indexBounds) {
+      const auto edmFieldIndices = FermionVertex::template fieldIndices<0>(index);
+
+      if (indices == std::array<int, 1> {2} || indices == std::array<int, 1> {1})
+         continue;
+
+      const auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(index);
+      const auto vertex = FermionVertex::evaluate(index, context);
+
+      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
+      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
+
+      const double photonEmitterCharge =
+         PhotonEmitter::electric_charge * unit_charge(context);
+
+      constexpr double numericFactor = oneOver16PiSquared;
+      const double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
+      const double couplingFactor = 1; //(std::conj(vertex.right()) * vertex.left()).imag();
+
+      const double massRatioSquared = Sqr(exchangeFieldMass / photonEmitterMass);
+      const double loopFactor = photonEmitterCharge * OneLoopFunctionB(massRatioSquared);
+      const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+
+      res += contribution;
+   }
+
+   return res;
+}
+
+} // anonymous namespace
