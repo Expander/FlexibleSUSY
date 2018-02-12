@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -26,7 +28,7 @@ MuEGammaCreateInterfaceFunctionForField::usage="";
 MuEGammaContributingDiagramsForFieldAndGraph::usage="";
 MuEGammaContributingGraphs::usage="";
 
-Begin["Private`"];
+(*Begin["Private`"];*)
 
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate
@@ -48,15 +50,16 @@ MuEGammaContributingGraphs[] := contributingGraphs
 
 GetPhoton[] := SARAH`Photon
 
-MuEGammaContributingDiagramsForFieldAndGraph[field_,graph_] :=
+MuEGammaContributingDiagramsForLeptonPairAndGraph[{inLepton_, outLepton_}, graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> field, 2 -> SARAH`AntiField[field], 3 -> GetPhoton[]}];
+         {1 -> inLepton, 2 -> CXXDiagrams`LorentzConjugate[outLepton],
+          3 -> CXXDiagrams`LorentzConjugate[GetPhoton[]]}];
 
-    Select[diagrams,IsDiagramSupported[field,graph,#] &]
+    Select[diagrams,IsDiagramSupported[inLepton,outLepton,graph,#] &]
  ]
 
-IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
+IsDiagramSupported[inLepton_,outLepton_,vertexCorrectionGraph,diagram_] :=
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
@@ -71,18 +74,28 @@ IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-MuEGammaCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
-  Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
-  Print["in function"];
-    prototype = "double calculate_mu_to_egamma_" <> CXXNameOfField[field] <>
-                 "(" <> If[TreeMasses`GetDimension[field] =!= 1,
-                           " int generationIndex, ",
+MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_},gTaggedDiagrams_List] :=
+  Module[{prototype,definition,
+          numberOfIndices = CXXDiagrams`NumberOfFieldIndices[inLepton] +
+            CXXDiagrams`NumberOfFieldIndices[outLepton]},
+  
+    prototype = "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" 
+                  <> CXXNameOfField[outLepton] <> "_gamma" <>
+                  "(" <> If[TreeMasses`GetDimension[inLepton] =!= 1,
+                           " int generationIndex1, ",
+                           " "] <>
+                        If[TreeMasses`GetDimension[outLepton] =!= 1,
+                           " int generationIndex2, ",
                            " "] <>
                  "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );";
                  
-    definition = "double calculate_mu_to_egamma_" <> CXXNameOfField[field] <>
-                 "(" <> If[TreeMasses`GetDimension[field] =!= 1,
-                           " int generationIndex, ",
+    definition = "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" 
+                  <> CXXNameOfField[outLepton] <> "_gamma" <>
+                  "(" <> If[TreeMasses`GetDimension[inLepton] =!= 1,
+                           " int generationIndex1, ",
+                           " "] <>
+                        If[TreeMasses`GetDimension[outLepton] =!= 1,
+                           " int generationIndex2, ",
                            " "] <>
                  "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
                  "{\n" <>
@@ -91,8 +104,9 @@ MuEGammaCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                    "EvaluationContext context{ model_ };\n" <>
                    "std::array<int, " <> ToString @ numberOfIndices <>
                      "> indices = {" <>
-                       If[TreeMasses`GetDimension[field] =!= 1,
-                          " generationIndex" <>
+                     (* TODO: Specify indices correctly *)
+                       If[TreeMasses`GetDimension[inLepton] =!= 1,
+                          " generationIndex1" <>
                           If[numberOfIndices =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices-1}],
                              ""] <> " ",
@@ -104,7 +118,7 @@ MuEGammaCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                    "double val = 0.0;\n\n" <>
                    
                    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
-                     Flatten[CXXEvaluatorsForFieldAndDiagramsFromGraph[field,#[[2]],#[[1]]] & /@ gTaggedDiagrams],
+                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
                    
                    "return val;"
@@ -113,9 +127,9 @@ MuEGammaCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
     {prototype, definition}
   ];
 
-CXXEvaluatorsForFieldAndDiagramsFromGraph[field_,diagrams_,graph_] :=
-  CXXEvaluatorForFieldAndDiagramFromGraph[field,#,graph] & /@ diagrams
-CXXEvaluatorForFieldAndDiagramFromGraph[field_,diagram_,vertexCorrectionGraph] := 
+CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton_, outLepton_},diagrams_,graph_] :=
+  CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton,outLepton,#,graph] & /@ diagrams
+CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton_,outLepton_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
@@ -123,22 +137,24 @@ CXXEvaluatorForFieldAndDiagramFromGraph[field_,diagram_,vertexCorrectionGraph] :
     If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
        Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
-       Return[CXXEvaluatorFS[field,photonEmitter,exchangeParticle]]];
+       Return[CXXEvaluatorFS[inLepton,outLepton,photonEmitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
-       Return[CXXEvaluatorSF[field,photonEmitter,exchangeParticle]]];
+       Return[CXXEvaluatorSF[inLepton,outLepton,photonEmitter,exchangeParticle]]];
     
     Return["(unknown diagram)"];
   ]
 
-CXXEvaluatorFS[field_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[field] <> ", " <>
+CXXEvaluatorFS[inLepton_,outLepton_,photonEmitter_,exchangeParticle_] :=
+  "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inLepton] <> ", " <>
+  CXXDiagrams`CXXNameOfField[outLepton] <> ", " <>
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
-CXXEvaluatorSF[field_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[field] <> ", " <>
+CXXEvaluatorSF[inLepton_,outLepton_,photonEmitter_,exchangeParticle_] :=
+  "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inLepton] <> ", " <>
+  CXXDiagrams`CXXNameOfField[outLepton] <> ", " <>
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
-End[];
+(*End[];*)
 EndPackage[];
