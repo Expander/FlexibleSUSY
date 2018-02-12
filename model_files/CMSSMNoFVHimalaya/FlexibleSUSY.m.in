@@ -72,6 +72,9 @@ InitialGuessAtHighScale = {
 UseHiggs2LoopMSSM = True;
 EffectiveMu = \[Mu];
 UseMSSM3LoopRGEs = True;
+UseHiggs3LoopMSSM = True;
+UseMSSMYukawa2Loop = True;
+UseMSSMAlphaS2Loop = True;
 
 PotentialLSPParticles = {
     Chi, SveL, SvmL, SvtL, Su, Sd, Sc, Ss, St, Sb,
