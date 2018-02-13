@@ -196,15 +196,17 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
    constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
 
-   for (const auto& index: indexBoundsIn) {
-      const auto edmFieldIndices = FermionVertexIn::template fieldIndices<0>(index);
+   for (const auto& indexIn: indexBoundsIn) {
+      for (const auto& indexOut: indexBoundsOut) {
+      const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
+      const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexIn);
 
       //if (edmFieldIndices == std::array<int, 1> {2} || edmFieldIndices == std::array<int, 1> {1})
       //   continue;
 
-      const auto photonEmitterIndices = FermionVertexIn::template fieldIndices<2>(index);
-      const auto exchangeFieldIndices = FermionVertexIn::template fieldIndices<1>(index);
-      const auto vertex = FermionVertexIn::evaluate(index, context);
+      const auto photonEmitterIndices = FermionVertexIn::template fieldIndices<2>(indexIn);
+      const auto exchangeFieldIndices = FermionVertexIn::template fieldIndices<1>(indexIn);
+      const auto vertex = FermionVertexIn::evaluate(indexIn, context);
 
       const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
       const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
@@ -221,6 +223,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
       const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
       res += contribution;
+      }
    }
 
    return res;
