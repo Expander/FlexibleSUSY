@@ -99,7 +99,7 @@ namespace @ModelName@_mu_to_egamma {
 namespace {
 /**
 * @defgroup LoopFunctions Loop functions
-* @brief The loop functions necessary for edm one-loop calculations.
+* @brief The loop functions necessary for the Fe_I -> Fe_J gamma one-loop calculations.
 *
 * These are OneLoopFunctionA(), OneLoopFunctionB()
 * as specified in arXiv:0808.1819
@@ -172,6 +172,7 @@ double OneLoopFunctionF(double r)
    }
 }
 
+// emit photon from the internal scalar line
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionFS<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
@@ -196,39 +197,49 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
    constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
 
+   // loop over all possible particle "generations" attached to both vertices
    for (const auto& indexIn: indexBoundsIn) {
       for (const auto& indexOut: indexBoundsOut) {
-      const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
-      const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexIn);
 
-      //if (edmFieldIndices == std::array<int, 1> {2} || edmFieldIndices == std::array<int, 1> {1})
-      //   continue;
+         // cycle if external particles are different then requested   
+         const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
+         const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexIn);
+         if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
+            continue;
 
-      const auto photonEmitterIndices = FermionVertexIn::template fieldIndices<2>(indexIn);
-      const auto exchangeFieldIndices = FermionVertexIn::template fieldIndices<1>(indexIn);
-      const auto vertex = FermionVertexIn::evaluate(indexIn, context);
+         // match internal particles in two vertices
+         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         const auto exchangeFieldIndicesIn = FermionVertexIn::template fieldIndices<1>(indexIn);
+         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
+         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut || photonEmitterIndicesIn != photonEmitterIndicesOut)
+            continue;
 
-      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
-      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
+         const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
+         const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
 
-      const double photonEmitterCharge =
-         PhotonEmitter::electric_charge * unit_charge(context);
+         const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
+         const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
 
-      constexpr double numericFactor = oneOver16PiSquared;
-      const double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
-      const double couplingFactor = 1; //(std::conj(vertex.right()) * vertex.left()).imag();
+         const double photonEmitterCharge =
+            PhotonEmitter::electric_charge * unit_charge(context);
 
-      const double massRatioSquared = Sqr(photonEmitterMass/exchangeFieldMass);
-      const double loopFactor = photonEmitterCharge * OneLoopFunctionA(massRatioSquared);
-      const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+         constexpr double numericFactor = oneOver16PiSquared;
+         const double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
+         const double couplingFactor = 1; //(std::conj(vertex.right()) * vertex.left()).imag();
 
-      res += contribution;
+         const double massRatioSquared = Sqr(photonEmitterMass/exchangeFieldMass);
+         const double loopFactor = photonEmitterCharge * OneLoopFunctionA(massRatioSquared);
+         const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+
+         res += contribution;
       }
    }
 
    return res;
 }
 
+// emit photon from the internal fermion line
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionSF<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
