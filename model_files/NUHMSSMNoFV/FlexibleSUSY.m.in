@@ -46,9 +46,31 @@ SUSYScaleFirstGuess = LowEnergyConstant[MZ];
 
 SUSYScaleInput = {};
 
-HighScale = Qin;
+Qstop = With[
+    { mt = Yu[3,3] vu / Sqrt[2],
+      mQ2 = mq33IN^2,
+      mU2 = mu33IN^2,
+      Xt = AtIN - MuIN/TanBeta
+    },
+    Simplify @
+    Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
+];
 
-HighScaleFirstGuess = Qin;
+QstopGuess = With[
+    { mt = 160,
+      mQ2 = mq33IN^2,
+      mU2 = mu33IN^2,
+      Xt = AtIN - MuIN/TanBeta
+    },
+    Simplify @
+    Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
+];
+
+EvalIf[expr_] := Block[{If}, expr];
+
+HighScale = EvalIf @ If[Qin != 0, Qin, Qstop];
+
+HighScaleFirstGuess = EvalIf @ If[Qin != 0, Qin, QstopGuess];
 
 HighScaleInput = {
    {T[Ye][1,1], AeIN*Ye[1,1]},

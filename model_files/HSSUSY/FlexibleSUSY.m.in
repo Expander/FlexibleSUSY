@@ -55,10 +55,32 @@ FSAuxiliaryParameterInfo = {
 
 EWSBOutputParameters = { mu2 };
 
-(* The high scale where we match to the MSSM *)
-HighScale = MSUSY;
+Qmat = With[
+    { mt = Yu[3,3] v Sin[ArcTan[TanBeta]] / Sqrt[2],
+      mQ2 = msq2[3,3],
+      mU2 = msu2[3,3],
+      Xt = AtInput - MuInput/TanBeta
+    },
+    Simplify @
+    Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
+];
 
-HighScaleFirstGuess = MSUSY;
+QmatGuess = With[
+    { mt = 160,
+      mQ2 = msq2[3,3],
+      mU2 = msu2[3,3],
+      Xt = AtInput - MuInput/TanBeta
+    },
+    Simplify @
+    Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
+];
+
+EvalIf[expr_] := Block[{If}, expr];
+
+(* The high scale where we match to the MSSM *)
+HighScale = EvalIf @ If[MSUSY != 0, MSUSY, Qmat];
+
+HighScaleFirstGuess = EvalIf @ If[MSUSY != 0, MSUSY, QmatGuess];
 
 HighScaleInput = {
     {\[Lambda], lambdaTree
