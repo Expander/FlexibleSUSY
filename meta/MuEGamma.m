@@ -76,8 +76,8 @@ IsDiagramSupported[inLepton_,outLepton_,vertexCorrectionGraph,diagram_] :=
 
 MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_},gTaggedDiagrams_List] :=
   Module[{prototype,definition,
-          numberOfIndices = CXXDiagrams`NumberOfFieldIndices[inLepton] +
-            CXXDiagrams`NumberOfFieldIndices[outLepton]},
+          numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inLepton],
+numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
   
     prototype = "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" 
                   <> CXXNameOfField[outLepton] <> "_gamma" <>
@@ -102,22 +102,33 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_},gTaggedDiag
                  IndentText[
                    FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                    "EvaluationContext context{ model_ };\n" <>
-                   "std::array<int, " <> ToString @ numberOfIndices <>
-                     "> indices = {" <>
+                   "std::array<int, " <> ToString @ numberOfIndices1 <>
+                     "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[inLepton] =!= 1,
                           " generationIndex1" <>
-                          If[numberOfIndices =!= 1,
-                             StringJoin @ Table[", 0", {numberOfIndices-1}],
+                          If[numberOfIndices1 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices1-1}],
                              ""] <> " ",
-                          If[numberOfIndices =!= 0,
-                             StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
+                          If[numberOfIndices1 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
+                             ""]
+                         ] <> "};\n" <>
+                   "std::array<int, " <> ToString @ numberOfIndices2 <>
+                     "> indices2 = {" <>
+                       If[TreeMasses`GetDimension[outLepton] =!= 1,
+                          " generationIndex2" <>
+                          If[numberOfIndices2 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices2-1}],
+                             ""] <> " ",
+                          If[numberOfIndices2 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
                              ""]
                          ] <> "};\n\n" <>
                                  
                    "double val = 0.0;\n\n" <>
                    
-                   StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
+                   StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@ 
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
                    
@@ -128,7 +139,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_},gTaggedDiag
   ];
 
 CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton_, outLepton_},diagrams_,graph_] :=
-  CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton,outLepton,#,graph] & /@ diagrams
+  CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton,outLepton,#,graph] & /@ diagrams;
 CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton_,outLepton_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)

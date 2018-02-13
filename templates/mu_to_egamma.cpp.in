@@ -59,7 +59,8 @@ static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionSF {
    static double value(
-         std::array<const typename field_indices<EDMField1>::type&, 2> indices,
+         const typename field_indices<EDMField1>::type& indices_in,
+         const typename field_indices<EDMField1>::type& indices_out,
                        EvaluationContext& context);
 };
 
@@ -83,7 +84,8 @@ struct EDMVertexCorrectionSF {
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionFS {
    static double value(
-         std::array<const typename field_indices<EDMField1>::type&, 2> indices,
+         const typename field_indices<EDMField1>::type& indices_in,
+         const typename field_indices<EDMField1>::type& indices_out,
                        EvaluationContext& context);
 };
 } // anonymous namespace
@@ -173,33 +175,36 @@ double OneLoopFunctionF(double r)
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionFS<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
->::value(std::array<const typename field_indices<EDMField1>::type&, 2> indices, 
+>::value(
+      const typename field_indices<EDMField1>::type& indices_in, 
+      const typename field_indices<EDMField1>::type& indices_out, 
       EvaluationContext& context)
 {
    double res = 0.0;
 
-   using FermionVertex1 = Vertex<
-                         typename EDMField1::lorentz_conjugate,
+   using FermionVertexOut = Vertex<
+                         typename EDMField2::lorentz_conjugate,
                          ExchangeField,
                          PhotonEmitter
                          >;
-   using FermionVertex2 = Vertex<
-                         typename EDMField1::lorentz_conjugate,
-                         ExchangeField,
-                         PhotonEmitter
+   using FermionVertexIn = Vertex<
+                         EDMField1,
+                         typename ExchangeField::lorentz_conjugate,
+                         typename PhotonEmitter::lorentz_conjugate
                          >;
 
-   constexpr auto indexBounds = FermionVertex1::index_bounds;
+   constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
+   constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
 
-   for (const auto& index: indexBounds) {
-      const auto edmFieldIndices = FermionVertex1::template fieldIndices<0>(index);
+   for (const auto& index: indexBoundsIn) {
+      const auto edmFieldIndices = FermionVertexIn::template fieldIndices<0>(index);
 
       //if (edmFieldIndices == std::array<int, 1> {2} || edmFieldIndices == std::array<int, 1> {1})
       //   continue;
 
-      const auto photonEmitterIndices = FermionVertex1::template fieldIndices<2>(index);
-      const auto exchangeFieldIndices = FermionVertex1::template fieldIndices<1>(index);
-      const auto vertex = FermionVertex1::evaluate(index, context);
+      const auto photonEmitterIndices = FermionVertexIn::template fieldIndices<2>(index);
+      const auto exchangeFieldIndices = FermionVertexIn::template fieldIndices<1>(index);
+      const auto vertex = FermionVertexIn::evaluate(index, context);
 
       const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
       const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
