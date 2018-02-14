@@ -201,9 +201,9 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
    for (const auto& indexIn: indexBoundsIn) {
       for (const auto& indexOut: indexBoundsOut) {
 
-         // cycle if external particles are different then requested   
+         // cycle if generations of external particles are different then requested   
          const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
-         const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexIn);
+         const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexOut);
          if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
             continue;
 
@@ -220,17 +220,18 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
          const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
+         const auto x = pow(exchangeFieldMass/photonEmitterMass, 2);
+         const auto leptonMass = context.mass<EDMField1>(edmFieldIndicesIn);
 
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
-         constexpr double numericFactor = oneOver16PiSquared;
-         const double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
-         const double couplingFactor = 1; //(std::conj(vertex.right()) * vertex.left()).imag();
+         constexpr double numericFactor = oneOver16PiSquared/2.0;
+         const double couplingFactor = (vertexOut.left() * vertexIn.left()).real() * OneLoopFunctionB(x) + (vertexOut.left()* vertexIn.right()).real()* exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+         std::cout << (vertexOut.left() * vertexIn.left()).real() << std::endl; 
+         const double massFactor = pow(photonEmitterMass,-2);
 
-         const double massRatioSquared = Sqr(photonEmitterMass/exchangeFieldMass);
-         const double loopFactor = photonEmitterCharge * OneLoopFunctionA(massRatioSquared);
-         const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+         const double contribution = numericFactor * massFactor * couplingFactor ;
 
          res += contribution;
       }
@@ -281,7 +282,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
       const double loopFactor = photonEmitterCharge * OneLoopFunctionB(massRatioSquared);
       const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
-      res += contribution;
+      res += 0*contribution;
    }
 
    return res;
