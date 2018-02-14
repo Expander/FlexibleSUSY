@@ -24,6 +24,9 @@
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
+#include <valarray>
+#include <complex>
+#include <iostream>
 
 #include "@ModelName@_mu_to_egamma.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
@@ -58,7 +61,7 @@ static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
  */
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionSF {
-   static double value(
+   static std::valarray<std::complex<double>> value(
          const typename field_indices<EDMField1>::type& indices_in,
          const typename field_indices<EDMField1>::type& indices_out,
                        EvaluationContext& context);
@@ -79,11 +82,10 @@ struct EDMVertexCorrectionSF {
 * dipole moment of a one loop diagram with fields given by
 * \a Args.
 */
-#include <iostream>
 
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionFS {
-   static double value(
+   static std::valarray<std::complex<double>> value(
          const typename field_indices<EDMField1>::type& indices_in,
          const typename field_indices<EDMField1>::type& indices_out,
                        EvaluationContext& context);
@@ -174,14 +176,14 @@ double OneLoopFunctionF(double r)
 
 // emit photon from the internal scalar line
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
-double EDMVertexCorrectionFS<
+std::valarray<std::complex<double>> EDMVertexCorrectionFS<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
 >::value(
       const typename field_indices<EDMField1>::type& indices_in, 
       const typename field_indices<EDMField1>::type& indices_out, 
       EvaluationContext& context)
 {
-   double res = 0.0;
+   std::valarray<std::complex<double>> res {0.0, 0.0};
 
    using FermionVertexOut = Vertex<
                          typename EDMField2::lorentz_conjugate,
@@ -226,14 +228,16 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
-         constexpr double numericFactor = oneOver16PiSquared/2.0;
-         const double couplingFactor = (vertexOut.left() * vertexIn.left()).real() * OneLoopFunctionB(x) + (vertexOut.left()* vertexIn.right()).real()* exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
-         std::cout << (vertexOut.left() * vertexIn.left()).real() << std::endl; 
-         const double massFactor = pow(photonEmitterMass,-2);
+         constexpr std::complex<double> numericFactor = oneOver16PiSquared/2.0;
+         const std::complex<double> A2L = vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+         const std::complex<double> A2R = vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+ //        std::cout << couplingFactor << std::endl; 
+         const std::complex<double> massFactor = pow(photonEmitterMass,-2);
 
-         const double contribution = numericFactor * massFactor * couplingFactor ;
+  //       const double contribution = numericFactor * massFactor * couplingFactor ;
 
-         res += contribution;
+         res += numericFactor * massFactor 
+            * std::valarray<std::complex<double>> {A2L, A2R};
       }
    }
 
@@ -242,13 +246,13 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
 // emit photon from the internal fermion line
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
-double EDMVertexCorrectionSF<
+std::valarray<std::complex<double>> EDMVertexCorrectionSF<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField1>::type& indices_in, 
       const typename field_indices<EDMField1>::type& indices_out,
       EvaluationContext& context)
 {
-   double res = 0.0;
+   std::valarray<std::complex<double>> res {0.0, 0.0};
 
    using FermionVertex = Vertex<
                          typename EDMField1::lorentz_conjugate,
@@ -263,7 +267,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
       //if (indices == std::array<int, 1> {2} || indices == std::array<int, 1> {1})
       //   continue;
-
+/*
       const auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(index);
       const auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(index);
       const auto vertex = FermionVertex::evaluate(index, context);
@@ -283,7 +287,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
       const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
 
       res += 0*contribution;
-   }
+*/   }
 
    return res;
 }

@@ -126,13 +126,13 @@ numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
                              ""]
                          ] <> "};\n\n" <>
                                  
-                   "double val = 0.0;\n\n" <>
+                   "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
                    
                    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@ 
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
-                   
-                   "return val;"
+                  "const auto leptonInMass = context.mass<Fe>(indices1);\n" <> 
+                   "return pow(leptonInMass,5)/(16.0*Pi) * (abs(val)*abs(val)).sum().real();"
                  ] <> "\n}";
     
     {prototype, definition}
