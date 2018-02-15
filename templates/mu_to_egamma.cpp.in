@@ -176,7 +176,7 @@ double OneLoopFunctionF(double r)
 
 // emit photon from the internal scalar line
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
-std::valarray<std::complex<double>> EDMVertexCorrectionFS<
+std::valarray<std::complex<double>> EDMVertexCorrectionSF<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
 >::value(
       const typename field_indices<EDMField1>::type& indices_in, 
@@ -231,10 +231,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          constexpr std::complex<double> numericFactor = oneOver16PiSquared/2.0;
          const std::complex<double> A2L = vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
          const std::complex<double> A2R = vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
- //        std::cout << couplingFactor << std::endl; 
          const std::complex<double> massFactor = pow(photonEmitterMass,-2);
-
-  //       const double contribution = numericFactor * massFactor * couplingFactor ;
 
          res += numericFactor * massFactor 
             * std::valarray<std::complex<double>> {A2L, A2R};
@@ -246,7 +243,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
 // emit photon from the internal fermion line
 template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
-std::valarray<std::complex<double>> EDMVertexCorrectionSF<
+std::valarray<std::complex<double>> EDMVertexCorrectionFS<
 EDMField1, EDMField2, PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField1>::type& indices_in, 
       const typename field_indices<EDMField1>::type& indices_out,
@@ -254,40 +251,58 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 {
    std::valarray<std::complex<double>> res {0.0, 0.0};
 
-   using FermionVertex = Vertex<
-                         typename EDMField1::lorentz_conjugate,
+   using FermionVertexOut = Vertex<
+                         typename EDMField2::lorentz_conjugate,
                          ExchangeField,
                          PhotonEmitter
                          >;
+   using FermionVertexIn = Vertex<
+                         EDMField1,
+                         typename ExchangeField::lorentz_conjugate,
+                         typename PhotonEmitter::lorentz_conjugate
+                         >;
 
-   constexpr auto indexBounds = FermionVertex::index_bounds;
+   constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
+   constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
 
-   for (const auto& index: indexBounds) {
-      const auto edmFieldIndices = FermionVertex::template fieldIndices<0>(index);
+   // loop over all possible particle "generations" attached to both vertices
+   for (const auto& indexIn: indexBoundsIn) {
+      for (const auto& indexOut: indexBoundsOut) {
 
-      //if (indices == std::array<int, 1> {2} || indices == std::array<int, 1> {1})
-      //   continue;
-/*
-      const auto photonEmitterIndices = FermionVertex::template fieldIndices<2>(index);
-      const auto exchangeFieldIndices = FermionVertex::template fieldIndices<1>(index);
-      const auto vertex = FermionVertex::evaluate(index, context);
+         // cycle if generations of external particles are different then requested   
+         const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
+         const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexOut);
+         if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
+            continue;
 
-      const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndices);
-      const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
+         // match internal particles in two vertices
+         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         const auto exchangeFieldIndicesIn = FermionVertexIn::template fieldIndices<1>(indexIn);
+         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
+         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut || photonEmitterIndicesIn != photonEmitterIndicesOut)
+            continue;
 
-      const double photonEmitterCharge =
-         PhotonEmitter::electric_charge * unit_charge(context);
+         const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
+         const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
 
-      constexpr double numericFactor = oneOver16PiSquared;
-      const double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);
-      const double couplingFactor = 1; //(std::conj(vertex.right()) * vertex.left()).imag();
+         const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
+         const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
+         const auto x = pow(photonEmitterMass/exchangeFieldMass, 2);
+         const auto leptonMass = context.mass<EDMField1>(edmFieldIndicesIn);
 
-      const double massRatioSquared = Sqr(exchangeFieldMass / photonEmitterMass);
-      const double loopFactor = photonEmitterCharge * OneLoopFunctionB(massRatioSquared);
-      const double contribution = numericFactor * massFactor * couplingFactor * loopFactor;
+         const double photonEmitterCharge =
+            PhotonEmitter::electric_charge * unit_charge(context);
 
-      res += 0*contribution;
-*/   }
+         constexpr std::complex<double> numericFactor = oneOver16PiSquared/2.0;
+         const std::complex<double> A2L = vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) + vertexOut.left()* vertexIn.left() * photonEmitterMass/leptonMass *OneLoopFunctionF(x);
+         const std::complex<double> A2R = vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass *OneLoopFunctionF(x);
+         const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
+
+         res += - numericFactor * massFactor 
+            * std::valarray<std::complex<double>> {A2L, A2R};
+      }
+   }
 
    return res;
 }
