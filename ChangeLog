@@ -109,6 +109,11 @@ FlexibleSUSY 2.0.2 [not released yet]
    This bugfix affects BSM models with additional unbroken non-abelian
    gauge groups.
 
+ * Bugfix (commit a1fa5e7f): Fix multiple local definitions of EWSB
+   output parameters in models with complex parameters.
+
+   Thanks to Simonas Drauksas.
+
  * Bugfix (commit c275b60): Fix linking error on Darwin platforms.
 
  * Bugfix (commit dd4292a): Adding the user-defined $(CXXFLAGS) to the
