@@ -53,7 +53,7 @@ GetPhoton[] := SARAH`Photon
 MuEGammaContributingDiagramsForLeptonPairAndGraph[{inLepton_, outLepton_}, graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> inLepton, 2 -> CXXDiagrams`LorentzConjugate[outLepton],
+         {1 ->CXXDiagrams`LorentzConjugate[inLepton], 2 -> outLepton,
           3 -> CXXDiagrams`LorentzConjugate[GetPhoton[]]}];
 
     Select[diagrams,IsDiagramSupported[inLepton,outLepton,graph,#] &]
@@ -61,11 +61,11 @@ MuEGammaContributingDiagramsForLeptonPairAndGraph[{inLepton_, outLepton_}, graph
 
 IsDiagramSupported[inLepton_,outLepton_,vertexCorrectionGraph,diagram_] :=
   Module[{photonEmitter,exchangeParticle},
-    photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+    photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
-       Return[False]];
+    If[diagram[[6]] =!= {GetPhoton[],photonEmitter,CXXDiagrams`LorentzConjugate[photonEmitter]},
+       Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[True]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
@@ -142,11 +142,9 @@ CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton_, outLepton_},diagrams_
   CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton,outLepton,#,graph] & /@ diagrams;
 CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton_,outLepton_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},
-    photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+    photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
-       Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[CXXEvaluatorFS[inLepton,outLepton,photonEmitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],

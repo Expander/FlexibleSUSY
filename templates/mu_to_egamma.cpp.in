@@ -185,15 +185,15 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 {
    std::valarray<std::complex<double>> res {0.0, 0.0};
 
-   using FermionVertexOut = Vertex<
-                         typename EDMField2::lorentz_conjugate,
-                         ExchangeField,
-                         PhotonEmitter
-                         >;
    using FermionVertexIn = Vertex<
                          EDMField1,
-                         typename ExchangeField::lorentz_conjugate,
+                         ExchangeField,
                          typename PhotonEmitter::lorentz_conjugate
+                         >;
+   using FermionVertexOut = Vertex<
+                         typename EDMField2::lorentz_conjugate,
+                         typename ExchangeField::lorentz_conjugate,
+                         PhotonEmitter
                          >;
 
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
@@ -229,8 +229,14 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
             PhotonEmitter::electric_charge * unit_charge(context);
 
          constexpr std::complex<double> numericFactor = oneOver16PiSquared/2.0;
-         const std::complex<double> A2L = vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
-         const std::complex<double> A2R = vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+
+         const std::complex<double> A2L = 
+            vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
+            + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+         const std::complex<double> A2R = 
+            vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
+            + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+
          const std::complex<double> massFactor = pow(photonEmitterMass,-2);
 
          res += numericFactor * massFactor 
@@ -251,17 +257,17 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 {
    std::valarray<std::complex<double>> res {0.0, 0.0};
 
-   using FermionVertexOut = Vertex<
-                         typename EDMField2::lorentz_conjugate,
-                         ExchangeField,
-                         PhotonEmitter
-                         >;
    using FermionVertexIn = Vertex<
                          EDMField1,
-                         typename ExchangeField::lorentz_conjugate,
+                         ExchangeField,
                          typename PhotonEmitter::lorentz_conjugate
                          >;
-
+   using FermionVertexOut = Vertex<
+                         typename EDMField2::lorentz_conjugate,
+                         typename ExchangeField::lorentz_conjugate,
+                         PhotonEmitter
+                         >;
+   
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
    constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
 
