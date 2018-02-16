@@ -1600,6 +1600,18 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            parametersToSave = Join[parametersToSave,
                                    #[[1]]& /@ (Select[ewsbSubstitutions,
                                                       Function[sub, Or @@ (!FreeQ[sub[[2]], #]& /@ parametersToSave)]])];
+           parametersToSave = DeleteDuplicates[parametersToSave /.
+                                               {
+                                                   Susyno`LieGroups`conj -> Identity,
+                                                   SARAH`Conj            -> Identity,
+                                                   SARAH`Tp              -> Identity,
+                                                   SARAH`Adj             -> Identity,
+                                                   SARAH`bar             -> Identity,
+                                                   Conjugate             -> Identity,
+                                                   Transpose             -> Identity,
+                                                   Re                    -> Identity,
+                                                   Im                    -> Identity
+                                               }];
            saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersToSave];
            (ewsbSolverHeaders = ewsbSolverHeaders
                                 <> EnableForBVPSolver[#, ("#include \"" <> FlexibleSUSY`FSModelName
