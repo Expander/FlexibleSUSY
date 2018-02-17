@@ -94,6 +94,20 @@ struct EDMVertexCorrectionFS {
 
 namespace flexiblesusy {
 namespace @ModelName@_mu_to_egamma {
+inline double sm_width(int generationIndex1,  int generationIndex2, const MRSSM2_mass_eigenstates& model ) {
+   MRSSM2_mass_eigenstates model_ = model;
+   EvaluationContext context{ model_ };
+   std::array<int, 1> indices1 = { generationIndex1 };
+   std::array<int, 1> indices2 = { generationIndex2 };
+
+   const auto leptonInMass = context.mass<Fe>(indices1);
+   const auto leptonOutMass = context.mass<Fe>(indices2);
+   const auto ratio = pow(leptonOutMass/leptonInMass,2);
+   const auto GF {1.1667e-5};
+   const double Alpha = 1./128.;
+
+   return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio ) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
+}
 @MuEGamma_InterfaceDefinitions@
 }
 } // namespace flexiblesusy

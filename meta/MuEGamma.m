@@ -132,7 +132,8 @@ numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
                   "const auto leptonInMass = context.mass<Fe>(indices1);\n" <> 
-                   "return pow(leptonInMass,5)/(16.0*Pi) * (abs(val)*abs(val)).sum().real();"
+                  "const double width = pow(leptonInMass,5)/(16.0*Pi) * (abs(val)*abs(val)).sum().real();" <>
+                  "return width/(width + sm_width(generationIndex1, generationIndex2, model));"
                  ] <> "\n}";
     
     {prototype, definition}
