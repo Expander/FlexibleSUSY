@@ -81,26 +81,36 @@ void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
 @setObservables@
 }
 
-@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+@ModelName@_observables calculate_observables(@ModelName@_mass_eigenstates& model,
                                               const softsusy::QedQcd& qedqcd,
                                               const Physical_input& physical_input,
                                               double scale)
 {
    auto model_at_scale = model;
 
-   if (scale > 0.)
-      model_at_scale.run_to(scale);
+   if (scale > 0.) {
+      try {
+         model_at_scale.run_to(scale);
+      } catch (const Error& e) {
+         model.get_problems().flag_thrown(e.what());
+         return @ModelName@_observables();
+      }
+   }
 
    return calculate_observables(model_at_scale, qedqcd, physical_input);
 }
 
-@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+@ModelName@_observables calculate_observables(@ModelName@_mass_eigenstates& model,
                                               const softsusy::QedQcd& qedqcd,
                                               const Physical_input& physical_input)
 {
    @ModelName@_observables observables;
 
+   try {
 @calculateObservables@
+   } catch (const Error& e) {
+      model.get_problems().flag_thrown(e.what());
+   }
 
    return observables;
 }

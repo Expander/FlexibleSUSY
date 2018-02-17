@@ -1868,7 +1868,7 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
                                        "@getObservablesNames@" -> IndentText[getObservablesNames],
                                        "@clearObservables@" -> IndentText[clearObservables],
                                        "@setObservables@" -> IndentText[setObservables],
-                                       "@calculateObservables@" -> IndentText[calculateObservables],
+                                       "@calculateObservables@" -> IndentText @ IndentText[calculateObservables],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
