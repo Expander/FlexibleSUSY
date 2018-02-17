@@ -146,7 +146,7 @@ FactorOutLoopFactor[expr_] :=
                              CConversion`threeLoop, CConversion`oneOver16PiSqr^4}},
            For[i = 1, i <= Length[prefactors], i++,
                If[Coefficient[expr, prefactors[[i]]] =!= 0,
-                  Return[Simplify[prefactors[[i]] Expand[expr / prefactors[[i]]]]];
+                  Return[TimeConstrainedSimplify[prefactors[[i]] Expand[expr / prefactors[[i]]]]];
                  ];
               ];
            expr
