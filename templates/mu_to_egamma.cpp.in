@@ -42,7 +42,7 @@ using namespace flexiblesusy;
 using namespace cxx_diagrams;
 
 namespace {
-static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
+static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
 
 /**
  * @class MuEGammaVertexCorrectionSF
@@ -228,8 +228,6 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
-         constexpr std::complex<double> numericFactor = oneOver16PiSquared/2.0;
-
          const std::complex<double> A2L = 
             vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
             + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
@@ -239,7 +237,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
          const std::complex<double> massFactor = pow(photonEmitterMass,-2);
 
-         res += numericFactor * massFactor 
+         res += oneOver32PiSquared * massFactor 
             * std::valarray<std::complex<double>> {A2L, A2R};
       }
    }
@@ -300,12 +298,11 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
-         constexpr std::complex<double> numericFactor = oneOver16PiSquared/2.0;
          const std::complex<double> A2L = vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) + vertexOut.left()* vertexIn.left() * photonEmitterMass/leptonMass *OneLoopFunctionF(x);
          const std::complex<double> A2R = vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass *OneLoopFunctionF(x);
          const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
 
-         res += - numericFactor * massFactor 
+         res += - oneOver32PiSquared * massFactor 
             * std::valarray<std::complex<double>> {A2L, A2R};
       }
    }
