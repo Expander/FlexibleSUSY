@@ -237,7 +237,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
          const std::complex<double> massFactor = pow(photonEmitterMass,-2);
 
-         res += oneOver32PiSquared * massFactor 
+         res += oneOver32PiSquared * photonEmitterCharge * massFactor 
             * std::valarray<std::complex<double>> {A2L, A2R};
       }
    }
@@ -306,7 +306,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
             + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
          const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
 
-         res += - oneOver32PiSquared * massFactor 
+         res += - oneOver32PiSquared * photonEmitterCharge * massFactor 
             * std::valarray<std::complex<double>> {A2L, A2R};
       }
    }
