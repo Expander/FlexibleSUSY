@@ -230,10 +230,10 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
          const std::complex<double> A2L = 
             vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
-            + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+            + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
          const std::complex<double> A2R = 
             vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
-            + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass *OneLoopFunctionC(x);
+            + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
 
          const std::complex<double> massFactor = pow(photonEmitterMass,-2);
 
@@ -298,8 +298,12 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
-         const std::complex<double> A2L = vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) + vertexOut.left()* vertexIn.left() * photonEmitterMass/leptonMass *OneLoopFunctionF(x);
-         const std::complex<double> A2R = vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass *OneLoopFunctionF(x);
+         const std::complex<double> A2L = 
+            vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
+            + vertexOut.left()* vertexIn.left() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
+         const std::complex<double> A2R = 
+            vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
+            + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
          const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
 
          res += - oneOver32PiSquared * massFactor 
