@@ -29,7 +29,7 @@ AMuonCreateMuonPhysicalMass::usage="";
 AMuonCreateCalculation::usage="";
 AMuonGetMSUSY::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate

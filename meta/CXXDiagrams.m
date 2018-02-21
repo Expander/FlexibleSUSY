@@ -39,7 +39,7 @@ CreateMassFunctions::usage="";
 CreateUnitCharge::usage="";
 NumberOfFieldIndices::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 Initialize[] := LoadVerticesIfNecessary[]
 
