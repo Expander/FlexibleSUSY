@@ -9,9 +9,6 @@ BASEDIR=$(dirname $0)
 # absolute path to this script
 ABSBASEDIR=$(cd $BASEDIR; pwd)
 
-# config directory
-CONFIGDIR="${BASEDIR}/config"
-
 # operating system
 operating_system="`(uname -s) 2>/dev/null || echo unknown`"
 
@@ -183,25 +180,6 @@ is_executable () {
     fi
 
     cmd=$(command -v -- "$1")
-}
-
-#_____________________________________________________________________
-string_trim() {
-    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
-}
-
-#_____________________________________________________________________
-make_unique() {
-    # removes duplicate words from the string $1 (preserves order)
-    local str="$1"
-    local res=""
-
-    for s in ${str}; do
-        contains "${res}" "${s}" && continue
-        res="${res} ${s}"
-    done
-
-    echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
 }
 
 #_____________________________________________________________________
@@ -381,26 +359,6 @@ search_default_model() {
     eval "${_output_var}=${_sarah_model}"
 }
 
-#_____________________________________________________________________
-# include function to check for model-specific corrections
-. "${CONFIGDIR}/model_specific_corrections.sh"
-
-#_____________________________________________________________________
-check_model_specific_corrections() {
-    message -n "Searching for required higher order corrections ... "
-    local model_file="$1"
-    local ho="$(get_model_specific_corrections "${model_file}" "${mathematica_kernel}")"
-    ho="$(make_unique "${ho}")"
-    ho="$(string_trim "${ho}")"
-
-    message "(${ho})"
-    logmsg "Depends on higher order libraries: ${ho}"
-
-    MODEL_SPECIFIC_MODULES="$ho"
-}
-
-#_____________________________________________________________________
-
 trap "exit 1" INT QUIT TERM
 
 rm -f ${createmodel_log}
@@ -524,7 +482,6 @@ fi
 check_model_name "${name}"
 check_sarah_model "${sarah_model}" "${sub_model}"
 check_flags
-check_model_specific_corrections "$model_file_dir/FlexibleSUSY.m.in"
 
 if [ -n "$sub_model" ]; then
     echo "Creating model $name (SARAH model: $sarah_model, sub-model: $sub_model)"
@@ -550,7 +507,6 @@ message -n "  Creating Makefile module $targetdir/module.mk ... "
 sed -e "s|@DIR@|$targetdir|g"			  \
     -e "s|@MODEL@|$sarah_model|g"		  \
     -e "s|@CLASSNAME@|$name|g"			  \
-    -e "s|@MODEL_SPECIFIC_MODULES@|$MODEL_SPECIFIC_MODULES|g" \
     -e "s|@SLHA_INPUT@|$SLHA_input_files_in_mk|g" \
     < templates/module.mk.in > $targetdir/module.mk
 message "done"
