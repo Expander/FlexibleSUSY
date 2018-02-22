@@ -115,6 +115,7 @@
 \newcommand{\THDMII}{\ensuremath{\text{THDM-II}}\xspace}
 \newcommand{\MSSM}{\ensuremath{\text{MSSM}}\xspace}
 \newcommand{\MS}{\ensuremath{M_S}\xspace}
+\newcommand{\MLCP}{\ensuremath{M_\text{LCP}}\xspace}
 \newcommand{\MEWSB}{\ensuremath{M_\text{EWSB}}\xspace}
 \newcommand{\Qmatch}{\ensuremath{Q_\text{match}}}
 \newcommand{\QpoleBSM}{\ensuremath{Q_\text{pole,BSM}}}
@@ -259,31 +260,34 @@ Seoul 02455, Republic of Korea}
 \address[rwth]{Institute for Theoretical Particle Physics and Cosmology, RWTH Aachen University, 52074 Aachen, Germany}
 
   \begin{abstract}
-    We document major new features and improvements
-    of \fs, a \mathematica and
-    C++ package that generates fast and precise spectrum
-    generators. These extensions significantly increase the generality
-    and capabilities of the \fs package, while maintaining the elegant
-    structure and easy to use interfaces. The \fbsm extension makes it
-    possible to also create spectrum generators for non-supersymmetric
-    extensions of the Standard Model. The \fcpv extension adds the
-    option of complex parameters to the spectrum generators, allowing
-    the study of many interesting models with new sources of \CP
-    violation. \fmw computes the decay of the muon for the generated
-    model and thereby allows \fs to predict the mass of the $W$ boson
-    from the input parameters by using the more precise electroweak
-    input of $\{ G_F, M_Z, \aem \}$ instead of $\{ M_W, M_Z,
-    \aem \}$. The \famu extension provides a calculator of the
-    anomalous magnetic moment of the muon in any model \fs can
-    generate a spectrum for.  \fsas introduces a new solver for the
-    boundary value problem which makes use of semi-analytic expressions
-    for dimensionful parameters to find solutions in models
-    where the classic two-scale solver will not work such as the constrained
-    E$_6$SSM\@. \feft is a hybrid calculation of the Higgs mass which
-    combines the virtues of both effective field theory calculations
-    and fixed-order calculations.  All of these extensions are
-    included in \fstwo, which is released simultaneously with this
-    manual.
+    We document major new features and improvements of \fs, a
+    \mathematica and C++ package with a dependency on the external
+    package \sarah, that generates fast and precise spectrum
+    generators. The extensions presented here significantly increase
+    the generality and capabilities of the \fs package, which already
+    works with a wide class of models, while
+    maintaining an elegant structure and easy to use interfaces. The
+    \fbsm extension makes it possible to also create spectrum
+    generators for non-supersymmetric extensions of the Standard
+    Model. The \fcpv extension adds the option of complex parameters
+    to the spectrum generators, allowing the study of many interesting
+    models with new sources of \CP violation. \fmw computes the decay
+    of the muon for the generated model and thereby allows \fs to
+    predict the mass of the $W$ boson from the input parameters by
+    using the more precise electroweak input of $\{ G_F, M_Z, \aem \}$
+    instead of $\{ M_W, M_Z, \aem \}$. The \famu extension provides a
+    calculator of the anomalous magnetic moment of the muon in any
+    model \fs can generate a spectrum for.  \fsas introduces a new
+    solver for the boundary value problem which makes use of
+    semi-analytic expressions for dimensionful parameters to find
+    solutions in models where the classic two-scale solver will not
+    work such as the constrained E$_6$SSM\@. \feft is a hybrid
+    calculation of the Higgs mass which combines the virtues of both
+    effective field theory calculations and fixed-order calculations.
+    All of these extensions are included in \fstwo, which is released
+    simultaneously with this manual.%% \sarah, an external dependency
+    %% providing model dependent information, can be automaically
+    %% installed using an installation script distributed with \fs.
   \end{abstract}
 
 \begin{keyword}
@@ -350,21 +354,21 @@ extending it to overcome restrictions in scope is quite straightforward.
 \section{Introduction}
 
 Popular and well studied new physics extensions of the Standard Model
-(SM) are coming under increasing pressure from the searches
-at the Large Hadron Collider (LHC) as well as other current experiments.
-At the same time, there remain many outstanding physics problems that are not
-solved by the SM and require new physics.  For example, the origin of dark
-matter is still unexplained and it requires some new particle
+(SM) are coming under increasing pressure from the searches at the
+Large Hadron Collider (LHC) as well as other current experiments.  At
+the same time, there remain many outstanding physics problems that are
+not solved by the SM and require new physics.  For example, the origin
+of dark matter is still unexplained and it requires some new particle
 to fit the relic density.  In addition, the gauge structure and
 fractional charges of the SM have no explanation, but some
 observations hint at the possibility of a grand unified theory (GUT)
 from which these can be derived after the breakdown of the GUT gauge
 group.  Finally, the stability of the weak scale, which is $17$ orders
 of magnitude smaller than the Planck scale, has no explanation within
-the SM and has been the driving motivation for the construction and study
-of concepts that go beyond the Standard Model (BSM), most notably supersymmetry
-(SUSY) \cite{Weinberg:1975gm, Weinberg:1979bn, Gildener:1976ai,Susskind:1978ms,
-  tHooft:1980xss}.
+the SM \cite{Weinberg:1975gm, Weinberg:1979bn,
+  Gildener:1976ai,Susskind:1978ms, tHooft:1980xss} and has been the
+driving motivation for the construction and study of concepts that go
+beyond the Standard Model (BSM), most notably supersymmetry (SUSY) \cite{Miyazawa:1966mfa,Miyazawa:1968zz,Ramond:1971gb,Golfand:1971iw,Gervais:1971ji,Neveu:1971rx,Neveu:1971iv,Volkov:1973ix,Wess:1973kz,Wess:1974tw,Salam:1974yz} which ensures that the quadratic corrections from fermions and bosons in the loop diagrams cancel at all orders in perturbation theory \cite{Dimopoulos:1981au,Witten:1981nf,Dine:1981za,Dimopoulos:1981zb,Kaul:1981hi}.
 
 These issues strongly motivate the development of new ideas and new
 models.  However, in principle there are a huge number of models that
@@ -405,7 +409,7 @@ expressions into C++ routines and embeds them inside a code structure
 for solving the boundary value problem (BVP)\@.  It also uses some numerical
 routines from \softsusy \cite{Allanach:2001kg,Allanach:2013kza} and is
 heavily unit-tested against the MSSM and Next-to-MSSM versions of
-\softsusy every night to avoid bugs.
+\softsusy every night to ensure bugs are avoided in updates.
 
 
 Spectrum generators determine the pole masses and couplings of a
@@ -599,13 +603,19 @@ $ tar -xf FlexibleSUSY-2.0.1.tar.gz
 $ cd FlexibleSUSY-2.0.1
 \end{lstlisting}%% $
 %
-\fstwo is distributed with a huge selection of predefined models
-including: the CMSSM (called \modelname{CMSSM}), the semi-constrained and
-fully constrained NMSSM (\modelname{NMSSM}, \modelname{CNMSSM}), the
-$R$-symmetric MSSM (\modelname{MRSSM}) \cite{Kribs:2007ac}, the NUHM \ESSM
-(\modelname{E6SSM}) \cite{Athron:2007en}, high-scale SUSY (\HSSUSY)
-\cite{Bagnaschi:2015pwa}, split-SUSY (\modelname{SplitMSSM})
-\cite{Bagnaschi:2015pwa} and the THDM-II (\modelname{THDMII}).  See the
+\fstwo is distributed with a huge selection of predefined ``models'', 
+including several MSSM and NMSSM scenarios such as the CMSSM (called
+\modelname{CMSSM}), high-scale SUSY and split-SUSY (called \HSSUSY and
+\modelname{SplitMSSM}; these  models have been created for
+Ref.~\cite{Bagnaschi:2015pwa}), the semi-constrained and
+fully constrained NMSSM (\modelname{NMSSM}, \modelname{CNMSSM}). The
+distribution also contains BSM models such as the
+$R$-symmetric MSSM (\modelname{MRSSM}; for a definition of the model
+see Ref.~\cite{Kribs:2007ac}), the NUHM \ESSM
+(\modelname{E6SSM}, see \cite{King:2005jy,King:2005my,Athron:2010zz,
+  Athron:2009ue,Athron:2009bs,Athron:2007en}) and the two-Higgs 
+doublet model type II
+(\modelname{THDMII}).  See the 
 contents of \code{model_files/} for all predefined model files.
 
 A spectrum generator for any of these models can be built with just
@@ -637,7 +647,7 @@ $ ./run_CMSSM.x --slha-input-file=LesHouches.in.CMSSM \
 %
 The spectrum generator reads the CMSSM input parameters from the SLHA input file
 \code{LesHouches.in.CMSSM} and first solves a BVP to find a
-set of running parameters at the \code{SUSYScale} that are consistent with all
+set of running parameters at the SUSY scale that are consistent with all
 boundary conditions specified in the model file, and then calculates the pole
 masses, mixing matrices and potentially further observables.
 The mass spectrum etc.\ obtained in this way is output
@@ -1185,8 +1195,7 @@ enabled in models beyond their scope of application.
   \midrule
   %
   \code{UseHiggs3LoopSplit} & \code{False} & \code{True} or \code{False} &
-  3-loop contributions $O(\at\as^2)$ to $M_h$, $M_H$ and
-  $M_A$ in the split-MSSM \\
+  3-loop contributions $O(\at\as^2)$ to $M_h$ in the split-MSSM \\
   %
   \bottomrule
 \end{OptionTable}
@@ -1198,12 +1207,12 @@ enabled in models beyond their scope of application.
 
 In the SM, 2-loop and leading 3-loop contributions to the Higgs pole
 mass are known in the \MSbar scheme
-\cite{Degrassi:2012ry,Martin:2014cxa,Vega:2015fna}.  In \fs the 2-loop
+\cite{Degrassi:2012ry,Vega:2015fna,Martin:2014cxa}.  In \fs the 2-loop
 contributions of $O(\at^2 + \at \as)$
-\cite{Degrassi:2012ry,Martin:2014cxa} and the 3-loop
+\cite{Vega:2015fna,Martin:2014cxa} and the 3-loop
 $O(\at^3 + \at^2 \as + \at \as^2)$ contributions \cite{Martin:2014cxa}
 can be taken into account to calculate the SM-like Higgs pole mass for
-non-SUSY models with only one Higgs.  In order to enable these loop
+non-SUSY models with only one Higgs. In order to enable these loop
 contributions, the following switches must be set in the model file:
 %
 \begin{lstlisting}
@@ -1211,16 +1220,27 @@ UseHiggs2LoopSM = True;
 UseHiggs3LoopSM = True;
 \end{lstlisting}
 %
+The 2-loop and 3-loop
+contributions enter the mass of the Higgs boson as
+\begin{align} 
+ \begin{split}
+   M_h^2 &= m_h^2 + (\Delta m_h^2)_{1L}(p^2)
+   + (\Delta m_h^2)_{2L}(p^2) +(\Delta m_h^2)_{3L} \,,
+ \end{split} \label{eq:Mh_polp^2}
+\end{align}
+where $m_h^2$ and $(\Delta m_h)_{1L}(p^2)$ correspond to the tree-level 
+and a 1-loop expression, respectively.
 The enabled 2-loop SM contributions of
 $O(\at^2 + \at \as)$ to the Higgs mass read
 %
 \begin{align}
-  (\Delta m_h^2)_{2L} &= (\Delta m_h^2)_{2L}^{(\at^2)} + (\Delta m_h^2)_{2L}^{(\at\as)} \,, \\
+  (\Delta m_h^2)_{2L}(p^2) &= (\Delta m_h^2)_{2L}^{(\at^2)} + 
+     (\Delta m_h^2)_{2L}^{(\at\as)}(p^2) \,, \\
   (\Delta m_h^2)_{2L}^{(\at^2)} &=
   \frac{2 t}{(4\pi)^4} \left[
     -3 y_t^4 \left(3 \;\barlog^2(t) - 7 \;\barlog(t) + 2 + \frac{\pi^2}{3}\right)
   \right] , \label{eq:2L_Mh_atat}\\
-  (\Delta m_h^2)_{2L}^{(\at\as)} &=
+  (\Delta m_h^2)_{2L}^{(\at\as)} (p^2)&=
       \frac{g_3^2 y_t^2}{(4\pi)^4} \;\bigg[
         \frac{37}{3} p^2 - \frac{122 p^4}{135 t} - 4 (5 p^2 - 8 t) \;\barlog(t) -
         12 (p^2 - 8 t) \;\barlog^2(t) \bigg] \label{eq:2L_Mh_atas} \\
@@ -1228,15 +1248,27 @@ $O(\at^2 + \at \as)$ to the Higgs mass read
   \frac{2 t}{(4\pi)^4} \left[
     16 g_3^2 y_t^2 \left(3 \;\barlog^2(t) + \barlog(t)\right)
   \right] \,.
+  \label{eq:2L_Mh_atas p2=0}
 \end{align}
 %
-In Eqs.~\eqref{eq:2L_Mh_atat} ff.\ the abbreviations
-$t \equiv m_t^2$ and $\barlog(t) \equiv \log(t/Q^2)$ have been used
-for brevity, analogous to the notation of Ref.~\cite{Martin:2014cxa},
-where $m_t$ is the \MSbar top mass in the SM\@.  Note
-that the momentum dependence is included in the 2-loop expression of
-Eq.~\eqref{eq:2L_Mh_atas} in order to generate implicit 3-loop
-$O(\at^2\as)$ terms.
+In Eqs.~\eqref{eq:2L_Mh_atat} ff.\ the abbreviations $t \equiv m_t^2$
+and $\barlog(t) \equiv \log(t/Q^2)$ have been used for brevity, 
+analogous to the notation of Ref.~\cite{Martin:2014cxa}, where $m_t$ 
+is the \MSbar top mass in the SM\@. 
+By performing a momentum iteration in the computation of the Higgs 
+pole mass, the momentum entering the 1-loop self energy in 
+Eq.~\eqref{eq:Mh_polp^2} consists of a tree-level part and a loop 
+correction.
+In combination with Eq.~\eqref{eq:2L_Mh_atat}, the latter yields the 
+complete Higgs mass contribution at $O(\at^2 t)$ which is identical 
+to the corresponding correction given in Ref.~\cite{Degrassi:2012ry}.
+The 2-loop self energy at $O(\at\as)$ \cite{Martin:2014cxa} together
+with the occurring integral functions from Ref.~\cite{Martin:2003qz}
+have been evaluated for a small external momentum argument. Neglecting
+higher orders, the expansion in powers of the momentum over the \MSbar
+top mass up to $O(p^4/t)$ results in the Eq.~\eqref{eq:2L_Mh_atas}. 
+Note that the momentum dependence is included in the 2-loop expression 
+in order to generate implicit 3-loop $O(\at^2\as)$ terms.
 %
 The explicit 3-loop effective potential contributions of
 $O(\at^3 + \at^2 \as + \at \as^2)$ to the
@@ -1252,7 +1284,7 @@ Higgs mass included by \fs read
      + y_t^6 \Big(-3199.017 + 36 \;\barlog(h) - 2653.511 \;\barlog(t) + 756 \;\barlog(h) \;\barlog(t) \nonumber \\
      &\phantom{=\frac{m_t^2}{(4\pi)^6} \Bigg[}\qquad~~
      + \frac{27}{2} \;\barlog^2(t) + 324 \;\barlog(h) \;\barlog^2(t) - 225 \;\barlog^3(t)\Big)
-  \Bigg]
+  \Bigg] \,,
 \end{align}
 %
 where $h\equiv m_h^2$ is the squared \MSbar Higgs mass in the SM\@.
@@ -1426,8 +1458,10 @@ right-handed parts of the \MSbar-renormalized 1-loop top quark self
 energy, $M_t$ is the top pole mass and
 %
 \begin{align}
+  \label{eq:top-selfenergy-qcd-1L}
   \Delta m_t^{(1),\text{qcd}}(Q) &=
   -\frac{g_3^2}{12 \pi^2} \left[4 - 3 \;\barlog(t)\right], \\
+  \label{eq:top-selfenergy-qcd-2L}
   \begin{split}
     \Delta m_t^{(2),\text{qcd}}(Q) &= \left(\Delta
       m_t^{(1),\text{qcd}}(Q)\right)^2 - \frac{g_3^4}{4608 \pi^4}
@@ -1558,8 +1592,18 @@ effective potential contributions to the Higgs masses in the (N)MSSM
 of $O((\at + \ab)\as + (\at +
 \ab)^2 + \atau^2)$
 \cite{Degrassi:2001yf,Brignole:2001jy,Dedes:2002dy,Brignole:2002bz,Dedes:2003km,Degrassi:2009yq}
-can be taken into account by \fs by setting the corresponding switches
-in the model files:
+can be taken into account by \fs.
+%
+Note, however, that the implemented NMSSM 2-loop contributions of
+$O((\at + \ab)^2 + \atau^2)$ are currently available only in the
+MSSM-limit.  Furthermore, NMSSM-specific 2-loop corrections to the
+running vacuum expectation value beyond the MSSM limit, which would be
+required for a consistent treatment of the $O((\at + \ab)\as)$
+contributions, are currently not implemented.
+%
+To take the implemented 2-loop corrections to the Higgs masses in the
+(N)MSSM into account, the following switches must be set in the model
+file:
 %
 \begin{lstlisting}
 UseHiggs2LoopMSSM = True;
@@ -1759,8 +1803,11 @@ In the right panels of \figref{fig:Mh-himalaya}, the effect of the 2-loop
 \SQCD threshold correction $\Delta\as^{2L}$
 \cite{Harlander:2005wm,Bauer:2008bj,Bednyakov:2010ni} to the strong
 coupling $\as$ (see below) on the 3-loop Higgs mass calculation is shown for
-the same scenario as in the corresponding left panels.  The inclusion
-of $\Delta\as^{2L}$ is formally a 4-loop effect on the light
+the same scenario as in the corresponding left panels.
+The threshold correction $\Delta\as^{2L}$ is included at the scale
+$Q = M_Z$, the same scale at which all dimensionless MSSM \DRbar
+parameters are determined from the Standard Model input parameters.
+The inclusion of $\Delta\as^{2L}$ is formally a 4-loop effect on the light
 \CP-even Higgs mass in the MSSM\@.  However, $\Delta\as^{2L}$ should
 be taken into account for a consistent running and decoupling
 procedure with 3-loop renormalization group running.  The red solid
@@ -1771,7 +1818,10 @@ corresponding left panels.  The effect of including
 $\Delta\as^{2L}$ is shown as the red dashed line.  We find that the
 inclusion of this 2-loop threshold correction leads to an upwards
 shift of the Higgs mass by up to $2\unit{GeV}$, depending on \MS and
-$X_t$.
+$X_t$.  Note, that large 4-loop contributions of multiple GeV hint at
+a large theoretical uncertainty of the fixed-order calculation of the
+light \CP-even Higgs pole mass in parameter regions with multi-TeV
+stop masses.
 
 \paragraph{3-loop renormalization group running in the MSSM}
 
@@ -1966,8 +2016,7 @@ where $g = m_{\tilde{g}}^2$ and $m_{\tilde{g}}$ is the \MSbar gluino
 mass.  Furthermore, for consistency the 2-loop gluino contribution in
 the calculation of the \MSbar top mass from Ref.\
 \cite{Benakli:2013msa} is taken into account by adding the following
-term to Eq.\ \eqref{eq:mt_MSbar} or \eqref{eq:mt_MSbar_default},
-respectively:
+term to Eq.\ \eqref{eq:mt_MSbar}:
 %
 \begin{align}
   \Delta m_t^{(2),\text{split-qcd}}(Q) =
@@ -2048,6 +2097,9 @@ found in \tabref{tab:bcs_functions}.
 
     \code{Cbrt[a_]} &
     Returns the cubic root of \code{a}, $\sqrt[3]{a}$. \\
+
+    \code{CKM}, \code{PMNS} &
+    CKM and PMNS matrices, respectively, as defined in \cite{Allanach:2008qq}. \\
 
     \code{Conjugate[a_]} &
     Returns the complex conjugate of \code{a}. \\
@@ -2185,7 +2237,9 @@ models is exactly the same as in the case of SUSY models, except that
 all non-SUSY parameters are defined in the \MSbar scheme.  In
 particular, at the low-energy scale \fs automatically determines
 the gauge and Yukawa couplings of the non-SUSY model in the \MSbar
-scheme.
+scheme.  For gauge-dependent quantities like running masses and VEVs,
+\fs adopts the Feynman gauge, where all gauge fixing parameters
+$\xi_i$ are set to unity.
 
 \subsection{Determination of the \MSbar gauge and Yukawa couplings}
 \label{sec:determination_of_g_Y}
@@ -2301,40 +2355,7 @@ with $f = u,d,c,s,t,b,e,\mu,\tau$ and the \MSbar vacuum expectation value $v^{\S
 The running top quark \MSbar\ mass in the non-SUSY model, $m_t(Q)$, is
 calculated from the top pole mass $M_t$
 using the full 1-loop self energy plus 2-loop SM QCD
-corrections,
-%
-\begin{align}
-\begin{split}
-  m_t(Q) &= M_t + \re\Sigma_{t}^S(p^2=M_t^2,Q) \\
-  &\phantom{={}} + M_t \Big[ \re\Sigma_{t}^L(p^2=M_t^2,Q) +
-    \re\Sigma_{t}^R(p^2=M_t^2,Q) \\
-  &\phantom{={} + M_t \Big[}
-    + \Delta m_t^{(1),\text{qcd}}(Q) + \Delta m_t^{(2),\text{qcd}}(Q) \Big]
-  \,,
-\end{split} \label{eq:mt_MSbar_default}
-\end{align}
-%
-where $\Sigma_{t}^{S,L,R}$ denote the scalar, left- and right-handed
-parts of the 1-loop top self energy in the \MSbar\ scheme in the
-non-SUSY model without the gluon
-contribution, and $\Delta m_t^{(1),\text{qcd}}$ and $\Delta
-m_t^{(2),\text{qcd}}$ are 1- and 2-loop gluon corrections taken from
-Ref.~\cite{Fleischer:1998dw},
-%
-\begin{align}
-  \Delta m_t^{(1),\text{qcd}}(Q) &=
-  -\frac{g_3^2}{12 \pi^2} \left[4 - 3 \log\frac{m_t^2}{Q^2}\right],
-  \label{eq:top-selfenergy-qcd-1L}\\
-  \begin{split}
-    \Delta m_t^{(2),\text{qcd}}(Q) &= \left(\Delta
-      m_t^{(1),\text{qcd}}(Q)\right)^2 - \frac{g_3^4}{4608 \pi^4}
-    \Bigg[396 \log^2\frac{m_t^2}{Q^2} \\
-    &\phantom{={}} - 1452 \log\frac{m_t^2}{Q^2}
-    - 48 \zeta(3) + 2053 + 16 \pi^2 (1+\log 4)\Bigg] \,.
-  \end{split}
-  \label{eq:top-selfenergy-qcd-2L}
-\end{align}
-%
+corrections as shown in Eq.\ \eqref{eq:mt_MSbar}.
 In the SM, 3-loop QCD contributions can be taken into
 account as well, see \secref{sec:model_specific_contributions}.
 %
@@ -2645,7 +2666,8 @@ masses as well as the new 2-loop contributions from Ref.~\cite{Bagnaschi:2017xid
 which involve the bottom and tau Yukawa couplings, are
 included.  As a result, the version of \HSSUSY included in \fstwo uses
 the 2-loop threshold corrections of
-$O(\at\as + \ab\as + (\at+\ab)^2 + \atau^2)$ for general SUSY spectra.
+$O(\at\as + \ab\as + (\at+\ab)^2 + \ab\atau + \atau^2)$ for general
+SUSY spectra.
 
 In the \HSSUSY model file
 (\code{model_files/HSSUSY/FlexibleSUSY.m.in}), these threshold
@@ -3116,7 +3138,7 @@ non-SM particle in the loop,
   + \sum_{\substack{\text{SSF}\\\text{diagrams}}} \amu^{\BSM\text{,1L,SSF}} \,.
 \end{align}
 %
-The calculation is performed at the renormalization scale $\MS$, which
+The calculation is performed at the renormalization scale $\MLCP$, which
 is defined as the running mass of the lightest electrically charged
 \BSM particle contributing to $\amu^{\BSM\text{,1L}}$.  In addition to
 this 1-loop \BSM contribution, \famu adds the universal leading
@@ -3124,8 +3146,8 @@ logarithmic 2-loop QED contribution \cite{Degrassi:1998es},
 %
 \begin{align}
   \amu^{\QED,\text{2L}} = \amu^{\BSM\text{,1L}} \times \Bigg[
-    16 \, \frac{\aem^\BSM(\MS)}{4\pi}
-    \log\frac{M_\mu}{\MS}
+    16 \, \frac{\aem^\BSM(\MLCP)}{4\pi}
+    \log\frac{M_\mu}{\MLCP}
   \Bigg] \,.
 \end{align}
 %
@@ -3228,13 +3250,13 @@ the deviation is much larger due to a large renormalization scale
 dependence, see below.  The $1$--$10\%$ deviation is caused mainly by
 the fact that \GMTCalc calculates \amuMSSM in an on-shell scheme and
 includes all known 2-loop corrections, while \famu performs the
-calculation in the \MSbar/\DRbar scheme at the SUSY scale and only
+calculation in the \MSbar/\DRbar scheme at the lightest charged BSM particle scale $\MLCP$ and only
 includes the leading logarithmic 2-loop QED correction.  A comparison
 of \famu with \spheno 4.0.2 shows differences of up to $10\%$.  These
 differences are caused by the fact that \famu includes the leading
 logarithmic 2-loop QED contribution and by the different choice of the
 renormalization scale: \spheno performs the calculation at the $Z$ pole
-mass scale, while \famu performs it at $\MS$.
+mass scale, while \famu performs it at $\MLCP$.
 
 In specific parameter scenarios, where the \MSbar/\DRbar smuon masses
 show a high sensitivity to the renormalization scale, the predictions
@@ -3246,7 +3268,7 @@ in \famu and \spheno, which would (if included) cancel the
 renormalization scale dependence at the 2-loop level.  To illustrate
 the sensitivity on the renormalization scale, we show in the third
 column of \tabref{tab:test_famu} the variation of $\amuBSM$ in \famu
-when the scale is varied in the interval $[\MS/2,2\MS]$.  For BM4$^\prime$,
+when the scale is varied in the interval $[\MLCP/2,2\MLCP]$.  For BM4$^\prime$,
 $\amuBSM$ varies by around $66\%$, which indicates a very imprecise
 prediction for this point.  Such a large scale uncertainty is avoided
 in \GMTCalc due to the renormalization in an on-shell scheme.  Another
@@ -3279,7 +3301,8 @@ counter term.
     \GMTCalc 1.3.3 and \spheno 4.0.2 for the CMSSM benchmark points
     presented in Ref.~\cite{Allanach:2002nj} and the parameter points shown
     in \tabref{tab:bm_amu}.  The third column shows the variation
-    of $\amuBSM$ when the renormalization scale is varied by a factor $2$.
+    of $\amuBSM$ when the renormalization scale is varied between
+    $\MLCP/2$ and $2\MLCP$.
     For BM4$^\prime$ the value of \amu calculated by the \DRbar
     programs \famu and \spheno suffers from a high renormalization scale
     sensitivity due to the large values of $M_2$ and $(m_{\tilde{l}})_{ii}$,
@@ -3668,7 +3691,7 @@ The running weak mixing angle is extracted from the relation
   \label{eq:muon_decay_master}
 \end{align}
 %
-at the scale $M_Z$,
+with the renormalization scale consistently being set to $M_Z$,
 where $\aem$ is the electromagnetic coupling of the \BSM model in the
 \MSbar/\DRbar scheme and
 %
@@ -3754,6 +3777,8 @@ $(\mathbbm{1}\,a_{\varphi_i tt} + \gamma_5\,b_{\varphi_i tt})$.
 For this generalization to work properly, the SM-like vacuum
 expectation value $v_\SM$ has to be defined and normalized
 to the value $\approx 246$ GeV in the corresponding \sarah model file.
+The utilized expansions of the function $\rho^{(2)}$ can be found in
+Ref.~\cite{Fleischer:1993ub}.
 
 The model-specific correction in Eq.~\eqref{eq:Delta_r_hat}
 consists of an SM and a BSM part,
@@ -3765,8 +3790,15 @@ consists of an SM and a BSM part,
 where the SM contribution $\deltaVB^\SM$
 \cite{Degrassi:1990tu}, originating
 from diagrams with additional internal gauge bosons, is given by
-Eq.~(C.12) from Ref.~\cite{Pierce:1996zz} considering the replacement
-$\hat\rho \rightarrow 1/(1-\Delta\hat\rho)$.
+Eq.~(C.12) from Ref.~\cite{Pierce:1996zz} with the replacement
+$\hat\rho \rightarrow 1/(1-\Delta\hat\rho)$.\footnote{The expression
+  for $\deltaVB^\SM$ implemented in \fs has been extended by a term
+  expressing the scale dependence so that the calculation can be
+  performed consistently at the 1-loop level at scales different from
+  $M_Z$.  However, the 2-loop contributions
+  $\Delta\hat{r}_\text{2L}^\SM$ and $\Delta\hat\rho_\text{2L}^\SM$ are
+  omitted if $Q \neq M_Z$, because their explicit scale dependence is
+  currently not taken into account.}
 The BSM contribution $\deltaVB^\BSM$ contains corrections from
 1-loop external wave-function renormalizations, vertex and
 box diagrams, which are put together as in Eq.~(C.13) from the
@@ -4624,8 +4656,7 @@ semi-analytic solver in each model are displayed in
 \tabref{tab:semi_analytic_bms}.  In all three models, the
 running parameters and pole mass spectra are found to differ at or
 below the level of $0.1$\%.  Unit tests that perform these
-comparisons have also been added to the extensive \fs test suite that
-runs on a nightly basis.
+comparisons have also been added to the \fs test suite.
 %
 \begin{table}[tbh]
   \centering
@@ -4657,13 +4688,22 @@ points, this is found to be the case; however, we have also observed important
 exceptions where non-negligible differences are found between the two
 solvers.  In these cases, one solver may fail to converge to a stable
 solution, or multiple solutions are present \cite{Allanach:2013cda} with
-different stability properties in the two solvers.  We have checked that such
-points nevertheless satisfy the boundary conditions imposed at each
-scale and are indeed valid solutions.  More generally we have checked that
-solutions found in one solver also correspond to fixed point solutions of the
-other solver algorithm; that is, they satisfy all of the boundary conditions
-so that the parameter values remain unchanged after applying a single step of
-the iteration.
+different stability properties in the two solvers.  In this latter case, note
+that both solvers always return the first solution to
+which they converge,\footnote{When multiple convergent solutions exist,
+  the one first obtained will depend, for instance, on the initial guess
+  used for the iteration.} with the iteration
+stopping immediately once a convergent solution is obtained.  That is, neither
+method attempts to find all possible solutions for the given input parameters
+or automatically select between multiple fixed points.  Since a given solution
+might not be a stable fixed point of both iterations, the two solvers need not
+converge to the same solution, leading to the observed differences.  We have
+checked that such points nevertheless satisfy the boundary conditions imposed at
+each scale and are indeed valid solutions of the BVP.  More generally we have
+checked that solutions found in one solver also correspond to (not necessarily
+stable) fixed point solutions of the other solver algorithm; that is, they
+satisfy all of the boundary conditions so that the parameter values remain
+unchanged after applying a single step of the iteration.
 
 From these tests, we have found that in some cases the agreement
 between the two solvers can depend quite sensitively on small differences
@@ -4745,9 +4785,9 @@ coefficients.
 
 While the semi-analytic solver suffers from an increased runtime compared to
 the two-scale solver, it is also able to provide complementary coverage of the
-parameter space to that of the two-scale solver.  This is demonstrated in the left panel of
-\figref{fig:cmssm_solution_regions} in the CMSSM, where the solutions found
-by each solver are plotted in the $\mzero - \mu$ plane.
+parameter space to that of the two-scale solver.  This is demonstrated in the
+left panel of \figref{fig:cmssm_solution_regions} in the CMSSM, where the
+solutions found by each solver are plotted in the $\mzero - \mu$ plane.
 %
 \begin{figure}
   \centering
@@ -4755,19 +4795,19 @@ by each solver are plotted in the $\mzero - \mu$ plane.
     doc/plots/CMSSM_solution_regions/CMSSM_solution_regions}
   \includegraphics[width=0.48\textwidth]{%
     doc/plots/CMSSM_solution_regions/CMSSM_higgs_mass}
-  \caption{Left panel: CMSSM solutions found by the two-scale solver (blue diamonds)
-    and the semi-analytic solver (red circles) in the $\mzero - \mu$ plane.
-    For both solvers, $\mhalf \in [0,1]\unit{TeV}$ is randomly sampled,
-    while $\tan\beta = 10$ and $\azero = 0$ GeV\@.  The solutions obtained
-    using the two-scale solver are found by randomly sampling
-    $\mzero \in [0, 6]\unit{TeV}$ with $\sign \mu = 1$, and those for the
-    semi-analytic solver are found by randomly sampling $\mu \in [0,1150]
-    \unit{GeV}$.  Right panel: Change in the calculated lightest \CP-even
-    Higgs pole mass $M_{h_1}$ from a reference value of $121$ GeV as a
-    function of $\mu$ at fixed $\mzero = 4$ TeV for the two solvers.  The
-    solutions shown correspond to a vertical slice at fixed $\mzero$ in the
-    left-hand plot; $\mhalf$ is again varied in $[0,1]\unit{TeV}$,
-    $\tan\beta = 10$ and $\azero = 0$ GeV.}
+  \caption{Left panel: CMSSM solutions found by the two-scale solver
+    (blue diamonds) and the semi-analytic solver (red circles) in the
+    $\mzero - \mu$ plane.  For both solvers, $\mhalf \in [0,1]\unit{TeV}$
+    is randomly sampled, while $\tan\beta = 10$ and $\azero = 0$ GeV\@.
+    The solutions obtained using the two-scale solver are found by
+    randomly sampling $\mzero \in [0, 6]\unit{TeV}$ with $\sign \mu = 1$,
+    and those for the semi-analytic solver are found by randomly sampling
+    $\mu \in [0,1150] \unit{GeV}$.  Right panel: Change in the calculated
+    lightest \CP-even Higgs pole mass $M_{h_1}$ from a reference value of
+    $121$ GeV as a function of $\mu$ at fixed $\mzero = 4$ TeV for the two
+    solvers.  The solutions shown correspond to a vertical slice at fixed
+    $\mzero$ in the left-hand plot; $\mhalf$ is again varied in
+    $[0,1]\unit{TeV}$, $\tan\beta = 10$ and $\azero = 0$ GeV.}
   \label{fig:cmssm_solution_regions}
 \end{figure}
 %
@@ -4776,22 +4816,50 @@ of solutions to be found in the focus point region \cite{Chan:1997bi,
   Feng:1999hg,Feng:1999mn} at small values of $\mu \ll \mzero$, where the
 two-scale solver is unable to find convergent solutions.  Conversely,
 the two-scale solver is more effective for finding solutions with small
-$\mzero$.  In general terms, the regions of parameter space in which the two
-solvers are effective need not overlap, and the use of both in tandem allows
-for a more complete picture of the parameter space to be obtained.  Moreover,
-in the regions in which both solvers do find solutions, there is excellent
-agreement between the two algorithms.\footnote{Provided the same solution is
-  found if multiple solutions exist.}  This is illustrated in the right
-panel of \figref{fig:cmssm_solution_regions}, where the lightest \CP-even
-Higgs mass, expressed as the difference from a reference value of $121$ GeV,
-is plotted for fixed $\mzero = 4$ TeV\@.  If both solvers find a solution for
-this value of $\mzero$, the two values of the Higgs mass agree very well.
+$\mzero$.  This highlights the fact that, for some parameter points,
+the semi-analytic solver generated by \fs might not find a solution
+where the two-scale solver is able to, and vice versa.  As noted above, this
+can be due to the point in question having different stability properties
+under the two different algorithms.  For example, the CMSSM point with
+$m_0 = 125\unit{GeV}$, $M_{1/2} = 300\unit{GeV}$, $\tan\beta = 10$,
+$\sign \mu = 1$ and $A_0 = 0\unit{GeV}$  is successfully solved using the
+two-scale solver, with $\mu \approx 395\unit{GeV}$ required for correct EWSB.
+The same point, when run using the semi-analytic solver with the two-scale
+solution for $\mu$, fails to converge; for this choice of input parameters
+and initial guess, the iteration enters a periodic orbit in which the
+approximations to the solution are close to, but do not correspond to, the
+fixed point found by the two-scale solver.  To avoid the observed cyclic
+behaviour here, it is necessary to either fine-tune the provided input
+parameters or otherwise modify the initial guess made by \fs.  Due to the
+differing choice of input and output parameters between the two algorithms
+in general, certain regions of the parameter space can also be susceptible to
+high levels of numerical sensitivity in one approach and not the other,
+again necessitating significant fine-tuning.  In the CMSSM, for instance,
+large cancellations are typically required in
+order to produce a small value of $m_0$ when using the semi-analytic solver.
+In such cases, $\mu$ must be carefully fine-tuned to obtain a valid solution.
+On the other hand, when using the two-scale solver one has direct control over
+the value of $m_0$, and it is not necessary to fine-tune in order to obtain
+the desired small value of $m_0$.  The situation is reversed in regions of
+parameter space with small values of $\mu$ and large $m_0$, where one now
+has direct control over the fine-tuned value of $\mu$ in the semi-analytic
+solver but not in the two-scale solver.  In general terms, the regions of
+parameter space in which the two solvers are effective need not overlap, and
+the use of both in tandem allows for a more complete picture of the parameter
+space to be obtained.  Moreover, in the regions in which both solvers do find
+solutions, there is excellent agreement between the two algorithms.\footnote{
+  Provided the same solution is found if multiple solutions exist.}  This is
+illustrated in the right panel of \figref{fig:cmssm_solution_regions}, where
+the lightest \CP-even Higgs mass, expressed as the difference from a reference
+value of $121$ GeV, is plotted for fixed $\mzero = 4$ TeV\@.  If both solvers
+find a solution for this value of $\mzero$, the two values of the Higgs mass
+agree very well.
 
 It is also evident from \figref{fig:cmssm_solution_regions} that the use of
 both solvers allows features in the parameter space to be picked up that would
-be missed by either solver alone.  In this case, in 
-\figref{fig:cmssm_solution_regions} the two-scale solver only finds a single 
-solution for each value of $\mhalf$, for fixed $\sign\mu = 1$, while the 
+be missed by either solver alone.  In this case, in
+\figref{fig:cmssm_solution_regions} the two-scale solver only finds a single
+solution for each value of $\mhalf$, for fixed $\sign\mu = 1$, while the
 semi-analytic solver in some cases finds multiple solutions.  These
 solutions have different values of $|\mu|$ for the same value of $\mhalf$,
 leading to the sharp feature at low values of $\mu$ evident in the right panel
@@ -5295,8 +5363,10 @@ improved version deviate by around $1$--$2\unit{GeV}$ for non-zero
 stop mixing.  This deviation can be attributed to genuine 2-loop
 contributions.  Note that \HSSUSY does not reproduce the Higgs mass
 prediction of the fixed-order calculation for
-$\MS \lesssim 1\unit{TeV}$, because it neglects terms of
-$O(v^2/\MS^2)$.
+$\MS \lesssim 400\unit{GeV}$ in the shown scenario with $X_t = 0$,
+because of the neglected terms of $O(v^2/\MS^2)$.  In other scenarios
+the $O(v^2/\MS^2)$ terms may be important up to
+$\MS \approx 1\unit{TeV}$.
 %
 \begin{figure}[tbh]
   \centering
@@ -5767,10 +5837,16 @@ SM parameters can be given in four different input blocks:
   the Wolfenstein parametrization, as defined in
   Ref.~\cite{Allanach:2008qq}.  If the \texttt{VCKMIN} block or an entry is
   missing, the corresponding parameter is set to zero.
+  The given CKM matrix elements can be accessed in the \fs model file
+  via the \texttt{CKM} symbol to set the Yukawa matrices at the
+  low-energy scale.  See \fs's \modelname{CMSSMCKM} model for an example.
 \item The PMNS matrix is given as input in the block
   \texttt{UPMNSIN}, as defined in Ref.~\cite{Allanach:2008qq}.  If the
   \texttt{UPMNSIN} block or an entry is missing, the corresponding
   parameter is set to zero.
+  The given PMNS matrix elements can be accessed in the \fs model file
+  via the \texttt{PMNS} symbol to fix potential neutrino mass
+  parameters at the low-energy scale.
 \item For special applications such as the calculation of
   $\amu$ with \GMTCalc, further input parameters are
   needed.  These can be given in the \texttt{FlexibleSUSYInput} block.
@@ -6140,6 +6216,7 @@ handle = FS<model>OpenHandle[
 The individual configuration options have the following meaning:
 %
 \begin{itemize}
+\setlength{\itemindent}{1cm}
 \item[\texttt{FlexibleSUSY[0]},] \texttt{precisionGoal}: This option
   describes the numeric precision of the renormalization group
   running, the mass spectrum calculation, the electroweak symmetry
@@ -6160,12 +6237,17 @@ The individual configuration options have the following meaning:
 \item[\texttt{FlexibleSUSY[2]},] \texttt{solver}: This option chooses
   the BVP solver to be used.  If set to $0$, all
   solvers that have been enabled in the model file (see
-  \secref{sec:chosing_SAS}) are used, starting with the two-scale
-  solver.  If set to $1$, the two-scale solver is used if it has been
-  enabled in the model file.  If set to $2$, then the semi-analytic
-  solver is used if it has been enabled in the model file.  If a
-  solver that has not been enabled in the model file is chosen, \fs
-  stops with an error.
+  \secref{sec:chosing_SAS}) are used.  In this case, each of the
+  enabled solvers will be tried in turn, in the same order as given in
+  \code{FSBVPSolvers}, until a solution is found, at which point \fs
+  will return this solution and no further solvers are tried.  In the
+  event that no solver obtains a valid solution, \fs reports the status of the
+  last solver tried.  Non-zero values of \texttt{FlexibleSUSY[2]}
+  select a single solver to be used.  If set to $1$, the two-scale
+  solver is used if it has been enabled in the model file.  If set
+  to $2$, then the semi-analytic solver is used if it has been enabled
+  in the model file.  If a solver that has not been enabled in the model
+  file is chosen, \fs stops with an error.
 
 \item[\texttt{FlexibleSUSY[3]},]
   \texttt{calculateStandardModelMasses}: This option allows the user
