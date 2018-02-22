@@ -286,13 +286,21 @@ write_configure_parameters() {
 
 #_____________________________________________________________________
 message() {
-    # Write a simple message to std out (and to the log file)
+    # Write a simple message to std out (and to the log file).  Use -n
+    # as first parameter to prevent a newline at the end of the
+    # message.
     if test $# -lt 1 ; then
         echo "message: Too few arguments"
         return 1
     fi
-    echo "$*"
-    logmsg "$*"
+    if test "x$1" = "x-n"; then
+        shift
+        printf "%s" "$*"
+        logmsg "-n" "$*"
+    else
+        echo "$*"
+        logmsg "$*"
+    fi
 }
 
 #_____________________________________________________________________
