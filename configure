@@ -2539,7 +2539,7 @@ update_module_mk() {
 	return
 
     message -n "   Updating model-specific modules in $mkfile ... "
-    local ho=$(get_model_specific_corrections "$model_file" "$math_cmd")
+    local ho="$(get_model_specific_corrections "$model_file" "$math_cmd")"
     sed -i -e "s|^\(MOD${name}_MOD[[:space:]]*:=\).*$|\1 $ho|" "$mkfile"
     message "($ho)"
     logmsg "   Depends on model-specific modules: ${ho}"
