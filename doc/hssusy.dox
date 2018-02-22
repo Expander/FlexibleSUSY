@@ -33,6 +33,9 @@ The 3- and partial 4-loop renormalization group equations of
 are used to run \f$\lambda(M_\text{SUSY})\f$ down to the electroweak
 scale \f$M_Z\f$ or \f$M_{\text{EWSB}}\f$.
 
+If \f$M_{\text{SUSY}}\f$ is set to zero, \f$M_{\text{SUSY}} =
+\sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}\f$ is used.
+
 __Low scale__
 
 The `LowScale` is set to \f$M_Z\f$.  At this scale, the
