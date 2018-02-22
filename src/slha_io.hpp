@@ -33,7 +33,6 @@
 #include "wrappers.hpp"
 #include "numerics2.hpp"
 #include "pmns.hpp"
-#include "standard_model_two_scale_model.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -181,12 +180,6 @@ public:
    void set_sminputs(const softsusy::QedQcd&);
    void write_to_file(const std::string&) const;
    void write_to_stream(std::ostream& = std::cerr) const;
-
-   // Standard_model class interface
-   void set_mass(const standard_model::Standard_model_physical&);
-   void set_mixing_matrices(const standard_model::Standard_model_physical&);
-   void set_model_parameters(const standard_model::Standard_model&);
-   void set_spectrum(const standard_model::Standard_model&);
 
    template<int N>
    static void convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 1>&,

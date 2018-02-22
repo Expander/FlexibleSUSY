@@ -1,6 +1,10 @@
 DIR          := models/SoftsusyFlavourMSSM
 MODNAME      := SoftsusyFlavourMSSM
 WITH_$(MODNAME) := yes
+MODSoftsusyFlavourMSSM_MOD := MSSM_higgs NMSSM_higgs
+MODSoftsusyFlavourMSSM_DEP := $(patsubst %,model_specific/%,$(MODSoftsusyFlavourMSSM_MOD))
+MODSoftsusyFlavourMSSM_INC := $(patsubst %,-Imodel_specific/%,$(MODSoftsusyFlavourMSSM_MOD))
+MODSoftsusyFlavourMSSM_LIB := $(foreach M,$(MODSoftsusyFlavourMSSM_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
 
 LIBSoftsusyFlavourMSSM_SRC  := \
 		$(DIR)/flavoursoft.cpp
@@ -49,14 +53,16 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBSoftsusyFlavourMSSM_DEP) $(LIBSoftsusyFlavourMSSM_OBJ) $(EXESoftsusyFlavourMSSM_DEP) $(EXESoftsusyFlavourMSSM_OBJ): CPPFLAGS += $(EIGENFLAGS)
+$(LIBSoftsusyFlavourMSSM_DEP) $(LIBSoftsusyFlavourMSSM_OBJ) $(EXESoftsusyFlavourMSSM_DEP) $(EXESoftsusyFlavourMSSM_OBJ): \
+	CPPFLAGS += $(MODSoftsusyFlavourMSSM_INC) $(EIGENFLAGS)
 
 $(LIBSoftsusyFlavourMSSM): $(LIBSoftsusyFlavourMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(EXESoftsusyFlavourMSSM_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(EXESoftsusyFlavourMSSM_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(MODSoftsusyFlavourMSSM_LIB) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyFlavourMSSM_DEP) $(EXESoftsusyFlavourMSSM_DEP)
 ALLLIB += $(LIBSoftsusyFlavourMSSM)
 ALLEXE += $(EXESoftsusyFlavourMSSM_EXE)
+ALLMODDEP += $(MODSoftsusyFlavourMSSM_DEP)

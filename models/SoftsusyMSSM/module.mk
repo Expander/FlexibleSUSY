@@ -1,6 +1,10 @@
 DIR          := models/SoftsusyMSSM
 MODNAME      := SoftsusyMSSM
 WITH_$(MODNAME) := yes
+MODSoftsusyMSSM_MOD := NMSSM_higgs MSSM_higgs
+MODSoftsusyMSSM_DEP := $(patsubst %,model_specific/%,$(MODSoftsusyMSSM_MOD))
+MODSoftsusyMSSM_INC := $(patsubst %,-Imodel_specific/%,$(MODSoftsusyMSSM_MOD))
+MODSoftsusyMSSM_LIB := $(foreach M,$(MODSoftsusyMSSM_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
 
 LIBSoftsusyMSSM_HDR  := \
 		$(DIR)/conversion.hpp \
@@ -87,14 +91,16 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP) $(LIBSoftsusyMSSM_OBJ) $(EXESoftsusyMSSM_OBJ): CPPFLAGS += $(EIGENFLAGS)
+$(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP) $(LIBSoftsusyMSSM_OBJ) $(EXESoftsusyMSSM_OBJ): \
+	CPPFLAGS += $(MODSoftsusyMSSM_INC) $(EIGENFLAGS)
 
 $(LIBSoftsusyMSSM): $(LIBSoftsusyMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
 
-$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(RUN_SoftsusyMSSM_EXE): $(EXESoftsusyMSSM_OBJ) $(LIBSoftsusyMSSM) $(MODSoftsusyMSSM_LIB) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyMSSM_DEP) $(EXESoftsusyMSSM_DEP)
 ALLLIB += $(LIBSoftsusyMSSM)
 ALLEXE += $(RUN_SoftsusyMSSM_EXE)
+ALLMODDEP += $(MODSoftsusyMSSM_DEP)

@@ -286,13 +286,21 @@ write_configure_parameters() {
 
 #_____________________________________________________________________
 message() {
-    # Write a simple message to std out (and to the log file)
+    # Write a simple message to std out (and to the log file).  Use -n
+    # as first parameter to prevent a newline at the end of the
+    # message.
     if test $# -lt 1 ; then
         echo "message: Too few arguments"
         return 1
     fi
-    echo "$*"
-    logmsg "$*"
+    if test "x$1" = "x-n"; then
+        shift
+        printf "%s" "$*"
+        logmsg "-n" "$*"
+    else
+        echo "$*"
+        logmsg "$*"
+    fi
 }
 
 #_____________________________________________________________________
@@ -369,6 +377,11 @@ make_unique() {
     done
 
     echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
+}
+
+#_____________________________________________________________________
+string_trim() {
+    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 }
 
 #_____________________________________________________________________
@@ -2442,6 +2455,114 @@ check_cygpath() {
 }
 
 #_____________________________________________________________________
+mma_symbol_is() {
+    local model_file="$1"
+    local math_cmd="$2"
+    local symbol="$3"
+    local value="$4"
+
+    [ -e "${model_file}" ] || {
+        >&2 echo "Error: file \"${model_file}\" does not exist!"
+        return 1
+    }
+
+    command -v "${math_cmd}" >/dev/null 2>&1 || {
+        >&2 echo "Error: Mathematica kernel \"${math_cmd}\" is not executable!"
+        return 1
+    }
+
+    [ -z "${symbol}" ] && {
+        >&2 echo "Error: no symbol given!"
+        return 1
+    }
+
+    [ -z "${value}" ] && {
+        >&2 echo "Error: no value given!"
+        return 1
+    }
+
+    echo "Get[\"${model_file}\"]; Quit[Boole[!(${symbol} === ${value})]]" | "${math_cmd}" > /dev/null 2>&1
+
+    return $?
+}
+
+#_____________________________________________________________________
+get_model_specific_corrections() {
+    local model_file="$1"
+    local math_cmd="${2:-math}"
+
+    # always build SM, because it is needed for the effective couplings module
+    local ho="SM"
+
+    [ -e "${model_file}" ] || {
+        >&2 echo "Error: file \"${model_file}\" does not exist!"
+        echo "${ho}"
+        return 1
+    }
+
+    command -v "${math_cmd}" >/dev/null 2>&1 || {
+        >&2 echo "Error: Mathematica kernel \"${math_cmd}\" is not executable!"
+        >&2 echo "   Please specify the Mathematica kernel as 2nd argument!"
+        echo "${ho}"
+        return 1
+    }
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs2LoopSM" "True"    && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs3LoopSM" "True"    && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs4LoopSM" "True"    && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "UseSMAlphaS3Loop" "True"   && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "FlexibleEFTHiggs" "True"   && ho="${ho} SM"
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs2LoopMSSM" "True"  && ho="${ho} MSSM_higgs"
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs3LoopMSSM" "True"  && ho="${ho} MSSM_higgs"
+    mma_symbol_is "$model_file" "$math_cmd" "UseMSSMAlphaS2Loop" "True" && ho="${ho} MSSM_thresholds"
+    mma_symbol_is "$model_file" "$math_cmd" "UseMSSMYukawa2Loop" "True" && ho="${ho} MSSM_thresholds"
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs2LoopNMSSM" "True" && ho="${ho} MSSM_higgs NMSSM_higgs"
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs3LoopSplit" "True" && ho="${ho} SplitMSSM"
+
+    ho=$(make_unique "${ho}")
+    ho=$(string_trim "${ho}")
+    echo "${ho}"
+}
+
+#_____________________________________________________________________
+update_module_mk() {
+    local name="$1"
+    local mkfile="$2"
+    local model_file="$3"
+    local math_cmd="${4:-math}"
+
+    [ -e "$model_file" ] || return
+    { find "$mkfile" -newer "$model_file" | grep ^; } > /dev/null 2>&1 &&
+	return
+
+    message -n "   Updating model-specific modules in $mkfile ... "
+    local ho="$(get_model_specific_corrections "$model_file" "$math_cmd")"
+    sed -i -e "s|^\(MOD${name}_MOD[[:space:]]*:=\).*$|\1 $ho|" "$mkfile"
+    message "($ho)"
+    logmsg "   Depends on model-specific modules: ${ho}"
+}
+
+#_____________________________________________________________________
+update_model_makefiles() {
+    # If Mathematica is disabled, dependences on model-specific
+    # modules should have been already resolved.
+    [ "$enable_meta" != yes -o -z "${MATH}" ] && return
+
+    message "Checking model makefiles"
+
+    for m in ${MODELS}; do
+        local model_name=$(echo ${m} | sed -e 's|models/||')
+        local model_file="${m}/FlexibleSUSY.m"
+	local mkfile="$m/module.mk"
+
+	update_module_mk "$model_name" "$mkfile" "$model_file" "$MATH"
+    done
+}
+
+#_____________________________________________________________________
 enable_defines() {
     if test "x$enable_colors" = "xyes" ; then
         DEFINE_ENABLE_COLORS="#define ENABLE_COLORS 1"
@@ -2984,6 +3105,9 @@ fi
 check_models
 check_addons
 check_optional_modules
+# BEGIN: NOT EXPORTED ##########################################
+update_model_makefiles
+# END:   NOT EXPORTED ##########################################
 
 enable_defines
 

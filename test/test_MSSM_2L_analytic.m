@@ -131,9 +131,14 @@ int main(){
 ";
            exec = CreateExecutable[
                progr, "exec",
-               "CompileOptions" -> "-I" <> FileNameJoin[{Directory[], "src"}],
-               "Libraries" -> {FileNameJoin[{Directory[], "src", "libflexisusy.a"}], "gfortran"}
-               (*, "ShellOutputFunction"->Print, "ShellCommandFunction"->Print *)
+               "CompileOptions" -> StringJoin[Riffle[
+                   {"-I" <> FileNameJoin[{Directory[], "src"}],
+                    "-I" <> FileNameJoin[{Directory[], "model_specific", "MSSM_higgs"}]},
+                   " "]],
+               "Libraries" -> {FileNameJoin[{Directory[], "model_specific", "MSSM_higgs", "libmodel_specific_MSSM_higgs.a"}],
+                               FileNameJoin[{Directory[], "src", "libflexisusy.a"}],
+                               "gfortran"}
+               (* , "ShellOutputFunction"->Print, "ShellCommandFunction"->Print *)
            ];
            If[exec === $Failed,
               Print["Error: cannot create executable"];

@@ -95,6 +95,8 @@ ALLLL    :=
 ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
 ADDONLIBS:=
+# the modules add dependent modules to this variable to be included in the makefile
+ALLMODDEP:=
 
 # set default shell
 SHELL = /bin/sh
@@ -162,6 +164,7 @@ endif
 
 include config/abspathx.mk
 include $(patsubst %, %/module.mk, $(MODULES))
+include $(patsubst %, %/module.mk, $(sort $(ALLMODDEP)))
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
