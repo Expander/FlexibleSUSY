@@ -71,6 +71,7 @@ NUHMSSMNoFVHimalaya takes the following physics parameters as input:
 \f$(m_{\tilde{d}}^2)_{11}(M_\text{SUSY})\f$ | soft-breaking 1st generation right-handed down-type squark mass parameters | `EXTPAR[47]`     | `md11IN`
 \f$(m_{\tilde{d}}^2)_{22}(M_\text{SUSY})\f$ | soft-breaking 2nd generation right-handed down-type squark mass parameters | `EXTPAR[48]`     | `md22IN`
 \f$(m_{\tilde{d}}^2)_{33}(M_\text{SUSY})\f$ | soft-breaking 3rd generation right-handed down-type squark mass parameters | `EXTPAR[49]`     | `md33IN`
+\f$M_\text{low}\f$                          | scale where the SM(5) is matched to the MSSM                               | `EXTPAR[100]`    | `Mlow`
 \f$\tan\beta(M_Z)\f$                        | \f$\tan\beta(M_Z)=v_u(M_Z)/v_d(M_Z)\f$                                     | `MINPAR[3]`      | `TanBeta`
 
 All MSSM parameters, except for \f$\tan\beta\f$, are defined in the
