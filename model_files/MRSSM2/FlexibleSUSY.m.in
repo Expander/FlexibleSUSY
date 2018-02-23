@@ -2,7 +2,7 @@ FSModelName = "MRSSM2";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MRSSM;
 
-OnlyLowEnergyFlexibleSUSY = True;
+OnlyLowEnergyFlexibleSUSY = False;
 
 MINPAR = {
     {3, TanBeta}
@@ -95,7 +95,12 @@ ExtraSLHAOutputBlocks = {
             {25, FlexibleSUSYObservable`EDM[Fe[3]]}, 
             {26, FlexibleSUSYObservable`MuEGamma[Fe[2], Fe[1]]} 
            } 
-   }
+   },
+   {EFFHIGGSCOUPLINGS, NoScale,
+            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+             {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+             {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+             {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
 };
 
 DefaultPoleMassPrecision = HighPrecision;
