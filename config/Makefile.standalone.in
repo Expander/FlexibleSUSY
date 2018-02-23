@@ -17,6 +17,7 @@ CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SMHODIR         := $(ABSBASEDIR)/model_specific/SM
+MSSMHODIR       := $(ABSBASEDIR)/model_specific/MSSM_higgs
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
@@ -26,10 +27,11 @@ LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
 LIBSMHO         := $(SMHODIR)/libmodel_specific_SM$(MODULE_LIBEXT)
+LIBMSSMHO       := $(MSSMHODIR)/libmodel_specific_MSSM_higgs$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
-CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) -I$(SMHODIR) $(INCFLEXI) \
+CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) -I$(SMHODIR) -I$(MSSMHODIR) $(INCFLEXI) \
                    $(INCMODEL)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := $(CXX)
@@ -92,7 +94,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBSMHO) $(LIBMSSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
