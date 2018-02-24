@@ -3995,8 +3995,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
            
            Print["Creating MuEGamma class..."];
-           leptonPairs = {{SARAH`Electron,SARAH`Electron}};(*DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                                                FlexibleSUSYObservable`MuEGamma[p_[__]|p_] :> p]*);
+           leptonPairs = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                                                FlexibleSUSYObservable`MuEGamma[pIn_[i_Integer], pOut_[j_Integer]] :> {pIn, pOut}];
+
            mu2egammaVertices =
              WriteMuEGammaClass[leptonPairs,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.hpp.in"}],

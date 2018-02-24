@@ -94,6 +94,7 @@ struct EDMVertexCorrectionFS {
 
 namespace flexiblesusy {
 namespace @ModelName@_mu_to_egamma {
+   /*
 inline double sm_width(int generationIndex1,  int generationIndex2, const @ModelName@_mass_eigenstates& model ) {
    @ModelName@_mass_eigenstates model_ = model;
    EvaluationContext context{ model_ };
@@ -108,6 +109,7 @@ inline double sm_width(int generationIndex1,  int generationIndex2, const @Model
 
    return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio ) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
 }
+*/
 @MuEGamma_InterfaceDefinitions@
 }
 } // namespace flexiblesusy
