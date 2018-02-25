@@ -3964,7 +3964,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       
                       
            Print["Setting up CXXDiagrams..."];
-           CXXDiagrams`Initialize[];
+           CXXDiagrams`CXXDiagramsInitialize[];
            
            Print["Creating EDM class..."];
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
