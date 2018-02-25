@@ -38,7 +38,7 @@
 
 #include <mathlink.h>
 #include "mathlink_utils.hpp"
-#include "WolframLibrary.h"
+#include <WolframLibrary.h>
 
 #include <cmath>
 #include <iostream>
