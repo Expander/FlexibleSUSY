@@ -523,6 +523,16 @@ TEST_SH += \
 		$(DIR)/test_Mh_uncertainties.sh
 endif
 
+ifeq ($(WITH_HSSUSY),yes)
+TEST_META += \
+		$(DIR)/test_HSSUSY_uncertainty.m
+endif
+
+ifeq ($(WITH_NUHMSSMNoFVHimalaya),yes)
+TEST_META += \
+		$(DIR)/test_NUHMSSMNoFVHimalaya_uncertainty.m
+endif
+
 ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp

@@ -120,13 +120,14 @@ CalcHSSUSYMh[ytLoops_?NumericQ, Qpole_?NumericQ, Qm_?NumericQ, eft_?NumericQ, yt
            tc = thresholdCorrections /. { args };
            tc = If[IntegerQ[tc], tc,
                    thresholdCorrections /. Options[FSHSSUSYOpenHandle]];
+           If[ytLoops >= 0, tc = SetDigit[tc, 6, ytLoops]];
            handle = FSHSSUSYOpenHandle[args];
            FSHSSUSYSet[handle,
                fsSettings -> {
                    calculateStandardModelMasses -> 1,
                    thresholdCorrectionsLoopOrder -> 3,
                    poleMassScale -> Qpole,
-                   thresholdCorrections -> SetDigit[tc, 6, ytLoops]
+                   thresholdCorrections -> tc
                },
                fsModelParameters -> {
                    DeltaEFT -> eft,
@@ -145,9 +146,10 @@ CalcHSSUSYDMh[a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List,
     CalcHSSUSYDMh[a, Sequence @@ s, r];
 
 CalcHSSUSYDMh[args__] :=
-    Module[{Mh, MhYt3L, MhEFT, MhYtMSSM, varyQpole, varyQmatch,
+    Module[{Mh0, Mh, MhYt3L, MhEFT, MhYtMSSM, varyQpole, varyQmatch,
             DMhSM, DMhEFT, DMhSUSY,
             MS = MSUSY /. { args }, Mlow = MEWSB /. { args }},
+           Mh0        = CalcHSSUSYMh[-1, 0, 0, 0, 0, args];
            Mh         = CalcHSSUSYMh[2, 0, 0, 0, 0, args];
            MhYt3L     = CalcHSSUSYMh[3, 0, 0, 0, 0, args];
            MhEFT      = CalcHSSUSYMh[2, 0, 0, 1, 0, args];
@@ -164,5 +166,5 @@ CalcHSSUSYDMh[args__] :=
            DMhSUSY = Max[Abs[Max[varyQmatch] - Mh],
                          Abs[Min[varyQmatch] - Mh]] +
                      Abs[Mh - MhYtMSSM];
-           { Mh, DMhSM + DMhEFT + DMhSUSY }
+           { Mh0, DMhSM + DMhEFT + DMhSUSY }
           ];
