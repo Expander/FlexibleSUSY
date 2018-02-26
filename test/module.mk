@@ -528,6 +528,11 @@ TEST_META += \
 		$(DIR)/test_HSSUSY_uncertainty.m
 endif
 
+ifeq ($(WITH_MSSMEFTHiggs),yes)
+TEST_META += \
+		$(DIR)/test_MSSMEFTHiggs_uncertainty.m
+endif
+
 ifeq ($(WITH_NUHMSSMNoFVHimalaya),yes)
 TEST_META += \
 		$(DIR)/test_NUHMSSMNoFVHimalaya_uncertainty.m
