@@ -74,35 +74,86 @@ IsDiagramSupported[inLepton_,outLepton_,vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_},gTaggedDiagrams_List] :=
-  Module[{prototype,definition,
-          numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inLepton],
-numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
+MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDiagrams_List] :=
+   Module[
+      {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inLepton],
+         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
   
-    prototype = "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" 
-                  <> CXXNameOfField[outLepton] <> "_gamma" <>
-                  "(" <> If[TreeMasses`GetDimension[inLepton] =!= 1,
-                           " int generationIndex1, ",
-                           " "] <>
-                        If[TreeMasses`GetDimension[outLepton] =!= 1,
-                           " int generationIndex2, ",
-                           " "] <>
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );";
+      prototype =
+         "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" <>
+            CXXNameOfField[outLepton] <> "_gamma" <> "(" <>
+            If[TreeMasses`GetDimension[inLepton] =!= 1,
+               " int generationIndex1, ",
+               " "
+            ] <>
+            If[TreeMasses`GetDimension[outLepton] =!= 1,
+               " int generationIndex2, ",
+               " "
+            ] <>
+            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model);";
                  
-    definition = "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" 
-                  <> CXXNameOfField[outLepton] <> "_gamma" <>
-                  "(" <> If[TreeMasses`GetDimension[inLepton] =!= 1,
-                           " int generationIndex1, ",
-                           " "] <>
-                        If[TreeMasses`GetDimension[outLepton] =!= 1,
-                           " int generationIndex2, ",
-                           " "] <>
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
-                 "{\n" <>
-                 IndentText[
-                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                   "EvaluationContext context{ model_ };\n" <>
-                   "std::array<int, " <> ToString @ numberOfIndices1 <>
+      definition =
+         (* calculate form factors A1L, A2L, etc *)
+         "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inLepton] <>
+            "_" <> CXXNameOfField[outLepton] <> "_gamma_form_factors" <>
+            " (\n" <>
+            If[TreeMasses`GetDimension[inLepton] =!= 1,
+               "   int generationIndex1, ",
+               " "
+            ] <>
+            If[TreeMasses`GetDimension[outLepton] =!= 1,
+               " int generationIndex2, ",
+               " "
+            ] <>
+            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
+            "{\n" <>
+            IndentText[
+               FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
+               "EvaluationContext context{ model_ };\n" <>
+               "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
+                     (* TODO: Specify indices correctly *)
+                       If[TreeMasses`GetDimension[inLepton] =!= 1,
+                          " generationIndex1" <>
+                          If[numberOfIndices1 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices1-1}],
+                             ""] <> " ",
+                          If[numberOfIndices1 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
+                             ""]
+                         ] <> "};\n" <>
+                   "std::array<int, " <> ToString @ numberOfIndices2 <>
+                     "> indices2 = {" <>
+                       If[TreeMasses`GetDimension[outLepton] =!= 1,
+                          " generationIndex2" <>
+                          If[numberOfIndices2 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices2-1}],
+                             ""] <> " ",
+                          If[numberOfIndices2 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
+                             ""]
+                         ] <> "};\n\n" <>
+
+               "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
+                   
+               StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
+                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
+                                       "\n"] <> "\n\n" <>
+               "return val;"
+                  (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
+            ] <> "\n}\n\n" <>
+
+            (* calculate observable using formfactors *)
+            "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" <> CXXNameOfField[outLepton] <> "_gamma " <> "(\n" <>
+            If[TreeMasses`GetDimension[inLepton] =!= 1, "   int generationIndex1, ", " "] <>
+            If[TreeMasses`GetDimension[outLepton] =!= 1, "int generationIndex2, ", " "] <>
+            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model\n) {\n" <>
+            (* choose which observable to compute from form factors *)
+            If[CXXNameOfField[inLepton] == "Fe",
+               (* write routine for mu to e gamma *)
+               IndentText[
+                  FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
+                  "EvaluationContext context{ model_ };\n" <>
+                  "std::array<int, " <> ToString @ numberOfIndices1 <>
                      "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[inLepton] =!= 1,
@@ -125,17 +176,24 @@ numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
                              StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
                              ""]
                          ] <> "};\n\n" <>
-                                 
-                   "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
-                   
-                   StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@ 
-                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"] <> "\n\n" <>
+                    "const auto form_factors = calculate_" <> CXXNameOfField[inLepton] <> "_"
+                   <> CXXNameOfField[outLepton] <> "_gamma_form_factors "<>
+                   "(" <> If[TreeMasses`GetDimension[inLepton] =!= 1,
+                            " generationIndex1, ",
+                            " "] <>
+                         If[TreeMasses`GetDimension[outLepton] =!= 1,
+                            " generationIndex2, ",
+                            " "] <>
+                  "model );\n" <>
                   "const auto leptonInMass = context.mass<" <> CXXNameOfField[inLepton] <> ">(indices1);\n" <> 
-                  "const double width = pow(leptonInMass,5)/(16.0*Pi) * (abs(val)*abs(val)).sum().real();\n" <>
-                  "return width;"
-                  (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
-                 ] <> "\n}";
+                  "const double width = pow(leptonInMass,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
+                  "return width;\n"
+               ],
+               (* part for Kien *)
+               IndentText[
+                  "return -1;\n"
+               ]
+            ] <> "}";
     
     {prototype, definition}
   ];

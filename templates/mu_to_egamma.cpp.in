@@ -201,7 +201,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
       const typename field_indices<EDMField1>::type& indices_out, 
       EvaluationContext& context)
 {
-   std::valarray<std::complex<double>> res {0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
 
    using FermionVertexIn = Vertex<
                          EDMField1,
@@ -246,9 +246,17 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
+         // eq. 15 of hep-ph/9510309
+         const std::complex<double> A1L =
+            1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionA(x);
+         // eq. 16 of hep-ph/9510309
          const std::complex<double> A2L = 
             vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
             + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
+
+         // eq. 15 & 16 of hep-ph/9510309 after replacement L <-> R
+         const std::complex<double> A1R = 
+            1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionA(x);
          const std::complex<double> A2R = 
             vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
             + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
@@ -256,7 +264,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const std::complex<double> massFactor = pow(photonEmitterMass,-2);
 
          res += oneOver32PiSquared * photonEmitterCharge * massFactor 
-            * std::valarray<std::complex<double>> {A2L, A2R};
+            * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
 
@@ -271,7 +279,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
       const typename field_indices<EDMField1>::type& indices_out,
       EvaluationContext& context)
 {
-   std::valarray<std::complex<double>> res {0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
 
    using FermionVertexIn = Vertex<
                          EDMField1,
@@ -316,16 +324,24 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const double photonEmitterCharge =
             PhotonEmitter::electric_charge * unit_charge(context);
 
+         // eq. 18 of hep-ph/9510309
+         const std::complex<double> A1L =
+            -1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionD(x);
+         // eq. 19 of hep-ph/9510309
          const std::complex<double> A2L = 
             vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
             + vertexOut.left()* vertexIn.left() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
+
+         // eq. 18 & 18 of hep-ph/9510309 after replacement L <-> R
+         const std::complex<double> A1R = 
+            1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionD(x);
          const std::complex<double> A2R = 
             vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
             + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
          const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
 
          res += - oneOver32PiSquared * photonEmitterCharge * massFactor 
-            * std::valarray<std::complex<double>> {A2L, A2R};
+            * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
 
