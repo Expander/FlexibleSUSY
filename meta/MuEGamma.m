@@ -48,23 +48,21 @@ contributingGraphs = {vertexCorrectionGraph};
 
 MuEGammaContributingGraphs[] := contributingGraphs
 
-GetPhoton[] := SARAH`Photon
-
-MuEGammaContributingDiagramsForLeptonPairAndGraph[{inLepton_, outLepton_}, graph_] :=
+MuEGammaContributingDiagramsForLeptonPairAndGraph[{inFermion_, outFermion_}, graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 ->CXXDiagrams`LorentzConjugate[inLepton], 2 -> outLepton,
-          3 -> CXXDiagrams`LorentzConjugate[GetPhoton[]]}];
+         {1 ->CXXDiagrams`LorentzConjugate[inFermion], 2 -> outFermion,
+          3 -> CXXDiagrams`LorentzConjugate[SARAH`Photon]}];
 
-    Select[diagrams,IsDiagramSupported[inLepton,outLepton,graph,#] &]
+    Select[diagrams,IsDiagramSupported[inFermion,outFermion,graph,#] &]
  ]
 
-IsDiagramSupported[inLepton_,outLepton_,vertexCorrectionGraph,diagram_] :=
+IsDiagramSupported[inFermion_,outFermion_,vertexCorrectionGraph,diagram_] :=
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],photonEmitter,CXXDiagrams`LorentzConjugate[photonEmitter]},
+    If[diagram[[6]] =!= {SARAH`Photon,photonEmitter,CXXDiagrams`LorentzConjugate[photonEmitter]},
        Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[True]];
@@ -74,19 +72,19 @@ IsDiagramSupported[inLepton_,outLepton_,vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDiagrams_List] :=
+MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedDiagrams_List] :=
    Module[
-      {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inLepton],
-         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outLepton]},
+      {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
+         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion]},
   
       prototype =
-         "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" <>
-            CXXNameOfField[outLepton] <> "_gamma" <> "(" <>
-            If[TreeMasses`GetDimension[inLepton] =!= 1,
+         "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
+            CXXNameOfField[outFermion] <> "_gamma" <> "(" <>
+            If[TreeMasses`GetDimension[inFermion] =!= 1,
                " int generationIndex1, ",
                " "
             ] <>
-            If[TreeMasses`GetDimension[outLepton] =!= 1,
+            If[TreeMasses`GetDimension[outFermion] =!= 1,
                " int generationIndex2, ",
                " "
             ] <>
@@ -94,14 +92,14 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                  
       definition =
          (* calculate form factors A1L, A2L, etc *)
-         "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inLepton] <>
-            "_" <> CXXNameOfField[outLepton] <> "_gamma_form_factors" <>
+         "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
+            "_" <> CXXNameOfField[outFermion] <> "_gamma_form_factors" <>
             " (\n" <>
-            If[TreeMasses`GetDimension[inLepton] =!= 1,
+            If[TreeMasses`GetDimension[inFermion] =!= 1,
                "   int generationIndex1, ",
                " "
             ] <>
-            If[TreeMasses`GetDimension[outLepton] =!= 1,
+            If[TreeMasses`GetDimension[outFermion] =!= 1,
                " int generationIndex2, ",
                " "
             ] <>
@@ -112,7 +110,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                "EvaluationContext context{ model_ };\n" <>
                "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
-                       If[TreeMasses`GetDimension[inLepton] =!= 1,
+                       If[TreeMasses`GetDimension[inFermion] =!= 1,
                           " generationIndex1" <>
                           If[numberOfIndices1 =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices1-1}],
@@ -123,7 +121,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                          ] <> "};\n" <>
                    "std::array<int, " <> ToString @ numberOfIndices2 <>
                      "> indices2 = {" <>
-                       If[TreeMasses`GetDimension[outLepton] =!= 1,
+                       If[TreeMasses`GetDimension[outFermion] =!= 1,
                           " generationIndex2" <>
                           If[numberOfIndices2 =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices2-1}],
@@ -136,19 +134,19 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
                    
                StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
-                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton, outLepton},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
+                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
                "return val;"
                   (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n" <>
 
             (* calculate observable using formfactors *)
-            "double calculate_" <> CXXNameOfField[inLepton] <> "_to_" <> CXXNameOfField[outLepton] <> "_gamma " <> "(\n" <>
-            If[TreeMasses`GetDimension[inLepton] =!= 1, "   int generationIndex1, ", " "] <>
-            If[TreeMasses`GetDimension[outLepton] =!= 1, "int generationIndex2, ", " "] <>
+            "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <> CXXNameOfField[outFermion] <> "_gamma " <> "(\n" <>
+            If[TreeMasses`GetDimension[inFermion] =!= 1, "   int generationIndex1, ", " "] <>
+            If[TreeMasses`GetDimension[outFermion] =!= 1, "int generationIndex2, ", " "] <>
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model\n) {\n" <>
             (* choose which observable to compute from form factors *)
-            If[CXXNameOfField[inLepton] == "Fe",
+            Switch[CXXNameOfField[inFermion], "Fe",
                (* write routine for mu to e gamma *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
@@ -156,7 +154,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                   "std::array<int, " <> ToString @ numberOfIndices1 <>
                      "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
-                       If[TreeMasses`GetDimension[inLepton] =!= 1,
+                       If[TreeMasses`GetDimension[inFermion] =!= 1,
                           " generationIndex1" <>
                           If[numberOfIndices1 =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices1-1}],
@@ -167,7 +165,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                          ] <> "};\n" <>
                    "std::array<int, " <> ToString @ numberOfIndices2 <>
                      "> indices2 = {" <>
-                       If[TreeMasses`GetDimension[outLepton] =!= 1,
+                       If[TreeMasses`GetDimension[outFermion] =!= 1,
                           " generationIndex2" <>
                           If[numberOfIndices2 =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices2-1}],
@@ -176,52 +174,88 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inLepton_, outLepton_}, gTaggedDia
                              StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
                              ""]
                          ] <> "};\n\n" <>
-                    "const auto form_factors = calculate_" <> CXXNameOfField[inLepton] <> "_"
-                   <> CXXNameOfField[outLepton] <> "_gamma_form_factors "<>
-                   "(" <> If[TreeMasses`GetDimension[inLepton] =!= 1,
+                    "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
+                   <> CXXNameOfField[outFermion] <> "_gamma_form_factors "<>
+                   "(" <> If[TreeMasses`GetDimension[inFermion] =!= 1,
                             " generationIndex1, ",
                             " "] <>
-                         If[TreeMasses`GetDimension[outLepton] =!= 1,
+                         If[TreeMasses`GetDimension[outFermion] =!= 1,
                             " generationIndex2, ",
                             " "] <>
                   "model );\n" <>
-                  "const auto leptonInMass = context.mass<" <> CXXNameOfField[inLepton] <> ">(indices1);\n" <> 
+                  "const auto leptonInMass = context.mass<" <> CXXNameOfField[inFermion] <> ">(indices1);\n" <> 
                   "const double width = pow(leptonInMass,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
                   "return width;\n"
-               ],
-               (* part for Kien *)
+               ], "Fd",
+               (* routine b -> s gamma *)
                IndentText[
-                  "return -1;\n"
+                  FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
+                  "EvaluationContext context{ model_ };\n" <>
+                  "std::array<int, " <> ToString @ numberOfIndices1 <>
+                     "> indices1 = {" <>
+                     (* TODO: Specify indices correctly *)
+                       If[TreeMasses`GetDimension[inFermion] =!= 1,
+                          " generationIndex1" <>
+                          If[numberOfIndices1 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices1-1}],
+                             ""] <> " ",
+                          If[numberOfIndices1 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
+                             ""]
+                         ] <> "};\n" <>
+                   "std::array<int, " <> ToString @ numberOfIndices2 <>
+                     "> indices2 = {" <>
+                       If[TreeMasses`GetDimension[outFermion] =!= 1,
+                          " generationIndex2" <>
+                          If[numberOfIndices2 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices2-1}],
+                             ""] <> " ",
+                          If[numberOfIndices2 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
+                             ""]
+                         ] <> "};\n\n" <>
+                    "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
+                   <> CXXNameOfField[outFermion] <> "_gamma_form_factors "<>
+                   "(" <> If[TreeMasses`GetDimension[inFermion] =!= 1,
+                            " generationIndex1, ",
+                            " "] <>
+                         If[TreeMasses`GetDimension[outFermion] =!= 1,
+                            " generationIndex2, ",
+                            " "] <>
+                  "model );\n" <>
+                  "const auto fdInMass = context.mass<" <> CXXNameOfField[inFermion] <> ">(indices1);\n" <> 
+                  "const auto c7np = (16.0*pow(Pi, 2))/(fdInMass*pow(unit_charge(context), 2)) * std::real(form_factors[3]);\n" <>
+                  "return c7np;\n"
                ]
             ] <> "}";
     
     {prototype, definition}
   ];
 
-CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inLepton_, outLepton_},diagrams_,graph_] :=
-  CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton,outLepton,#,graph] & /@ diagrams;
-CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inLepton_,outLepton_,diagram_,vertexCorrectionGraph] := 
+CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_},diagrams_,graph_] :=
+  CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion,outFermion,#,graph] & /@ diagrams;
+CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_,outFermion_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
-       Return[CXXEvaluatorFS[inLepton,outLepton,photonEmitter,exchangeParticle]]];
+       Return[CXXEvaluatorFS[inFermion,outFermion,photonEmitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
-       Return[CXXEvaluatorSF[inLepton,outLepton,photonEmitter,exchangeParticle]]];
+       Return[CXXEvaluatorSF[inFermion,outFermion,photonEmitter,exchangeParticle]]];
     
     Return["(unknown diagram)"];
   ]
 
-CXXEvaluatorFS[inLepton_,outLepton_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inLepton] <> ", " <>
-  CXXDiagrams`CXXNameOfField[outLepton] <> ", " <>
+CXXEvaluatorFS[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
+  "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+  CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
-CXXEvaluatorSF[inLepton_,outLepton_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inLepton] <> ", " <>
-  CXXDiagrams`CXXNameOfField[outLepton] <> ", " <>
+CXXEvaluatorSF[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
+  "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+  CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
