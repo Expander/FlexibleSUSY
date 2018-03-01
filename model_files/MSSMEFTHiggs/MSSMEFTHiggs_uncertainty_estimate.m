@@ -135,16 +135,17 @@ CalcMSSMEFTHiggsDMh[args__] :=
               Mlow = Mt /. Options[FSMSSMEFTHiggsOpenHandle]
              ];
            Mh0        = CalcMSSMEFTHiggsMh[-1, 0, 0, args];
+           If[Mh0 === $Failed, Return[{$Failed, $Failed}]];
            Mh         = CalcMSSMEFTHiggsMh[2, 0, 0, args];
-           If[Mh === $Failed, Return[{ $Failed, $Failed }]];
+           If[Mh === $Failed, Return[{ Mh0, $Failed }]];
            MhYt3L     = CalcMSSMEFTHiggsMh[3, 0, 0, args];
-           If[MhYt3L === $Failed, Return[{ Mh, $Failed }]];
+           If[MhYt3L === $Failed, Return[{ Mh0, $Failed }]];
            varyQpole  = CalcMSSMEFTHiggsMh[2, #, 0, args]& /@
                         LogRange[Mlow/2, 2 Mlow, 10];
-           If[MemberQ[varyQpole, $Failed], Return[{ Mh, $Failed }]];
+           If[MemberQ[varyQpole, $Failed], Return[{ Mh0, $Failed }]];
            varyQmatch = CalcMSSMEFTHiggsMh[2, 0, #, args]& /@
                         LogRange[MS/2, 2 MS, 10];
-           If[MemberQ[varyQmatch, $Failed], Return[{ Mh, $Failed }]];
+           If[MemberQ[varyQmatch, $Failed], Return[{ Mh0, $Failed }]];
            (* combine uncertainty estimates *)
            DMhSM   = Max[Abs[Max[varyQpole] - Mh],
                          Abs[Min[varyQpole] - Mh]] +
