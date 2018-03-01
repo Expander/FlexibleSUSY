@@ -185,7 +185,6 @@ GetSMLeptons::usage="";
 GetSMUpQuarks::usage="";
 GetSMDownQuarks::usage="";
 GetSMQuarks::usage="";
-GetSMGoldstoneBosons::usage="";
 GetColoredParticles::usage="";
 
 GetUpQuark::usage="";
