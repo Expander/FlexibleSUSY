@@ -85,12 +85,12 @@ The Higgs and W boson pole masses, \f$M_h\f$ and \f$M_Z\f$, are
 calculated at the full 1-loop level, including potential flavour
 mixing and momentum dependence.  Depending on the given configuration
 flags, additional 2-, 3- and 4-loop corrections to the Higgs pole mass
-of \f$O(\alpha_t\alpha_s)\f$ [<a
-href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>, Eq.(2.47)]
-and \f$O(\alpha_t^2)\f$ [<a
-href="https://arxiv.org/abs/1205.6497">arXiv:1205.6497</a>, Eq.(20)],
-as well as 3-loop corrections \f$O(\alpha_t^3 + \alpha_t^2\alpha_s +
-\alpha_t\alpha_s^2)\f$ [<a
+of \f$O(\alpha_t\alpha_s + \alpha_b\alpha_s)\f$ [<a
+href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>]
+\f$O((\alpha_t + \alpha_b)^2)\f$ [<a
+href="https://arxiv.org/abs/1205.6497">arXiv:1205.6497</a>] and
+\f$O(\alpha_\tau^2)\f$, as well as 3-loop corrections \f$O(\alpha_t^3
++ \alpha_t^2\alpha_s + \alpha_t\alpha_s^2)\f$ [<a
 href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>] and 4-loop
 corrections \f$O(\alpha_t\alpha_s^3)\f$ [<a
 href="https://arxiv.org/abs/1508.00912">arXiv:1508.00912</a>] can be
@@ -162,7 +162,7 @@ Block FlexibleSUSY
     7   3            # threshold corrections loop order
     8   1            # Higgs 2-loop corrections O(alpha_t alpha_s)
     9   1            # Higgs 2-loop corrections O(alpha_b alpha_s)
-   10   1            # Higgs 2-loop corrections O(alpha_t^2 + alpha_t alpha_b + alpha_b^2)
+   10   1            # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
    11   1            # Higgs 2-loop corrections O(alpha_tau^2)
    12   0            # force output
    13   1            # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
