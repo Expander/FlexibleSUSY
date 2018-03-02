@@ -224,10 +224,10 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                             " "] <>
                   "model );\n" <>
                   "double c7NP[2][2];\n" <>
-                  "c7NP[0][0] = -1/(2*unit_charge(context)) * std::real(form_factors[3]);\n" <>
-                  "c7NP[0][1] = -1/(2*unit_charge(context)) * std::imag(form_factors[3]);\n" <>
-                  "c7NP[1][0] = -1/(2*unit_charge(context)) * std::real(form_factors[2]);\n" <>
-                  "c7NP[1][1] = -1/(2*unit_charge(context)) * std::imag(form_factors[2]);\n" <>
+                  "c7NP[0][0] = 1/(2*unit_charge(context)) * std::real(form_factors[3]);\n" <>
+                  "c7NP[0][1] = 1/(2*unit_charge(context)) * std::imag(form_factors[3]);\n" <>
+                  "c7NP[1][0] = 1/(2*unit_charge(context)) * std::real(form_factors[2]);\n" <>
+                  "c7NP[1][1] = 1/(2*unit_charge(context)) * std::imag(form_factors[2]);\n" <>
                   "return c7NP[0][0];\n"
                ]
             ] <> "}";

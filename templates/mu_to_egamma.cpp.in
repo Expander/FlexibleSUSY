@@ -42,6 +42,7 @@ using namespace flexiblesusy;
 using namespace cxx_diagrams;
 
 namespace {
+using ChargedHiggsMultiplet = @MuEGamma_ChargedHiggsMultiplet@;
 static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
 
 /**
@@ -235,6 +236,14 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          if (exchangeFieldIndicesIn != exchangeFieldIndicesOut || photonEmitterIndicesIn != photonEmitterIndicesOut)
             continue;
 
+         // Throw out SM Goldstone, it could crashes if SM is used.
+         if ( std::is_same<PhotonEmitter, ChargedHiggsMultiplet>::type::value || 
+                 std::is_same<PhotonEmitter, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
+         {
+            if ( exchangeFieldIndicesIn[0] == 0 )
+                continue;
+         }
+
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
 
@@ -312,6 +321,14 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
          if (exchangeFieldIndicesIn != exchangeFieldIndicesOut || photonEmitterIndicesIn != photonEmitterIndicesOut)
             continue;
+
+         // Throw out SM Goldstone, it could crash if SM is used.
+         if ( std::is_same<ExchangeField, ChargedHiggsMultiplet>::type::value || 
+                 std::is_same<ExchangeField, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
+         {
+            if ( exchangeFieldIndicesIn[0] == 0 )
+                continue;
+         }
 
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);

@@ -1933,6 +1933,7 @@ WriteMuEGammaClass[leptonPairs_List,files_List] :=
     WriteOut`ReplaceInFiles[files,
                             {"@MuEGamma_InterfacePrototypes@"       -> interfacePrototypes,
                              "@MuEGamma_InterfaceDefinitions@"      -> interfaceDefinitions,
+                             "@MuEGamma_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
                              Sequence @@ GeneralReplacementRules[]
                             }];
     
