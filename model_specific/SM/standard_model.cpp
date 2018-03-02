@@ -4194,18 +4194,30 @@ double Standard_model::self_energy_hh_2loop(double p) const
    using namespace flexiblesusy::sm_twoloophiggs;
 
    const double p2 = Sqr(p);
+   const double mb = MFd(2);
    const double mt = MFu(2);
+   const double mtau = MFe(2);
+   const double yb = Yd(2,2);
    const double yt = Yu(2,2);
+   const double ytau = Ye(2,2);
    const double gs = g3;
    const double scale = get_scale();
    double self_energy = 0.;
 
    if (HIGGS_2LOOP_CORRECTION_AT_AT) {
-      self_energy -= delta_mh_2loop_at_at_sm(p2, scale, mt, yt);
+      self_energy -= delta_mh_2loop_at_at_sm(p2, scale, mt, yt, mb);
    }
 
    if (HIGGS_2LOOP_CORRECTION_AT_AS) {
       self_energy -= delta_mh_2loop_at_as_sm(p2, scale, mt, yt, gs);
+   }
+
+   if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+      self_energy -= delta_mh_2loop_ab_as_sm(p2, scale, mb, yb, gs);
+   }
+
+   if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+      self_energy -= delta_mh_2loop_atau_atau_sm(p2, scale, mtau, ytau);
    }
 
    return self_energy;
