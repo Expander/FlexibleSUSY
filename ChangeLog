@@ -65,6 +65,39 @@ FlexibleSUSY 2.0.2 [not released yet]
    2) changing the top Yukawa coupling by higher orders (if available)
    and 3) changing the stong coupling by higher orders.
 
+ * Feature: Implementing 2-loop effective potential contributions to
+   the Higgs pole mass in the Standard Model of O((at+ab)^2 + ab*as +
+   atau^2).  These corrections are enabled in all FlexibleEFTHiggs
+   models by default and can be enabled in other SM-like models by
+   setting the flag
+
+      UseHiggs2LoopSM = True
+
+   in the corresponding model file.  At run-time these corrections
+   (and the O(at*as) contributions) are enabled when the following
+   switches are set in the SLHA input file:
+
+   Block FlexibleSUSY
+       4   2   # pole mass loop order
+       5   2   # EWSB loop order
+       8   1   # Higgs 2-loop corrections O(alpha_t alpha_s)
+       9   1   # Higgs 2-loop corrections O(alpha_b alpha_s)
+      10   1   # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
+      11   1   # Higgs 2-loop corrections O(alpha_tau^2)
+
+   or in the Mathematica interface:
+
+   FSSMOpenHandle[
+      fsSettings -> {
+        poleMassLoopOrder -> 2,            (* FlexibleSUSY[4] *)
+        ewsbLoopOrder -> 2,                (* FlexibleSUSY[5] *)
+        higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
+        higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
+        higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
+        higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
+      }, ...
+   ];
+
  * Feature: Implementation of the strong corrections to the 4-loop
    beta functions of the strong gauge, Yukawa and quartic Higgs
    couplings in the SM from [1508.00912, 1604.00853, 1508.02680].
