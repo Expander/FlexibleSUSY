@@ -413,7 +413,6 @@ void SLHA_io::set_settings(const Spectrum_generator_settings& settings)
 
 void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
 {
-   using namespace softsusy;
    std::ostringstream ss;
 
    ss << "Block SMINPUTS\n";
@@ -499,18 +498,16 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
  */
 void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double value)
 {
-   using namespace softsusy;
-
    switch (key) {
    case 1:
-      qedqcd.setAlpha(ALPHA, 1.0 / value);
+      qedqcd.setAlpha(softsusy::ALPHA, 1.0 / value);
       qedqcd.setAlphaEmInput(1.0 / value);
       break;
    case 2:
       qedqcd.setFermiConstant(value);
       break;
    case 3:
-      qedqcd.setAlpha(ALPHAS, value);
+      qedqcd.setAlpha(softsusy::ALPHAS, value);
       qedqcd.setAlphaSInput(value);
       break;
    case 4:
@@ -518,14 +515,14 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       qedqcd.set_scale(value);
       break;
    case 5:
-      qedqcd.setMass(mBottom, value);
+      qedqcd.setMass(softsusy::mBottom, value);
       qedqcd.setMbMb(value);
       break;
    case 6:
       qedqcd.setPoleMt(value);
       break;
    case 7:
-      qedqcd.setMass(mTau, value);
+      qedqcd.setMass(softsusy::mTau, value);
       qedqcd.setPoleMtau(value);
       break;
    case 8:
@@ -535,33 +532,33 @@ void SLHA_io::process_sminputs_tuple(softsusy::QedQcd& qedqcd, int key, double v
       qedqcd.setPoleMW(value);
       break;
    case 11:
-      qedqcd.setMass(mElectron, value);
+      qedqcd.setMass(softsusy::mElectron, value);
       qedqcd.setPoleMel(value);
       break;
    case 12:
       qedqcd.setNeutrinoPoleMass(1, value);
       break;
    case 13:
-      qedqcd.setMass(mMuon, value);
+      qedqcd.setMass(softsusy::mMuon, value);
       qedqcd.setPoleMmuon(value);
       break;
    case 14:
       qedqcd.setNeutrinoPoleMass(2, value);
       break;
    case 21:
-      qedqcd.setMass(mDown, value);
+      qedqcd.setMass(softsusy::mDown, value);
       qedqcd.setMd2GeV(value);
       break;
    case 22:
-      qedqcd.setMass(mUp, value);
+      qedqcd.setMass(softsusy::mUp, value);
       qedqcd.setMu2GeV(value);
       break;
    case 23:
-      qedqcd.setMass(mStrange, value);
+      qedqcd.setMass(softsusy::mStrange, value);
       qedqcd.setMs2GeV(value);
       break;
    case 24:
-      qedqcd.setMass(mCharm, value);
+      qedqcd.setMass(softsusy::mCharm, value);
       qedqcd.setMcMc(value);
       break;
    default:

@@ -41,8 +41,6 @@
 #define DEFINE_PHYSICAL_PARAMETER(p) decltype(LOCALPHYSICAL(p)) p;
 #define LowEnergyConstant(p) Electroweak_constants::p
 
-using namespace softsusy;
-
 namespace flexiblesusy {
 
 @ModelName@_slha_io::@ModelName@_slha_io()
