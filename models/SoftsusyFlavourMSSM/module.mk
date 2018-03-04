@@ -7,7 +7,6 @@ MODSoftsusyFlavourMSSM_INC := $(patsubst %,-Imodel_specific/%,$(MODSoftsusyFlavo
 MODSoftsusyFlavourMSSM_LIB := $(foreach M,$(MODSoftsusyFlavourMSSM_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
 
 LIBSoftsusyFlavourMSSM_SRC  := \
-		$(DIR)/flavoursoft.cpp
 
 LIBSoftsusyFlavourMSSM_OBJ  := \
 		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBSoftsusyFlavourMSSM_SRC))) \
@@ -28,8 +27,6 @@ EXESoftsusyFlavourMSSM_DEP  := \
 
 EXESoftsusyFlavourMSSM_EXE := \
 		$(EXESoftsusyFlavourMSSM_OBJ:.o=.x)
-
-RUN_SOFTPOINT_EXE := $(EXESoftsusyFlavourMSSM_EXE)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME)
 
@@ -58,9 +55,6 @@ $(LIBSoftsusyFlavourMSSM_DEP) $(LIBSoftsusyFlavourMSSM_OBJ) $(EXESoftsusyFlavour
 
 $(LIBSoftsusyFlavourMSSM): $(LIBSoftsusyFlavourMSSM_OBJ)
 		$(MODULE_MAKE_LIB_CMD) $@ $^
-
-$(EXESoftsusyFlavourMSSM_EXE): $(DIR)/run_softpoint.o $(LIBSoftsusyFlavourMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyMSSM) $(MODSoftsusyFlavourMSSM_LIB) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSoftsusyFlavourMSSM_DEP) $(EXESoftsusyFlavourMSSM_DEP)
 ALLLIB += $(LIBSoftsusyFlavourMSSM)

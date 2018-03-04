@@ -57,9 +57,6 @@ models/fmssmn/fmssmn_lattice_rge.f
 models/fmssmn/fmssmn_lattice_translator.inc
 models/*/LesHouches.out.*
 models/**/
-!models/SoftsusyMSSM/
-!models/SoftsusyNMSSM/
-!models/SoftsusyFlavourMSSM/
 
 model_files/*/LesHouches.out.*
 

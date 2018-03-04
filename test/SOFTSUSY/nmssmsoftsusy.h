@@ -27,8 +27,8 @@
 #include "nmssmsoftpars.h"
 #include "softsusy.h"
 #include "mssmUtils.h"
-#include <nmssm2loop.h>
-#include <nmssm1loop.h>
+#include "nmssm2loop.h"
+#include "nmssm1loop.h"
 #include "nmssmUtils.h"
 
 namespace softsusy {
