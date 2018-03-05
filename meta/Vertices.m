@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -33,8 +35,10 @@ ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to s
 FieldIndexList::usage;
 SortCp::usage="SortCp[cp] sorts fields in cp into SARAH internal order.";
 SortCps::usage="SortCps[nPointFunctions] sorts all SARAH`Cp[] and SARAH`Cp[][] in nPointFunctions.";
+SortFieldsInCp::usage="";
 EnforceCpColorStructures::usage;
 EnforceCpColorStructures::cpext="Fixing positions of external field `1` within `2`.  This might happen with SARAH version 4.1.0 or earlier.  Please report to us if you see this message with a newer version of SARAH.";
+FindVertexWithLorentzStructure::usage="";
 
 GetLorentzStructure::usage;
 GetParticleList::usage;
@@ -43,6 +47,8 @@ ToRotatedField::usage;
 ReplaceUnrotatedFields::usage;
 StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 StripFieldIndices::usage;
+
+SarahToFSVertexConventions::usage="";
 
 Begin["`Private`"]
 
@@ -309,6 +315,21 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
     -I factor TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
 ];
+
+SarahToFSVertexConventions[sortedFields_List, expr_] :=
+  Module[{contraction, factor},
+    StripGroupStructure[expr, {}];
+    contraction = Block[{
+	    SARAH`sum
+	    (* corrupts a polynomial (monomial + monomial + ...) summand *)
+	},
+	ExpandSarahSum @ SimplifyContraction @ expr];
+    (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
+       for the following sign factor *)
+    factor = If[GetFieldType /@ sortedFields === {S,S,V}, -1, 1];
+    -I factor TreeMasses`ReplaceDependencies[contraction] /.
+	Parameters`ApplyGUTNormalization[]
+  ]
 
 SARAHVertex[fieldsInRotatedCp_List] := Module[{
 	sarahVertex = SARAH`Vertex @ StripFieldIndices[fieldsInRotatedCp],

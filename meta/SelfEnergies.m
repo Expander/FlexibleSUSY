@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -85,6 +87,8 @@ definitions for three-loop Higgs self-energies in split-SUSY";
 
 SelfEnergyIsSymmetric::usage = "";
 CreateCouplingSymbol::usage = "";
+
+ReplaceGhosts::usage="";
 
 Begin["`Private`"];
 
