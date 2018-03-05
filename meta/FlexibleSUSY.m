@@ -1882,17 +1882,14 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[vertices_List,massMatrices_,files_List] :=
+WriteCXXDiagramClass[vertices_List,files_List] :=
   Module[{fields, nPointFunctions, vertexRules, vertexData, cxxVertices, massFunctions, unitCharge},
-    vertexRules = CXXDiagrams`VertexRulesForVertices[vertices,massMatrices];
-
     fields = CXXDiagrams`CreateFields[];
-    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] &
-                                     /@ DeleteDuplicates[vertices],
-                                     "\n\n"];
-    cxxVertices = CXXDiagrams`CreateVertices[vertices,vertexRules];
+    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData /@
+                                       DeleteDuplicates[vertices], "\n\n"];
+    cxxVertices = CXXDiagrams`CreateVertices[vertices];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
-    unitCharge = CXXDiagrams`CreateUnitCharge[massMatrices];
+    unitCharge = CXXDiagrams`CreateUnitCharge[];
     
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"          -> fields,
@@ -3202,6 +3199,7 @@ Options[MakeFlexibleSUSY] :=
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             edmVertices, mu2egammaVertices, aMuonVertices, edmFields, leptonPairs,
+            cxxQFTTemplateDir, cxxQFTOutputDir, cxxQFTFiles,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -4069,12 +4067,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
                       
+<<<<<<< HEAD
                       
            Print["Setting up CXXDiagrams..."];
            
            CXXDiagrams`CXXDiagramsInitialize[];
            
            Print["Creating EDM class ..."];
+=======
+           Print["Creating EDM class..."];
+>>>>>>> 2aa51b1ec... Updated FlexibleSUSY.m to actually use the new interfaces.
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            edmVertices =
@@ -4150,11 +4152,20 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
 
+           cxxQFTTemplateDir = FileNameJoin[{$flexiblesusyTemplateDir, "cxx_qft"}];
+           cxxQFTOutputDir = FileNameJoin[{FSOutputDir, "cxx_qft"}];
+           cxxQFTFiles = {{FileNameJoin[{cxxQFTTemplateDir, "qft.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_qft.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "fields.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_fields.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "vertices.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.hpp"}]}};
+
+           If[DirectoryQ[cxxQFTOutputDir] === False,
+              CreateDirectory[cxxQFTOutputDir]];
 
            WriteCXXDiagramClass[
-             DeleteDuplicates @ Join[edmVertices, aMuonVertices, fFFMasslessVFormFactorVertices, fFFMassiveVFormFactorVertices, conversionVertices],Lat$massMatrices,
-                                {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
-                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
+             DeleteDuplicates @ Join[edmVertices, aMuonVertices, fFFMasslessVFormFactorVertices, fFFMassiveVFormFactorVertices, conversionVertices], cxxQFTFiles];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
