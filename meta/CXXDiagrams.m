@@ -357,7 +357,7 @@ CreateMassFunctions[] :=
             ] & /@ massiveFields, "\n\n"]
         ]
 
-CreateUnitCharge[massMatrices_] :=
+CreateUnitCharge[] :=
   Module[{electron,photon,vertex,vertexBody,
           numberOfElectronIndices,numberOfPhotonIndices},
          electron = AtomHead @ TreeMasses`GetSMElectronLepton[];
