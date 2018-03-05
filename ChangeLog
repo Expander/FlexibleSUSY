@@ -1,4 +1,4 @@
-FlexibleSUSY 2.0.2 [not released yet]
+FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
    self-energies/tadpoles and vertices.  The replacement rules are
