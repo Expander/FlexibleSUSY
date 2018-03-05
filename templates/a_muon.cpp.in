@@ -28,7 +28,7 @@
 #include "@ModelName@_a_muon.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
-#include "@ModelName@_cxx_diagrams.hpp"
+#include "cxx_qft/@ModelName@_qft.hpp"
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
@@ -36,9 +36,9 @@
 #define PHASE(p) context.model.get_##p()
 
 using namespace flexiblesusy;
-using namespace cxx_diagrams;
+using namespace cxx_qft;
 
-using Muon = @AMuon_MuonField@;
+using Muon = fields::@AMuon_MuonField@;
 
 namespace {
 static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
@@ -261,6 +261,8 @@ double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
    EvaluationContext context{ model };
    double val = 0.0;
 
+   using namespace cxx_qft::fields;
+
 @AMuon_Calculation@
 
    // add 2-loop QED logarithms
@@ -391,16 +393,14 @@ PhotonEmitter, ExchangeField
                       PhotonEmitter
                       >;
 
-   constexpr auto indexBounds = MuonVertex::index_bounds;
-
-   for (const auto& index: indexBounds) {
-      const auto muonIndices = MuonVertex::template fieldIndices<0>(index);
+   for (const auto& index: index_range<MuonVertex>()) {
+      const auto muonIndices = MuonVertex::template field_indices<0>(index);
 
       if (muonIndices != indices)
          continue;
 
-      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(index);
-      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(index);
+      const auto photonEmitterIndices = MuonVertex::template field_indices<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template field_indices<1>(index);
 
       if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
           isSMField<ExchangeField>(exchangeFieldIndices))
@@ -451,16 +451,14 @@ PhotonEmitter, ExchangeField
                       PhotonEmitter
                       >;
 
-   constexpr auto indexBounds = MuonVertex::index_bounds;
-
-   for (const auto& index: indexBounds) {
-      const auto muonIndices = MuonVertex::template fieldIndices<0>(index);
+   for (const auto& index: index_range<MuonVertex>()) {
+      const auto muonIndices = MuonVertex::template field_indices<0>(index);
 
       if (muonIndices != indices)
          continue;
 
-      const auto photonEmitterIndices = MuonVertex::template fieldIndices<2>(index);
-      const auto exchangeFieldIndices = MuonVertex::template fieldIndices<1>(index);
+      const auto photonEmitterIndices = MuonVertex::template field_indices<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template field_indices<1>(index);
 
       if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
           isSMField<ExchangeField>(exchangeFieldIndices))

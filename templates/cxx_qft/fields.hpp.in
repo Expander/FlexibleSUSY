@@ -1,0 +1,151 @@
+#ifndef @ModelName@_CXX_FIELDS_H
+#define @ModelName@_CXX_FIELDS_H
+
+#include "multiindex.hpp"
+
+#include <array>
+
+#include <boost/array.hpp>
+#include <boost/mpl/at.hpp>
+#include <boost/version.hpp>
+#include <boost/mpl/pair.hpp>
+#include <boost/mpl/vector.hpp>
+#include <boost/mpl/vector_c.hpp>
+
+#include <boost/range/iterator_range.hpp>
+
+#include <boost/fusion/include/copy.hpp>
+#include <boost/fusion/include/move.hpp>
+#include <boost/fusion/adapted/boost_array.hpp>
+
+namespace flexiblesusy {
+namespace cxx_qft {
+namespace detail
+{
+template<class Begin, class End>
+decltype(
+  boost::make_iterator_range(
+    multiindex<Begin, End>::begin(),
+    multiindex<Begin, End>::end()
+  )
+)
+make_index_range( void )
+{
+  using index = multiindex<Begin, End>;
+
+  return boost::make_iterator_range(
+    index::begin(), index::end()
+  );
+}
+}
+
+template<class Field> struct field_indices {
+  using type = std::array<int, Field::numberOfFieldIndices>;
+};
+
+namespace fields
+{
+template<class Field> struct bar
+{
+  using index_bounds = typename Field::index_bounds;
+  static constexpr int numberOfGenerations = Field::numberOfGenerations;
+  using sm_flags = typename Field::sm_flags;
+  static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
+  static constexpr double electric_charge = Field::electric_charge;
+  using lorentz_conjugate = Field;
+
+  using type = bar<Field>;
+};
+
+template<class Field> struct conj
+{
+  using index_bounds = typename Field::index_bounds;
+  static constexpr int numberOfGenerations = Field::numberOfGenerations;
+  using sm_flags = typename Field::sm_flags;
+  static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
+  static constexpr double electric_charge = Field::electric_charge;
+  using lorentz_conjugate = Field;
+
+  using type = conj<Field>;
+};
+
+template<class Field> struct bar<bar<Field>> {
+  using type = Field;
+};
+template<class Field> struct conj<conj<Field>> {
+  using type = Field;
+};
+
+template<class Field> struct remove_lorentz_conjugation {
+  using type = Field;
+};
+
+template<class Field> struct remove_lorentz_conjugation<bar<Field>> {
+  using type = Field;
+};
+
+template<class Field> struct remove_lorentz_conjugation<conj<Field>> {
+  using type = Field;
+};
+
+@CXXDiagrams_Fields@
+}
+
+using fields::bar;
+using fields::conj;
+using fields::remove_lorentz_conjugation;
+
+template<class Field>
+typename std::enable_if<
+  Field::numberOfGenerations != 1,
+  bool
+>::type
+isSMField(const typename field_indices<Field>::type& indices)
+{
+  boost::array<bool, Field::numberOfGenerations> sm_flags;
+
+#if BOOST_VERSION >= 105800
+  boost::fusion::move(typename Field::sm_flags(), sm_flags);
+#else
+  boost::fusion::copy(typename Field::sm_flags(), sm_flags);
+#endif
+
+  return sm_flags[indices[0]];
+}
+
+template<class Field>
+typename std::enable_if<
+  Field::numberOfGenerations == 1,
+  bool
+>::type
+isSMField(const typename field_indices<Field>::type &)
+{
+  return boost::mpl::at_c<
+    typename Field::sm_flags,
+    0
+  >::type::value;
+}
+
+template<class ObjectWithIndexBounds>
+struct index_bounds
+{
+  using type = typename ObjectWithIndexBounds::index_bounds;
+};
+
+template<class ObjectWithIndexBounds>
+decltype(detail::make_index_range<
+  typename ObjectWithIndexBounds::index_bounds::first,
+  typename ObjectWithIndexBounds::index_bounds::second
+>())
+index_range( void )
+{
+  return detail::make_index_range<
+    typename ObjectWithIndexBounds::index_bounds::first,
+    typename ObjectWithIndexBounds::index_bounds::second
+  >();
+}
+}
+}
+
+#endif
+
