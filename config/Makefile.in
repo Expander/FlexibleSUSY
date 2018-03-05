@@ -101,6 +101,9 @@ ALLMODDEP:=
 # set default shell
 SHELL = /bin/sh
 
+# disable built-in rules to improve speed
+MAKEFLAGS += -rR --include-dir=$(CURDIR)
+
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 
@@ -225,6 +228,18 @@ depend:  $(ALLDEP)
 
 %.d: %.F | $(DEPGEN)
 	$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
+
+%.o: %.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+%.o: %.f
+	$(FC) $(FFLAGS) -c $< -o $@
+
+%.o: %.F
+	$(FC) $(FFLAGS) $(CPPFLAGS) -c $< $@
 
 distclean::
 	-rm -f Makefile
