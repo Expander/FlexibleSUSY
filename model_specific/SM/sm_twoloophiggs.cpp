@@ -153,11 +153,11 @@ double self_energy_higgs_2loop_at_as_sm(
 
 /**
  * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_b
- * \alpha_s)\f$, including momentum dependence.
+ * \alpha_s)\f$, for zero momentum.
  *
  * @warning The result is in Landau gauge (\f$\xi = 0\f$).
  *
- * @param p2    squared momentum
+ * @param p2    squared momentum (not used)
  * @param scale renormalization scale
  * @param mb MS-bar bottom mass
  * @param yb MS-bar Yukawa coupling
@@ -166,9 +166,9 @@ double self_energy_higgs_2loop_at_as_sm(
  * @return real part of 2-loop self-energy \f$O(\alpha_b \alpha_s)\f$
  */
 double self_energy_higgs_2loop_ab_as_sm(
-   double p2, double scale, double mb, double yb, double g3)
+   double /* p2 */, double scale, double mb, double yb, double g3)
 {
-   return self_energy_higgs_2loop_at_as_sm(p2, scale, mb, yb, g3);
+   return self_energy_higgs_2loop_at_as_sm(0., scale, mb, yb, g3);
 }
 
 /**
@@ -328,7 +328,7 @@ double self_energy_higgs_2loop_atau_atau_sm(
    const double LogT2 = Sqr(LogT);
 
    const double result =
-      3*mtau2 * ytau4 * (19 + Sqr(Pi) - 27 * LogT + 9 * LogT2);
+      mtau2 * ytau4 * (19 + Sqr(Pi) - 27 * LogT + 9 * LogT2);
 
    return result * twoLoop;
 }
