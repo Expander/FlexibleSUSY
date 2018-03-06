@@ -240,7 +240,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          if ( std::is_same<PhotonEmitter, ChargedHiggsMultiplet>::type::value || 
                  std::is_same<PhotonEmitter, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
          {
-            if ( exchangeFieldIndicesIn[0] == 0 )
+            if ( photonEmitterIndicesIn[0] == 0 )
                 continue;
          }
 
