@@ -240,7 +240,7 @@ depend:  $(ALLDEP)
 	$(FC) $(FFLAGS) -c $< -o $@
 
 %.o: %.F
-	$(FC) $(FFLAGS) $(CPPFLAGS) -c $< $@
+	$(FC) $(FFLAGS) $(CPPFLAGS) -c $< -o $@
 
 distclean::
 	-rm -f Makefile
