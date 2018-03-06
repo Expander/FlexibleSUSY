@@ -1535,6 +1535,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize
                                                         /@ Parameters`GetExtraParameters[]];
               extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
+                                                                                        CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
               extraParameterSetters        = StringJoin[CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#],

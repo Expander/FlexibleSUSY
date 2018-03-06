@@ -465,17 +465,11 @@ CreateSetters[betaFunctions_List] :=
           ];
 
 (* create getters *)
-CreateElementGetter[name_String, CConversion`ScalarType[_]] := "";
-
-CreateElementGetter[name_String, type_] :=
-    CConversion`CreateInlineElementGetter[name, type];
-
 CreateGetters[betaFunction_BetaFunction] :=
     Module[{getter = "", name = "", type},
            name = ToValidCSymbolString[GetName[betaFunction]];
            type = GetType[betaFunction];
-           getter = getter <> CConversion`CreateInlineGetter[name, type];
-           getter = getter <> CreateElementGetter[name, type];
+           getter = getter <> CConversion`CreateInlineGetters[name, name, type];
            Return[getter];
           ];
 
