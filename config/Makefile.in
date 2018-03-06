@@ -115,6 +115,7 @@ DEPGEN = $(DEPGEN_EXE)
 
 # script which lists the SARAH model files
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
+SARAH_MODEL_DIR := @SARAH_MODEL_DIR@
 
 # script which installs a file without export markers
 INSTALL_STRIPPED := config/install_stripped.sh

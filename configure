@@ -58,6 +58,7 @@ FSCONFIG_TMPL=${CONFIGDIR}/flexiblesusy-config.in
 # target sarah dependency generation script
 SARAH_DEP_GEN=${CONFIGDIR}/list_sarah_model_files.sh
 SARAH_DEP_GEN_TMPL=${CONFIGDIR}/list_sarah_model_files.sh.in
+SARAH_MODEL_DIR=""
 
 # target config header
 CONFIGHDR=${CONFIGDIR}/config.h
@@ -2439,6 +2440,14 @@ EOF
         message "   Please make sure Needs[\"SARAH\`\"] works correctly."
         exit 1
     fi
+
+    SARAH_MODEL_DIR=$(cat <<EOF | ("$MATH" 2> /dev/stdout 1> /dev/null)
+If[Needs["SARAH\`"] === \$Failed || !ValueQ[\$sarahModelDir],
+   Quit[1];
+  ];
+WriteString["stderr", \$sarahModelDir];
+EOF
+             )
 }
 
 #_____________________________________________________________________
@@ -2793,7 +2802,6 @@ replace_markers() {
         -e "s|@LDLIBS@|$LDLIBS|"           \
         -e "s|@LLFLAGS@|$LLFLAGS|"         \
         -e "s|@LLLIBS@|$LLLIBS|"           \
-	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COLORS@|$enable_colors|" \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_COMPILER_WARNINGS@|$enable_compiler_warnings|" \
@@ -2818,6 +2826,8 @@ replace_markers() {
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
+	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"    \
+	-e "s|@SARAH_MODEL_DIR@|$SARAH_MODEL_DIR|" \
         -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|"  \
         -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|"  \
 	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
