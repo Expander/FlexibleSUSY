@@ -187,7 +187,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                   "const double width = pow(leptonInMass,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
                   "return width;\n"
                ], "Fd",
-               (* routine b -> s gamma *)
+               (* write routine for b -> s gamma *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                   "EvaluationContext context{ model_ };\n" <>
@@ -223,9 +223,12 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                             " generationIndex2, ",
                             " "] <>
                   "model );\n" <>
-                  "const auto fdInMass = context.mass<" <> CXXNameOfField[inFermion] <> ">(indices1);\n" <> 
-                  "const auto c7np = (16.0*pow(Pi, 2))/(fdInMass*pow(unit_charge(context), 2)) * std::real(form_factors[3]);\n" <>
-                  "return c7np;\n"
+                  "double c7NP[2][2];\n" <>
+                  "c7NP[0][0] = 1/(2*unit_charge(context)) * std::real(form_factors[3]);\n" <>
+                  "c7NP[0][1] = 1/(2*unit_charge(context)) * std::imag(form_factors[3]);\n" <>
+                  "c7NP[1][0] = 1/(2*unit_charge(context)) * std::real(form_factors[2]);\n" <>
+                  "c7NP[1][1] = 1/(2*unit_charge(context)) * std::imag(form_factors[2]);\n" <>
+                  "return c7NP[0][0];\n"
                ]
             ] <> "}";
     
