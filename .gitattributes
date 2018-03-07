@@ -28,6 +28,7 @@ meta/SM/extract_*.m             export-ignore
 model_files/BetaSM              export-ignore
 model_files/cCMSSM              export-ignore
 model_files/complexMSSM         export-ignore
+model_files/CMSSMSemiAnalyticMW export-ignore
 model_files/CMSSMCPVSemiAnalytic export-ignore
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
