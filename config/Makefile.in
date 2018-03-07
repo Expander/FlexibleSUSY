@@ -230,9 +230,6 @@ depend:  $(ALLDEP)
 %.d: %.F | $(DEPGEN)
 	$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
 
-%.o: %.c
-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
-
 %.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
