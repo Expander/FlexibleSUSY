@@ -224,10 +224,10 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                             " "] <>
                   "model );\n" <>
                   "double c7NP[2][2];\n" <>
-                  "c7NP[0][0] = 1/(2*unit_charge(context)) * std::real(form_factors[3]);\n" <>
-                  "c7NP[0][1] = 1/(2*unit_charge(context)) * std::imag(form_factors[3]);\n" <>
-                  "c7NP[1][0] = 1/(2*unit_charge(context)) * std::real(form_factors[2]);\n" <>
-                  "c7NP[1][1] = 1/(2*unit_charge(context)) * std::imag(form_factors[2]);\n" <>
+                  "c7NP[0][0] = -1/(2*unit_charge(context)) * std::real(form_factors[3]);\n" <>
+                  "c7NP[0][1] = -1/(2*unit_charge(context)) * std::imag(form_factors[3]);\n" <>
+                  "c7NP[1][0] = -1/(2*unit_charge(context)) * std::real(form_factors[2]);\n" <>
+                  "c7NP[1][1] = -1/(2*unit_charge(context)) * std::imag(form_factors[2]);\n" <>
                   "return c7NP[0][0];\n"
                ]
             ] <> "}";
@@ -251,16 +251,28 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_,outFermion_,diagram_,ve
   ]
 
 CXXEvaluatorFS[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+  "std::complex<double>(" <>
+  ToString[N[SARAH`CalculateColorFactor[inFermion, CXXDiagrams`LorentzConjugate[photonEmitter], CXXDiagrams`LorentzConjugate[exchangeParticle]]/
+  (EvaluateColorStruct[photonEmitter, exchangeParticle])]] <> 
+  ")" <>
+  " * EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
   CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
 CXXEvaluatorSF[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+  "std::complex<double>(" <>
+  ToString[N[SARAH`CalculateColorFactor[inFermion, CXXDiagrams`LorentzConjugate[photonEmitter], CXXDiagrams`LorentzConjugate[exchangeParticle]]/
+  (EvaluateColorStruct[photonEmitter, exchangeParticle])]] <> 
+  ")" <>
+  " * EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
   CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
+
+EvaluateColorStruct[photonEmitter_, exchangeParticle_] := 
+ Switch[getColorRep[photonEmitter] && getColorRep[exchangeParticle], T && T, 3*3, 
+  T && O, 3*8, O && T, 8*3, O && O, 8*8, _, 1]
 
 (*End[];*)
 EndPackage[];
