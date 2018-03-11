@@ -28,6 +28,7 @@ MuEGammaCreateInterfaceFunctionForField::usage="";
 MuEGammaContributingDiagramsForFieldAndGraph::usage="";
 MuEGammaContributingGraphs::usage="";
 
+(* TODO: uncomment this in the end *)
 (*Begin["Private`"];*)
 
 (* The graphs that contribute to the EDM are precisely those with three
@@ -132,7 +133,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                          ] <> "};\n\n" <>
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
-                   
+               
                StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
@@ -235,32 +236,66 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
     {prototype, definition}
   ];
 
-CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_},diagrams_,graph_] :=
-  CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion,outFermion,#,graph] & /@ diagrams;
-CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_,outFermion_,diagram_,vertexCorrectionGraph] := 
-  Module[{photonEmitter,exchangeParticle},
-    photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
-    exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
+(* evaluate multiple diagrams *)
+CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_}, diagrams_, graph_] :=
+   CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, #, graph] & /@ diagrams;
+
+(* evaluate single diagram *)
+CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, diagram_, vertexCorrectionGraph] := 
+   Module[{photonEmitter, exchangeParticle, colorFactor, colorFactorStr},
+      photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+      exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
+      colorFactor = getChargeFactor[
+ {
+  {
+   Cp[inFermion, exchangeParticle, AntiField[photonEmitter]],
+   Cp[VP, photonEmitter, AntiField[photonEmitter]],
+   Cp[AntiField[outFermion], AntiField[exchangeParticle], 
+    photonEmitter]
+   },
+  {
+   External[1] -> inFermion, External[2] -> AntiField[outFermion], 
+   External[3] -> VP,
+   Internal[1] -> photonEmitter, Internal[2] -> exchangeParticle, 
+   Internal[3] -> AntiField[photonEmitter]
+   }
+  },
+ {
+  {{inFermion, ex1}, {exchangeParticle, 
+    in2}, {AntiField[photonEmitter], in1}},
+  {{VP, ex3}, {photonEmitter, in3}, {AntiField[photonEmitter], in1}},
+  {{AntiField[outFermion], ex2}, {AntiField[exchangeParticle], 
+    in2}, {photonEmitter, in3}}
+  }
+ ];
+ Print[inFermion, " ", outFermion, " ", photonEmitter, " ", exchangeParticle, " ", colorFactor];
+    
+    colorFactorStr = "std::complex<double> {" <> ToString @ N[colorFactor, 16] <> "}";
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
-       Return[CXXEvaluatorFS[inFermion,outFermion,photonEmitter,exchangeParticle]]];
+       Return[colorFactorStr <> "*" <> CXXEvaluatorFS[inFermion,outFermion,photonEmitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
-       Return[CXXEvaluatorSF[inFermion,outFermion,photonEmitter,exchangeParticle]]];
+       Return[colorFactorStr <> "*" <> CXXEvaluatorSF[inFermion,outFermion,photonEmitter,exchangeParticle]]];
     
+    (* TODO: add switch for remaining topologies *)
     Return["(unknown diagram)"];
   ]
 
+(* loop diagrams *)
+
 CXXEvaluatorFS[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
-  CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
-  CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
-  CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
+   "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+   CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
+   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
+   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
 CXXEvaluatorSF[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
-  "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
-  CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
-  CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
-  CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
+   "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+   CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
+   CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
+   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
+
+(* TODO: add other topologies? *)
 
 (*End[];*)
 EndPackage[];
