@@ -47,7 +47,7 @@ TreeLevelEWSBSolution = {
           - BMuCoeff3 MuBV Azero / BMuCoeff1}
 };
 
-FSWeakMixingAngleInput = MassW;
+FSWeakMixingAngleInput = FSMassW;
 
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 

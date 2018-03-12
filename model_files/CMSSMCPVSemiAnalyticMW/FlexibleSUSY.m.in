@@ -43,6 +43,8 @@ FSAuxiliaryParameterInfo = {
 
 EWSBOutputParameters = { ReBMu0, ImBMu0, m0Sq };
 
+FSWeakMixingAngleInput = FSMassW;
+
 SUSYScale = Sqrt[Product[M[Su[i]]^(Abs[ZU[i,3]]^2 + Abs[ZU[i,6]]^2), {i,6}]];
 
 SUSYScaleFirstGuess = Sqrt[14 (m12^2 + Imm12^2)- 3 m12 Azero + Azero^2 + ImAzero^2];
