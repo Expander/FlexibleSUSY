@@ -49,21 +49,21 @@ contributingGraphs = {vertexCorrectionGraph};
 
 MuEGammaContributingGraphs[] := contributingGraphs
 
-MuEGammaContributingDiagramsForLeptonPairAndGraph[{inFermion_, outFermion_}, graph_] :=
+MuEGammaContributingDiagramsForLeptonPairAndGraph[{inFermion_, outFermion_, spectator_}, graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
          {1 ->CXXDiagrams`LorentzConjugate[inFermion], 2 -> outFermion,
-          3 -> CXXDiagrams`LorentzConjugate[SARAH`Photon]}];
+          3 -> CXXDiagrams`LorentzConjugate[spectator]}];
 
-    Select[diagrams,IsDiagramSupported[inFermion,outFermion,graph,#] &]
+    Select[diagrams,IsDiagramSupported[inFermion,outFermion,spectator,graph,#] &]
  ]
 
-IsDiagramSupported[inFermion_,outFermion_,vertexCorrectionGraph,diagram_] :=
+IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagram_] :=
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {SARAH`Photon,photonEmitter,CXXDiagrams`LorentzConjugate[photonEmitter]},
+    If[diagram[[6]] =!= {spectator,photonEmitter,CXXDiagrams`LorentzConjugate[photonEmitter]},
        Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[True]];
@@ -73,14 +73,14 @@ IsDiagramSupported[inFermion_,outFermion_,vertexCorrectionGraph,diagram_] :=
     Return[False];
   ]
 
-MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedDiagrams_List] :=
+MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, gTaggedDiagrams_List] :=
    Module[
       {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
          numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion]},
   
       prototype =
          "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
-            CXXNameOfField[outFermion] <> "_gamma" <> "(" <>
+            CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "(" <>
             If[TreeMasses`GetDimension[inFermion] =!= 1,
                " int generationIndex1, ",
                " "
@@ -94,7 +94,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
       definition =
          (* calculate form factors A1L, A2L, etc *)
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
-            "_" <> CXXNameOfField[outFermion] <> "_gamma_form_factors" <>
+            "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
             " (\n" <>
             If[TreeMasses`GetDimension[inFermion] =!= 1,
                "   int generationIndex1, ",
@@ -135,14 +135,14 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
                
                StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
-                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
+                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
                "return val;"
                   (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n" <>
 
             (* calculate observable using formfactors *)
-            "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <> CXXNameOfField[outFermion] <> "_gamma " <> "(\n" <>
+            "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "(\n" <>
             If[TreeMasses`GetDimension[inFermion] =!= 1, "   int generationIndex1, ", " "] <>
             If[TreeMasses`GetDimension[outFermion] =!= 1, "int generationIndex2, ", " "] <>
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model\n) {\n" <>
@@ -176,7 +176,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                              ""]
                          ] <> "};\n\n" <>
                     "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
-                   <> CXXNameOfField[outFermion] <> "_gamma_form_factors "<>
+                   <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors "<>
                    "(" <> If[TreeMasses`GetDimension[inFermion] =!= 1,
                             " generationIndex1, ",
                             " "] <>
@@ -216,7 +216,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
                              ""]
                          ] <> "};\n\n" <>
                     "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
-                   <> CXXNameOfField[outFermion] <> "_gamma_form_factors "<>
+                   <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors "<>
                    "(" <> If[TreeMasses`GetDimension[inFermion] =!= 1,
                             " generationIndex1, ",
                             " "] <>
@@ -237,11 +237,11 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_}, gTaggedD
   ];
 
 (* evaluate multiple diagrams *)
-CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_}, diagrams_, graph_] :=
-   CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, #, graph] & /@ diagrams;
+CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_, spectator_}, diagrams_, graph_] :=
+   CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, spectator, #, graph] & /@ diagrams;
 
 (* evaluate single diagram *)
-CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, diagram_, vertexCorrectionGraph] := 
+CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator_, diagram_, vertexCorrectionGraph] := 
    Module[{photonEmitter, exchangeParticle, colorFactor, colorFactorStr},
       photonEmitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
       exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
@@ -250,13 +250,13 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, diagram_,
  {
   {
    Cp[inFermion, exchangeParticle, AntiField[photonEmitter]],
-   Cp[VP, photonEmitter, AntiField[photonEmitter]],
+   Cp[spectator, photonEmitter, AntiField[photonEmitter]],
    Cp[AntiField[outFermion], AntiField[exchangeParticle], 
     photonEmitter]
    },
   {
    External[1] -> inFermion, External[2] -> AntiField[outFermion], 
-   External[3] -> VP,
+   External[3] -> spectator,
    Internal[1] -> photonEmitter, Internal[2] -> exchangeParticle, 
    Internal[3] -> AntiField[photonEmitter]
    }
@@ -264,14 +264,15 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, diagram_,
  {
   {{inFermion, ex1}, {exchangeParticle, 
     in2}, {AntiField[photonEmitter], in1}},
-  {{VP, ex3}, {photonEmitter, in3}, {AntiField[photonEmitter], in1}},
+  {{spectator, ex3}, {photonEmitter, in3}, {AntiField[photonEmitter], in1}},
   {{AntiField[outFermion], ex2}, {AntiField[exchangeParticle], 
     in2}, {photonEmitter, in3}}
   }
  ];
  Print[inFermion, " ", outFermion, " ", photonEmitter, " ", exchangeParticle, " ", colorFactor];
     
-    colorFactorStr = "std::complex<double> {" <> ToString @ N[colorFactor, 16] <> "}";
+    colorFactorStr = "std::complex<double> " <> 
+       ToString @ (N[#, 16]& /@ ReIm[colorFactor]);
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[colorFactorStr <> "*" <> CXXEvaluatorFS[inFermion,outFermion,photonEmitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],

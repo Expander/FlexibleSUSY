@@ -1921,8 +1921,6 @@ WriteMuEGammaClass[leptonPairs_List,files_List] :=
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     
-    Print[vertices];
-    
     {interfacePrototypes,interfaceDefinitions} = 
       If[diagrams === {},
          {"",""},
@@ -3997,7 +3995,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            
            Print["Creating MuEGamma class..."];
            leptonPairs = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                                                FlexibleSUSYObservable`MuEGamma[pIn_[i_Integer], pOut_[j_Integer]] :> {pIn, pOut}];
+                                                FlexibleSUSYObservable`MuEGamma[pIn_[i_Integer], pOut_[j_Integer], spectator_] :> {pIn, pOut, spectator}];
 
            mu2egammaVertices =
              WriteMuEGammaClass[leptonPairs,

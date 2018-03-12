@@ -101,8 +101,9 @@ ExtraSLHAOutputBlocks = {
             {23, FlexibleSUSYObservable`EDM[Fe[1]]},
             {24, FlexibleSUSYObservable`EDM[Fe[2]]},
             {25, FlexibleSUSYObservable`EDM[Fe[3]]}, 
-            {26, FlexibleSUSYObservable`MuEGamma[Fe[2], Fe[1]]}, 
-            {27, FlexibleSUSYObservable`MuEGamma[Fd[3], Fd[2]]} 
+            {26, FlexibleSUSYObservable`MuEGamma[Fe[2], Fe[1], VP]}, 
+            {27, FlexibleSUSYObservable`MuEGamma[Fd[3], Fd[2], VP]}, 
+            {28, FlexibleSUSYObservable`MuEGamma[Fd[3], Fd[2], VG]}
            } 
    }
 };
