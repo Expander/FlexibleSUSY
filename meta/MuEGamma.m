@@ -76,8 +76,10 @@ IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagr
 MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, gTaggedDiagrams_List] :=
    Module[
       {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
-         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion]},
-  
+         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
+         numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator],
+      },
+   
       prototype =
          "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
             CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "(" <>
@@ -131,6 +133,8 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                              StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
                              ""]
                          ] <> "};\n\n" <>
+                   "std::array<int, " <> ToString @ numberOfIndices3 <>
+                     "> indices3;\n\n" <>
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
                
@@ -274,9 +278,9 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
     colorFactorStr = "std::complex<double> " <> 
        ToString @ (N[#, 16]& /@ ReIm[colorFactor]);
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
-       Return[colorFactorStr <> "*" <> CXXEvaluatorFS[inFermion,outFermion,photonEmitter,exchangeParticle]]];
+       Return[colorFactorStr <> "*" <> CXXEvaluatorFS[inFermion,outFermion,spectator,photonEmitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
-       Return[colorFactorStr <> "*" <> CXXEvaluatorSF[inFermion,outFermion,photonEmitter,exchangeParticle]]];
+       Return[colorFactorStr <> "*" <> CXXEvaluatorSF[inFermion,outFermion,spectator,photonEmitter,exchangeParticle]]];
     
     (* TODO: add switch for remaining topologies *)
     Return["(unknown diagram)"];
@@ -284,15 +288,17 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
 
 (* loop diagrams *)
 
-CXXEvaluatorFS[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
+CXXEvaluatorFS[inFermion_,outFermion_,spectator_,photonEmitter_,exchangeParticle_] :=
    "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
    CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
+   CXXDiagrams`CXXNameOfField[spectator] <> ", " <>
    CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
    CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
-CXXEvaluatorSF[inFermion_,outFermion_,photonEmitter_,exchangeParticle_] :=
+CXXEvaluatorSF[inFermion_,outFermion_,spectator_,photonEmitter_,exchangeParticle_] :=
    "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
    CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
+   CXXDiagrams`CXXNameOfField[spectator] <> ", " <>
    CXXDiagrams`CXXNameOfField[photonEmitter] <> ", " <>
    CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 

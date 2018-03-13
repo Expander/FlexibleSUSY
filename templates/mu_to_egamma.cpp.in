@@ -60,11 +60,11 @@ static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeParticle>
+template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionSF {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<EDMField1>::type& indices_in,
-         const typename field_indices<EDMField1>::type& indices_out,
+         const typename field_indices<EDMField2>::type& indices_out,
                        EvaluationContext& context);
 };
 
@@ -84,11 +84,11 @@ struct EDMVertexCorrectionSF {
 * \a Args.
 */
 
-template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeParticle>
+template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionFS {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<EDMField1>::type& indices_in,
-         const typename field_indices<EDMField1>::type& indices_out,
+         const typename field_indices<EDMField2>::type& indices_out,
                        EvaluationContext& context);
 };
 } // anonymous namespace
@@ -194,12 +194,12 @@ double OneLoopFunctionF(double r)
 }
 
 // emit photon from the internal scalar line
-template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
+template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionSF<
-EDMField1, EDMField2, PhotonEmitter, ExchangeField
+EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 >::value(
       const typename field_indices<EDMField1>::type& indices_in, 
-      const typename field_indices<EDMField1>::type& indices_out, 
+      const typename field_indices<EDMField2>::type& indices_out, 
       EvaluationContext& context)
 {
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
@@ -214,27 +214,42 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
                          typename ExchangeField::lorentz_conjugate,
                          PhotonEmitter
                          >;
+   using FermionVertexEmit = Vertex<
+                         typename EDMField3::lorentz_conjugate,
+                         PhotonEmitter,
+                         typename PhotonEmitter::lorentz_conjugate
+                         >;
 
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
    constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
+   constexpr auto indexBoundsEmit = FermionVertexEmit::index_bounds;
 
    // loop over all possible particle "generations" attached to both vertices
    for (const auto& indexIn: indexBoundsIn) {
       for (const auto& indexOut: indexBoundsOut) {
+         for (const auto& indexEmit: indexBoundsEmit) {
 
-         // cycle if generations of external particles are different then requested   
+         // cycle if generations of external fermions  are different then requested   
          const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
          const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexOut);
          if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
             continue;
 
-         // match internal particles in two vertices
-         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         // match indices of the exchange field
          const auto exchangeFieldIndicesIn = FermionVertexIn::template fieldIndices<1>(indexIn);
-         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
          const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
-         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut || photonEmitterIndicesIn != photonEmitterIndicesOut)
+         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut)
             continue;
+
+
+         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         if ((FermionVertexEmit::template fieldIndices<1>(indexEmit)) != photonEmitterIndicesIn) {
+            continue;
+         }
+         if ((FermionVertexEmit::template fieldIndices<2>(indexEmit)) != photonEmitterIndicesOut)
+            continue;
+         if ((FermionVertexEmit::template fieldIndices<1>(indexEmit)) != (FermionVertexEmit::template fieldIndices<2>(indexEmit))) continue;
 
          // Throw out SM Goldstone, it could crashes if SM is used.
          if ( std::is_same<PhotonEmitter, ChargedHiggsMultiplet>::type::value || 
@@ -276,16 +291,17 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
+   }
 
    return res;
 }
 
 // emit photon from the internal fermion line
-template<class EDMField1, class EDMField2, class PhotonEmitter, class ExchangeField>
+template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionFS<
-EDMField1, EDMField2, PhotonEmitter, ExchangeField
+EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 >::value(const typename field_indices<EDMField1>::type& indices_in, 
-      const typename field_indices<EDMField1>::type& indices_out,
+      const typename field_indices<EDMField2>::type& indices_out,
       EvaluationContext& context)
 {
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
@@ -300,27 +316,42 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
                          typename ExchangeField::lorentz_conjugate,
                          PhotonEmitter
                          >;
+   using FermionVertexEmit = Vertex<
+                         typename EDMField3::lorentz_conjugate,
+                         PhotonEmitter,
+                         typename PhotonEmitter::lorentz_conjugate
+                         >;
    
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
    constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
+   constexpr auto indexBoundsEmit = FermionVertexEmit::index_bounds;
 
    // loop over all possible particle "generations" attached to both vertices
    for (const auto& indexIn: indexBoundsIn) {
       for (const auto& indexOut: indexBoundsOut) {
+         for (const auto& indexEmit: indexBoundsEmit) {
 
-         // cycle if generations of external particles are different then requested   
+         // cycle if generations of external fermions are different then requested   
          const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
          const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexOut);
          if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
             continue;
 
-         // match internal particles in two vertices
-         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         // match indices of the exchange field
          const auto exchangeFieldIndicesIn = FermionVertexIn::template fieldIndices<1>(indexIn);
-         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
          const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
-         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut || photonEmitterIndicesIn != photonEmitterIndicesOut)
+         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut )
             continue;
+
+         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         if ((FermionVertexEmit::template fieldIndices<1>(indexEmit)) != photonEmitterIndicesIn) {
+            continue;
+         }
+         if ((FermionVertexEmit::template fieldIndices<2>(indexEmit)) != photonEmitterIndicesOut)
+            continue;
+         if (photonEmitterIndicesIn != photonEmitterIndicesOut) continue;
+         //concatenate(concatenate(..., photonEmitterIndicesIn), photonEmitterIndicesOut);
 
          // Throw out SM Goldstone, it could crash if SM is used.
          if ( std::is_same<ExchangeField, ChargedHiggsMultiplet>::type::value || 
@@ -332,6 +363,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
 
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
+         const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
          const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
@@ -360,6 +392,7 @@ EDMField1, EDMField2, PhotonEmitter, ExchangeField
          res -= oneOver32PiSquared * photonEmitterCharge * massFactor 
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
+   }
    }
 
    return res;
