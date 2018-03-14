@@ -194,6 +194,24 @@ double OneLoopFunctionF(double r)
    }
 }
 
+template<class Spectator>
+typename field_indices<Spectator>::type
+default_indices_for_spectator( void );
+
+template<>
+typename field_indices<VP>::type
+default_indices_for_spectator<VP>( void )
+{
+  return {};
+}
+
+template<>
+typename field_indices<VG>::type
+default_indices_for_spectator<VG>( void )
+{
+  return {0};
+}
+
 // emit photon from the internal scalar line
 template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionSF<
@@ -223,12 +241,10 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
    constexpr auto indexBoundsIn = FermionVertexIn::index_bounds;
-   constexpr auto indexBoundsEmit = FermionVertexEmit::index_bounds;
 
    // loop over all possible particle "generations" attached to both vertices
    for (const auto& indexIn: indexBoundsIn) {
       for (const auto& indexOut: indexBoundsOut) {
-         for (const auto& indexEmit: indexBoundsEmit) {
 
          // cycle if generations of external fermions  are different then requested   
          const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
@@ -245,12 +261,7 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 
          const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
          const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
-         if ((FermionVertexEmit::template fieldIndices<1>(indexEmit)) != photonEmitterIndicesIn) {
-            continue;
-         }
-         if ((FermionVertexEmit::template fieldIndices<2>(indexEmit)) != photonEmitterIndicesOut)
-            continue;
-         if ((FermionVertexEmit::template fieldIndices<1>(indexEmit)) != (FermionVertexEmit::template fieldIndices<2>(indexEmit))) continue;
+         if (photonEmitterIndicesIn != photonEmitterIndicesOut) continue;
 
          // Throw out SM Goldstone, it could crashes if SM is used.
          if ( std::is_same<PhotonEmitter, ChargedHiggsMultiplet>::type::value || 
@@ -262,6 +273,10 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
+
+         auto spectator_indices = default_indices_for_spectator<EDMField3>();
+         const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, photonEmitterIndicesIn ), photonEmitterIndicesIn );
+         const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
          const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
@@ -292,27 +307,8 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
-   }
 
    return res;
-}
-
-template<class Spectator>
-typename field_indices<Spectator>::type
-default_indices_for_spectator( void );
-
-template<>
-typename field_indices<VP>::type
-default_indices_for_spectator<VP>( void )
-{
-  return {};
-}
-
-template<>
-typename field_indices<VG>::type
-default_indices_for_spectator<VG>( void )
-{
-  return {0};
 }
 
 // emit photon from the internal fermion line
@@ -374,13 +370,10 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
-         auto vertexEmit = vertexIn; 
          
-auto spectator_indices = default_indices_for_spectator<EDMField3>();
-
-const auto a = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, photonEmitterIndicesIn ), photonEmitterIndicesIn );
-
-FermionVertexEmit::evaluate(a, context);
+         auto spectator_indices = default_indices_for_spectator<EDMField3>();
+         const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, photonEmitterIndicesIn ), photonEmitterIndicesIn );
+         const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
          const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
