@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_edm.hpp
+ * @file @ModelName@_FFV_form_factors.hpp
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
