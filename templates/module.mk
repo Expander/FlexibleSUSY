@@ -7,6 +7,8 @@ BASE_TEMPLATES := \
 		$(DIR)/a_muon.cpp.in \
 		$(DIR)/edm.hpp.in \
 		$(DIR)/edm.cpp.in \
+		$(DIR)/FFV_form_factors.hpp.in \
+		$(DIR)/FFV_form_factors.cpp.in \
 		$(DIR)/mu_to_egamma.hpp.in \
 		$(DIR)/mu_to_egamma.cpp.in \
 		$(DIR)/convergence_tester.hpp.in \

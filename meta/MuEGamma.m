@@ -93,58 +93,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
             ] <>
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model);";
                  
-      definition =
-         (* calculate form factors A1L, A2L, etc *)
-         "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
-            "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
-            " (\n" <>
-            If[TreeMasses`GetDimension[inFermion] =!= 1,
-               "   int generationIndex1, ",
-               " "
-            ] <>
-            If[TreeMasses`GetDimension[outFermion] =!= 1,
-               " int generationIndex2, ",
-               " "
-            ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
-            "{\n" <>
-            IndentText[
-               FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-               "EvaluationContext context{ model_ };\n" <>
-               "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
-                     (* TODO: Specify indices correctly *)
-                       If[TreeMasses`GetDimension[inFermion] =!= 1,
-                          " generationIndex1" <>
-                          If[numberOfIndices1 =!= 1,
-                             StringJoin @ Table[", 0", {numberOfIndices1-1}],
-                             ""] <> " ",
-                          If[numberOfIndices1 =!= 0,
-                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
-                             ""]
-                         ] <> "};\n" <>
-                   "std::array<int, " <> ToString @ numberOfIndices2 <>
-                     "> indices2 = {" <>
-                       If[TreeMasses`GetDimension[outFermion] =!= 1,
-                          " generationIndex2" <>
-                          If[numberOfIndices2 =!= 1,
-                             StringJoin @ Table[", 0", {numberOfIndices2-1}],
-                             ""] <> " ",
-                          If[numberOfIndices2 =!= 0,
-                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
-                             ""]
-                         ] <> "};\n\n" <>
-                   "std::array<int, " <> ToString @ numberOfIndices3 <>
-                     "> indices3;\n\n" <>
-
-               "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
-               
-               StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
-                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"] <> "\n\n" <>
-               "return val;"
-                  (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
-            ] <> "\n}\n\n" <>
-
+                 definition = 
             (* calculate observable using formfactors *)
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "(\n" <>
             If[TreeMasses`GetDimension[inFermion] =!= 1, "   int generationIndex1, ", " "] <>
