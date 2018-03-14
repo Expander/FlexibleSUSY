@@ -134,8 +134,6 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
                              StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
                              ""]
                          ] <> "};\n\n" <>
-                   "std::array<int, " <> ToString @ numberOfIndices3 <>
-                     "> indices3;\n\n" <>
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
                

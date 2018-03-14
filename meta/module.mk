@@ -70,6 +70,7 @@ META_SRC     := \
 		$(DIR)/CXXDiagrams.m \
 		$(DIR)/EDM.m \
 		$(DIR)/MuEGamma.m \
+		$(DIR)/FFVFormFactors.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \
