@@ -60,11 +60,11 @@ static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeParticle>
+template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeParticle>
 struct EDMVertexCorrectionSF {
    static std::valarray<std::complex<double>> value(
-         const typename field_indices<EDMField1>::type& indices_in,
-         const typename field_indices<EDMField2>::type& indices_out,
+         const typename field_indices<FermionIn>::type& indices_in,
+         const typename field_indices<FermionOut>::type& indices_out,
                        EvaluationContext& context);
 };
 
@@ -84,11 +84,11 @@ struct EDMVertexCorrectionSF {
 * \a Args.
 */
 
-template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeParticle>
+template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeParticle>
 struct EDMVertexCorrectionFS {
    static std::valarray<std::complex<double>> value(
-         const typename field_indices<EDMField1>::type& indices_in,
-         const typename field_indices<EDMField2>::type& indices_out,
+         const typename field_indices<FermionIn>::type& indices_in,
+         const typename field_indices<FermionOut>::type& indices_out,
                        EvaluationContext& context);
 };
 } // anonymous namespace
@@ -213,30 +213,30 @@ default_indices_for_spectator<VG>( void )
 }
 
 // emit photon from the internal scalar line
-template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeField>
+template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionSF<
-EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
+FermionIn, FermionOut, Spectator, Emitter, ExchangeField
 >::value(
-      const typename field_indices<EDMField1>::type& indices_in, 
-      const typename field_indices<EDMField2>::type& indices_out, 
+      const typename field_indices<FermionIn>::type& indices_in, 
+      const typename field_indices<FermionOut>::type& indices_out, 
       EvaluationContext& context)
 {
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
 
    using FermionVertexIn = Vertex<
-                         EDMField1,
+                         FermionIn,
                          ExchangeField,
-                         typename PhotonEmitter::lorentz_conjugate
+                         typename Emitter::lorentz_conjugate
                          >;
    using FermionVertexOut = Vertex<
-                         typename EDMField2::lorentz_conjugate,
+                         typename FermionOut::lorentz_conjugate,
                          typename ExchangeField::lorentz_conjugate,
-                         PhotonEmitter
+                         Emitter
                          >;
    using FermionVertexEmit = Vertex<
-                         typename EDMField3::lorentz_conjugate,
-                         PhotonEmitter,
-                         typename PhotonEmitter::lorentz_conjugate
+                         typename Spectator::lorentz_conjugate,
+                         Emitter,
+                         typename Emitter::lorentz_conjugate
                          >;
 
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
@@ -259,32 +259,31 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
             continue;
 
 
-         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
-         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
-         if (photonEmitterIndicesIn != photonEmitterIndicesOut) continue;
+         const auto EmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         const auto EmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         if (EmitterIndicesIn != EmitterIndicesOut) continue;
 
-         // Throw out SM Goldstone, it could crashes if SM is used.
-         if ( std::is_same<PhotonEmitter, ChargedHiggsMultiplet>::type::value || 
-                 std::is_same<PhotonEmitter, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
+         // Throw out SM Goldstone, it could crash if SM is used.
+         if ( std::is_same<Emitter, ChargedHiggsMultiplet>::type::value || 
+                 std::is_same<Emitter, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
          {
-            if ( photonEmitterIndicesIn[0] == 0 )
+            if ( EmitterIndicesIn[0] == 0 )
                 continue;
          }
 
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
 
-         auto spectator_indices = default_indices_for_spectator<EDMField3>();
-         const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, photonEmitterIndicesIn ), photonEmitterIndicesIn );
+         auto spectator_indices = default_indices_for_spectator<Spectator>();
+         const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, EmitterIndicesIn ), EmitterIndicesIn );
          const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
-         const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
+         const auto EmitterMass = context.mass<Emitter>(EmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
-         const auto x = pow(exchangeFieldMass/photonEmitterMass, 2);
-         const auto leptonMass = context.mass<EDMField1>(edmFieldIndicesIn);
+         const auto x = pow(exchangeFieldMass/EmitterMass, 2);
+         const auto leptonMass = context.mass<FermionIn>(edmFieldIndicesIn);
 
-         const double photonEmitterCharge =
-            PhotonEmitter::electric_charge * unit_charge(context);
+         std::complex<double> EmitterCharge (vertexEmit.value());
 
          // eq. 15 of hep-ph/9510309
          const std::complex<double> A1L =
@@ -301,9 +300,9 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
             vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
             + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
 
-         const std::complex<double> massFactor = pow(photonEmitterMass,-2);
+         const std::complex<double> massFactor = pow(EmitterMass,-2);
 
-         res += oneOver32PiSquared * photonEmitterCharge * massFactor 
+         res += oneOver32PiSquared * EmitterCharge * massFactor 
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
@@ -312,29 +311,29 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
 }
 
 // emit photon from the internal fermion line
-template<class EDMField1, class EDMField2, class EDMField3, class PhotonEmitter, class ExchangeField>
+template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionFS<
-EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
->::value(const typename field_indices<EDMField1>::type& indices_in, 
-      const typename field_indices<EDMField2>::type& indices_out,
+FermionIn, FermionOut, Spectator, Emitter, ExchangeField
+>::value(const typename field_indices<FermionIn>::type& indices_in, 
+      const typename field_indices<FermionOut>::type& indices_out,
       EvaluationContext& context)
 {
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
 
    using FermionVertexIn = Vertex<
-                         EDMField1,
+                         FermionIn,
                          ExchangeField,
-                         typename PhotonEmitter::lorentz_conjugate
+                         typename Emitter::lorentz_conjugate
                          >;
    using FermionVertexOut = Vertex<
-                         typename EDMField2::lorentz_conjugate,
+                         typename FermionOut::lorentz_conjugate,
                          typename ExchangeField::lorentz_conjugate,
-                         PhotonEmitter
+                         Emitter
                          >;
    using FermionVertexEmit = Vertex<
-                         typename EDMField3::lorentz_conjugate,
-                         PhotonEmitter,
-                         typename PhotonEmitter::lorentz_conjugate
+                         typename Spectator::lorentz_conjugate,
+                         Emitter,
+                         typename Emitter::lorentz_conjugate
                          >;
    
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
@@ -356,9 +355,9 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
          if (exchangeFieldIndicesIn != exchangeFieldIndicesOut )
             continue;
 
-         const auto photonEmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
-         const auto photonEmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
-         if (photonEmitterIndicesIn != photonEmitterIndicesOut) continue;
+         const auto EmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
+         const auto EmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         if (EmitterIndicesIn != EmitterIndicesOut) continue;
 
          // Throw out SM Goldstone, it could crash if SM is used.
          if ( std::is_same<ExchangeField, ChargedHiggsMultiplet>::type::value || 
@@ -371,17 +370,16 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
          const auto vertexIn = FermionVertexIn::evaluate(indexIn, context);
          const auto vertexOut = FermionVertexOut::evaluate(indexOut, context);
          
-         auto spectator_indices = default_indices_for_spectator<EDMField3>();
-         const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, photonEmitterIndicesIn ), photonEmitterIndicesIn );
+         auto spectator_indices = default_indices_for_spectator<Spectator>();
+         const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, EmitterIndicesIn ), EmitterIndicesIn );
          const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
-         const auto photonEmitterMass = context.mass<PhotonEmitter>(photonEmitterIndicesIn);
+         const auto EmitterMass = context.mass<Emitter>(EmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
-         const auto x = pow(photonEmitterMass/exchangeFieldMass, 2);
-         const auto leptonMass = context.mass<EDMField1>(edmFieldIndicesIn);
+         const auto x = pow(EmitterMass/exchangeFieldMass, 2);
+         const auto leptonMass = context.mass<FermionIn>(edmFieldIndicesIn);
 
-         const double photonEmitterCharge =
-            PhotonEmitter::electric_charge * unit_charge(context);
+         std::complex<double> EmitterCharge (vertexEmit.left());
 
          // eq. 18 of hep-ph/9510309
          const std::complex<double> A1L =
@@ -389,17 +387,17 @@ EDMField1, EDMField2, EDMField3, PhotonEmitter, ExchangeField
          // eq. 19 of hep-ph/9510309
          const std::complex<double> A2L = 
             vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
-            + vertexOut.left()* vertexIn.left() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
+            + vertexOut.left()* vertexIn.left() * EmitterMass/leptonMass * OneLoopFunctionF(x);
 
          // eq. 18 & 18 of hep-ph/9510309 after replacement L <-> R
          const std::complex<double> A1R = 
             1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionD(x);
          const std::complex<double> A2R = 
             vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
-            + vertexOut.right()* vertexIn.right() * photonEmitterMass/leptonMass * OneLoopFunctionF(x);
+            + vertexOut.right()* vertexIn.right() * EmitterMass/leptonMass * OneLoopFunctionF(x);
          const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
 
-         res -= oneOver32PiSquared * photonEmitterCharge * massFactor 
+         res -= oneOver32PiSquared * EmitterCharge * massFactor 
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
