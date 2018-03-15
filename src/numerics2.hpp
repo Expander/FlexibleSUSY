@@ -106,8 +106,7 @@ bool is_finite(const std::array<T, N>& v)
 template <class T>
 std::complex<T> fast_log(const std::complex<T>& z)
 {
-   const T r = std::abs(z);
-   return std::complex<T>(std::log(r), std::arg(z));
+   return std::complex<T>(std::log(std::abs(z)), std::arg(z));
 }
 
 } // namespace flexiblesusy
