@@ -1,0 +1,66 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+// File generated at @DateAndTime@
+
+/**
+ * @file @ModelName@_f_to_f_conversion.cpp
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ */
+#include <valarray>
+#include <complex>
+#include <iostream>
+
+#include "@ModelName@_f_to_f_conversion.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
+
+#include "@ModelName@_cxx_diagrams.hpp"
+#include "@ModelName@_FFV_form_factors.hpp"
+
+#define INPUTPARAMETER(p) context.model.get_input().p
+#define MODELPARAMETER(p) context.model.get_##p()
+#define DERIVEDPARAMETER(p) context.model.p()
+#define PHASE(p) context.model.get_##p()
+
+using namespace flexiblesusy;
+using namespace cxx_diagrams;
+using namespace @ModelName@_FFV_form_factors;
+
+namespace flexiblesusy {
+namespace @ModelName@_f_to_f_conversion {
+   /*
+inline double sm_width(int generationIndex1,  int generationIndex2, const @ModelName@_mass_eigenstates& model ) {
+   @ModelName@_mass_eigenstates model_ = model;
+   EvaluationContext context{ model_ };
+   std::array<int, 1> indices1 = { generationIndex1 };
+   std::array<int, 1> indices2 = { generationIndex2 };
+
+   const auto leptonInMass = context.mass<Fe>(indices1);
+   const auto leptonOutMass = context.mass<Fe>(indices2);
+   const auto ratio = pow(leptonOutMass/leptonInMass,2);
+   const auto GF {1.1667e-5};
+   const double Alpha = Sqr(Fe::electric_charge * unit_charge(context))/(4*Pi);
+
+   return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio ) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
+}
+*/
+@FToFConversion_InterfaceDefinitions@
+}
+} // namespace flexiblesusy
