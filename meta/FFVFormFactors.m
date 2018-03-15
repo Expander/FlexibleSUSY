@@ -77,7 +77,7 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
    Module[
       {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
          numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-         numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator],
+         numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]
       },
    
       prototype =
