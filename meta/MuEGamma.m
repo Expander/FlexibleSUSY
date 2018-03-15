@@ -100,7 +100,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
             If[TreeMasses`GetDimension[outFermion] =!= 1, "int generationIndex2, ", " "] <>
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model\n) {\n" <>
             (* choose which observable to compute from form factors *)
-            Switch[CXXNameOfField[inFermion], "Fe",
+            Switch[inFermion && spectator, Fe && VP,
                (* write routine for mu to e gamma *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
@@ -140,14 +140,13 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                   "const auto leptonInMass = context.mass<" <> CXXNameOfField[inFermion] <> ">(indices1);\n" <> 
                   "const double width = pow(leptonInMass,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
                   "return width;\n"
-               ], "Fd",
+               ], Fd && VP,
                (* write routine for b -> s gamma *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                   "EvaluationContext context{ model_ };\n" <>
                   "std::array<int, " <> ToString @ numberOfIndices1 <>
                      "> indices1 = {" <>
-                     (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[inFermion] =!= 1,
                           " generationIndex1" <>
                           If[numberOfIndices1 =!= 1,
@@ -177,17 +176,56 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                             " generationIndex2, ",
                             " "] <>
                   "model );\n" <>
-                  "double c7NP[2][2];\n" <>
-                  "c7NP[0][0] = -1/(2*unit_charge(context)) * std::real(form_factors[3]);\n" <>
-                  "c7NP[0][1] = -1/(2*unit_charge(context)) * std::imag(form_factors[3]);\n" <>
-                  "c7NP[1][0] = -1/(2*unit_charge(context)) * std::real(form_factors[2]);\n" <>
-                  "c7NP[1][1] = -1/(2*unit_charge(context)) * std::imag(form_factors[2]);\n" <>
-                  "return c7NP[0][0];\n"
+                  "std::valarray<std::complex<double>> c7NP {0.0, 0.0};\n" <>
+                  "c7NP[0] = -1/(2*unit_charge(context)) * std::complex<double>(form_factors[3]);\n" <>
+                  "c7NP[1] = -1/(2*unit_charge(context)) * std::complex<double>(form_factors[2]);\n" <>
+                  "return std::real(c7NP[0]);\n"
+               ], Fd && VG,
+               (* write routine for b -> s gluon *)
+               IndentText[
+                  FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
+                  "EvaluationContext context{ model_ };\n" <>
+                  "std::array<int, " <> ToString @ numberOfIndices1 <>
+                     "> indices1 = {" <>
+                       If[TreeMasses`GetDimension[inFermion] =!= 1,
+                          " generationIndex1" <>
+                          If[numberOfIndices1 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices1-1}],
+                             ""] <> " ",
+                          If[numberOfIndices1 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
+                             ""]
+                         ] <> "};\n" <>
+                   "std::array<int, " <> ToString @ numberOfIndices2 <>
+                     "> indices2 = {" <>
+                       If[TreeMasses`GetDimension[outFermion] =!= 1,
+                          " generationIndex2" <>
+                          If[numberOfIndices2 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices2-1}],
+                             ""] <> " ",
+                          If[numberOfIndices2 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
+                             ""]
+                         ] <> "};\n\n" <>
+                    "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
+                   <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors "<>
+                   "(" <> If[TreeMasses`GetDimension[inFermion] =!= 1,
+                            " generationIndex1, ",
+                            " "] <>
+                         If[TreeMasses`GetDimension[outFermion] =!= 1,
+                            " generationIndex2, ",
+                            " "] <>
+                  "model );\n" <>
+                  "std::valarray<std::complex<double>> c8NP {0.0, 0.0};\n" <>
+                  (* TODO: Get correct g3 *)
+                  "const double g3 = 1.04407069; \n" <>
+                  "c8NP[0] = -1/(2*g3) * std::complex<double>(form_factors[3]);\n" <>
+                  "c8NP[1] = -1/(2*g3) * std::complex<double>(form_factors[2]);\n" <>
+                  "return std::real(c8NP[0]);\n"
                ]
             ] <> "}";
     
     {prototype, definition}
   ];
 
-(*End[];*)
 EndPackage[];
