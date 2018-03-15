@@ -23,7 +23,6 @@
 #include <iosfwd>
 #include <string>
 #include "array_view.hpp"
-#include "error.hpp"
 
 namespace flexiblesusy {
 

@@ -32,6 +32,7 @@
 
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_ewsb_solver_interface.hpp"
+#include "config.h"
 #include "eigen_utils.hpp"
 #include "ewsb_solver.hpp"
 #include "wrappers.hpp"
@@ -43,8 +44,6 @@
 #include "raii.hpp"
 #include "thread_pool.hpp"
 #include "functors.hpp"
-
-#include "config.h"
 
 @ewsbSolverHeaders@
 @twoLoopHiggsHeaders@

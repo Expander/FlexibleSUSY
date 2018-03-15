@@ -37,9 +37,7 @@
 #include "@ModelName@_soft_parameters.hpp"
 #include "loop_corrections.hpp"
 #include "threshold_corrections.hpp"
-#include "error.hpp"
 #include "problems.hpp"
-#include "config.h"
 
 #include <iosfwd>
 #include <memory>
