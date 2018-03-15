@@ -13,13 +13,13 @@
  - Boost (version 1.37.0 or higher)   http://www.boost.org
  - Eigen 3 (version 3.1 or higher)    http://eigen.tuxfamily.org
  - GNU scientific library             http://www.gnu.org/software/gsl/
- - Lapack / Blas                      http://www.netlib.org/lapack/
 
 Optional:
 
  - BLAS                               http://www.netlib.org/blas/
  - LAPACK                             http://www.netlib.org/lapack/
  - LoopTools (version 2.8 or higher)  http://www.feynarts.de/looptools/
+ - Himalaya                           https://github.com/Himalaya-Library/Himalaya
 
 \subsection generation Generating a spectrum generator
 
