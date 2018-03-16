@@ -213,7 +213,7 @@ double tadpole_higgs_2loop_at_as_sm(
 double tadpole_higgs_2loop_ab_as_sm(
    double scale, double mb, double yb, double g3)
 {
-   tadpole_higgs_2loop_at_as_sm(scale, mb, yb, g3);
+   return tadpole_higgs_2loop_at_as_sm(scale, mb, yb, g3);
 }
 
 double delta_mh_2loop_at_as_sm(
