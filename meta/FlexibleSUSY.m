@@ -1913,8 +1913,8 @@ WriteEDMClass[edmFields_List,files_List] :=
     vertices
   ]
 
-(* Write the MuEGamma c++ files *)
-WriteFFVFormFactorsClass[leptonPairs_List,files_List] :=
+(* Write the FFV c++ files *)
+WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
   Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
     graphs = FFVFormFactors`FFVFormFactorsContributingGraphs[];
@@ -1939,30 +1939,43 @@ WriteFFVFormFactorsClass[leptonPairs_List,files_List] :=
     vertices
   ]
 
-(* Write the MuEGamma c++ files *)
-WriteMuEGammaClass[leptonPairs_List,files_List] :=
-  Module[{graphs,diagrams,vertices,
-          interfacePrototypes,interfaceDefinitions},
-    graphs = MuEGamma`MuEGammaContributingGraphs[];
-    diagrams = Outer[MuEGamma`MuEGammaContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
+(* Write c++ files for the FFV decay *)
+WriteMuEGammaClass[leptonPairs_List, files_List] :=
+  Module[{interfacePrototypes,interfaceDefinitions},
     
-    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
-    
-    {interfacePrototypes,interfaceDefinitions} = 
-      If[diagrams === {},
+    {interfacePrototypes, interfaceDefinitions} = 
+      If[leptonPairs === {},
          {"",""},
          StringJoin @@@ 
           (Riffle[#, "\n\n"] & /@ Transpose[MuEGamma`MuEGammaCreateInterfaceFunctionForLeptonPair @@@ 
-            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
+            Transpose[{leptonPairs}]])
+      ];
     
     WriteOut`ReplaceInFiles[files,
-                            {"@MuEGamma_InterfacePrototypes@"       -> interfacePrototypes,
-                             "@MuEGamma_InterfaceDefinitions@"      -> interfaceDefinitions,
-                             "@MuEGamma_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
-                             Sequence @@ GeneralReplacementRules[]
-                            }];
+      {"@MuEGamma_InterfacePrototypes@"       -> interfacePrototypes,
+       "@MuEGamma_InterfaceDefinitions@"      -> interfaceDefinitions,
+       "@MuEGamma_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+       Sequence @@ GeneralReplacementRules[]}
+    ];
+  ]
+
+(* Write c++ files for the FF conversion *)
+WriteFToFConversionClass[leptonPairs_List, files_List] :=
+  Module[{interfacePrototypes,interfaceDefinitions},
     
-    vertices
+    {interfacePrototypes, interfaceDefinitions} = 
+      If[leptonPairs === {},
+         {"",""},
+         StringJoin @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNuclei`FToFConversionInNucleiCreateInterfaceFunctionForLeptonPair @@@ 
+            Transpose[{leptonPairs}]])
+      ];
+    
+    WriteOut`ReplaceInFiles[files,
+      {"@FToFConversion_InterfacePrototypes@"       -> "" (*interfacePrototypes*),
+       "@FToFConversion_InterfaceDefinitions@"      -> "" (*interfaceDefinitions*),
+       Sequence @@ GeneralReplacementRules[]}
+    ];
   ]
 
 (* Write the AMuon c++ files *)
@@ -4020,22 +4033,44 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
            
+           (* collect all the {fermion,fermion,vector} triplets needed for the requested observables *)
+           fieldsForFToFDecay = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                                                FlexibleSUSYObservable`MuEGamma[pIn_[_Integer], pOut_[_Integer], spectator_] :> {pIn, pOut, spectator}];
+           Print[fieldsForFToFDecay]; 
+
+           Print["Creating MuEGamma class ..."];
+           mu2egammaVertices =
+             WriteMuEGammaClass[fieldsForFToFDecay,
+                           {{FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.cpp"}]}}];
+
+           fieldsForFToFConversion = 
+              DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                FlexibleSUSYObservable`FToFConversionInNuclei[pIn_[_Integer], pOut_[_Integer], _] 
+                :> {pIn, pOut, VP}];
+           Print[fieldsForFToFConversion];     
+            
+           Print["Creating FToFConversionInNuclei class ..."];
+           mu2egammaVertices =
+             WriteFToFConversionClass[fieldsForFToFConversion,
+                           {{FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.cpp"}]}}];
+              
+
            Print["Creating FFV form factor class ..."];
-           leptonPairs = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                                                FlexibleSUSYObservable`MuEGamma[pIn_[i_Integer], pOut_[j_Integer], spectator_] :> {pIn, pOut, spectator}];
-             WriteFFVFormFactorsClass[leptonPairs,
+           Print[
+              DeleteDuplicates @ Join[fieldsForFToFDecay, fieldsForFToFConversion]];
+           fFVVertices = WriteFFVFormFactorsClass[
+              DeleteDuplicates @ Join[fieldsForFToFDecay, fieldsForFToFConversion],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
 
-           Print["Creating MuEGamma class ..."];
-           mu2egammaVertices =
-             WriteMuEGammaClass[leptonPairs,
-                           {{FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.hpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.hpp"}]},
-                            {FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.cpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.cpp"}]}}];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 
@@ -4044,7 +4079,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
            
-           WriteCXXDiagramClass[Join[edmVertices,mu2egammaVertices,aMuonVertices],Lat$massMatrices,
+
+           WriteCXXDiagramClass[
+             DeleteDuplicates @ Join[fFVVertices, edmVertices,aMuonVertices],Lat$massMatrices,
                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
 
