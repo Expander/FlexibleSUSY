@@ -198,15 +198,6 @@ int Delta(int i, int j) noexcept;
 #define FSFlagProblem(p) [&](){ (p); return 0.; }()
 #define FSFlagWarning(p) [&](){ (p); return 0.; }()
 
-template <typename T>
-constexpr T If(bool c, T a, T b) noexcept { return c ? a : b; }
-
-template <typename T>
-constexpr T If(bool c, int a, T b)  noexcept{ return c ? T(a) : b; }
-
-template <typename T>
-constexpr T If(bool c, T a, int b) noexcept { return c ? a : T(b); }
-
 bool IsClose(double, double, double eps = std::numeric_limits<double>::epsilon()) noexcept;
 bool IsCloseRel(double, double, double eps = std::numeric_limits<double>::epsilon()) noexcept;
 bool IsFinite(double) noexcept;
@@ -776,18 +767,6 @@ template <typename T>
 constexpr int UnitStep(T x) noexcept
 {
    return x < T() ? 0 : 1;
-}
-
-template <typename T>
-constexpr T Which(bool cond, T value) noexcept
-{
-   return cond ? value : T(0);
-}
-
-template<typename T, typename ... Trest>
-constexpr typename std::common_type<T, Trest...>::type Which(bool cond, T value, Trest... rest) noexcept
-{
-   return cond ? value : Which(rest...);
 }
 
 double ZeroSqrt(double x) noexcept;
