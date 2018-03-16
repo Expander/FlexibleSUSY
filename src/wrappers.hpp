@@ -19,7 +19,6 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
-#include <algorithm>
 #include <cmath>
 #include <complex>
 #include <limits>
@@ -34,7 +33,6 @@
 
 #include "config.h"
 #include "dilog.hpp"
-#include "error.hpp"
 #include "eigen_tensor.hpp"
 #include "error.hpp"
 #include "if.hpp"
@@ -564,13 +562,6 @@ T RelDiff(T a, T b, T eps = std::numeric_limits<T>::epsilon()) noexcept
 }
 
 int Round(double a) noexcept;
-
-template<int N>
-void Sort(Eigen::Array<double, N, 1>& v)
-{
-   std::sort(v.data(), v.data() + v.size(),
-             [] (double a, double b) { return std::abs(a) < std::abs(b); });
-}
 
 double SignedAbsSqrt(double a) noexcept;
 

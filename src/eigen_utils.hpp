@@ -20,6 +20,7 @@
 #define EIGEN_UTILS_H
 
 #include <Eigen/Core>
+#include <algorithm>
 #include <cassert>
 #include <complex>
 #include <string>
@@ -215,6 +216,14 @@ void reorder_vector(
    const Eigen::MatrixBase<Derived>& matrix)
 {
    reorder_vector(v, matrix.diagonal().array().eval());
+}
+
+/// sorts an Eigen array
+template<int N>
+void sort(Eigen::Array<double, N, 1>& v)
+{
+   std::sort(v.data(), v.data() + v.size(),
+             [] (double a, double b) { return std::abs(a) < std::abs(b); });
 }
 
 } // namespace flexiblesusy
