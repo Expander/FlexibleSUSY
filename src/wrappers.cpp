@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "wrappers.hpp"
+#include "dilog.hpp"
 #include "numerics2.hpp"
 
 namespace flexiblesusy {
@@ -187,6 +188,20 @@ double MaxRelDiff(const std::complex<double>& a, const std::complex<double>& b)
       return 0.0;
 
    return std::abs(a - b) / maxx;
+}
+
+double PolyLog(int n, double z)
+{
+   if (n == 2)
+      return gm2calc::dilog(z);
+   throw SetupError("PolyLog(n!=2) not implemented");
+}
+
+std::complex<double> PolyLog(int n, const std::complex<double>& z)
+{
+   if (n == 2)
+      return gm2calc::dilog(z);
+   throw SetupError("PolyLog(n!=2) not implemented");
 }
 
 double Re(double x) noexcept

@@ -32,7 +32,6 @@
 #include <boost/lexical_cast.hpp>
 
 #include "config.h"
-#include "dilog.hpp"
 #include "eigen_tensor.hpp"
 #include "error.hpp"
 #include "if.hpp"
@@ -425,12 +424,8 @@ constexpr T Quad(T a) noexcept
    return a * a * a * a;
 }
 
-template <typename T>
-T PolyLog(int n, T z) {
-   if (n == 2)
-      return gm2calc::dilog(z);
-   throw SetupError("PolyLog(n!=2) not implemented");
-}
+double PolyLog(int, double);
+std::complex<double> PolyLog(int, const std::complex<double>&);
 
 template <typename Base, typename Exponent>
 Base Power(Base base, Exponent exp) noexcept
