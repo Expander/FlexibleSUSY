@@ -212,7 +212,7 @@ default_indices_for_spectator<VG>( void )
   return {0};
 }
 
-// emit photon from the internal scalar line
+// emit spectator from the internal scalar line
 template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionSF<
 FermionIn, FermionOut, Spectator, Emitter, ExchangeField
@@ -310,7 +310,7 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
    return res;
 }
 
-// emit photon from the internal fermion line
+// emit spectator from the internal fermion line
 template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionFS<
 FermionIn, FermionOut, Spectator, Emitter, ExchangeField
@@ -379,6 +379,7 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
          const auto x = pow(EmitterMass/exchangeFieldMass, 2);
          const auto leptonMass = context.mass<FermionIn>(edmFieldIndicesIn);
 
+         // Assuming left and right couplings are the same. Doesn't work for the Z boson.
          std::complex<double> EmitterCharge (vertexEmit.left());
 
          // eq. 18 of hep-ph/9510309
