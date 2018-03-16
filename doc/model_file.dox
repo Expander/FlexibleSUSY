@@ -1487,9 +1487,9 @@ EffectiveMASqr = (T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2) (vu^2
 #### Standard Model (SM) ####
 
 In the Standard Model the two-loop Higgs pole mass corrections of the
-order \f$O(\alpha_t\alpha_s)\f$ [arxiv:1407.4336, Eq.(2.47)] and
-\f$O(\alpha_t^2)\f$ [arxiv:1205.6497, Eq.(20)] can be used by setting
-in the model file
+order \f$O(\alpha_t\alpha_s + \alpha_b\alpha_s)\f$ [arxiv:1407.4336],
+\f$O((\alpha_t + \alpha_b)^2)\f$ [arxiv:1205.6497] and
+\f$O(\alpha_\tau^2)\f$ can be used by setting in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 UseHiggs2LoopSM = True;

@@ -120,13 +120,14 @@ CalcHSSUSYMh[ytLoops_?NumericQ, Qpole_?NumericQ, Qm_?NumericQ, eft_?NumericQ, yt
            tc = thresholdCorrections /. { args };
            tc = If[IntegerQ[tc], tc,
                    thresholdCorrections /. Options[FSHSSUSYOpenHandle]];
+           If[ytLoops >= 0, tc = SetDigit[tc, 6, ytLoops]];
            handle = FSHSSUSYOpenHandle[args];
            FSHSSUSYSet[handle,
                fsSettings -> {
                    calculateStandardModelMasses -> 1,
                    thresholdCorrectionsLoopOrder -> 3,
                    poleMassScale -> Qpole,
-                   thresholdCorrections -> SetDigit[tc, 6, ytLoops]
+                   thresholdCorrections -> tc
                },
                fsModelParameters -> {
                    DeltaEFT -> eft,
@@ -145,17 +146,26 @@ CalcHSSUSYDMh[a___, (fsSettings | fsSMParameters | fsModelParameters) -> s_List,
     CalcHSSUSYDMh[a, Sequence @@ s, r];
 
 CalcHSSUSYDMh[args__] :=
-    Module[{Mh, MhYt3L, MhEFT, MhYtMSSM, varyQpole, varyQmatch,
+    Module[{Mh0, Mh, MhYt3L, MhEFT, MhYtMSSM, varyQpole, varyQmatch,
             DMhSM, DMhEFT, DMhSUSY,
             MS = MSUSY /. { args }, Mlow = MEWSB /. { args }},
+           Mh0        = CalcHSSUSYMh[-1, 0, 0, 0, 0, args];
+           If[Mh0 === $Failed, Return[{$Failed, $Failed}]];
            Mh         = CalcHSSUSYMh[2, 0, 0, 0, 0, args];
+           If[Mh === $Failed, Return[{Mh0, $Failed}]];
            MhYt3L     = CalcHSSUSYMh[3, 0, 0, 0, 0, args];
+           If[MhYt3L === $Failed, Return[{Mh0, $Failed}]];
            MhEFT      = CalcHSSUSYMh[2, 0, 0, 1, 0, args];
+           If[MhEFT === $Failed, Return[{Mh0, $Failed}]];
            MhYtMSSM   = CalcHSSUSYMh[2, 0, 0, 0, 1, args];
+           If[MhYtMSSM === $Failed, Return[{Mh0, $Failed}]];
            varyQpole  = CalcHSSUSYMh[2, #, 0, 0, 0, args]& /@
                         LogRange[Mlow/2, 2 Mlow, 10];
            varyQmatch = CalcHSSUSYMh[2, 0, #, 0, 0, args]& /@
                         LogRange[MS/2, 2 MS, 10];
+           varyQpole  = Select[varyQpole , NumericQ];
+           varyQmatch = Select[varyQmatch, NumericQ];
+           If[varyQmatch === {} || varyQpole === {}, Return[{Mh0, $Failed}]];
            (* combine uncertainty estimates *)
            DMhSM   = Max[Abs[Max[varyQpole] - Mh],
                          Abs[Min[varyQpole] - Mh]] +
@@ -164,5 +174,5 @@ CalcHSSUSYDMh[args__] :=
            DMhSUSY = Max[Abs[Max[varyQmatch] - Mh],
                          Abs[Min[varyQmatch] - Mh]] +
                      Abs[Mh - MhYtMSSM];
-           { Mh, DMhSM + DMhEFT + DMhSUSY }
+           { Mh0, DMhSM + DMhEFT + DMhSUSY }
           ];

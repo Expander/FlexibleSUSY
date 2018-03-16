@@ -5,8 +5,8 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=2
-FLEXIBLESUSY_MINOR=0
-FLEXIBLESUSY_PATCH=1
+FLEXIBLESUSY_MINOR=1
+FLEXIBLESUSY_PATCH=0
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT=$(git rev-parse HEAD 2> /dev/null || echo unknown)
@@ -58,6 +58,7 @@ FSCONFIG_TMPL=${CONFIGDIR}/flexiblesusy-config.in
 # target sarah dependency generation script
 SARAH_DEP_GEN=${CONFIGDIR}/list_sarah_model_files.sh
 SARAH_DEP_GEN_TMPL=${CONFIGDIR}/list_sarah_model_files.sh.in
+SARAH_MODEL_DIR=""
 
 # target config header
 CONFIGHDR=${CONFIGDIR}/config.h
@@ -286,13 +287,21 @@ write_configure_parameters() {
 
 #_____________________________________________________________________
 message() {
-    # Write a simple message to std out (and to the log file)
+    # Write a simple message to std out (and to the log file).  Use -n
+    # as first parameter to prevent a newline at the end of the
+    # message.
     if test $# -lt 1 ; then
         echo "message: Too few arguments"
         return 1
     fi
-    echo "$*"
-    logmsg "$*"
+    if test "x$1" = "x-n"; then
+        shift
+        printf "%s" "$*"
+        logmsg "-n" "$*"
+    else
+        echo "$*"
+        logmsg "$*"
+    fi
 }
 
 #_____________________________________________________________________
@@ -369,6 +378,11 @@ make_unique() {
     done
 
     echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
+}
+
+#_____________________________________________________________________
+string_trim() {
+    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
 }
 
 #_____________________________________________________________________
@@ -2426,6 +2440,14 @@ EOF
         message "   Please make sure Needs[\"SARAH\`\"] works correctly."
         exit 1
     fi
+
+    SARAH_MODEL_DIR=$(cat <<EOF | ("$MATH" 2> /dev/stdout 1> /dev/null)
+If[Needs["SARAH\`"] === \$Failed || !ValueQ[\$sarahModelDir],
+   Quit[1];
+  ];
+WriteString["stderr", \$sarahModelDir];
+EOF
+             )
 }
 
 #_____________________________________________________________________
@@ -2439,6 +2461,114 @@ check_cygpath() {
     else
 	result "found $cmd"
     fi
+}
+
+#_____________________________________________________________________
+mma_symbol_is() {
+    local model_file="$1"
+    local math_cmd="$2"
+    local symbol="$3"
+    local value="$4"
+
+    [ -e "${model_file}" ] || {
+        >&2 echo "Error: file \"${model_file}\" does not exist!"
+        return 1
+    }
+
+    command -v "${math_cmd}" >/dev/null 2>&1 || {
+        >&2 echo "Error: Mathematica kernel \"${math_cmd}\" is not executable!"
+        return 1
+    }
+
+    [ -z "${symbol}" ] && {
+        >&2 echo "Error: no symbol given!"
+        return 1
+    }
+
+    [ -z "${value}" ] && {
+        >&2 echo "Error: no value given!"
+        return 1
+    }
+
+    echo "Get[\"${model_file}\"]; Quit[Boole[!(${symbol} === ${value})]]" | "${math_cmd}" > /dev/null 2>&1
+
+    return $?
+}
+
+#_____________________________________________________________________
+get_model_specific_corrections() {
+    local model_file="$1"
+    local math_cmd="${2:-math}"
+
+    # always build SM, because it is needed for the effective couplings module
+    local ho="SM"
+
+    [ -e "${model_file}" ] || {
+        >&2 echo "Error: file \"${model_file}\" does not exist!"
+        echo "${ho}"
+        return 1
+    }
+
+    command -v "${math_cmd}" >/dev/null 2>&1 || {
+        >&2 echo "Error: Mathematica kernel \"${math_cmd}\" is not executable!"
+        >&2 echo "   Please specify the Mathematica kernel as 2nd argument!"
+        echo "${ho}"
+        return 1
+    }
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs2LoopSM" "True"    && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs3LoopSM" "True"    && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs4LoopSM" "True"    && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "UseSMAlphaS3Loop" "True"   && ho="${ho} SM"
+    mma_symbol_is "$model_file" "$math_cmd" "FlexibleEFTHiggs" "True"   && ho="${ho} SM"
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs2LoopMSSM" "True"  && ho="${ho} MSSM_higgs"
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs3LoopMSSM" "True"  && ho="${ho} MSSM_higgs"
+    mma_symbol_is "$model_file" "$math_cmd" "UseMSSMAlphaS2Loop" "True" && ho="${ho} MSSM_thresholds"
+    mma_symbol_is "$model_file" "$math_cmd" "UseMSSMYukawa2Loop" "True" && ho="${ho} MSSM_thresholds"
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs2LoopNMSSM" "True" && ho="${ho} MSSM_higgs NMSSM_higgs"
+
+    mma_symbol_is "$model_file" "$math_cmd" "UseHiggs3LoopSplit" "True" && ho="${ho} SplitMSSM"
+
+    ho=$(make_unique "${ho}")
+    ho=$(string_trim "${ho}")
+    echo "${ho}"
+}
+
+#_____________________________________________________________________
+update_module_mk() {
+    local name="$1"
+    local mkfile="$2"
+    local model_file="$3"
+    local math_cmd="${4:-math}"
+
+    [ -e "$model_file" ] || return
+    { find "$mkfile" -newer "$model_file" | grep ^; } > /dev/null 2>&1 &&
+	return
+
+    message -n "   Updating model-specific modules in $mkfile ... "
+    local ho="$(get_model_specific_corrections "$model_file" "$math_cmd")"
+    sed -i -e "s|^\(MOD${name}_MOD[[:space:]]*:=\).*$|\1 $ho|" "$mkfile"
+    message "($ho)"
+    logmsg "   Depends on model-specific modules: ${ho}"
+}
+
+#_____________________________________________________________________
+update_model_makefiles() {
+    # If Mathematica is disabled, dependences on model-specific
+    # modules should have been already resolved.
+    [ "$enable_meta" != yes -o -z "${MATH}" ] && return
+
+    message "Checking model makefiles"
+
+    for m in ${MODELS}; do
+        local model_name=$(echo ${m} | sed -e 's|models/||')
+        local model_file="${m}/FlexibleSUSY.m"
+	local mkfile="$m/module.mk"
+
+	update_module_mk "$model_name" "$mkfile" "$model_file" "$MATH"
+    done
 }
 
 #_____________________________________________________________________
@@ -2672,7 +2802,6 @@ replace_markers() {
         -e "s|@LDLIBS@|$LDLIBS|"           \
         -e "s|@LLFLAGS@|$LLFLAGS|"         \
         -e "s|@LLLIBS@|$LLLIBS|"           \
-	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"   \
 	-e "s|@ENABLE_COLORS@|$enable_colors|" \
 	-e "s|@ENABLE_COMPILE@|$enable_compile|" \
 	-e "s|@ENABLE_COMPILER_WARNINGS@|$enable_compiler_warnings|" \
@@ -2697,6 +2826,8 @@ replace_markers() {
 	-e "s|@LOOPTOOLSLIBS@|$LOOPTOOLSLIBS|"    \
 	-e "s|@LOOPTOOLSFLAGS@|$LOOPTOOLSFLAGS|"  \
 	-e "s|@OPTIONAL_MODULES@|$OPTIONAL_MODULES|" \
+	-e "s|@SARAH_DEP_GEN@|$SARAH_DEP_GEN|"    \
+	-e "s|@SARAH_MODEL_DIR@|$SARAH_MODEL_DIR|" \
         -e "s|@SHARED_LIB_CMD@|$SHARED_LIB_CMD|"  \
         -e "s|@STATIC_LIB_CMD@|$STATIC_LIB_CMD|"  \
 	-e "s|@SQLITELIBS@|$SQLITELIBS|"          \
@@ -2984,6 +3115,9 @@ fi
 check_models
 check_addons
 check_optional_modules
+# BEGIN: NOT EXPORTED ##########################################
+update_model_makefiles
+# END:   NOT EXPORTED ##########################################
 
 enable_defines
 

@@ -32,6 +32,7 @@
 #include "lowe.h"
 #include "spectrum_generator_problems.hpp"
 #include "spectrum_generator_settings.hpp"
+#include "standard_model.hpp"
 #include "loop_corrections.hpp"
 
 #include <string>

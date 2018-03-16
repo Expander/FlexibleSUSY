@@ -584,7 +584,9 @@ CreateSemiAnalyticSolutionsDefinitions[solutions_List] :=
 CreateSemiAnalyticCoefficientGetters[solution_SemiAnalyticSolution] :=
     Module[{getters = "", coeffs},
            coeffs = CreateCoefficientParameters[solution];
-           getters = (CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]], #[[3]]])& /@ coeffs;
+           getters = (CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#[[1]]],
+                                                      CConversion`ToValidCSymbolString[#[[1]]],
+                                                      #[[3]]])& /@ coeffs;
            StringJoin[getters]
           ];
 

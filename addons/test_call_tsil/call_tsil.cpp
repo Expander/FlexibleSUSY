@@ -1,12 +1,7 @@
 #include "call_tsil.hpp"
-
-// <complex> must be included before tsil_cpp.h
-#include <complex>
-
-// Warning: tsil_cpp.h does `using namespace std'
 #include "tsil_cpp.h"
 
-double call_A_cpp(double m, double q)
+double call_A(double m, double q)
 {
    TSIL_REAL m2 = m*m;
    TSIL_REAL q2 = q*q;

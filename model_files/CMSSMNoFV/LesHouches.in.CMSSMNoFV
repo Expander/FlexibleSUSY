@@ -59,3 +59,5 @@ Block MINPAR                 # Input parameters
     3   10.                  # TanBeta
     4   1                    # SignMu
     5   0                    # Azero
+Block EXTPAR
+  100   0                    # Mlow

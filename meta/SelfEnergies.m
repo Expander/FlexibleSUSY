@@ -873,29 +873,43 @@ CreateTwoLoopTadpolesNMSSM[higgsBoson_] :=
 
 GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                               model_String /; model === "SM", 2] :=
-    Module[{mTop, mtStr, yt, ytStr, g3Str},
+    Module[{mtStr, ytStr, mbStr, ybStr, mtauStr, ytauStr, g3Str},
            AssertFieldDimension[particle, 1, model];
-           mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
-           mtStr   = CConversion`RValueToCFormString[mTop];
-           yt      = Parameters`GetThirdGeneration[SARAH`UpYukawa];
-           ytStr   = CConversion`RValueToCFormString[yt];
+           mtStr   = CConversion`RValueToCFormString[TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]]];
+           ytStr   = CConversion`RValueToCFormString[Parameters`GetThirdGeneration[SARAH`UpYukawa]];
+           mbStr   = CConversion`RValueToCFormString[TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]]];
+           ybStr   = CConversion`RValueToCFormString[Parameters`GetThirdGeneration[SARAH`DownYukawa]];
+           mtauStr = CConversion`RValueToCFormString[TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]]];
+           ytauStr = CConversion`RValueToCFormString[Parameters`GetThirdGeneration[SARAH`ElectronYukawa]];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
 "\
 using namespace flexiblesusy::sm_twoloophiggs;
 
 const double p2 = Sqr(p);
+const double mb = " <> mbStr <> ";
 const double mt = " <> mtStr <> ";
+const double mtau = " <> mtauStr <> ";
+const double yb = " <> ybStr <> ";
 const double yt = " <> ytStr <> ";
+const double ytau = " <> ytauStr <> ";
 const double gs = " <> g3Str <> ";
 const double scale = get_scale();
 double self_energy = 0.;
 
 if (HIGGS_2LOOP_CORRECTION_AT_AT) {
-   self_energy -= delta_mh_2loop_at_at_sm(p2, scale, mt, yt);
+   self_energy -= delta_mh_2loop_at_at_sm(p2, scale, mt, yt, mb);
 }
 
 if (HIGGS_2LOOP_CORRECTION_AT_AS) {
    self_energy -= delta_mh_2loop_at_as_sm(p2, scale, mt, yt, gs);
+}
+
+if (HIGGS_2LOOP_CORRECTION_AB_AS) {
+   self_energy -= delta_mh_2loop_ab_as_sm(p2, scale, mb, yb, gs);
+}
+
+if (HIGGS_2LOOP_CORRECTION_ATAU_ATAU) {
+   self_energy -= delta_mh_2loop_atau_atau_sm(p2, scale, mtau, ytau);
 }
 
 return self_energy;"

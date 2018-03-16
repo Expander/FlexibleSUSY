@@ -44,6 +44,9 @@ The 3- and partial 4-loop renormalization group equations of
 are used to run \f$\lambda(M_\text{SUSY})\f$ down to the electroweak
 scale \f$M_Z\f$ or \f$M_t\f$.
 
+If \f$M_{\text{SUSY}}\f$ is set to zero, \f$M_{\text{SUSY}} =
+\sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}\f$ is used.
+
 __Low scale__
 
 The `LowScale` is set to \f$M_Z\f$.  At this scale, the
@@ -91,12 +94,12 @@ The Higgs and W boson pole masses, \f$M_h\f$ and \f$M_Z\f$, are
 calculated at the full 1-loop level in the Standard Model, including
 potential flavour mixing and momentum dependence.  Depending on the
 given configuration flags, additional 2-, 3- and 4-loop corrections to
-the Higgs pole mass of \f$O(\alpha_t\alpha_s)\f$ [<a
-href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>, Eq.(2.47)]
-and \f$O(\alpha_t^2)\f$ [<a
-href="https://arxiv.org/abs/1205.6497">arXiv:1205.6497</a>, Eq.(20)],
-as well as 3-loop corrections \f$O(\alpha_t^3 + \alpha_t^2\alpha_s +
-\alpha_t\alpha_s^2)\f$ [<a
+the Higgs pole mass of \f$O(\alpha_t\alpha_s + \alpha_b\alpha_s)\f$
+[<a href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>]
+\f$O((\alpha_t + \alpha_b)^2)\f$ [<a
+href="https://arxiv.org/abs/1205.6497">arXiv:1205.6497</a>] and
+\f$O(\alpha_\tau^2)\f$, as well as 3-loop corrections \f$O(\alpha_t^3
++ \alpha_t^2\alpha_s + \alpha_t\alpha_s^2)\f$ [<a
 href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>] and 4-loop
 corrections \f$O(\alpha_t\alpha_s^3)\f$ [<a
 href="https://arxiv.org/abs/1508.00912">arXiv:1508.00912</a>] can be

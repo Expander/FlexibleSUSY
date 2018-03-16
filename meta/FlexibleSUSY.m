@@ -1539,6 +1539,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               extraParameterDefs           = StringJoin[Parameters`CreateParameterDefinitionAndDefaultInitialize
                                                         /@ Parameters`GetExtraParameters[]];
               extraParameterGetters        = StringJoin[CConversion`CreateInlineGetters[CConversion`ToValidCSymbolString[#],
+                                                                                        CConversion`ToValidCSymbolString[#],
                                                                                         Parameters`GetType[#]]& /@
                                                         Parameters`GetExtraParameters[]];
               extraParameterSetters        = StringJoin[CConversion`CreateInlineSetters[CConversion`ToValidCSymbolString[#],
@@ -1604,6 +1605,18 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            parametersToSave = Join[parametersToSave,
                                    #[[1]]& /@ (Select[ewsbSubstitutions,
                                                       Function[sub, Or @@ (!FreeQ[sub[[2]], #]& /@ parametersToSave)]])];
+           parametersToSave = DeleteDuplicates[parametersToSave /.
+                                               {
+                                                   Susyno`LieGroups`conj -> Identity,
+                                                   SARAH`Conj            -> Identity,
+                                                   SARAH`Tp              -> Identity,
+                                                   SARAH`Adj             -> Identity,
+                                                   SARAH`bar             -> Identity,
+                                                   Conjugate             -> Identity,
+                                                   Transpose             -> Identity,
+                                                   Re                    -> Identity,
+                                                   Im                    -> Identity
+                                               }];
            saveEWSBOutputParameters = Parameters`SaveParameterLocally[parametersToSave];
            (ewsbSolverHeaders = ewsbSolverHeaders
                                 <> EnableForBVPSolver[#, ("#include \"" <> FlexibleSUSY`FSModelName
@@ -1860,7 +1873,7 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
                                        "@getObservablesNames@" -> IndentText[getObservablesNames],
                                        "@clearObservables@" -> IndentText[clearObservables],
                                        "@setObservables@" -> IndentText[setObservables],
-                                       "@calculateObservables@" -> IndentText[calculateObservables],
+                                       "@calculateObservables@" -> IndentText @ IndentText[calculateObservables],
                                        Sequence @@ GeneralReplacementRules[]
                                    } ];
            ];
@@ -4008,7 +4021,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                       
                       
            Print["Setting up CXXDiagrams..."];
-           CXXDiagrams`CXXInitialize[];
+           
+           CXXDiagrams`CXXDiagramsInitialize[];
            
            Print["Creating EDM class..."];
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],

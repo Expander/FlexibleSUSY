@@ -30,7 +30,7 @@
 #include "numerics.h"
 #include "numerics2.hpp"
 #ifdef USE_LOOPTOOLS
-#include "clooptools.h"
+#include <clooptools.h>
 #endif
 #include <algorithm>
 #include <cmath>

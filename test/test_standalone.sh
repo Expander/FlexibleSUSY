@@ -15,8 +15,8 @@ do
     echo "> copying: cp -r ${examples_dir}/${dir}/ ${BASEDIR}"
     cp -r ${examples_dir}/${dir}/ ${BASEDIR}
 
-    echo "> building: (cd ${BASEDIR}/${dir} && make)"
-    (cd ${BASEDIR}/${dir} && make)
+    echo "> building: make -C ${BASEDIR}/${dir}"
+    make -C ${BASEDIR}/${dir}
 
     exit_code="$?"
     echo "> exit code: ${exit_code}"

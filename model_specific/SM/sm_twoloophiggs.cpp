@@ -152,6 +152,26 @@ double self_energy_higgs_2loop_at_as_sm(
 }
 
 /**
+ * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_b
+ * \alpha_s)\f$, for zero momentum.
+ *
+ * @warning The result is in Landau gauge (\f$\xi = 0\f$).
+ *
+ * @param p2    squared momentum (not used)
+ * @param scale renormalization scale
+ * @param mb MS-bar bottom mass
+ * @param yb MS-bar Yukawa coupling
+ * @param g3 MS-bar strong gauge coupling
+ *
+ * @return real part of 2-loop self-energy \f$O(\alpha_b \alpha_s)\f$
+ */
+double self_energy_higgs_2loop_ab_as_sm(
+   double /* p2 */, double scale, double mb, double yb, double g3)
+{
+   return self_energy_higgs_2loop_at_as_sm(0., scale, mb, yb, g3);
+}
+
+/**
  * Standard Model Higgs tadpole 2-loop, \f$O(\alpha_t \alpha_s)\f$.
  *
  * @warning The result is in Landau gauge (\f$\xi = 0\f$).
@@ -178,6 +198,24 @@ double tadpole_higgs_2loop_at_as_sm(
    return result * twoLoop;
 }
 
+/**
+ * Standard Model Higgs tadpole 2-loop, \f$O(\alpha_b \alpha_s)\f$.
+ *
+ * @warning The result is in Landau gauge (\f$\xi = 0\f$).
+ *
+ * @param scale renormalization scale
+ * @param mb MS-bar bottom mass
+ * @param yb MS-bar Yukawa coupling
+ * @param g3 MS-bar strong gauge coupling
+ *
+ * @return real part of 2-loop self-energy \f$O(\alpha_b \alpha_s)\f$
+ */
+double tadpole_higgs_2loop_ab_as_sm(
+   double scale, double mb, double yb, double g3)
+{
+   tadpole_higgs_2loop_at_as_sm(scale, mb, yb, g3);
+}
+
 double delta_mh_2loop_at_as_sm(
    double p2, double scale, double mt, double yt, double g3)
 {
@@ -185,60 +223,145 @@ double delta_mh_2loop_at_as_sm(
       + tadpole_higgs_2loop_at_as_sm(scale, mt, yt, g3);
 }
 
+double delta_mh_2loop_ab_as_sm(
+   double p2, double scale, double mb, double yb, double g3)
+{
+   return - self_energy_higgs_2loop_ab_as_sm(p2, scale, mb, yb, g3)
+      + tadpole_higgs_2loop_ab_as_sm(scale, mb, yb, g3);
+}
+
 /**
- * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_t^2)\f$.
+ * Standard Model Higgs self-energy 2-loop, \f$O((\alpha_b + \alpha_t)^2)\f$.
  *
  * @param p2    squared momentum (not used so far)
  * @param scale renormalization scale
  * @param mt MS-bar top mass
  * @param yt MS-bar Yukawa coupling
+ * @param mb MS-bar bottom mass
  *
- * @return real part of 2-loop self-energy \f$O(\alpha_t^2) \f$
+ * @return real part of 2-loop self-energy \f$O((\alpha_b + \alpha_t)^2)\f$
  */
 double self_energy_higgs_2loop_at_at_sm(
-   double /* p2 */, double scale, double mt, double yt)
+   double /* p2 */, double scale, double mt, double yt, double mb)
 {
+   const double Pi2 = Sqr(Pi);
    const double yt4 = Power4(yt);
    const double mt2 = Sqr(mt);
+   const double mb2 = Sqr(mb);
    const double Q2 = Sqr(scale);
+   const double r = mb2/mt2;
    const double LogT = FiniteLog(mt2 / Q2);
    const double LogT2 = Sqr(LogT);
+   const double LogTB = 0.5*FiniteLog(r);
+   const double LogTB2 = Sqr(LogTB);
 
    const double result =
-      3*mt2 * yt4 * (19 + Sqr(Pi) - 27 * LogT + 9 * LogT2);
+      3 * mt2 * yt4 * (19 + Pi2 - 27 * LogT + 9 * LogT2)
+      - 3 * mt2 * yt4 * (5 + 3*Pi2 - 3*LogT + 9*LogT2)*r
+      + 3./2. * mt2 * yt4 * (35 + 6*Pi2 + 6*LogT - 18*LogT2
+                             - 24*LogTB*(1 + 3*LogT))*Sqr(r)
+      - 0.5 * mt2 * yt4 * (-29 + 6*Pi2 - 144*LogTB2 + 162*LogT - 54*LogT2
+                           - 24*LogTB*(-8 + 9*LogT))*Power3(r);
 
    return result * twoLoop;
 }
 
 /**
- * Standard Model Higgs tadpole 2-loop, \f$O(\alpha_t^2)\f$.
+ * Standard Model Higgs tadpole 2-loop, \f$O((\alpha_b + \alpha_t)^2)\f$.
  *
  * @param scale renormalization scale
  * @param mt MS-bar top mass
  * @param yt MS-bar Yukawa coupling
+ * @param mb MS-bar bottom mass
  *
- * @return real part of 2-loop self-energy \f$O(\alpha_t^2) \f$
+ * @return real part of 2-loop self-energy \f$O((\alpha_b + \alpha_t)^2)\f$
  */
 double tadpole_higgs_2loop_at_at_sm(
-   double scale, double mt, double yt)
+   double scale, double mt, double yt, double mb)
 {
+   const double Pi2 = Sqr(Pi);
    const double yt4 = Power4(yt);
    const double mt2 = Sqr(mt);
+   const double mb2 = Sqr(mb);
    const double Q2 = Sqr(scale);
+   const double r = mb2/mt2;
    const double LogT = FiniteLog(mt2 / Q2);
    const double LogT2 = Sqr(LogT);
+   const double LogTB = 0.5*FiniteLog(r);
+   const double LogTB2 = Sqr(LogTB);
 
    const double result =
-      mt2 * yt4 * (45 + Sqr(Pi) - 39*LogT + 9*LogT2);
+      mt2 * yt4 * (45 + Pi2 - 39*LogT + 9*LogT2)
+      - 3 * mt2 * yt4 * (5 + Pi2 - 5*LogT + 3*LogT2)*r
+      + 3./2. * mt2 * yt4 * (5 + 2*Pi2 + LogTB*(8 - 24*LogT) + 10*LogT
+                             - 6*LogT2)*Sqr(r)
+      - 1./6. * mt2 * yt4 * (-185 + 6*Pi2 - 144*LogTB2 + 234*LogT - 54*LogT2
+                             - 24*LogTB*(-14 + 9*LogT))*Power3(r);
 
    return result * twoLoop;
 }
 
 double delta_mh_2loop_at_at_sm(
-   double p2, double scale, double mt, double yt)
+   double p2, double scale, double mt, double yt, double mb)
 {
-   return - self_energy_higgs_2loop_at_at_sm(p2, scale, mt, yt)
-      + tadpole_higgs_2loop_at_at_sm(scale, mt, yt);
+   return - self_energy_higgs_2loop_at_at_sm(p2, scale, mt, yt, mb)
+      + tadpole_higgs_2loop_at_at_sm(scale, mt, yt, mb);
+}
+
+/**
+ * Standard Model Higgs self-energy 2-loop, \f$O(\alpha_tau^2)\f$.
+ *
+ * @param p2    squared momentum (not used so far)
+ * @param scale renormalization scale
+ * @param mtau MS-bar tau mass
+ * @param ytau MS-bar Yukawa coupling
+ *
+ * @return real part of 2-loop self-energy \f$O(\alpha_tau^2) \f$
+ */
+double self_energy_higgs_2loop_atau_atau_sm(
+   double /* p2 */, double scale, double mtau, double ytau)
+{
+   const double ytau4 = Power4(ytau);
+   const double mtau2 = Sqr(mtau);
+   const double Q2 = Sqr(scale);
+   const double LogT = FiniteLog(mtau2 / Q2);
+   const double LogT2 = Sqr(LogT);
+
+   const double result =
+      mtau2 * ytau4 * (19 + Sqr(Pi) - 27 * LogT + 9 * LogT2);
+
+   return result * twoLoop;
+}
+
+/**
+ * Standard Model Higgs tadpole 2-loop, \f$O(\alpha_tau^2)\f$.
+ *
+ * @param scale renormalization scale
+ * @param mtau MS-bar tau mass
+ * @param ytau MS-bar Yukawa coupling
+ *
+ * @return real part of 2-loop self-energy \f$O(\alpha_tau^2) \f$
+ */
+double tadpole_higgs_2loop_atau_atau_sm(
+   double scale, double mtau, double ytau)
+{
+   const double ytau4 = Power4(ytau);
+   const double mtau2 = Sqr(mtau);
+   const double Q2 = Sqr(scale);
+   const double LogT = FiniteLog(mtau2 / Q2);
+   const double LogT2 = Sqr(LogT);
+
+   const double result =
+      1./3. * mtau2 * ytau4 * (45 + Sqr(Pi) - 39*LogT + 9*LogT2);
+
+   return result * twoLoop;
+}
+
+double delta_mh_2loop_atau_atau_sm(
+   double p2, double scale, double mtau, double ytau)
+{
+   return - self_energy_higgs_2loop_atau_atau_sm(p2, scale, mtau, ytau)
+      + tadpole_higgs_2loop_atau_atau_sm(scale, mtau, ytau);
 }
 
 namespace {

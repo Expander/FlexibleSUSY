@@ -39,13 +39,15 @@ MuEGammaContributingGraphs::usage="";
     2 is its Lorentz conjugate
     3 is the photon
    and all other indices unspecified. *)
-   (*
 vertexCorrectionGraph = {{0,0,0,1,0,0},
                          {0,0,0,0,1,0},
                          {0,0,0,0,0,1},
                          {1,0,0,0,1,1},
                          {0,1,0,1,0,1},
                          {0,0,1,1,1,0}};
+contributingGraphs = {vertexCorrectionGraph};
+
+MuEGammaContributingGraphs[] := contributingGraphs
 
 MuEGammaContributingDiagramsForLeptonPairAndGraph[{inFermion_, outFermion_, spectator_}, graph_] :=
   Module[{diagrams},
@@ -70,13 +72,13 @@ IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagr
     
     Return[False];
   ]
-*)
-MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}] :=
-  Module[
-    {prototype, definition, 
-     numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
-     numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-     numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
+
+MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, gTaggedDiagrams_List] :=
+   Module[
+      {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
+         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
+         numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]
+      },
    
       prototype =
          "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>

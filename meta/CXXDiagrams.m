@@ -26,7 +26,7 @@ BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Verti
 
 (* This module generates c++ code intended to be used similarly to SARAH's fields and Vertex[] function *)
 
-CXXInitialize::usage="";
+CXXDiagramsInitialize::usage="";
 VertexTypes::usage="";
 CXXNameOfField::usage="";
 LorentzConjugateOperation::usage="";
@@ -41,9 +41,9 @@ CreateMassFunctions::usage="";
 CreateUnitCharge::usage="";
 NumberOfFieldIndices::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
-CXXInitialize[] := LoadVerticesIfNecessary[]
+CXXDiagramsInitialize[] := LoadVerticesIfNecessary[]
 
 (* The supported vertex types.
  They have the same names as their c++ counterparts. *)

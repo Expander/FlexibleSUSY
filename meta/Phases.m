@@ -69,7 +69,7 @@ CreatePhasesGetterSetters[phases_List] :=
                type = GetPhaseType[phases[[k]]];
                result = result <>
                         CConversion`CreateInlineSetter[phaseName, type] <>
-                        CConversion`CreateInlineGetter[phaseName, type];
+                        CConversion`CreateInlineGetter[phaseName, phaseName, type];
               ];
            Return[result];
           ];
