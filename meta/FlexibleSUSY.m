@@ -1981,7 +1981,7 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
       If[leptonPairs === {},
          {"",""},
          StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterfaceFunctionForLeptonPair @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface @@@ 
             Transpose[{leptonPairs}]])
       ];
     
@@ -4062,7 +4062,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            fieldsForFToFConversion = 
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], _] :> {pIn, pOut, VP}];
+                FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, VP}];
            Print[fieldsForFToFConversion];     
             
            Print["Creating FToFConversionInNucleus class ..."];
@@ -4075,10 +4075,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               
 
            Print["Creating FFV form factor class ..."];
-           Print[
-              DeleteDuplicates @ Join[fieldsForFToFDecay, fieldsForFToFConversion]];
            fFVVertices = WriteFFVFormFactorsClass[
-              DeleteDuplicates @ Join[fieldsForFToFDecay, fieldsForFToFConversion],
+              DeleteDuplicates @ Join[fieldsForFToFDecay(*, fieldsForFToFConversion*)],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],

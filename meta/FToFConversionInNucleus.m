@@ -31,14 +31,14 @@ FToFConversionInNucleusContributingGraphs::usage="";
 (* TODO: uncomment this in the end *)
 (*Begin["Private`"];*)
 
-FToFConversionInNucleus`FToFConversionInNucleusCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}] :=
+FToFConversionInNucleus`FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
   Module[
     {prototype, definition, 
+      nucleus = Au,
      numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
      numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
      numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
    
-    Print["Inside of FToFConvertionInNucles"];
       prototype =
           "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
             CXXNameOfField[outFermion] <> "_in_nucleus (" <>
@@ -50,12 +50,50 @@ FToFConversionInNucleus`FToFConversionInNucleusCreateInterfaceFunctionForLeptonP
                " int generationIndex2, ",
                " "
             ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus, " <>
+            "const " <> FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus nucleus, " <>
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model)";
                  
       definition = 
-        prototype <> "{\n" <>
-        "return 0.;\n" <>
+        prototype <> " {\n" <>
+        IndentText[
+FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
+                  "EvaluationContext context{ model_ };\n" <>
+                  "std::array<int, " <> ToString @ numberOfIndices1 <>
+                     "> indices1 = {" <>
+                     (* TODO: Specify indices correctly *)
+                       If[TreeMasses`GetDimension[inFermion] =!= 1,
+                          " generationIndex1" <>
+                          If[numberOfIndices1 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices1-1}],
+                             ""] <> " ",
+                          If[numberOfIndices1 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
+                             ""]
+                         ] <> "};\n" <>
+                   "std::array<int, " <> ToString @ numberOfIndices2 <>
+                     "> indices2 = {" <>
+                       If[TreeMasses`GetDimension[outFermion] =!= 1,
+                          " generationIndex2" <>
+                          If[numberOfIndices2 =!= 1,
+                             StringJoin @ Table[", 0", {numberOfIndices2-1}],
+                             ""] <> " ",
+                          If[numberOfIndices2 =!= 0,
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
+                             ""]
+                         ] <> "};\n\n" <>
+                    "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
+                   <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[VP] <> "_form_factors "<>
+                   "(" <> If[TreeMasses`GetDimension[inFermion] =!= 1,
+                            "generationIndex1, ",
+                            " "] <>
+                         If[TreeMasses`GetDimension[outFermion] =!= 1,
+                            " generationIndex2, ",
+                            " "] <>
+                  "model);\n" <>
+                  "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <> ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus] <> ");\n" <>
+                  "constexpr auto GF {1.1667e-5};" <>
+        "return 2.*pow(GF,2)*(std::abs(form_factors[2]*nuclear_form_factors.D) + std::abs(form_factors[3]*nuclear_form_factors.D));\n"
+        ] <>
         "}\n";
     
     {prototype <> ";", definition}
