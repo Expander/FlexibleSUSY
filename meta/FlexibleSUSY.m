@@ -51,6 +51,7 @@ BeginPackage["FlexibleSUSY`",
               "AMuon`",
               "EDM`",
               "MuEGamma`",
+              "FToFConversionInNucleus`",
               "FFVFormFactors`",
               "EffectiveCouplings`",
               "FlexibleEFTHiggsMatching`",
@@ -1973,20 +1974,20 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
   ]
 
 (* Write c++ files for the FF conversion *)
-WriteFToFConversionClass[leptonPairs_List, files_List] :=
+WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
   Module[{interfacePrototypes,interfaceDefinitions},
     
     {interfacePrototypes, interfaceDefinitions} = 
       If[leptonPairs === {},
          {"",""},
          StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNuclei`FToFConversionInNucleiCreateInterfaceFunctionForLeptonPair @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterfaceFunctionForLeptonPair @@@ 
             Transpose[{leptonPairs}]])
       ];
     
     WriteOut`ReplaceInFiles[files,
-      {"@FToFConversion_InterfacePrototypes@"       -> "" (*interfacePrototypes*),
-       "@FToFConversion_InterfaceDefinitions@"      -> "" (*interfaceDefinitions*),
+      {"@FToFConversion_InterfacePrototypes@"       -> interfacePrototypes,
+       "@FToFConversion_InterfaceDefinitions@"      -> interfaceDefinitions,
        Sequence @@ GeneralReplacementRules[]}
     ];
   ]
@@ -4050,7 +4051,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* collect all the {fermion,fermion,vector} triplets needed for the requested observables *)
            fieldsForFToFDecay = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`MuEGamma[pIn_[_Integer], pOut_[_Integer], spectator_] :> {pIn, pOut, spectator}];
-           Print[fieldsForFToFDecay]; 
 
            Print["Creating MuEGamma class ..."];
            mu2egammaVertices =
@@ -4062,13 +4062,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            fieldsForFToFConversion = 
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                FlexibleSUSYObservable`FToFConversionInNuclei[pIn_[_Integer], pOut_[_Integer], _] 
-                :> {pIn, pOut, VP}];
+                FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], _] :> {pIn, pOut, VP}];
            Print[fieldsForFToFConversion];     
             
-           Print["Creating FToFConversionInNuclei class ..."];
+           Print["Creating FToFConversionInNucleus class ..."];
            mu2egammaVertices =
-             WriteFToFConversionClass[fieldsForFToFConversion,
+             WriteFToFConversionInNucleusClass[fieldsForFToFConversion,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],

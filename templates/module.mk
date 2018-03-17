@@ -11,6 +11,8 @@ BASE_TEMPLATES := \
 		$(DIR)/FFV_form_factors.cpp.in \
 		$(DIR)/mu_to_egamma.hpp.in \
 		$(DIR)/mu_to_egamma.cpp.in \
+		$(DIR)/f_to_f_conversion.hpp.in \
+		$(DIR)/f_to_f_conversion.cpp.in \
 		$(DIR)/convergence_tester.hpp.in \
 		$(DIR)/ewsb_solver.hpp.in \
 		$(DIR)/ewsb_solver_interface.hpp.in \
