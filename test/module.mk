@@ -92,10 +92,6 @@ TEST_SRC += \
 		$(DIR)/test_thread_pool.cpp
 endif
 
-ifneq ($(findstring lattice,$(SOLVERS)),)
-TEST_SRC +=
-endif # ifneq($(findstring lattice,$(SOLVERS)),)
-
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
