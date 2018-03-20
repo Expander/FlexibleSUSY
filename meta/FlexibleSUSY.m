@@ -53,6 +53,7 @@ BeginPackage["FlexibleSUSY`",
               "MuEGamma`",
               "FToFConversionInNucleus`",
               "FFVFormFactors`",
+              "ColorMathInterface`",
               "EffectiveCouplings`",
               "FlexibleEFTHiggsMatching`",
               "FSMathLink`",
@@ -1932,9 +1933,12 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
   Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
     graphs = FFVFormFactors`FFVFormFactorsContributingGraphs[];
+    (*Print["graphs: ", graphs];*)
     diagrams = Outer[FFVFormFactors`FFVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
+    Print[ColorMathInterface`CalculateColorFactor[diagrams[[1,1]],graphs]];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
+    (*Print["vertices: ", vertices];*)
     
     {interfacePrototypes,interfaceDefinitions} = 
       If[diagrams === {},
@@ -4081,6 +4085,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
+                             Print[fFVVertices];
 
 
            Print["Creating AMuon class ..."];

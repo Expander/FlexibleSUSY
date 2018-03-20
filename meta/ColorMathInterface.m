@@ -12,18 +12,61 @@
 	GenerateUniqueColorAssociationsForExternalParticles function
 	which takes list from Jobst and returns a association list,
 	e.g. \[LeftAssociation]1\[Rule]c22\[RightAssociation] meaning that external particle at position on in
-	Jobst list will have color index c22.	
+	Jobst list will have color index c22.
+3.  Final step. Take fields in vertices and pass them to SARAH`Vertex function.
+    Each vertex will get automatically generated indices starting from c1. 
+    Using info the info from Jobst adjacency matrix and my association list 
+    create new dummny indices and connect them between vertices.		
 *)
 
 BeginPackage["ColorMathInterface`", {"SARAH`", "ColorMath`"}]
-
+RegenerateIndices[l_List,graph_]:=
+Module[{},
+keys=GenerateUniqueColorAssociationsForExternalParticles[l];
+extFields=TakeWhile[l,(Head[#]=!=List)&];
+vertices=Drop[l,Length@extFields];
+ll=SARAH`Vertex@#&/@vertices;
+(* loop over external particles *)
+For[extIdx=1,extIdx<=Length[extFields],extIdx++,
+(* skip if uncollored *)
+If[!ColorChargedQ[extFields[[extIdx]]],Continue[]];
+(* loop over vertices *)
+For[vertIdx=1,vertIdx<=Length[Complement[l,extFields]],vertIdx++,
+(* check graph if enternal field is connected to the vertex at all *)
+If[graph[[extIdx,vertIdx+Length[extFields]]]==0,Continue[]];
+(* loop over particles in the vertex *)
+For[vertFieldIdx=1,vertFieldIdx<=Length[ll[[vertIdx,1]]],vertFieldIdx++,
+pInV=l[[vertIdx+Length[extFields],vertFieldIdx]];
+If[!ColorChargedQ[pInV],Continue[]];
+If[AntiField[extFields[[extIdx]]]=!= pInV,Continue[]];
+ll=MapAt[(
+(#//.GetFieldColorIndex[#[[1,vertFieldIdx]]]->keys[extIdx]))&,ll,vertIdx]];
+]
+]
+(* loop over vertices pairs *)
+For[vertIdx1 = 1,vertIdx1<=Length[vertices],vertIdx1++,
+For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
+(* if two vertices are not conneted at all *)
+If[graph[[vertIdx1+Length[extFields],vertIdx2+Length[extFields]]]==0,Continue[]];
+(* loop over fields in the vertex *)
+For[v1i=1,v1i<=Length[vertices[[vertIdx1,1]]],v1i++,
+If[!ColorChargedQ[ll[[vertIdx1,1,v1i]]],Continue[]];
+For[v2i=1,v2i<=Length[vertices[[vertIdx2,1]]],v2i++,
+If[!ColorChargedQ[ll[[vertIdx2,1,v2i]]],Continue[]];
+If[ll[[v1,1,v1i]]=!=AntiField[ll[[v2,1,v2i]]],Continue[]];
+ll=MapAt[(#//.GetFieldColorIndex[#[[1,v2i]]]:>GetFieldColorIndex[ll[[vertIdx1,1,v1i]]])&,ll,vertIdx2]
+]
+]
+]
+]
+]
 CalculateColorFactor::usage =
 	"dasdas"
    
 (* Begin["`Private`"]; *)
-ccParticles={Fd,bar[Fd],VG};
+(*ccParticles={SARAH`Fd,SARAH`bar[SARAH`Fd],SARAH`VG};*)
 ColorChargedQ[particle_] :=
- Module[{p = particle /. bar[x__] -> x},
+ Module[{p = particle /. bar[x__] -> x},c
   If[Head[p] === Symbol, MemberQ[ccParticles, p],
    MemberQ[ccParticles, Head[p]]
    ]
@@ -37,14 +80,13 @@ GetFieldColorIndex[field_/;ColorChargedQ[field]]:=
   Module[{res},
     res=GetFieldIndices[field];
     res = Select[res,ColorIndexQ];
-    Print[res];
     Assert[Length[res]==1];
     res[[1]]
   ]
-CalculateColorFactor[vertex_List, rule_] :=
+CalculateColorFactor[vertex_List,graph_] :=
    Module[{return},
       return = 
-         vertex // 
+         RegenerateIndices[vertex,graph] // 
          DropColorles //
          TakeOnlyColor // 
          SARAHToColorMathSymbols;
@@ -64,6 +106,7 @@ GenerationIndexQ[x_Symbol] :=
 
 LorentzIndexQ[x_Symbol] :=
    (Characters@SymbolName[x])[[1]] == "l"
+   
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  "
 DropColorles[vertices_List] :=  
    DeleteCases[vertices, el_ /; 
@@ -99,9 +142,6 @@ inOutParticles
 a
     ]
 
-Print[GenerateColorIndices[
-  {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
-  ]]
 (* End[] *)
 
 EndPackage[];
