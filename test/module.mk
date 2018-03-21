@@ -502,6 +502,8 @@ endif
 ifeq ($(WITH_HSSUSY),yes)
 TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
+TEST_META += \
+		$(DIR)/test_HSSUSY_uncertainty.m
 endif
 
 ifeq ($(WITH_NUHMSSMaltEFTHiggs) $(WITH_NUHMSSMalt),yes yes)
@@ -519,27 +521,11 @@ TEST_SH += \
 		$(DIR)/test_Mh_uncertainties.sh
 endif
 
-ifeq ($(WITH_HSSUSY),yes)
-TEST_META += \
-		$(DIR)/test_HSSUSY_uncertainty.m
-endif
-
 ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_META += \
 		$(DIR)/test_MSSMEFTHiggs_uncertainty.m
-endif
-
-ifeq ($(WITH_NUHMSSMNoFVHimalaya),yes)
-TEST_META += \
-		$(DIR)/test_NUHMSSMNoFVHimalaya_uncertainty.m
-endif
-
-ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
-endif
-
-ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SH += \
 		$(DIR)/test_MSSMEFTHiggs_librarylink.sh \
 		$(DIR)/test_MSSMEFTHiggs_profile.sh
@@ -553,6 +539,11 @@ endif
 ifeq ($(WITH_NMSSMEFTHiggs) $(WITH_lowNMSSM),yes yes)
 TEST_SH += \
 		$(DIR)/test_NMSSMEFTHiggs.sh
+endif
+
+ifeq ($(WITH_NUHMSSMNoFVHimalaya),yes)
+TEST_META += \
+		$(DIR)/test_NUHMSSMNoFVHimalaya_uncertainty.m
 endif
 
 ifeq ($(WITH_SMHighPrecision) $(WITH_SMEFTHiggs),yes yes)
