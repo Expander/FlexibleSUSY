@@ -19,19 +19,19 @@
     create new dummny indices and connect them between vertices.		
 *)
 
-BeginPackage["ColorMathInterface`", {"SARAH`", "ColorMath`"}];
+BeginPackage["ColorMathInterface`", {"SARAH`", "CXXDiagrams`", "ColorMath`"}];
 
 RegenerateIndices[l_List, graph_]:=
    Module[{keys, extFields},
       keys = GenerateUniqueColorAssociationsForExternalParticles[l];
       extFields = TakeWhile[l,(Head[#]=!=List)&];
-      Print[extFields, " ", ColorChargedQ /@ extFields];
+      Print[extFields, " ", CXXDiagrams`ColorChargedQ /@ extFields];
       vertices = Drop[l,Length@extFields];
       ll = SARAH`Vertex[#]& /@ vertices;
       (* loop over external particles *)
       For[extIdx=1, extIdx <= Length[extFields], extIdx++,
          (* skip if uncollored *)
-         If[!ColorChargedQ[extFields[[extIdx]]], Continue[]];
+         If[!CXXDiagrams`ColorChargedQ[extFields[[extIdx]]], Continue[]];
 (* loop over vertices *)
 For[vertIdx=1,vertIdx<=Length[Complement[l,extFields]],vertIdx++,
 (* check graph if enternal field is connected to the vertex at all *)
@@ -39,7 +39,7 @@ If[graph[[extIdx,vertIdx+Length[extFields]]]==0,Continue[]];
 (* loop over particles in the vertex *)
 For[vertFieldIdx=1,vertFieldIdx<=Length[ll[[vertIdx,1]]],vertFieldIdx++,
 pInV=l[[vertIdx+Length[extFields],vertFieldIdx]];
-If[!ColorChargedQ[pInV],Continue[]];
+If[!CXXDiagrams`ColorChargedQ[pInV],Continue[]];
 If[AntiField[extFields[[extIdx]]]=!= pInV,Continue[]];
 ll=MapAt[(
 (#//.GetFieldColorIndex[#[[1,vertFieldIdx]]]->keys[extIdx]))&,ll,vertIdx]];
@@ -52,15 +52,15 @@ For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
 If[graph[[vertIdx1+Length[extFields],vertIdx2+Length[extFields]]]==0,Continue[]];
 (* loop over fields in the vertex *)
 For[v1i=1,v1i<=Length[vertices[[vertIdx1,1]]],v1i++,
-If[!ColorChargedQ[ll[[vertIdx1,1,v1i]]],Continue[]];
+If[!CXXDiagrams`ColorChargedQ[ll[[vertIdx1,1,v1i]]],Continue[]];
 For[v2i=1,v2i<=Length[vertices[[vertIdx2,1]]],v2i++,
-If[!ColorChargedQ[ll[[vertIdx2,1,v2i]]],Continue[]];
+If[!CXXDiagrams`ColorChargedQ[ll[[vertIdx2,1,v2i]]],Continue[]];
 If[ll[[v1,1,v1i]]=!=AntiField[ll[[v2,1,v2i]]],Continue[]];
-ll=MapAt[(#//.GetFieldColorIndex[#[[1,v2i]]]:>GetFieldColorIndex[ll[[vertIdx1,1,v1i]]])&,ll,vertIdx2]
+ll=MapAt[(#//.GetFieldColorIndex[#[[1,v2i]]]:>GetFieldColorIndex[ll[[vertIdx1,1,v1i]]])&,ll,vertIdx2];
 ]
 ]
 ]
-]
+];
 ll
 ];
 
@@ -68,20 +68,12 @@ CalculateColorFactor::usage =
 	"dasdas"
    
 (* Begin["`Private`"]; *)
-ColorChargedQ[particle_] :=
- Module[{p = particle /. bar[x__] -> x, ccParticles},
-   (* TODO: get me color charged particles in some better way! *)
-   ccParticles={Fd, VG, Fu, Glu};
-  If[Head[p] === Symbol, MemberQ[ccParticles, p],
-   MemberQ[ccParticles, Head[p]]
-   ]
-  ]
-  
+
 (* give a field, e.g. Fd[{a,b}] or bar[Fd[{a,b}] will return {a,b} *)
 GetFieldIndices[field_] :=
   field //. bar[x__] -> x /. _[x_List] :> x 
   
-GetFieldColorIndex[field_/;ColorChargedQ[field]]:=
+GetFieldColorIndex[field_/;CXXDiagrams`ColorChargedQ[field]]:=
   Module[{res},
     res=GetFieldIndices[field];
     res = Select[res,ColorIndexQ];
@@ -96,11 +88,12 @@ CalculateColorFactor[vertex_List,graph_] :=
       return = 
          return //  TakeOnlyColor // 
          SARAHToColorMathSymbols;
-         return = Times @@ return;
-         return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
-         return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
-         (* CSimplify[1] doesn't evaluate *)
-         If[ return === 1, 1, Return[CSimplify[return]]];
+      Print[return];
+      return = Times @@ return;
+      return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
+      return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
+      (* CSimplify[1] doesn't evaluate *)
+      If[ return === 1, 1, Return[AllSimpleRules[return]]];
    ];
 
 ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'"
@@ -115,20 +108,46 @@ LorentzIndexQ[x_Symbol] :=
    
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  "
 DropColorles[vertices_List] :=  
-   DeleteCases[vertices, el_ /; 
+   Module[{vert},
+   vert = DeleteCases[vertices, el_ /; 
       FreeQ[el, 
          SARAH`Lam[__] |
          SARAH`fSU3[__] | 
          SARAH`Delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]]
       ]
    ];
+   vert
+   ]
+   
 
 TakeOnlyColor[v__] :=
-(Take[
-   #, {2}][[1, 1]] & /@ v) /. ___ Lam[colIdx__] :> Lam[colIdx]/. ___ fSU3[colIdx__] :> fSU3[colIdx] /. ___ SARAH`Delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]] :> SARAH`Delta[c1,c2];
+    Module[{result},
+      (* the generic structure of the Vertex "object" is 
+         {{ParticleList},{{Coefficient 1, Lorentz 1},{Coefficient 2, Lorentz 2},...} *)
+      (* drop ParticleList *) 
+      (*Print["start --------------------------------------------------------------------------------------------------------------"];*)
+      result = Drop[#, 1]& /@ v;
+      (*Print["1: ", result];*)
+      result = (Transpose @ Drop[Transpose[#], -1])& /@ result;
+      (*Print["2: ", result];*)
+      result = result //. 
+         ___ SARAH`Lam[colIdx__] :> SARAH`Lam[colIdx] //. 
+         ___ SARAH`fSU3[colIdx__] :> SARAH`fSU3[colIdx] //. 
+         ___ SARAH`Delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]] :> SARAH`Delta[c1,c2];
+      (*Print["3: ", result];*)
+      result = DeleteCases[#, {0}]& /@ result;
+      Assert[CountDistinct[#] === 1]& /@ result;
+      result = DeleteDuplicates[#]& /@ result;
+      (*Print["4: ", result];*)
+      result = Flatten[result, 2];
+      (*Print["5: ", result];*)
+      (*Print["end --------------------------------------------------------------------------------------------------------------"];*)
+      result
+    ];
 
-SARAHToColorMathSymbols[s_] := 
-   s /.SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`t[{colIdx1}, colIdx2, colIdx3]/. SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
+SARAHToColorMathSymbols[s__] := s //.
+   SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`t[{colIdx1}, colIdx2, colIdx3] //. 
+   SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
 
 (* input
     {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
@@ -142,7 +161,7 @@ GenerateUniqueColorAssociationsForExternalParticles[v_List]:=
     a = Association[{}];
     inOutParticlesWithColorIndices = 
     MapIndexed[
-      If[ColorChargedQ[#1],AssociateTo[a,#2[[1]]->Unique["c"]] ]&,
+      If[CXXDiagrams`ColorChargedQ[#1],AssociateTo[a,#2[[1]]->Unique["c"]] ]&,
 inOutParticles
 ];
 a
