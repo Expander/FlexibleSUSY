@@ -19,17 +19,19 @@
     create new dummny indices and connect them between vertices.		
 *)
 
-BeginPackage["ColorMathInterface`", {"SARAH`", "ColorMath`"}]
-RegenerateIndices[l_List,graph_]:=
-Module[{},
-keys=GenerateUniqueColorAssociationsForExternalParticles[l];
-extFields=TakeWhile[l,(Head[#]=!=List)&];
-vertices=Drop[l,Length@extFields];
-ll=SARAH`Vertex@#&/@vertices;
-(* loop over external particles *)
-For[extIdx=1,extIdx<=Length[extFields],extIdx++,
-(* skip if uncollored *)
-If[!ColorChargedQ[extFields[[extIdx]]],Continue[]];
+BeginPackage["ColorMathInterface`", {"SARAH`", "ColorMath`"}];
+
+RegenerateIndices[l_List, graph_]:=
+   Module[{keys, extFields},
+      keys = GenerateUniqueColorAssociationsForExternalParticles[l];
+      extFields = TakeWhile[l,(Head[#]=!=List)&];
+      Print[extFields, " ", ColorChargedQ /@ extFields];
+      vertices = Drop[l,Length@extFields];
+      ll = SARAH`Vertex[#]& /@ vertices;
+      (* loop over external particles *)
+      For[extIdx=1, extIdx <= Length[extFields], extIdx++,
+         (* skip if uncollored *)
+         If[!ColorChargedQ[extFields[[extIdx]]], Continue[]];
 (* loop over vertices *)
 For[vertIdx=1,vertIdx<=Length[Complement[l,extFields]],vertIdx++,
 (* check graph if enternal field is connected to the vertex at all *)
@@ -59,14 +61,17 @@ ll=MapAt[(#//.GetFieldColorIndex[#[[1,v2i]]]:>GetFieldColorIndex[ll[[vertIdx1,1,
 ]
 ]
 ]
-]
+ll
+];
+
 CalculateColorFactor::usage =
 	"dasdas"
    
 (* Begin["`Private`"]; *)
-(*ccParticles={SARAH`Fd,SARAH`bar[SARAH`Fd],SARAH`VG};*)
 ColorChargedQ[particle_] :=
- Module[{p = particle /. bar[x__] -> x},c
+ Module[{p = particle /. bar[x__] -> x, ccParticles},
+   (* TODO: get me color charged particles in some better way! *)
+   ccParticles={Fd, VG, Fu, Glu};
   If[Head[p] === Symbol, MemberQ[ccParticles, p],
    MemberQ[ccParticles, Head[p]]
    ]
@@ -86,17 +91,18 @@ GetFieldColorIndex[field_/;ColorChargedQ[field]]:=
 CalculateColorFactor[vertex_List,graph_] :=
    Module[{return},
       return = 
-         RegenerateIndices[vertex,graph] // 
-         DropColorles //
-         TakeOnlyColor // 
+         RegenerateIndices[vertex,graph] // DropColorles;
+      If[ return === {}, Return[1]];
+      return = 
+         return //  TakeOnlyColor // 
          SARAHToColorMathSymbols;
          return = Times @@ return;
-         Print[return];
-         (*return = (#/.(x___ SARAH`Delta[col1_,col2_]\[RuleDelayed] x/.col2\[Rule]col1)&)/@return;*)
-         return=return //. (x___ SARAH`Delta[col1_, col2_]y___:> (x y /. col2 -> col1));
-      CSimplify[return]
+         return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
+         return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
+         (* CSimplify[1] doesn't evaluate *)
+         If[ return === 1, 1, CSimplify[return]]
    ];
-    
+
 ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'"
 ColorIndexQ[x_Symbol] :=
    (Characters@SymbolName[x])[[1]] == "c"
