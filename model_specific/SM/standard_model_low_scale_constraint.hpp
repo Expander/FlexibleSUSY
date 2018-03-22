@@ -17,8 +17,8 @@
 // ====================================================================
 
 
-#ifndef SM_LOW_SCALE_CONSTRAINT_H
-#define SM_LOW_SCALE_CONSTRAINT_H
+#ifndef STANDARD_MODEL_LOW_SCALE_CONSTRAINT_H
+#define STANDARD_MODEL_LOW_SCALE_CONSTRAINT_H
 
 namespace flexiblesusy {
 namespace standard_model {
