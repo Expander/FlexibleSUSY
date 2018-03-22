@@ -40,6 +40,7 @@ VertexRulesForVertices::usage="";
 CreateMassFunctions::usage="";
 CreateUnitCharge::usage="";
 NumberOfFieldIndices::usage="";
+ColorChargedQ::usage="";
 
 Begin["`Private`"];
 
@@ -452,6 +453,9 @@ FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] :=
                DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
                fieldInfo]
           ]
+
+ColorChargedQ[field_] :=
+    !FreeQ[FieldInfo[field], SARAH`color];
         
 End[];
 EndPackage[];
