@@ -100,7 +100,7 @@ CalculateColorFactor[vertex_List,graph_] :=
          return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
          return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
          (* CSimplify[1] doesn't evaluate *)
-         If[ return === 1, 1, CSimplify[return]]
+         If[ return === 1, 1, Return[CSimplify[return]]];
    ];
 
 ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'"
