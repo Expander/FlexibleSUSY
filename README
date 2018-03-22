@@ -33,6 +33,7 @@ Optional:
  * LoopTools (version 2.8 or higher)  http://www.feynarts.de/looptools/
  * Himalaya                           https://github.com/Himalaya-Library/Himalaya
 
+
 Installation of SARAH
 =====================
 
@@ -467,3 +468,51 @@ remove model-specific files:
    $ make clean-<model>-obj # deletes .o files
 
    $ make clean-<model>-src # deletes generated files
+
+
+Package content
+===============
+
+In the following all sub-directories within the FlexibleSUSY package
+are listed:
+
+ * addons/ contains addons for FlexibleSUSY, such as GM2Calc
+
+ * config/ contains helper scripts and makefile modules for the build
+   system
+
+ * doc/ contains the FlexibleSUSY documentation
+
+ * examples/ contains examples how to build you own spectrum generator
+   based on FlexibleSUSY
+
+ * fflite/ contains an alternative implementation of the
+   Passarino-Veltman loop functions, based on FF
+
+ * meta/ contains the Mathematica meta code which generates the
+   spectrum generators
+
+ * model_files/ contains default model files for some frequently used
+   models (SM, SplitMSSM, MSSM, NMSSM, SMSSM, UMSSM, etc.)
+
+ * model_specific/ contains model-specific higher order corrections
+   for the MSSM, NMSSM, SM and SplitMSSM from the literature
+
+ * models/ This is the output directory where the generated C++ code
+   for the spectrum generators will be stored.
+
+ * Output/ contains SARAHs model-specific output files
+
+ * sarah/ contains SARAH model files shipped with FlexibleSUSY
+
+ * slhaea/ contains the SLHA reader library from
+   https://github.com/fthomas/slhaea
+
+ * src/ contains non-model specific FlexibleSUSY C++ source code
+
+ * templates/ contains C++ template files for the spectrum generators
+
+ * test/ contains the FlexibleSUSY test suite
+
+ * utils/ contains some utility scripts to perform scans or extract
+   data from SLHA files
