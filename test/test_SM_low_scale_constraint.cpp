@@ -10,6 +10,11 @@
 #include "SM_two_scale_low_scale_constraint.hpp"
 #include "wrappers.hpp"
 #include "ew_input.hpp"
+#include "test_SM.hpp"
+
+#include "standard_model.hpp"
+#include "standard_model_two_scale_model.hpp"
+#include "standard_model_two_scale_low_scale_constraint.hpp"
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -87,4 +92,40 @@ BOOST_AUTO_TEST_CASE( test_delta_spectrum )
    const double MVZ = 0.5 * vev * Sqrt(0.6*g1*g1 + g2*g2);
 
    BOOST_CHECK_CLOSE_FRACTION(m.get_MVZ(), MVZ, 1.0e-10);
+}
+
+BOOST_AUTO_TEST_CASE( test_low_scale_constraint )
+{
+   QedQcd qedqcd;
+   SM_input_parameters input;
+   input.LambdaIN = 0.25;
+   SM<Two_scale> m;
+   standard_model::StandardModel<Two_scale> sm;
+   setup_SM_const(m, input);
+   setup_SM_const(sm, input);
+
+   m.calculate_DRbar_masses();
+   sm.calculate_DRbar_masses();
+
+   SM_low_scale_constraint<Two_scale> c_m(&m, qedqcd);
+   c_m.apply();
+   standard_model::Standard_model_low_scale_constraint<Two_scale> c_sm(&sm, qedqcd);
+   c_sm.apply();
+
+   const double eps = 1e-14;
+
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g1(), sm.get_g1(), 1e-4); // deviation due to differen Weinberg angle class
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g2(), sm.get_g2(), 1e-4); // deviation due to differen Weinberg angle class
+   BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), sm.get_g3(), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_Lambdax(), sm.get_Lambdax(), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_v(), sm.get_v(), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m.get_mu2(), sm.get_mu2(), eps);
+
+   for (int i = 0; i < 3; i++) {
+      for (int k = 0; k < 3; k++) {
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Yu(i,k), -sm.get_Yu(i,k), eps);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Yd(i,k), sm.get_Yd(i,k), eps);
+         BOOST_CHECK_CLOSE_FRACTION(m.get_Ye(i,k), sm.get_Ye(i,k), eps);
+      }
+   }
 }
