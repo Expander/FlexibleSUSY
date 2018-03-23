@@ -25,7 +25,7 @@ RegenerateIndices[l_List, graph_]:=
    Module[{keys, extFields},
       keys = GenerateUniqueColorAssociationsForExternalParticles[l];
       extFields = TakeWhile[l,(Head[#]=!=List)&];
-      Print[extFields, " ", CXXDiagrams`ColorChargedQ /@ extFields];
+      Print["External fields: ", extFields, " ", CXXDiagrams`ColorChargedQ /@ extFields];
       vertices = Drop[l,Length@extFields];
       ll = SARAH`Vertex[#]& /@ vertices;
       (* loop over external particles *)
@@ -93,7 +93,7 @@ CalculateColorFactor[vertex_List,graph_] :=
       return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
       return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
       (* CSimplify[1] doesn't evaluate *)
-      If[ return === 1, 1, Return[AllSimpleRules[return]]];
+      If[ return === 1, 1, Return[CSimplify[return]]];
    ];
 
 ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'"
