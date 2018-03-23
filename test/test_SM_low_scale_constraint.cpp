@@ -129,3 +129,57 @@ BOOST_AUTO_TEST_CASE( test_low_scale_constraint )
       }
    }
 }
+
+BOOST_AUTO_TEST_CASE( test_initialise_from_input )
+{
+   QedQcd qedqcd;
+   SM_input_parameters input;
+   input.LambdaIN = 0.25;
+   standard_model::StandardModel<Two_scale> m1, m2;
+   setup_SM_const(m1, input);
+   setup_SM_const(m2, input);
+
+   m1.set_thresholds(3);
+   m2.set_thresholds(3);
+
+   m1.set_scale(qedqcd.displayPoleMZ());
+   m2.set_scale(qedqcd.displayPoleMZ());
+
+   m1.calculate_DRbar_masses();
+   m2.calculate_DRbar_masses();
+
+   m2.initialise_from_input(qedqcd);
+
+   // initialize after m2.initialise_from_input()
+   qedqcd.to(qedqcd.displayPoleMZ());
+
+   for (int i = 0; i < 10; i++) {
+      standard_model::Standard_model_low_scale_constraint<Two_scale> c_m1(&m1, qedqcd);
+      c_m1.apply();
+      m1.solve_ewsb();
+      m1.calculate_Lambdax_DRbar();
+   }
+
+   const double eps = 1e-4;
+
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_scale(), m2.get_scale(), 1e-14);
+
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_g1(), m2.get_g1(), 1e-5);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_g2(), m2.get_g2(), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_g3(), m2.get_g3(), 1e-6);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Lambdax(), m2.get_Lambdax(), 1e-3);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_v(), m2.get_v(), 1e-3);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_mu2(), m2.get_mu2(), 1e-4);
+
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Yu(0,0), m2.get_Yu(0,0), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Yd(0,0), m2.get_Yd(0,0), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Ye(0,0), m2.get_Ye(0,0), eps);
+
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Yu(1,1), m2.get_Yu(1,1), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Yd(1,1), m2.get_Yd(1,1), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Ye(1,1), m2.get_Ye(1,1), eps);
+
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Yu(2,2), m2.get_Yu(2,2), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Yd(2,2), m2.get_Yd(2,2), eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_Ye(2,2), m2.get_Ye(2,2), eps);
+}
