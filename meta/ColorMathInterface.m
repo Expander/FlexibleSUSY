@@ -69,9 +69,9 @@ CalculateColorFactor::usage =
    
 (* Begin["`Private`"]; *)
 
-(* give a field, e.g. Fd[{a,b}] or bar[Fd[{a,b}] will return {a,b} *)
+(* give a field, e.g. Fd[{a,b}] or bar[Fd[{a,b}] or conj[Sd[{a,b}]] will return {a,b} *)
 GetFieldIndices[field_] :=
-  field //. bar[x__] -> x /. _[x_List] :> x 
+  field /. SARAH`bar | Susyno`LieGroups`conj -> Identity /. _[x_List] :> x; 
   
 GetFieldColorIndex[field_/;CXXDiagrams`ColorChargedQ[field]]:=
   Module[{res},
