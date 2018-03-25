@@ -21,53 +21,58 @@
 
 BeginPackage["ColorMathInterface`", {"SARAH`", "TreeMasses`", "ColorMath`"}];
 
+CalculateColorFactor::usage = "";
+   
+(*Begin["`Private`"];*)
+
 RegenerateIndices[l_List, graph_]:=
-   Module[{keys, extFields},
+   Module[{keys, extFields, particlesInVertices, vertices},
       keys = GenerateUniqueColorAssociationsForExternalParticles[l];
-      extFields = TakeWhile[l,(Head[#]=!=List)&];
+      Print["Generated color indices for external particles: ", keys];
+      extFields = TakeWhile[l, (Head[#]=!=List)&];
       Print["Are external fields charged: ", extFields, " ", TreeMasses`ColorChargedQ /@ extFields];
-      vertices = Drop[l,Length@extFields];
-      ll = SARAH`Vertex[#]& /@ vertices;
+      particlesInVertices = Drop[l, Length@extFields];
+      vertices = SARAH`Vertex[#]& /@ particlesInVertices;
+
       (* loop over external particles *)
       For[extIdx=1, extIdx <= Length[extFields], extIdx++,
          (* skip if uncollored *)
          If[!TreeMasses`ColorChargedQ[extFields[[extIdx]]], Continue[]];
-(* loop over vertices *)
-For[vertIdx=1,vertIdx<=Length[Complement[l,extFields]],vertIdx++,
-(* check graph if enternal field is connected to the vertex at all *)
-If[graph[[extIdx,vertIdx+Length[extFields]]]==0,Continue[]];
-(* loop over particles in the vertex *)
-For[vertFieldIdx=1,vertFieldIdx<=Length[ll[[vertIdx,1]]],vertFieldIdx++,
-pInV=l[[vertIdx+Length[extFields],vertFieldIdx]];
+         (* loop over vertices *)
+         For[vertIdx=1, vertIdx<=Length[Complement[l,extFields]], vertIdx++,
+            (* check graph if enternal field is connected to the vertex at all *)
+            If[graph[[extIdx, vertIdx+Length[extFields]]]==0, Continue[]];
+            (* loop over particles in the vertex *)
+            For[vertFieldIdx=1,vertFieldIdx<=Length[vertices[[vertIdx,1]]],vertFieldIdx++,
+               pInV = l[[vertIdx+Length[extFields], vertFieldIdx]];
                If[!TreeMasses`ColorChargedQ[pInV], Continue[]];
-If[AntiField[extFields[[extIdx]]]=!= pInV,Continue[]];
-ll=MapAt[(
-(#//.GetFieldColorIndex[#[[1,vertFieldIdx]]]->keys[extIdx]))&,ll,vertIdx]];
-]
-]
-(* loop over vertices pairs *)
-For[vertIdx1 = 1,vertIdx1<=Length[vertices],vertIdx1++,
-For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
-(* if two vertices are not conneted at all *)
-If[graph[[vertIdx1+Length[extFields],vertIdx2+Length[extFields]]]==0,Continue[]];
-(* loop over fields in the vertex *)
-For[v1i=1,v1i<=Length[vertices[[vertIdx1,1]]],v1i++,
-               If[!TreeMasses`ColorChargedQ[vertices[[vertIdx1,1,v1i]]], Continue[]];
-For[v2i=1,v2i<=Length[vertices[[vertIdx2,1]]],v2i++,
-                  If[!TreeMasses`ColorChargedQ[vertices[[vertIdx2,1,v2i]]], Continue[]];
-If[ll[[v1,1,v1i]]=!=AntiField[ll[[v2,1,v2i]]],Continue[]];
-ll=MapAt[(#//.GetFieldColorIndex[#[[1,v2i]]]:>GetFieldColorIndex[ll[[vertIdx1,1,v1i]]])&,ll,vertIdx2];
-]
-]
-]
-];
-ll
-];
+               If[AntiField[extFields[[extIdx]]] =!= pInV, Continue[]];
+               vertices = MapAt[(# //. GetFieldColorIndex[#[[1,vertFieldIdx]]] -> keys[extIdx])&, vertices, vertIdx]
+            ];
+         ]
+      ];
 
-CalculateColorFactor::usage =
-	"dasdas"
-   
-(* Begin["`Private`"]; *)
+      (* loop over vertices pairs *)
+      For[vertIdx1 = 1, vertIdx1<=Length[vertices], vertIdx1++,
+         For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
+            (* cycle if two vertices are not connected at all *)
+            If[graph[[vertIdx1+Length[extFields], vertIdx2+Length[extFields]]]==0, Continue[]];
+            (* loop over fields in the vertex *)
+            For[v1i=1, v1i<=Length[vertices[[vertIdx1,1]]], v1i++,
+               If[!TreeMasses`ColorChargedQ[vertices[[vertIdx1,1,v1i]]], Continue[]];
+               Print[particlesInVertices[[vertIdx2]]];
+               For[v2i=1, v2i<=Length[vertices[[vertIdx2,1]]], v2i++,
+                  If[!TreeMasses`ColorChargedQ[vertices[[vertIdx2,1,v2i]]], Continue[]];
+                  If[vertices[[vertIdx1,1,v1i]]=!=AntiField[vertices[[vertIdx2,1,v2i]]], Continue[]];
+                  fieldIndex = GetFieldColorIndex[vertices[[vertIdx1,1,v1i]]];
+                  Print["heh6 ", vertices[[vertIdx2,1,v2i]], " field idx ", fieldIndex];
+                  vertices = MapAt[ (Print["was: ", GetFieldColorIndex[#[[1,v2i]]], ", will be ", fieldIndex]; # //.GetFieldColorIndex[#[[1,v2i]]] :> fieldIndex)&, vertices, vertIdx2];
+               ]
+            ]
+         ]
+      ];
+      vertices
+   ];
 
 (* give a field, e.g. Fd[{a,b}] or bar[Fd[{a,b}] or conj[Sd[{a,b}]] will return {a,b} *)
 GetFieldIndices[field_] :=
@@ -75,11 +80,13 @@ GetFieldIndices[field_] :=
   
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
-    res=GetFieldIndices[field];
-    res = Select[res,ColorIndexQ];
+    res = GetFieldIndices[field];
+    Print["field ", field, ", indices ", res];
+    res = Select[res, ColorIndexQ];
     Assert[Length[res]==1];
     res[[1]]
-  ]
+  ];
+  
 CalculateColorFactor[vertex_List,graph_] :=
    Module[{return},
       return = 
@@ -88,7 +95,6 @@ CalculateColorFactor[vertex_List,graph_] :=
       return = 
          return //  TakeOnlyColor // 
          SARAHToColorMathSymbols;
-      Print[return];
       return = Times @@ return;
       return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
       return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
@@ -167,15 +173,6 @@ inOutParticles
 a
     ]
 
-(* End[] *)
+(*End[];*)
 
 EndPackage[];
-
-
-
-
-
-
-
-
-
