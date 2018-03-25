@@ -1938,7 +1938,7 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
     Print["diagrams: ", diagrams];
     For[i = 1, i < Length[diagrams[[1,1]]], i++,
     Print["return from CalculateColorFactor: ", CalculateColorFactor[diagrams[[2,1,i]], graphs[[1]]]];
-   ]
+    ];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     (*Print["vertices: ", vertices];*)
