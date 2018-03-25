@@ -19,19 +19,19 @@
     create new dummny indices and connect them between vertices.		
 *)
 
-BeginPackage["ColorMathInterface`", {"SARAH`", "CXXDiagrams`", "ColorMath`"}];
+BeginPackage["ColorMathInterface`", {"SARAH`", "TreeMasses`", "ColorMath`"}];
 
 RegenerateIndices[l_List, graph_]:=
    Module[{keys, extFields},
       keys = GenerateUniqueColorAssociationsForExternalParticles[l];
       extFields = TakeWhile[l,(Head[#]=!=List)&];
-      Print["External fields: ", extFields, " ", CXXDiagrams`ColorChargedQ /@ extFields];
+      Print["Are external fields charged: ", extFields, " ", TreeMasses`ColorChargedQ /@ extFields];
       vertices = Drop[l,Length@extFields];
       ll = SARAH`Vertex[#]& /@ vertices;
       (* loop over external particles *)
       For[extIdx=1, extIdx <= Length[extFields], extIdx++,
          (* skip if uncollored *)
-         If[!CXXDiagrams`ColorChargedQ[extFields[[extIdx]]], Continue[]];
+         If[!TreeMasses`ColorChargedQ[extFields[[extIdx]]], Continue[]];
 (* loop over vertices *)
 For[vertIdx=1,vertIdx<=Length[Complement[l,extFields]],vertIdx++,
 (* check graph if enternal field is connected to the vertex at all *)
@@ -39,7 +39,7 @@ If[graph[[extIdx,vertIdx+Length[extFields]]]==0,Continue[]];
 (* loop over particles in the vertex *)
 For[vertFieldIdx=1,vertFieldIdx<=Length[ll[[vertIdx,1]]],vertFieldIdx++,
 pInV=l[[vertIdx+Length[extFields],vertFieldIdx]];
-If[!CXXDiagrams`ColorChargedQ[pInV],Continue[]];
+               If[!TreeMasses`ColorChargedQ[pInV], Continue[]];
 If[AntiField[extFields[[extIdx]]]=!= pInV,Continue[]];
 ll=MapAt[(
 (#//.GetFieldColorIndex[#[[1,vertFieldIdx]]]->keys[extIdx]))&,ll,vertIdx]];
@@ -52,9 +52,9 @@ For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
 If[graph[[vertIdx1+Length[extFields],vertIdx2+Length[extFields]]]==0,Continue[]];
 (* loop over fields in the vertex *)
 For[v1i=1,v1i<=Length[vertices[[vertIdx1,1]]],v1i++,
-If[!CXXDiagrams`ColorChargedQ[ll[[vertIdx1,1,v1i]]],Continue[]];
+               If[!TreeMasses`ColorChargedQ[vertices[[vertIdx1,1,v1i]]], Continue[]];
 For[v2i=1,v2i<=Length[vertices[[vertIdx2,1]]],v2i++,
-If[!CXXDiagrams`ColorChargedQ[ll[[vertIdx2,1,v2i]]],Continue[]];
+                  If[!TreeMasses`ColorChargedQ[vertices[[vertIdx2,1,v2i]]], Continue[]];
 If[ll[[v1,1,v1i]]=!=AntiField[ll[[v2,1,v2i]]],Continue[]];
 ll=MapAt[(#//.GetFieldColorIndex[#[[1,v2i]]]:>GetFieldColorIndex[ll[[vertIdx1,1,v1i]]])&,ll,vertIdx2];
 ]
@@ -73,7 +73,7 @@ CalculateColorFactor::usage =
 GetFieldIndices[field_] :=
   field /. SARAH`bar | Susyno`LieGroups`conj -> Identity /. _[x_List] :> x; 
   
-GetFieldColorIndex[field_/;CXXDiagrams`ColorChargedQ[field]]:=
+GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res=GetFieldIndices[field];
     res = Select[res,ColorIndexQ];
@@ -161,7 +161,7 @@ GenerateUniqueColorAssociationsForExternalParticles[v_List]:=
     a = Association[{}];
     inOutParticlesWithColorIndices = 
     MapIndexed[
-      If[CXXDiagrams`ColorChargedQ[#1],AssociateTo[a,#2[[1]]->Unique["c"]] ]&,
+      If[TreeMasses`ColorChargedQ[#1],AssociateTo[a,#2[[1]]->Unique["c"]] ]&,
 inOutParticles
 ];
 a
