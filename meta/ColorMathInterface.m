@@ -1,22 +1,26 @@
 (* ::Package:: *)
 
-(* Outline
-1.  I assume that the input for the calculation is a list from Jobst 
-	having the following format:
-	{list of external fields, list of lists of fields in vertices}
-	e.g.
-	{Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
-	Sizes of those lists are arbitrary.
+(*
+Outline
+1.  I assume that the input for the calculation is a list from Jobst
+    having the following format:
+    {list of external fields, list of lists of fields in vertices}
+    e.g.
+    {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
+    Sizes of those lists are arbitrary.
 2.  For each external color charged field I generate a random name for 
-	the color index. This is done through
-	GenerateUniqueColorAssociationsForExternalParticles function
-	which takes list from Jobst and returns a association list,
-	e.g. \[LeftAssociation]1\[Rule]c22\[RightAssociation] meaning that external particle at position on in
-	Jobst list will have color index c22.
+    the color index. This is done through
+    GenerateUniqueColorAssociationsForExternalParticles function
+    which takes list from Jobst and returns a association list,
+    e.g. \[LeftAssociation]1\[Rule]c22\[RightAssociation] meaning that external particle at position on in
+    Jobst list will have color index c22.
 3.  Final step. Take fields in vertices and pass them to SARAH`Vertex function.
-    Each vertex will get automatically generated indices starting from c1. 
+    Each vertex will get automatically generated indices starting from c1.
     Using info the info from Jobst adjacency matrix and my association list 
-    create new dummny indices and connect them between vertices.		
+    create new dummny indices and connect them between vertices.
+
+Limitations:
+1.  We asumme that there are only 3-particle vertices.
 *)
 
 BeginPackage["ColorMathInterface`", {"SARAH`", "TreeMasses`", "ColorMath`"}];
@@ -26,73 +30,105 @@ CalculateColorFactor::usage = "";
 (*Begin["`Private`"];*)
 
 RegenerateIndices[l_List, graph_]:=
-   Module[{keys, extFields, particlesInVertices, vertices},
-      keys = GenerateUniqueColorAssociationsForExternalParticles[l];
-      Print["Generated color indices for external particles: ", keys];
-      extFields = TakeWhile[l, (Head[#]=!=List)&];
-      Print["Are external fields charged: ", extFields, " ", TreeMasses`ColorChargedQ /@ extFields];
-      particlesInVertices = Drop[l, Length@extFields];
-      vertices = SARAH`Vertex[#]& /@ particlesInVertices;
+    Module[{keys, extFields, particlesInVertices,
+            vertices, vertex, vertex1, vertex2,
+            extField, inField,
+            fieldsInVertex, fieldsInVertex1, fieldsInVertex2},
 
-      (* loop over external particles *)
-      For[extIdx=1, extIdx <= Length[extFields], extIdx++,
-         (* skip if uncollored *)
-         If[!TreeMasses`ColorChargedQ[extFields[[extIdx]]], Continue[]];
-         (* loop over vertices *)
-         For[vertIdx=1, vertIdx<=Length[Complement[l,extFields]], vertIdx++,
-            (* check graph if enternal field is connected to the vertex at all *)
-            If[graph[[extIdx, vertIdx+Length[extFields]]]==0, Continue[]];
-            (* loop over particles in the vertex *)
-            For[vertFieldIdx=1,vertFieldIdx<=Length[vertices[[vertIdx,1]]],vertFieldIdx++,
-               pInV = l[[vertIdx+Length[extFields], vertFieldIdx]];
-               If[!TreeMasses`ColorChargedQ[pInV], Continue[]];
-               If[AntiField[extFields[[extIdx]]] =!= pInV, Continue[]];
-               vertices = MapAt[(# //. GetFieldColorIndex[#[[1,vertFieldIdx]]] -> keys[extIdx])&, vertices, vertIdx]
+        extFields = TakeWhile[l, (Head[#]=!=List)&];
+        Print["Are external fields charged: ", extFields, " ", TreeMasses`ColorChargedQ /@ extFields];
+        keys = GenerateUniqueColorAssociationsForExternalParticles[l];
+        Print["Generated color indices for external particles: ", keys];
+        particlesInVertices = Drop[l, Length@extFields];
+        (* change to vertices = SARAH`Vertex /@ particlesInVertices; *)
+        vertices = SARAH`Vertex[#]& /@ particlesInVertices;
+
+        (* STEP1: set colors of external particles in vertices to values in keys *)
+        (* loop over external particles *)
+        For[extIdx=1, extIdx <= Length[extFields], extIdx++,
+            extField = extFields[[extIdx]];
+            (* skip if un-colored *)
+            If[!TreeMasses`ColorChargedQ[extField], Continue[]];
+            (* loop over vertices *)
+            For[vertIdx=1, vertIdx<=Length[vertices], vertIdx++,
+                vertex = vertices[[vertIdx]];
+                fieldsInVertex = vertex[[1]];
+                (* check if enternal field is connected to the vertex *)
+                If[graph[[extIdx, vertIdx+Length[extFields]]] === 0, Continue[]];
+                (* loop over particles in the vertex *)
+                For[vertFieldIdx=1, vertFieldIdx<=Length[fieldsInVertex], vertFieldIdx++,
+                    inField = fieldsInVertex[[vertFieldIdx]];
+                    If[!TreeMasses`ColorChargedQ[inField], Continue[]];
+                    If[AntiField[extField] =!= (inField /. f_[_List] -> f), Continue[]];
+                    If[MemberQ[Values[keys], GetFieldColorIndex[inField]], Continue[]];
+                    vertices = MapAt[
+                        (# //. GetFieldColorIndex[inField] :> keys[extIdx])&,
+                        vertices,
+                        vertIdx
+                    ];
+                ];
             ];
-         ]
-      ];
+        ];
 
-      (* loop over vertices pairs *)
-      For[vertIdx1 = 1, vertIdx1<=Length[vertices], vertIdx1++,
-         vertex1 = vertices[[vertIdx1]];
-         fieldsInVertex1 = vertex1[[1]];
-         (*Print["fieldsInVertex1 ", fieldsInVertex1];*)
-         For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
-            vertex2 = vertices[[vertIdx2]];
-            fieldsInVertex2 = vertex2[[1]];
-            (** cycle if two vertices are not connected at all *)
-            If[graph[[vertIdx1+Length[extFields], vertIdx2+Length[extFields]]] === 0, Continue[]];
-            (** loop over fields in verteces *)
-            For[v1i=1, v1i<=Length[fieldsInVertex1], v1i++, Print["a"];
-               (*field1 = fieldsInVertex1[[1,v1i]];*)
-               (*Print["seroooo? ", field1];*)
-               (*If[!TreeMasses`ColorChargedQ[field1], Continue[]];*)
-               (*Print["kurwa"];*)
-               (*For[v2i=1, v2i<=Length[fieldsInVertex2], v2i++,*)
-                 (*field2 = fieldsInVertex2[[1,v2i]];*)
-                  (*If[!TreeMasses`ColorChargedQ[field2], Continue[]];*)
-                 (** we want to make a propagator < field bar[field]> *)
-                  (*If[field1 =!= AntiField[field2], Continue[]];*)
-                  (*Print["pola: ", field1, " ", field2];*)
-                  (*field1ColorIndex = GetFieldColorIndex[field1];*)
-                  (*field2ColorIndex = GetFieldColorIndex[field2];*)
-                 (*Print["color indices for fiels 1 & 2: ", field1ColorIndex, " ", field2ColorIndex];*)
-                  (**vertices = MapAt[ (Print["was: ", GetFieldColorIndex[#[[1,v2i]]], ", will be ", fieldIndex]; # //.GetFieldColorIndex[#[[1,v2i]]] :> fieldIndex)&, vertices, vertIdx2];*)
-               ]
-            ]
-         ]
-      ];
-      vertices
+        symbol = {};
+        (* loop over vertices pairs *)
+        For[vertIdx1 = 1, vertIdx1<=Length[vertices], vertIdx1++,
+            vertex1 = vertices[[vertIdx1]];
+            fieldsInVertex1 = vertex1[[1]];
+            (* loop over fields in vertex1 *)
+            For[v1i=1, v1i<=Length[fieldsInVertex1], v1i++,
+                field1 = fieldsInVertex1[[v1i]];
+                If[!TreeMasses`ColorChargedQ[field1], Continue[]];
+                field1ColorIndexOld = GetFieldColorIndex[field1];
+                (* cycle if external particle *)
+                If[MemberQ[Values[keys], field1ColorIndexOld], Continue[]];
+                field1ColorIndexNew = Unique["c"];
+                Print["generate new index ", field1ColorIndexNew, " for ", field1];
+                vertices = MapAt[
+                    (# //. field1ColorIndexOld -> field1ColorIndexNew)&,
+                    vertices, vertIdx1
+                ];
+                AppendTo[symbol, field1ColorIndexNew];
+                For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
+                    (* cycle if two vertices are not connected *)
+                    If[graph[[vertIdx1+Length[extFields], vertIdx2+Length[extFields]]] === 0, Continue[]];
+                    vertex2 = vertices[[vertIdx2]];
+                    fieldsInVertex2 = vertex2[[1]];
+                    For[v2i=1, v2i<=Length[fieldsInVertex2], v2i++,
+                        field2 = fieldsInVertex2[[v2i]];
+                        Print["Second field ", field2];
+                        If[!TreeMasses`ColorChargedQ[field2], Continue[]];
+                        field2ColorIndex = GetFieldColorIndex[field2];
+                        If[MemberQ[Values[keys], field2ColorIndex], Continue[]];
+                        If[MemberQ[symbol, field2ColorIndex], Print["Ania......."];Continue[]];
+                        (* we want to make a propagator < field bar[field]> *)
+                        If[(field1 /. f_[_List] -> f) =!= (AntiField[field2] /. f_[_List] -> f), Continue[]];
+                        Print["Overriding ", field2ColorIndex,  " ", field1ColorIndexNew];
+                        vertices = MapAt[
+                            (# //. field2ColorIndex -> field1ColorIndexNew)&,
+                            vertices, vertIdx2
+                        ];
+                    ];
+                ];
+            ];
+        ];
+        Print[vertices];
+        vertices
    ];
 
-(* give a field, e.g. Fd[{a,b}] or bar[Fd[{a,b}] or conj[Sd[{a,b}]] will return {a,b} *)
+(*  given a field will return it's indices,
+    e.g. Fd[{a,b}] or bar[Fd[{a,b}] or conj[Sd[{a,b}]] will return {a,b} *)
 GetFieldIndices[field_] :=
-  field /. SARAH`bar | Susyno`LieGroups`conj -> Identity /. _[x_List] :> x; 
-  
+    field /. SARAH`bar | Susyno`LieGroups`conj -> Identity /. _[x_List] :> x;
+
+(*  given a field with indices will discard indices,
+    e.g. bar[Fd[{a,b}] -> bar[Fd] *)
+DropFieldIndices[field_] :=
+    field /. f_[_List] -> f;
+
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res = GetFieldIndices[field];
-    Print["field ", field, ", indices ", res];
     res = Select[res, ColorIndexQ];
     Assert[Length[res]==1];
     res[[1]]
