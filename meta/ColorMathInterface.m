@@ -54,19 +54,30 @@ RegenerateIndices[l_List, graph_]:=
 
       (* loop over vertices pairs *)
       For[vertIdx1 = 1, vertIdx1<=Length[vertices], vertIdx1++,
+         vertex1 = vertices[[vertIdx1]];
+         fieldsInVertex1 = vertex1[[1]];
+         (*Print["fieldsInVertex1 ", fieldsInVertex1];*)
          For[vertIdx2=vertIdx1+1, vertIdx2<=Length[vertices], vertIdx2++,
-            (* cycle if two vertices are not connected at all *)
-            If[graph[[vertIdx1+Length[extFields], vertIdx2+Length[extFields]]]==0, Continue[]];
-            (* loop over fields in the vertex *)
-            For[v1i=1, v1i<=Length[vertices[[vertIdx1,1]]], v1i++,
-               If[!TreeMasses`ColorChargedQ[vertices[[vertIdx1,1,v1i]]], Continue[]];
-               Print[particlesInVertices[[vertIdx2]]];
-               For[v2i=1, v2i<=Length[vertices[[vertIdx2,1]]], v2i++,
-                  If[!TreeMasses`ColorChargedQ[vertices[[vertIdx2,1,v2i]]], Continue[]];
-                  If[vertices[[vertIdx1,1,v1i]]=!=AntiField[vertices[[vertIdx2,1,v2i]]], Continue[]];
-                  fieldIndex = GetFieldColorIndex[vertices[[vertIdx1,1,v1i]]];
-                  Print["heh6 ", vertices[[vertIdx2,1,v2i]], " field idx ", fieldIndex];
-                  vertices = MapAt[ (Print["was: ", GetFieldColorIndex[#[[1,v2i]]], ", will be ", fieldIndex]; # //.GetFieldColorIndex[#[[1,v2i]]] :> fieldIndex)&, vertices, vertIdx2];
+            vertex2 = vertices[[vertIdx2]];
+            fieldsInVertex2 = vertex2[[1]];
+            (** cycle if two vertices are not connected at all *)
+            If[graph[[vertIdx1+Length[extFields], vertIdx2+Length[extFields]]] === 0, Continue[]];
+            (** loop over fields in verteces *)
+            For[v1i=1, v1i<=Length[fieldsInVertex1], v1i++, Print["a"];
+               (*field1 = fieldsInVertex1[[1,v1i]];*)
+               (*Print["seroooo? ", field1];*)
+               (*If[!TreeMasses`ColorChargedQ[field1], Continue[]];*)
+               (*Print["kurwa"];*)
+               (*For[v2i=1, v2i<=Length[fieldsInVertex2], v2i++,*)
+                 (*field2 = fieldsInVertex2[[1,v2i]];*)
+                  (*If[!TreeMasses`ColorChargedQ[field2], Continue[]];*)
+                 (** we want to make a propagator < field bar[field]> *)
+                  (*If[field1 =!= AntiField[field2], Continue[]];*)
+                  (*Print["pola: ", field1, " ", field2];*)
+                  (*field1ColorIndex = GetFieldColorIndex[field1];*)
+                  (*field2ColorIndex = GetFieldColorIndex[field2];*)
+                 (*Print["color indices for fiels 1 & 2: ", field1ColorIndex, " ", field2ColorIndex];*)
+                  (**vertices = MapAt[ (Print["was: ", GetFieldColorIndex[#[[1,v2i]]], ", will be ", fieldIndex]; # //.GetFieldColorIndex[#[[1,v2i]]] :> fieldIndex)&, vertices, vertIdx2];*)
                ]
             ]
          ]
