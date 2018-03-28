@@ -71,20 +71,21 @@ struct overlap_integrals {
 };
 
 overlap_integrals get_overlap_integrals(Nucleus N) {
-  overlap_integrals res; 
-  switch (N) {
-     // Tab. 2 of hep-ph/0203110
-     case Nucleus::Au:
-      res.D  = 0.1670;
-      res.Vp = 0.0859;
-      res.Vn = 0.1080;
-      res.Sp = 0.0523;
-      res.Sn = 0.0610;
-      return res;
-     default:
-      std::cout << "Unknown nucleus\n";
+   overlap_integrals res; 
+   constexpr auto muon_m {0.105};
+   switch (N) {
+      // Tab. 2 of hep-ph/0203110
+      case Nucleus::Au:
+         res.D  = 0.1670*pow(muon_m, 5./2.);
+         res.Vp = 0.0859*pow(muon_m, 5./2.);
+         res.Vn = 0.1080*pow(muon_m, 5./2.);
+         res.Sp = 0.0523*pow(muon_m, 5./2.);
+         res.Sn = 0.0610*pow(muon_m, 5./2.);
+         return res;
+      default:
+         std::cout << "Unknown nucleus\n";
       break;
-  } 
+   } 
 }
 
 @FToFConversion_InterfaceDefinitions@

@@ -91,7 +91,7 @@ FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                             " "] <>
                   "model);\n" <>
                   "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <> ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus] <> ");\n" <>
-                  "constexpr auto GF {1.1667e-5};" <>
+                  "constexpr auto GF {1.1667e-5};\n" <>
         "return 2.*pow(GF,2)*(std::abs(form_factors[2]*nuclear_form_factors.D) + std::abs(form_factors[3]*nuclear_form_factors.D));\n"
         ] <>
         "}\n";
