@@ -92,7 +92,15 @@ FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                   "model);\n" <>
                   "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <> ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus] <> ");\n" <>
                   "constexpr auto GF {1.1667e-5};\n" <>
-        "return 2.*pow(GF,2)*(std::abs(form_factors[2]*nuclear_form_factors.D) + std::abs(form_factors[3]*nuclear_form_factors.D));\n"
+                     "auto A2L {form_factors[2]};" <>
+   "auto A2R {form_factors[3]};" <>
+   "// translate from the convention of Hisano, Moroi & Tobe to Kitano, Koike & Okada" <>
+   "A2L = A2L/(4.*GF/sqrt(2.));" <>
+   "A2R = A2R/(4.*GF/sqrt(2.));" <>
+   "const auto left {A2L*nuclear_form_factors.D};" <>
+   "const auto right {A2R*nuclear_form_factors.D};" <>
+        "// eq. 14 of Kitano, Koike and Okada" <>
+        "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
         ] <>
         "}\n";
     
