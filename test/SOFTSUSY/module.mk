@@ -14,7 +14,6 @@ LIBSOFTSUSY_HDR  := \
 		$(DIR)/linalg.h \
 		$(DIR)/lowe_legacy.h \
 		$(DIR)/mycomplex.h \
-		$(DIR)/numerics.h \
 		$(DIR)/numerics_legacy.h \
 		$(DIR)/rge.h \
 		$(DIR)/rk_legacy.hpp \
@@ -36,7 +35,6 @@ LIBSOFTSUSY_SRC  := \
 		$(DIR)/nmssmsoftsusy.cpp \
 		$(DIR)/nmssmsusy.cpp \
 		$(DIR)/nmssm1loop.f \
-		$(DIR)/numerics.cpp \
 		$(DIR)/numerics_legacy.cpp \
 		$(DIR)/physpars.cpp \
 		$(DIR)/rge.cpp \
