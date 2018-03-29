@@ -32,8 +32,8 @@ FToFConversionInNucleusContributingGraphs::usage="";
 (*Begin["Private`"];*)
 
 FToFConversionInNucleus`FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
-  Module[
-    {prototype, definition, 
+    Module[
+        {prototype, definition,
       nucleus = Au,
      numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
      numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
@@ -89,21 +89,21 @@ FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                          If[TreeMasses`GetDimension[outFermion] =!= 1,
                             " generationIndex2, ",
                             " "] <>
-                  "model);\n" <>
-                  "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <> ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus] <> ");\n" <>
-                  "constexpr auto GF {1.1667e-5};\n" <>
-                     "auto A2L {form_factors[2]};" <>
-   "auto A2R {form_factors[3]};" <>
-   "// translate from the convention of Hisano, Moroi & Tobe to Kitano, Koike & Okada" <>
-   "A2L = A2L/(4.*GF/sqrt(2.));" <>
-   "A2R = A2R/(4.*GF/sqrt(2.));" <>
-   "const auto left {A2L*nuclear_form_factors.D};" <>
-   "const auto right {A2R*nuclear_form_factors.D};" <>
-        "// eq. 14 of Kitano, Koike and Okada" <>
-        "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
+            "model);\n" <>
+            "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <> ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus] <> ");\n" <>
+            "constexpr auto GF {1.1667e-5};\n" <>
+            "auto A2L {form_factors[2]};\n" <>
+            "auto A2R {form_factors[3]};\n" <>
+            "// translate from the convention of Hisano, Moroi & Tobe to Kitano, Koike & Okada\n" <>
+            "A2L = A2L/(4.*GF/sqrt(2.));\n" <>
+            "A2R = A2R/(4.*GF/sqrt(2.));\n" <>
+            "const auto left {A2L*nuclear_form_factors.D};\n" <>
+            "const auto right {A2R*nuclear_form_factors.D};\n" <>
+            "// eq. 14 of Kitano, Koike and Okada\n" <>
+            "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
         ] <>
         "}\n";
     
-    {prototype <> ";", definition}
-  ];
+        {prototype <> ";", definition}
+    ];
 EndPackage[];
