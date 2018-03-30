@@ -70,9 +70,9 @@ struct overlap_integrals {
    double Sn;
 };
 
-overlap_integrals get_overlap_integrals(Nucleus N) {
+overlap_integrals get_overlap_integrals(Nucleus N, const softsusy::QedQcd& qedqcd) {
    overlap_integrals res; 
-   constexpr auto muon_m {0.105};
+   const auto muon_m {qedqcd.displayMass(softsusy::mMuon)};
    switch (N) {
       // Tab. 2 of hep-ph/0203110
       case Nucleus::Au:

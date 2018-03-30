@@ -55,6 +55,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
             IndentText[
                 FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                 "EvaluationContext context{ model_ };\n" <>
+
                 "std::array<int, " <> ToString @ numberOfIndices1 <>
                     "> indices1 = {" <>
                     (* TODO: Specify indices correctly *)
@@ -67,6 +68,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
                     StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
                     ""]
                     ] <> "};\n" <>
+
                 "std::array<int, " <> ToString @ numberOfIndices2 <>
                     "> indices2 = {" <>
                     If[TreeMasses`GetDimension[outFermion] =!= 1,
@@ -78,25 +80,30 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
                     StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
                     ""]
                     ] <> "};\n\n" <>
+
                 "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
                     <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[VP] <> "_form_factors (" <>
                     If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                     If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                     "model);\n" <>
+
                 "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <>
                     ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
-                    ");\n" <>
+                    ", qedqcd" <> ");\n" <>
 
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF {qedqcd.displayFermiConstant()};\n" <>
 
                 "auto A2L {form_factors[2]};\n" <>
                 "auto A2R {form_factors[3]};\n" <>
+
                 "\n// translate from the convention of Hisano, Moroi & Tobe to Kitano, Koike & Okada\n" <>
                 "A2L = A2L/(4.*GF/sqrt(2.));\n" <>
                 "A2R = A2R/(4.*GF/sqrt(2.));\n\n" <>
+
                 "const auto left {A2L*nuclear_form_factors.D};\n" <>
                 "const auto right {A2R*nuclear_form_factors.D};\n" <>
+
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
                 "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
             ] <>
