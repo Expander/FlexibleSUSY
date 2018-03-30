@@ -421,7 +421,7 @@ CalculateObservable[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_],
             nucleiStr = FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus]
     },
            structName <> ".FToFConversion1(" <> pInStr <> ", " <> idxInStr <> ", " <> pOutStr <> ", " <> idxOutStr <> ", " <> nucleiStr <> ") = " <>
-           FlexibleSUSY`FSModelName <> "_f_to_f_conversion::calculate_" <> pInStr <> "_to_" <> pOutStr <> "_in_nucleus(" <> idxInStr <> ", " <> idxOutStr <> ", " <> nucleiStr <> ", MODEL);"
+           FlexibleSUSY`FSModelName <> "_f_to_f_conversion::calculate_" <> pInStr <> "_to_" <> pOutStr <> "_in_nucleus(" <> idxInStr <> ", " <> idxOutStr <> ", " <> nucleiStr <> ", MODEL, qedqcd);"
           ];
 
 FillGM2CalcInterfaceData[struct_String] :=
