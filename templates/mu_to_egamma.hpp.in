@@ -28,6 +28,9 @@
 #ifndef @ModelName@_MuToEGamma_H
 #define @ModelName@_MuToEGamma_H
 
+#include "lowe.h"
+#include "physical_input.hpp"
+
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
 
