@@ -31,7 +31,7 @@
 #include "@ModelName@_mu_to_egamma.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
-#include "@ModelName@_cxx_diagrams.hpp"
+#include "cxx_qft/@ModelName@_qft.hpp"
 #include "@ModelName@_FFV_form_factors.hpp"
 
 #define INPUTPARAMETER(p) context.model.get_input().p
@@ -40,7 +40,7 @@
 #define PHASE(p) context.model.get_##p()
 
 using namespace flexiblesusy;
-using namespace cxx_diagrams;
+using namespace cxx_qft;
 using namespace @ModelName@_FFV_form_factors;
 
 namespace flexiblesusy {

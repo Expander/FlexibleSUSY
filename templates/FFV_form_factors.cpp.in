@@ -31,7 +31,8 @@
 #include "@ModelName@_mu_to_egamma.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
-#include "@ModelName@_cxx_diagrams.hpp"
+#include "cxx_qft/@ModelName@_qft.hpp"
+#include "concatenate.hpp"
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
@@ -39,9 +40,11 @@
 #define PHASE(p) context.model.get_##p()
 
 using namespace flexiblesusy;
-using namespace cxx_diagrams;
+using namespace cxx_qft;
 
 namespace {
+using namespace cxx_qft::fields;
+
 using ChargedHiggsMultiplet = @FFVFormFactors_ChargedHiggsMultiplet@;
 static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
 
@@ -256,20 +259,20 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
       for (const auto& indexOut: indexBoundsOut) {
 
          // cycle if generations of external fermions  are different then requested   
-         const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
-         const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexOut);
+         const auto edmFieldIndicesIn = FermionVertexIn::template field_indices<0>(indexIn);
+         const auto edmFieldIndicesOut = FermionVertexOut::template field_indices<0>(indexOut);
          if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
             continue;
 
          // match indices of the exchange field
-         const auto exchangeFieldIndicesIn = FermionVertexIn::template fieldIndices<1>(indexIn);
-         const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
+         const auto exchangeFieldIndicesIn = FermionVertexIn::template field_indices<1>(indexIn);
+         const auto exchangeFieldIndicesOut = FermionVertexOut::template field_indices<1>(indexOut);
          if (exchangeFieldIndicesIn != exchangeFieldIndicesOut)
             continue;
 
 
-         const auto EmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
-         const auto EmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         const auto EmitterIndicesIn = FermionVertexIn::template field_indices<2>(indexIn);
+         const auto EmitterIndicesOut = FermionVertexOut::template field_indices<2>(indexOut);
          if (EmitterIndicesIn != EmitterIndicesOut) continue;
 
          // Throw out SM Goldstone, it could crash if SM is used.
@@ -353,19 +356,19 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
       for (const auto& indexOut: indexBoundsOut) {
 
          // cycle if generations of external fermions are different then requested   
-         const auto edmFieldIndicesIn = FermionVertexIn::template fieldIndices<0>(indexIn);
-         const auto edmFieldIndicesOut = FermionVertexOut::template fieldIndices<0>(indexOut);
+         const auto edmFieldIndicesIn = FermionVertexIn::template field_indices<0>(indexIn);
+         const auto edmFieldIndicesOut = FermionVertexOut::template field_indices<0>(indexOut);
          if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
             continue;
 
          // match indices of the exchange field
-         const auto exchangeFieldIndicesIn = FermionVertexIn::template fieldIndices<1>(indexIn);
-         const auto exchangeFieldIndicesOut = FermionVertexOut::template fieldIndices<1>(indexOut);
+         const auto exchangeFieldIndicesIn = FermionVertexIn::template field_indices<1>(indexIn);
+         const auto exchangeFieldIndicesOut = FermionVertexOut::template field_indices<1>(indexOut);
          if (exchangeFieldIndicesIn != exchangeFieldIndicesOut )
             continue;
 
-         const auto EmitterIndicesIn = FermionVertexIn::template fieldIndices<2>(indexIn);
-         const auto EmitterIndicesOut = FermionVertexOut::template fieldIndices<2>(indexOut);
+         const auto EmitterIndicesIn = FermionVertexIn::template field_indices<2>(indexIn);
+         const auto EmitterIndicesOut = FermionVertexOut::template field_indices<2>(indexOut);
          if (EmitterIndicesIn != EmitterIndicesOut) continue;
 
          // Throw out SM Goldstone, it could crash if SM is used.
@@ -424,8 +427,8 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
 
    auto spectator_indices = default_indices_for_spectator<V>();
    using VertexFjBarFjVBar = Vertex<typename Fj::lorentz_conjugate, Fj, typename V::lorentz_conjugate>;
-         const auto kuwa = flexiblesusy::cxx_diagrams::impl::concatenate(
-            flexiblesusy::cxx_diagrams::impl::concatenate(indices_in, indices_in), 
+         const auto kuwa = concatenate(
+            indices_in, indices_in, 
             spectator_indices
          );
    const auto FjBarFjVBar = VertexFjBarFjVBar::evaluate(kuwa, context).left();
@@ -440,43 +443,40 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
    const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
 
-   constexpr auto indexBoundsOut = VertexFiBarFSBar::index_bounds;
-   constexpr auto indexBoundsIn = VertexFBarFjS::index_bounds;
-
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
    // loop over all possible particle "generations" attached to both vertices
-   for (const auto& indexIn: indexBoundsIn) {
-      for (const auto& indexOut: indexBoundsOut) {
+   for (const auto& indexIn: index_range<VertexFBarFjS>()) {
+      for (const auto& indexOut: index_range<VertexFiBarFSBar>()) {
 
          // cycle if generations of external fermions  are different then requested   
-         const auto jFieldIndices = VertexFBarFjS::template fieldIndices<1>(indexIn);
-         const auto iFieldIndices = VertexFiBarFSBar::template fieldIndices<0>(indexOut);
+         const auto jFieldIndices = VertexFBarFjS::template field_indices<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFSBar::template field_indices<0>(indexOut);
          if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
          // match indices of the fermion field in the loop
-         const auto fermionFieldIndicesIn = VertexFBarFjS::template fieldIndices<0>(indexIn);
-         const auto fermionFieldIndicesOut = VertexFiBarFSBar::template fieldIndices<1>(indexOut);
+         const auto fermionFieldIndicesIn = VertexFBarFjS::template field_indices<0>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFSBar::template field_indices<1>(indexOut);
          if (fermionFieldIndicesIn != fermionFieldIndicesOut)
             continue;
 
          // get SBarSVBar vertex 
-         const auto scalarFieldIndicesIn = VertexFBarFjS::template fieldIndices<2>(indexIn);
-         const auto scalarFieldIndicesOut = VertexFiBarFSBar::template fieldIndices<2>(indexOut);
+         const auto scalarFieldIndicesIn = VertexFBarFjS::template field_indices<2>(indexIn);
+         const auto scalarFieldIndicesOut = VertexFiBarFSBar::template field_indices<2>(indexOut);
          if (scalarFieldIndicesIn != scalarFieldIndicesOut)
             continue;
 
-         const auto indexSBarSVBar = flexiblesusy::cxx_diagrams::impl::concatenate(
-            flexiblesusy::cxx_diagrams::impl::concatenate(scalarFieldIndicesOut, scalarFieldIndicesIn), 
+         const auto indexSBarSVBar = concatenate(
+            scalarFieldIndicesOut, scalarFieldIndicesIn, 
             spectator_indices
          );
          // not clear what the sign
-         const auto SBarSVBar = -VertexSBarSVBar::evaluate(indexSBarSVBar, context).value();
+         const auto SBarSVBar = -VertexSBarSVBar::evaluate(indexSBarSVBar, context).value(1,0);
          // const auto SBarSVBar = VertexSBarSVBar::evaluate(indexSBarSVBar, context).value(positive momentum index, negative momentum index);
 
          // get FBarFVBar vertex
-         const auto indexFBarFVBar = flexiblesusy::cxx_diagrams::impl::concatenate(
-            flexiblesusy::cxx_diagrams::impl::concatenate(fermionFieldIndicesOut, fermionFieldIndicesIn),
+         const auto indexFBarFVBar = concatenate(
+            fermionFieldIndicesOut, fermionFieldIndicesIn,
             spectator_indices
          );
          const auto FBarFVBar = VertexFBarFVBar::evaluate(indexFBarFVBar, context).left();

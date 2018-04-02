@@ -351,6 +351,19 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
     ]
   ]
 
+(* Get a mathematical expression of the requested vertex
+   in terms of its canonically ordered vertex. *)
+CanonicalizeCoupling[
+    coupling_, sortedFields_List, sortedIndexedFields_List] :=
+  Module[{expr},
+    (* Note: Cannot use indexed fields, because their internal
+    SARAH ordering is different... *)
+    expr = Vertices`SortCp[coupling];
+    
+    (* Index the fields *)
+    expr = expr /. {SARAH`Cp @@ sortedFields -> SARAH`Cp @@ sortedIndexedFields}
+  ]
+
 CreateMassFunctions[] :=
   Module[{massiveFields,
           ghostMappings = SelfEnergies`ReplaceGhosts[FlexibleSUSY`FSEigenstates]},

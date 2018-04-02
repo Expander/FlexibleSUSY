@@ -29,7 +29,7 @@
 #define @ModelName@_FFVFormFactors_H
 
 using namespace flexiblesusy;
-using namespace cxx_diagrams;
+using namespace cxx_qft;
 
 
 namespace flexiblesusy {

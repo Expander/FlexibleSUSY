@@ -29,8 +29,6 @@
 #define @ModelName@_FFMassiveVFormFactors_H
 
 using namespace flexiblesusy;
-using namespace cxx_diagrams;
-
 
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;

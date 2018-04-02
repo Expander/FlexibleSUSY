@@ -4067,16 +4067,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              {FileNameJoin[{$flexiblesusyTemplateDir, "observables.cpp.in"}],
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
                       
-<<<<<<< HEAD
-                      
-           Print["Setting up CXXDiagrams..."];
-           
-           CXXDiagrams`CXXDiagramsInitialize[];
-           
            Print["Creating EDM class ..."];
-=======
-           Print["Creating EDM class..."];
->>>>>>> 2aa51b1ec... Updated FlexibleSUSY.m to actually use the new interfaces.
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            edmVertices =
@@ -4133,7 +4124,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                fieldsForFToFMassiveVFormFactors =
                DeleteDuplicates @ Join[
                   fieldsForFToFMassiveVFormFactors,
-                  Append[#, SARAH`VZ]& /@ Transpose[Drop[Transpose[fieldsForFToFConversion],-1]]
+                      Flatten /@ Tuples[{Transpose[Drop[Transpose[fieldsForFToFConversion],-1]],
+                        Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]}]
                ]
             ];
 
