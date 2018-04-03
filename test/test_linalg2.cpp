@@ -24,6 +24,7 @@
 #include <complex>
 #include <iostream>
 #include "linalg2.hpp"
+#include "config.h"
 
 #define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE test_linalg2
@@ -233,12 +234,15 @@ struct Test_diagonalize_hermitian {
 typedef boost::mpl::list<
     // use Eigen::SelfAdjointEigenSolver
     Test_diagonalize_hermitian<complex<double>, 6, hermitian_eigen>,
-    Test_diagonalize_hermitian<double	      , 6, hermitian_eigen>,
+    Test_diagonalize_hermitian<double	      , 6, hermitian_eigen>
 
+#ifdef ENABLE_LAPACK
+    ,
     // use ZHEEV of LAPACK
     Test_diagonalize_hermitian<complex<double>, 6, hermitian_lapack>,
     // use DSYEV of LAPACK
     Test_diagonalize_hermitian<double	      , 6, hermitian_lapack>
+#endif
 > diagonalize_hermitian_tests;
 
 BOOST_AUTO_TEST_CASE_TEMPLATE
