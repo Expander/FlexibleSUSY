@@ -31,14 +31,13 @@ MuEGammaCreateInterfaceFunctionForLeptonPair::usage = "";
 Begin["`Private`"];
 
 MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}] :=
-  Module[
-    {prototype, definition, 
-     numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
-     numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-     numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
+    Module[{prototype, definition,
+            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
+            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
+            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
 
-      prototype =
-         "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
+        prototype =
+            "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
             CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "(" <>
             If[TreeMasses`GetDimension[inFermion] =!= 1,
                " int generationIndex1, ",
@@ -193,10 +192,8 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                ]
             ] <> "}";
 
-      Print[definition];
-    {prototype, definition}
-  ];
+        {prototype, definition}
+    ];
 
 End[];
-
 EndPackage[];

@@ -4062,9 +4062,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            fieldsForFToFConversion = 
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, VP}];
-           Print[fieldsForFToFConversion];     
-            
+                FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, nucleus}];
+
            Print["Creating FToFConversionInNucleus class ..."];
            mu2egammaVertices =
              WriteFToFConversionInNucleusClass[fieldsForFToFConversion,

@@ -30,8 +30,8 @@ FToFConversionInNucleusCreateInterface::usage = "";
 
 Begin["Private`"];
 
-FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
-    Module[{prototype, definition, nucleus = Au,
+FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
+    Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
             numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
@@ -81,8 +81,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
                     ""]
                     ] <> "};\n\n" <>
 
-                "const auto form_factors = calculate_" <> CXXNameOfField[inFermion] <> "_"
-                    <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[VP] <> "_form_factors (" <>
+                "const auto photon_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_"
+                    <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`VP] <> "_form_factors (" <>
                     If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                     If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                     "model);\n" <>
@@ -93,16 +93,25 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, spectator_}] :=
 
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF {qedqcd.displayFermiConstant()};\n" <>
-
-                "auto A2L {form_factors[2]};\n" <>
-                "auto A2R {form_factors[3]};\n" <>
+                (* TODO: replace with the value from qedqcd *)
+                "const auto e = sqrt(1./137. * 4. * Pi);\n" <>
 
                 "\n// translate from the convention of Hisano, Moroi & Tobe to Kitano, Koike & Okada\n" <>
-                "A2L = A2L/(4.*GF/sqrt(2.));\n" <>
-                "A2R = A2R/(4.*GF/sqrt(2.));\n\n" <>
+                (* TODO: check the statement below *)
+                "// Hisano defines form factors A2 through a matrix element in eq. 14\n" <>
+                "// Kitano uses a lagrangian with F_munu. There is a factor of 2 from translation\n" <>
+                "// because Fmunu = qeps - eps q\n" <>
+                "const auto A2L = 0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
+                "const auto A2R = 0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
 
-                "const auto left {A2L*nuclear_form_factors.D};\n" <>
-                "const auto right {A2R*nuclear_form_factors.D};\n" <>
+                "\n// construct 4-fermion operators from A1 form factors\n" <>
+                "const auto gpLV = photon_exchange[0]/(GF/sqrt(2.0)) * e * (2.*2./3.-1./3.);\n" <>
+                "const auto gpRV = photon_exchange[1]/(GF/sqrt(2.0)) * e * (2.*2./3.-1./3.);\n" <>
+                "const auto gnLV = photon_exchange[0]/(GF/sqrt(2.0)) * e * (2.*(-1./3.)+2./3.);\n" <>
+                "const auto gnRV = photon_exchange[1]/(GF/sqrt(2.0)) * e * (2.*(-1./3.)+2./3.);\n" <>
+
+                "\nconst auto left {A2L*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn};\n" <>
+                "const auto right {A2R*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn};\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
                 "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
