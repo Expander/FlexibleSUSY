@@ -1957,8 +1957,8 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
 WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
   Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
-    graphs = FFVMassiveFormFactors`FFVMassiveFormFactorsContributingGraphs[];
-    diagrams = Outer[FFVMassiveFormFactors`FFVMasiveFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
+    graphs = FFMassiveVFormFactors`FFMassiveVFormFactorsContributingGraphs[];
+    diagrams = Outer[FFMassiveVFormFactors`FFMassiveVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     
@@ -1966,13 +1966,13 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
       If[diagrams === {},
          {"",""},
          StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FFVMassiveFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
             Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
     
     WriteOut`ReplaceInFiles[files,
                             {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
                              "@FFMassiveVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
-                             "@FFVMassiveFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+                             "@FFMassiveVFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
                              Sequence @@ GeneralReplacementRules[]
                             }];
     
@@ -4098,14 +4098,21 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.cpp"}]}}];
               
 
-           Print["Creating FFV form factor class ..."];
-           fFVVertices = WriteFFVFormFactorsClass[
+           Print["Creating FFMasslessV form factor class ..."];
+           fFFMasslessVertices = WriteFFVFormFactorsClass[
               DeleteDuplicates @ Join[fieldsForFToFDecay(*, fieldsForFToFConversion*)],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
 
+           Print["Creating FFMassiveV form factor class ..."];
+        fFFMassiveVertices = WriteFFMassiveVFormFactorsClass[
+            DeleteDuplicates @ Join[fieldsForFToFDecay(*, fieldsForFToFConversion*)],
+    {{FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.hpp.in"}],
+        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
+        {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
+            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 
@@ -4116,7 +4123,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            
 
            WriteCXXDiagramClass[
-             DeleteDuplicates @ Join[fFVVertices, edmVertices,aMuonVertices],Lat$massMatrices,
+             DeleteDuplicates @ Join[fFFMasslessVertices, edmVertices,aMuonVertices],Lat$massMatrices,
                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
 

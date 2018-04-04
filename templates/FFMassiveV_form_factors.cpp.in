@@ -42,7 +42,7 @@ using namespace flexiblesusy;
 using namespace cxx_diagrams;
 
 namespace {
-using ChargedHiggsMultiplet = @FFVFormFactors_ChargedHiggsMultiplet@;
+using ChargedHiggsMultiplet = @FFMassiveVFormFactors_ChargedHiggsMultiplet@;
 static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
 
 /**
@@ -112,7 +112,7 @@ inline double sm_width(int generationIndex1,  int generationIndex2, const @Model
    return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio ) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
 }
 */
-@FFVFormFactors_InterfaceDefinitions@
+@FFMassiveVFormFactors_InterfaceDefinitions@
 }
 } // namespace flexiblesusy
 

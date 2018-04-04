@@ -76,12 +76,12 @@ IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagr
   ]
 
 FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, gTaggedDiagrams_List] :=
-   Module[
-      {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
-         numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-         numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]
+    Module[{prototype, definition,
+            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
+            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
+            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
       },
-   
+
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
             "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
@@ -95,7 +95,7 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                " "
             ] <>
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );\n";
-                 
+
       definition =
          (* calculate form factors A1L, A2L, etc *)
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
@@ -145,7 +145,7 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                "return val;"
                   (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n";
-    
+
     {prototype, definition}
   ];
 

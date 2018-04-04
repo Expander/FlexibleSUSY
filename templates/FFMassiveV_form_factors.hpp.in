@@ -36,7 +36,7 @@ namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
 
 namespace @ModelName@_FFMassiveV_form_factors {
-@FFVFormFactors_InterfacePrototypes@
+@FFMassiveVFormFactors_InterfacePrototypes@
 }
 } // namespace flexiblesusy
 
