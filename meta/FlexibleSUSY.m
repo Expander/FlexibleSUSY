@@ -50,9 +50,10 @@ BeginPackage["FlexibleSUSY`",
               "CXXDiagrams`",
               "AMuon`",
               "EDM`",
+              "FFVFormFactors`",
+              "FFMassiveVFormFactors`",
               "MuEGamma`",
               "FToFConversionInNucleus`",
-              "FFVFormFactors`",
               "EffectiveCouplings`",
               "FlexibleEFTHiggsMatching`",
               "FSMathLink`",
@@ -1953,6 +1954,31 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
     vertices
   ]
 
+WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
+  Module[{graphs,diagrams,vertices,
+          interfacePrototypes,interfaceDefinitions},
+    graphs = FFVMassiveFormFactors`FFVMassiveFormFactorsContributingGraphs[];
+    diagrams = Outer[FFVMassiveFormFactors`FFVMasiveFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
+    
+    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
+    
+    {interfacePrototypes,interfaceDefinitions} = 
+      If[diagrams === {},
+         {"",""},
+         StringJoin @@@ 
+          (Riffle[#, "\n\n"] & /@ Transpose[FFVMassiveFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@ 
+            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
+    
+    WriteOut`ReplaceInFiles[files,
+                            {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
+                             "@FFMassiveVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
+                             "@FFVMassiveFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+                             Sequence @@ GeneralReplacementRules[]
+                            }];
+    
+    vertices
+  ]
+
 (* Write c++ files for the FFV decay *)
 WriteMuEGammaClass[leptonPairs_List, files_List] :=
   Module[{interfacePrototypes,interfaceDefinitions},
@@ -1975,22 +2001,21 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
 
 (* Write c++ files for the FF conversion *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
-  Module[{interfacePrototypes,interfaceDefinitions},
+    Module[{interfacePrototypes,interfaceDefinitions},
     
-    {interfacePrototypes, interfaceDefinitions} = 
-      If[leptonPairs === {},
-         {"",""},
-         StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface @@@ 
-            Transpose[{leptonPairs}]])
-      ];
-    
-    WriteOut`ReplaceInFiles[files,
-      {"@FToFConversion_InterfacePrototypes@"       -> interfacePrototypes,
-       "@FToFConversion_InterfaceDefinitions@"      -> interfaceDefinitions,
-       Sequence @@ GeneralReplacementRules[]}
+    {interfacePrototypes, interfaceDefinitions} =
+        If[leptonPairs === {},
+            {"",""},
+            StringJoin @@@
+          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface /@ leptonPairs])
+        ];
+
+        WriteOut`ReplaceInFiles[files,
+            {"@FToFConversion_InterfacePrototypes@"     -> interfacePrototypes,
+             "@FToFConversion_InterfaceDefinitions@"    -> interfaceDefinitions,
+             Sequence @@ GeneralReplacementRules[]}
+        ];
     ];
-  ]
 
 (* Write the AMuon c++ files *)
 WriteAMuonClass[files_List] :=
@@ -4065,7 +4090,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, nucleus}];
 
            Print["Creating FToFConversionInNucleus class ..."];
-           mu2egammaVertices =
+           conversionVertices =
              WriteFToFConversionInNucleusClass[fieldsForFToFConversion,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},

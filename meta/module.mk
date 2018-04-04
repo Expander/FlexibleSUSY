@@ -69,8 +69,9 @@ META_SRC     := \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/CXXDiagrams.m \
 		$(DIR)/EDM.m \
-		$(DIR)/MuEGamma.m \
 		$(DIR)/FFVFormFactors.m \
+		$(DIR)/FFMassiveVFormFactors.m \
+		$(DIR)/MuEGamma.m \
 		$(DIR)/FToFConversionInNucleus.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
