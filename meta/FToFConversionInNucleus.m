@@ -33,9 +33,8 @@ Begin["Private`"];
 FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
     Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
-            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
-   
+            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion]},
+
         prototype =
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
                 CXXNameOfField[outFermion] <> "_in_nucleus (" <>
@@ -49,7 +48,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 ] <>
                 "const " <> FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus nucleus, " <>
                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model, const softsusy::QedQcd& qedqcd)";
-                 
+
         definition =
             prototype <> " {\n" <>
             IndentText[
@@ -81,8 +80,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                     ""]
                     ] <> "};\n\n" <>
 
-                "const auto photon_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_"
-                    <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`VP] <> "_form_factors (" <>
+                "const auto photon_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
+                    CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`VP] <> "_form_factors (" <>
                     If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                     If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                     "model);\n" <>
