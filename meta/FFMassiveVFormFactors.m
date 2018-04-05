@@ -154,11 +154,12 @@ CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_, spectat
 
 (* evaluate single diagram *)
 CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator_, diagram_, vertexCorrectionGraph] := 
-   Module[{Emitter, exchangeParticle, colorFactor, colorFactorStr},
-      Emitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
-      exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
+    Module[{Emitter, exchangeParticle, colorFactor, colorFactorStr},
+
+        Emitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+        exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-      colorFactor = getChargeFactor[
+        colorFactor = getChargeFactor[
  {
   {
    Cp[inFermion, exchangeParticle, AntiField[Emitter]],
@@ -186,8 +187,7 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
             ToString @ (N[#, 16]& /@ (ReIm[colorFactor]/EvaluateColorStruct[Emitter, exchangeParticle]));
 
         colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, Emitter, exchangeParticle}]
-
-    ]
+    ];
 
 (* loop diagrams
    naming convention is
@@ -202,7 +202,7 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
 
 CXXEvaluator[external_List, internal_List] :=
     "FFMassiveVVertexCorrection" <>
-    StringJoin @@ (ToString @ SARAH`getType[#, False, FlexibleSUSY`FSEigenstates])& /@ internal <>
+    StringJoin @@ (ToString /@ (SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@ internal)) <>
     "<" <>
         StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, internal], ", "] <>
     ">";
