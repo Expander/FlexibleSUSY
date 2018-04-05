@@ -60,8 +60,8 @@ static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeParticle>
-struct FFMassiveVVertexCorrectionSF {
+template<class FermionIn, class FermionOut, class Spectator, class Emitter1, class Emitter2, class ExchangeParticle>
+struct FFMassiveVVertexCorrectionSSF {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<FermionIn>::type& indices_in,
          const typename field_indices<FermionOut>::type& indices_out,
@@ -84,8 +84,8 @@ struct FFMassiveVVertexCorrectionSF {
 * \a Args.
 */
 
-template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeParticle>
-struct FFMassiveVVertexCorrectionFS {
+template<class FermionIn, class FermionOut, class Spectator, class Emitter1, class Emitter2, class ExchangeParticle>
+struct FFMassiveVVertexCorrectionFFS {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<FermionIn>::type& indices_in,
          const typename field_indices<FermionOut>::type& indices_out,
@@ -213,9 +213,9 @@ default_indices_for_spectator<VG>( void )
 }
 
 // emit spectator from the internal scalar line
-template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
-std::valarray<std::complex<double>> FFMassiveVVertexCorrectionSF<
-FermionIn, FermionOut, Spectator, Emitter, ExchangeField
+template<class FermionIn, class FermionOut, class Spectator, class Emitter1, class Emitter2, class ExchangeField>
+std::valarray<std::complex<double>> FFMassiveVVertexCorrectionSSF<
+FermionIn, FermionOut, Spectator, Emitter1, Emitter2, ExchangeField
 >::value(
       const typename field_indices<FermionIn>::type& indices_in, 
       const typename field_indices<FermionOut>::type& indices_out, 
@@ -226,17 +226,17 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
    using FermionVertexIn = Vertex<
                          FermionIn,
                          ExchangeField,
-                         typename Emitter::lorentz_conjugate
+                         typename Emitter1::lorentz_conjugate
                          >;
    using FermionVertexOut = Vertex<
                          typename FermionOut::lorentz_conjugate,
                          typename ExchangeField::lorentz_conjugate,
-                         Emitter
+                         Emitter1
                          >;
    using FermionVertexEmit = Vertex<
                          typename Spectator::lorentz_conjugate,
-                         Emitter,
-                         typename Emitter::lorentz_conjugate
+                         Emitter1,
+                         typename Emitter1::lorentz_conjugate
                          >;
 
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
@@ -264,8 +264,8 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
          if (EmitterIndicesIn != EmitterIndicesOut) continue;
 
          // Throw out SM Goldstone, it could crash if SM is used.
-         if ( std::is_same<Emitter, ChargedHiggsMultiplet>::type::value || 
-                 std::is_same<Emitter, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
+         if ( std::is_same<Emitter1, ChargedHiggsMultiplet>::type::value || 
+                 std::is_same<Emitter1, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
          {
             if ( EmitterIndicesIn[0] == 0 )
                 continue;
@@ -278,7 +278,7 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
          const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, EmitterIndicesIn ), EmitterIndicesIn );
          const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
-         const auto EmitterMass = context.mass<Emitter>(EmitterIndicesIn);
+         const auto EmitterMass = context.mass<Emitter1>(EmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
          const auto x = pow(exchangeFieldMass/EmitterMass, 2);
          const auto leptonMass = context.mass<FermionIn>(edmFieldIndicesIn);
@@ -311,9 +311,9 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
 }
 
 // emit spectator from the internal fermion line
-template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
-std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFS<
-FermionIn, FermionOut, Spectator, Emitter, ExchangeField
+template<class FermionIn, class FermionOut, class Spectator, class Emitter1, class Emitter2, class ExchangeField>
+std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFFS<
+FermionIn, FermionOut, Spectator, Emitter1, Emitter2, ExchangeField
 >::value(const typename field_indices<FermionIn>::type& indices_in, 
       const typename field_indices<FermionOut>::type& indices_out,
       EvaluationContext& context)
@@ -323,17 +323,17 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
    using FermionVertexIn = Vertex<
                          FermionIn,
                          ExchangeField,
-                         typename Emitter::lorentz_conjugate
+                         typename Emitter1::lorentz_conjugate
                          >;
    using FermionVertexOut = Vertex<
                          typename FermionOut::lorentz_conjugate,
                          typename ExchangeField::lorentz_conjugate,
-                         Emitter
+                         Emitter1
                          >;
    using FermionVertexEmit = Vertex<
                          typename Spectator::lorentz_conjugate,
-                         Emitter,
-                         typename Emitter::lorentz_conjugate
+                         Emitter1,
+                         typename Emitter1::lorentz_conjugate
                          >;
    
    constexpr auto indexBoundsOut = FermionVertexOut::index_bounds;
@@ -374,7 +374,7 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
          const auto indexEmit = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, EmitterIndicesIn ), EmitterIndicesIn );
          const auto vertexEmit = FermionVertexEmit::evaluate(indexEmit, context);
 
-         const auto EmitterMass = context.mass<Emitter>(EmitterIndicesIn);
+         const auto EmitterMass = context.mass<Emitter1>(EmitterIndicesIn);
          const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndicesIn);
          const auto x = pow(EmitterMass/exchangeFieldMass, 2);
          const auto leptonMass = context.mass<FermionIn>(edmFieldIndicesIn);

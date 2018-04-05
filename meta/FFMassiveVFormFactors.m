@@ -181,34 +181,31 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
     in2}, {Emitter, in3}}
   }
  ];
- Print[inFermion, " ", outFermion, " ", Emitter, " ", exchangeParticle, " ", colorFactor];
-    
-    colorFactorStr = "std::complex<double> " <> 
-       ToString @ (N[#, 16]& /@ (ReIm[colorFactor]/EvaluateColorStruct[Emitter, exchangeParticle]));
-    If[TreeMasses`IsFermion[Emitter] && TreeMasses`IsScalar[exchangeParticle],
-       Return[colorFactorStr <> " * " <> CXXEvaluatorFS[inFermion,outFermion,spectator,Emitter,exchangeParticle]]];
-    If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[Emitter],
-       Return[colorFactorStr <> " * " <> CXXEvaluatorSF[inFermion,outFermion,spectator,Emitter,exchangeParticle]]];
-    
-    (* TODO: add switch for remaining topologies *)
-    Return["(unknown diagram)"];
-  ]
 
-(* loop diagrams *)
+        colorFactorStr = "std::complex<double> " <>
+            ToString @ (N[#, 16]& /@ (ReIm[colorFactor]/EvaluateColorStruct[Emitter, exchangeParticle]));
 
-CXXEvaluatorFS[inFermion_,outFermion_,spectator_,Emitter_,exchangeParticle_] :=
-   "FFMassiveVVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
-   CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
-   CXXDiagrams`CXXNameOfField[spectator] <> ", " <>
-   CXXDiagrams`CXXNameOfField[Emitter] <> ", " <>
-   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
+        colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, Emitter, exchangeParticle}]
 
-CXXEvaluatorSF[inFermion_,outFermion_,spectator_,Emitter_,exchangeParticle_] :=
-   "FFMassiveVVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
-   CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
-   CXXDiagrams`CXXNameOfField[spectator] <> ", " <>
-   CXXDiagrams`CXXNameOfField[Emitter] <> ", " <>
-   CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
+    ]
+
+(* loop diagrams
+   naming convention is
+   BCA =
+
+   in     A     out
+   ----------------
+        \    /
+     B   \  /   C
+          \/
+*)
+
+CXXEvaluator[external_List, internal_List] :=
+    "FFMassiveVVertexCorrection" <>
+    StringJoin @@ (ToString @ SARAH`getType[#, False, FlexibleSUSY`FSEigenstates])& /@ internal <>
+    "<" <>
+        StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, internal], ", "] <>
+    ">";
 
 (* Divide by this factor because we some over color indices. *)
 EvaluateColorStruct[Emitter_, exchangeParticle_] := 
