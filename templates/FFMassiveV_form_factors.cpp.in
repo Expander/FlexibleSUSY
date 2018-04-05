@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_FFV_form_factors.cpp
+ * @file @ModelName@_FFMassiveV_form_factors.cpp
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
@@ -214,7 +214,7 @@ default_indices_for_spectator<VG>( void )
 
 // emit spectator from the internal scalar line
 template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
-std::valarray<std::complex<double>> EDMVertexCorrectionSF<
+std::valarray<std::complex<double>> FFMassiveVVertexCorrectionSF<
 FermionIn, FermionOut, Spectator, Emitter, ExchangeField
 >::value(
       const typename field_indices<FermionIn>::type& indices_in, 
@@ -312,7 +312,7 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
 
 // emit spectator from the internal fermion line
 template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
-std::valarray<std::complex<double>> EDMVertexCorrectionFS<
+std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFS<
 FermionIn, FermionOut, Spectator, Emitter, ExchangeField
 >::value(const typename field_indices<FermionIn>::type& indices_in, 
       const typename field_indices<FermionOut>::type& indices_out,

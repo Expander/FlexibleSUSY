@@ -1957,18 +1957,19 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
 WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
   Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
+
     graphs = FFMassiveVFormFactors`FFMassiveVFormFactorsContributingGraphs[];
     diagrams = Outer[FFMassiveVFormFactors`FFMassiveVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     
-    {interfacePrototypes,interfaceDefinitions} = 
+    {interfacePrototypes, interfaceDefinitions} =
       If[diagrams === {},
          {"",""},
          StringJoin @@@ 
           (Riffle[#, "\n\n"] & /@ Transpose[FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
             Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
-    
+
     WriteOut`ReplaceInFiles[files,
                             {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
                              "@FFMassiveVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
@@ -4107,12 +4108,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
 
            Print["Creating FFMassiveV form factor class ..."];
-        fFFMassiveVertices = WriteFFMassiveVFormFactorsClass[
-            DeleteDuplicates @ Join[fieldsForFToFDecay(*, fieldsForFToFConversion*)],
-    {{FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.hpp.in"}],
-        FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
-        {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
-            FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
+           fFFMassiveVertices = WriteFFMassiveVFormFactorsClass[
+             DeleteDuplicates @ Join[fieldsForFToFDecay(*, fieldsForFToFConversion*)],
+                           {{FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 

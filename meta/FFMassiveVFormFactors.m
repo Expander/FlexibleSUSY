@@ -80,7 +80,6 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
             numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
-      },
 
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
@@ -198,14 +197,14 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
 (* loop diagrams *)
 
 CXXEvaluatorFS[inFermion_,outFermion_,spectator_,Emitter_,exchangeParticle_] :=
-   "EDMVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+   "FFMassiveVVertexCorrectionFS<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
    CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
    CXXDiagrams`CXXNameOfField[spectator] <> ", " <>
    CXXDiagrams`CXXNameOfField[Emitter] <> ", " <>
    CXXDiagrams`CXXNameOfField[exchangeParticle] <> ">"
 
 CXXEvaluatorSF[inFermion_,outFermion_,spectator_,Emitter_,exchangeParticle_] :=
-   "EDMVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
+   "FFMassiveVVertexCorrectionSF<" <> CXXDiagrams`CXXNameOfField[inFermion] <> ", " <>
    CXXDiagrams`CXXNameOfField[outFermion] <> ", " <>
    CXXDiagrams`CXXNameOfField[spectator] <> ", " <>
    CXXDiagrams`CXXNameOfField[Emitter] <> ", " <>

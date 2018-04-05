@@ -9,6 +9,8 @@ BASE_TEMPLATES := \
 		$(DIR)/edm.cpp.in \
 		$(DIR)/FFV_form_factors.hpp.in \
 		$(DIR)/FFV_form_factors.cpp.in \
+		$(DIR)/FFMassiveV_form_factors.hpp.in \
+		$(DIR)/FFMassiveV_form_factors.cpp.in \
 		$(DIR)/mu_to_egamma.hpp.in \
 		$(DIR)/mu_to_egamma.cpp.in \
 		$(DIR)/f_to_f_conversion.hpp.in \
