@@ -62,7 +62,6 @@ model_files/munuSSMSemiAnalytic export-ignore
 model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
-model_files/NUHMSSMNoFV         export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
