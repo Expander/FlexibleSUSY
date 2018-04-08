@@ -191,13 +191,17 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
 
 (* loop diagrams
    naming convention is
-   BCA =
+   external = {in, out, spectator}
+   internal = {B, C, A}
+   routine name BCA =
 
    in     A     out
    ----------------
         \    /
      B   \  /   C
           \/
+           |
+           spectator
 *)
 
 CXXEvaluator[external_List, internal_List] :=

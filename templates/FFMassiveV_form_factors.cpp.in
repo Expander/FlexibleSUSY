@@ -24,19 +24,15 @@
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
+
 #include <valarray>
 #include <complex>
 #include <iostream>
 
-#include "@ModelName@_mu_to_egamma.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
-
 #include "@ModelName@_cxx_diagrams.hpp"
 
-#define INPUTPARAMETER(p) context.model.get_input().p
-#define MODELPARAMETER(p) context.model.get_##p()
-#define DERIVEDPARAMETER(p) context.model.p()
-#define PHASE(p) context.model.get_##p()
+#include "@ModelName@_FFMassiveV_form_factors.hpp"
 
 using namespace flexiblesusy;
 using namespace cxx_diagrams;
