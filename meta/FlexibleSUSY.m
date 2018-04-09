@@ -4073,12 +4073,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
-           
+
+           Print["Creating MuEGamma class ..."];
            (* collect all the {fermion,fermion,vector} triplets needed for the requested observables *)
            fieldsForFToFDecay = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`MuEGamma[pIn_[_Integer], pOut_[_Integer], spectator_] :> {pIn, pOut, spectator}];
 
-           Print["Creating MuEGamma class ..."];
            mu2egammaVertices =
              WriteMuEGammaClass[fieldsForFToFDecay,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.hpp.in"}],
@@ -4086,18 +4086,23 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.cpp"}]}}];
 
-           fieldsForFToFConversion = 
+           Print["Creating FToFConversionInNucleus class ..."];
+           fieldsForFToFConversion =
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                 FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, nucleus}];
 
-           Print["Creating FToFConversionInNucleus class ..."];
-           conversionVertices =
+conversionVerticesTemp =
              WriteFToFConversionInNucleusClass[fieldsForFToFConversion,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.cpp"}]}}];
-              
+Print[conversionVerticesTemp];
+            (* TODO: find a nice way to add additional vertices needed for mu to e conversion *)
+            conversionVertices = {};
+            conversionVertices = {{SARAH`VZ, TreeMasses`GetSMQuarks[][[1]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[1]]]},
+                {SARAH`VZ, TreeMasses`GetSMQuarks[][[2]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[2]]]}
+            };
 
            Print["Creating FFMasslessV form factor class ..."];
            fFFMasslessVertices = WriteFFVFormFactorsClass[
@@ -4108,12 +4113,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
 
            Print["Creating FFMassiveV form factor class ..."];
+           Print["Fields for conversion: ", fieldsForFToFConversion];
+           fieldsForFToFConversion[[1,-1]] = SARAH`VZ;
            fFFMassiveVertices = WriteFFMassiveVFormFactorsClass[
-             DeleteDuplicates @ Join[fieldsForFToFDecay(*, fieldsForFToFConversion*)],
+             DeleteDuplicates @ Join[fieldsForFToFConversion,{}],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
+           Print["Massive vertices: ", fFFMassiveVertices];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 
@@ -4124,7 +4132,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            
 
            WriteCXXDiagramClass[
-             DeleteDuplicates @ Join[fFFMasslessVertices, edmVertices,aMuonVertices],Lat$massMatrices,
+             DeleteDuplicates @ Join[fFFMasslessVertices, fFFMassiveVertices, edmVertices, aMuonVertices, conversionVertices],Lat$massMatrices,
                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
 

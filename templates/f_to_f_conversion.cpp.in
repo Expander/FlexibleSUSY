@@ -52,20 +52,42 @@ struct overlap_integrals {
 
 overlap_integrals get_overlap_integrals(Nucleus N, const softsusy::QedQcd& qedqcd) {
    overlap_integrals res; 
-   const auto muon_m {qedqcd.displayMass(softsusy::mMuon)};
+   // get muon pole mass from input slha file
+   const auto muon_pole_mass {qedqcd.displayMass(softsusy::mMuon)};
    switch (N) {
       // Tab. 2 of hep-ph/0203110
       case Nucleus::Au:
-         res.D  = 0.1670*pow(muon_m, 5./2.);
-         res.Vp = 0.0859*pow(muon_m, 5./2.);
-         res.Vn = 0.1080*pow(muon_m, 5./2.);
-         res.Sp = 0.0523*pow(muon_m, 5./2.);
-         res.Sn = 0.0610*pow(muon_m, 5./2.);
+         res.D  = 0.1670*pow(muon_pole_mass, 5./2.);
+         res.Vp = 0.0859*pow(muon_pole_mass, 5./2.);
+         res.Vn = 0.1080*pow(muon_pole_mass, 5./2.);
+         res.Sp = 0.0523*pow(muon_pole_mass, 5./2.);
+         res.Sn = 0.0610*pow(muon_pole_mass, 5./2.);
          return res;
       default:
          std::cout << "Unknown nucleus\n";
       break;
    } 
+}
+
+std::valarray<std::complex<double>> create_Z_penguin_amp(const EvaluationContext& context) {
+   using FermionVertexEmit = Vertex<
+      typename VZ::lorentz_conjugate,
+      Fu,
+      typename Fu::lorentz_conjugate
+      >;
+   using FermionVertexEmit1 = Vertex<
+      typename VZ::lorentz_conjugate,
+      Fd,
+      typename Fd::lorentz_conjugate
+      >;
+   std::array<int, 4> indices = { 0, 0, 0, 0 };
+   const auto vertexEmit = FermionVertexEmit::evaluate(indices, context);
+   std::cout << vertexEmit.left() << ' ' << vertexEmit.right() << std::endl;
+
+   indices = { 1, 1, 1, 1 };
+   const auto vertexEmit1 = FermionVertexEmit::evaluate(indices, context);
+   std::cout << vertexEmit1.left() << ' ' << vertexEmit1.right() << std::endl;
+   return {0.,0.,0.,0.};
 }
 
 @FToFConversion_InterfaceDefinitions@
