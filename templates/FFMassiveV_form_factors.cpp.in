@@ -121,73 +121,20 @@ namespace {
 * as specified in arXiv:0808.1819
 */
 
-// function from eq. 15 of hep-ph/9510309 
-double OneLoopFunctionA(double r)
-{
-   if (is_zero(1.0-r)) {
-      return 1.5;
-   } else if (is_zero(r)) {
-      return 2.0;
-   }
-   else {
-      return (2.0 - 9.0*r + 18.0*r*r - 11.0*r*r*r + 6.0*r*r*r*std::log(r))/pow(1.0-r,4);
-   }
-}
-
-double OneLoopFunctionB(double r)
-{
-   if (is_zero(1.0-r)) {
-      return 1.0/12.0;
-   } else if (is_zero(r)) {
-      return 1.0/6.0;
-   }
-   else {
-      return (1.0 - 6.0*r + 3.0*r*r + 2.0*r*r*r - 6.0*r*r*std::log(r))/6.0/pow(1.0-r,4);
+// eq. 15 of hep-ph/9510309 
+double F(double xAX, double xBX) {
+   if (false) {
+      return 0.;
+   } else {
+      return std::log(xAX) + 1./(xAX - xBX) * (
+         xAX*xAX*std::log(xAX)/(1.-xAX)
+       - xBX*xBX*std::log(xBX)/(1.-xBX)
+      );
    }
 }
 
-double OneLoopFunctionC(double r)
-{
-   if (is_zero(1.0-r)) {
-      return 1.0/3.0;
-   } else if (is_zero(r)) {
-      return 1.0;
-   }
-   else {
-      return (1.0 - r*r + 2.0*r*std::log(r))/pow(1.0-r,3);
-   }
-}
-
-double OneLoopFunctionD(double r)
-{
-   if (is_zero(1.0-r)) {
-      return -9.0/2.0;
-   }
-   else {
-      return (16.0 - 45.0*r + 36.0*r*r - 7.0*r*r*r + 6.0*(2.0-3.0*r)*std::log(r))/pow(1.0-r,4);
-   }
-}
-
-double OneLoopFunctionE(double r)
-{
-   if (is_zero(1.0-r)) {
-      return 1.0/12.0;
-   } else if (is_zero(r)) {
-      return 1.0/3.0;
-   }
-   else {
-      return (2.0 + 3.0*r - 6.0*r*r + r*r*r + 6.0*r*std::log(r))/6.0/pow(1.0-r,4);
-   }
-}
-
-double OneLoopFunctionF(double r)
-{
-   if (is_zero(1.0-r)) {
-      return 2.0/3.0;
-   }
-   else {
-      return (-3.0 + 4.0*r - r*r - 2.0*std::log(r))/pow(1.0-r,3);
-   }
+double G(double rAX/*, double rBX*/) {
+   return rAX;
 }
 
 template<class Spectator>
@@ -283,18 +230,18 @@ FermionIn, FermionOut, Spectator, Emitter1, Emitter2, ExchangeField
 
          // eq. 15 of hep-ph/9510309
          const std::complex<double> A1L =
-            1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionA(x);
+            1./18. * vertexOut.right() * vertexIn.left() * G(x);
          // eq. 16 of hep-ph/9510309
          const std::complex<double> A2L = 
-            vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
-            + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
+            vertexOut.left() * vertexIn.right() * G(x) 
+            + vertexOut.left()* vertexIn.left() * exchangeFieldMass/leptonMass * G(x);
 
          // eq. 15 & 16 of hep-ph/9510309 after replacement L <-> R
          const std::complex<double> A1R = 
-            1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionA(x);
+            1./18. * vertexOut.left() * vertexIn.right() * G(x);
          const std::complex<double> A2R = 
-            vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
-            + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass * OneLoopFunctionC(x);
+            vertexOut.right() * vertexIn.left() * G(x) 
+            + vertexOut.right()* vertexIn.right() * exchangeFieldMass/leptonMass * G(x);
 
          const std::complex<double> massFactor = pow(EmitterMass,-2);
 
@@ -380,18 +327,18 @@ FermionIn, FermionOut, Spectator, Emitter1, Emitter2, ExchangeField
 
          // eq. 18 of hep-ph/9510309
          const std::complex<double> A1L =
-            1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionD(x);
+            1./18. * vertexOut.right() * vertexIn.left() * G(x);
          // eq. 19 of hep-ph/9510309
          const std::complex<double> A2L = 
-            vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
-            + vertexOut.left()* vertexIn.left() * EmitterMass/leptonMass * OneLoopFunctionF(x);
+            vertexOut.left() * vertexIn.right() * G(x) 
+            + vertexOut.left()* vertexIn.left() * EmitterMass/leptonMass * G(x);
 
          // eq. 18 & 18 of hep-ph/9510309 after replacement L <-> R
          const std::complex<double> A1R = 
-            1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionD(x);
+            1./18. * vertexOut.left() * vertexIn.right() * G(x);
          const std::complex<double> A2R = 
-            vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
-            + vertexOut.right()* vertexIn.right() * EmitterMass/leptonMass * OneLoopFunctionF(x);
+            vertexOut.right() * vertexIn.left() * G(x) 
+            + vertexOut.right()* vertexIn.right() * EmitterMass/leptonMass * G(x);
          const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
 
          res -= oneOver32PiSquared * EmitterCharge * massFactor 
