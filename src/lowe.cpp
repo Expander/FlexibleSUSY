@@ -341,7 +341,7 @@ void QedQcd::toMz()
 /**
  * Calculates all running parameters in the SM w/o top quark at Q.
  * This function can be called multiple times, leading to the same
- * result (in contrast to toMz()).
+ * result.
  *
  * @param scale target renormalization scale
  * @param precision_goal precision goal
