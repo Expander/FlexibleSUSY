@@ -1289,18 +1289,24 @@ CreateIndices[parameter_] := "";
 AppendIfNotEmpty[str_String, sym_String] := If[str == "", "", str <> sym];
 
 SetParameter[Re[parameter_], value_String, class_String, castToType_:None] :=
-    Module[{parameterStr, newValue},
-           parameterStr = CConversion`RValueToCFormString[parameter];
+    Module[{parameterStr, indicesStr = "", newValue},
+           If[GetIndices[parameter] =!= {},
+              indicesStr = "(" <> ConcatIndices[GetIndices[parameter]] <> ")";
+             ];
+           parameterStr = CConversion`RValueToCFormString[StripIndices[parameter]];
            newValue = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
-               "(" <> value <> ",Im(MODELPARAMETER(" <> parameterStr <> ")))";
+               "(" <> value <> ",Im(MODELPARAMETER(" <> parameterStr <> ")" <> indicesStr <> "))";
            SetParameter[parameter, newValue, class, castToType]
           ];
 
 SetParameter[Im[parameter_], value_String, class_String, castToType_:None] :=
-    Module[{parameterStr, newValue},
-           parameterStr = CConversion`RValueToCFormString[parameter];
+    Module[{parameterStr, indicesStr = "", newValue},
+           If[GetIndices[parameter] =!= {},
+              indicesStr = "(" <> ConcatIndices[GetIndices[parameter]] <> ")";
+             ];
+           parameterStr = CConversion`RValueToCFormString[StripIndices[parameter]];
            newValue = CConversion`CreateCType[CConversion`ScalarType[complexScalarCType]] <>
-               "(Re(MODELPARAMETER(" <> parameterStr <> "))," <> value <> ")";
+               "(Re(MODELPARAMETER(" <> parameterStr <> ")" <> indicesStr <> ")," <> value <> ")";
            SetParameter[parameter, newValue, class, castToType]
           ];
 
