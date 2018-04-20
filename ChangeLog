@@ -1,3 +1,10 @@
+FlexibleSUSY 2.1.1 [not released yet]
+
+ * Feature: The symbols upQuarksDRbar, downQuarksDRbar,
+   downLeptonsDRbar and neutrinoDRbar are now accessible in all the
+   individual low-scale constraint settings (not only in the ones that
+   set the SM-like Yukawa couplings Yu, Yd, Ye and Yv).
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
