@@ -283,8 +283,7 @@ FindFixedParametersFromConstraint[settings_List] :=
 
 CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_, value_],
              constraintName_String, __] :=
-    Module[{modelParameters, unknownParameters},
-           modelParameters = Join[Parameters`GetModelParameters[], Parameters`GetExtraParameters[]];
+    Module[{unknownParameters},
            If[Head[parameters] =!= List,
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
               Print["   First parameter must be a list!"];
@@ -313,7 +312,8 @@ CheckSetting[patt:(FlexibleSUSY`FSMinimize|FlexibleSUSY`FSFindRoot)[parameters_,
               Print["   Correct syntax: FSMinimize[{a,b}, f[a,b]]"];
               Return[False];
              ];
-           unknownParameters = Complement[parameters, modelParameters];
+           unknownParameters = Select[parameters, (!Parameters`IsModelParameter[#] &&
+                                                   !Parameters`IsExtraParameter[#])&];
            If[unknownParameters =!= {},
               Print["Error: In constraint ", constraintName, ": ", InputForm[patt]];
               Print["   Unknown parameters: ", unknownParameters];
