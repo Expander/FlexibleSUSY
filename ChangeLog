@@ -1,9 +1,13 @@
 FlexibleSUSY 2.1.1 [not released yet]
 
- * Feature: The symbols upQuarksDRbar, downQuarksDRbar,
-   downLeptonsDRbar and neutrinoDRbar are now accessible in all the
-   individual low-scale constraint settings (not only in the ones that
-   set the SM-like Yukawa couplings Yu, Yd, Ye and Yv).
+ * Feature: The symbols `upQuarksDRbar`, `downQuarksDRbar`,
+   `downLeptonsDRbar` and `neutrinoDRbar` are now accessible in all
+   the individual low-scale constraint settings (not only in the ones
+   that set the SM-like Yukawa couplings `Yu`, `Yd`, `Ye` and `Yv`).
+
+ * Bugfix (commit a9860038a): Properly treat `Re[p]` and `Im[p]` in
+   the parameter list of `FSFindRoot[]` and `FSMinimize[]`, when the
+   parameter `p` has indices.
 
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
