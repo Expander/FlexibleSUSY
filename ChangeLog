@@ -9,6 +9,11 @@ FlexibleSUSY 2.1.1 [not released yet]
    the parameter list of `FSFindRoot[]` and `FSMinimize[]`, when the
    parameter `p` has indices.
 
+ * Bugfix (commit 00b6798a7): Speed-up the generation of the C++ code
+   with Mathematica 11.3.
+
+   Thanks to Wojciech Kotlarski.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
