@@ -127,7 +127,7 @@ TestEquality[deriv, 0];
 
 Print["Testing cached 3-loop expression Mt/mt ..."];
 
-Get[FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "SM", "Mf_over_mf_3loop_qcd.m"}]];
+Get[FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "SM", "mf_3loop_qcd.m"}]];
 
 TestEquality[
     FullSimplify[
