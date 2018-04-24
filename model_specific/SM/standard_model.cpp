@@ -4577,11 +4577,9 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
    if (get_thresholds() > 2 && threshold_corrections.mt > 2) {
       qcd_3l = -0.0008783313853540776*Power6(g3) -
          5.078913443827405e-6*Cube(Log(Sqr(currentScale)/Sqr(MFu(idx))))*Power6
-         (g3) - 0.0004114970933517977*Log(Sqr(currentScale)/Sqr(MFu(idx)))*
-         Power6(g3) - 0.0002952541682011665*Log(Sqr(MFu(idx))/Sqr(currentScale)
-         )*Power6(g3) + 0.00005282069981580501*Power6(g3)*Sqr(Log(Power(MFu(idx
-         ),2)/Sqr(currentScale))) - 0.00007466002762426286*Power6(g3)*Sqr(Log(
-         Power(currentScale,2)/Sqr(MFu(idx))));
+         (g3) - 0.00011624292515063117*Log(Sqr(currentScale)/Sqr(MFu(idx)))*
+         Power6(g3) - 0.00002183932780845784*Power6(g3)*Sqr(Log(Sqr(
+         currentScale)/Sqr(MFu(idx))));
    }
 
    const double m_susy_drbar = m_pole + self_energy_1 + m_pole * (
