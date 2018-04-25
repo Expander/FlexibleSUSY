@@ -5,6 +5,10 @@ FlexibleSUSY 2.1.1 [not released yet]
    the individual low-scale constraint settings (not only in the ones
    that set the SM-like Yukawa couplings `Yu`, `Yd`, `Ye` and `Yv`).
 
+ * Change: If unspecified, the pole mass and EWSB loop order is set to
+   4 and the threshold correction loop order is set to 3.  In this way
+   all available loop corrections are enable by default.
+
  * Bugfix (commit a9860038a): Properly treat `Re[p]` and `Im[p]` in
    the parameter list of `FSFindRoot[]` and `FSMinimize[]`, when the
    parameter `p` has indices.
