@@ -142,6 +142,9 @@ BOOST_AUTO_TEST_CASE( test_SM_one_loop_masses )
    setup_SM_const(m, input);
    setup_SM_const(sm, input);
 
+   m.set_thresholds(1);
+   sm.set_thresholds(1);
+
    m.do_calculate_sm_pole_masses(true);
 
    m.calculate_DRbar_masses();

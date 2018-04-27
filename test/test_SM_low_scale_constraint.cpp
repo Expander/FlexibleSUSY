@@ -104,6 +104,9 @@ BOOST_AUTO_TEST_CASE( test_low_scale_constraint )
    setup_SM_const(m, input);
    setup_SM_const(sm, input);
 
+   m.set_thresholds(0);
+   sm.set_thresholds(0);
+
    m.calculate_DRbar_masses();
    sm.calculate_DRbar_masses();
 
