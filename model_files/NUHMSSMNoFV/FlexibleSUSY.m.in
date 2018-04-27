@@ -50,7 +50,7 @@ Qstop = With[
     { mt = Yu[3,3] vu / Sqrt[2],
       mQ2 = mq33IN^2,
       mU2 = mu33IN^2,
-      Xt = AtIN - MuIN/TanBeta
+      Xt = AtIN - MuIN/(vu/vd)
     },
     Simplify @
     Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
@@ -60,7 +60,7 @@ QstopGuess = With[
     { mt = 160,
       mQ2 = mq33IN^2,
       mU2 = mu33IN^2,
-      Xt = AtIN - MuIN/TanBeta
+      Xt = AtIN - MuIN/(vu/vd)
     },
     Simplify @
     Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
