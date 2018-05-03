@@ -18,6 +18,9 @@ FlexibleSUSY 2.1.1 [not released yet]
 
    Thanks to Wojciech Kotlarski.
 
+ * Bugfix (commit f2b91c358): Flag error when non-perturbative
+   corrections appear in calculation of Weinberg angle.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
