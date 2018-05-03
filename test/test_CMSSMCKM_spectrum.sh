@@ -14,7 +14,7 @@ sed_cmd=`command -v sed`
 awk_cmd=`command -v awk`
 numdiff_cmd=`command -v numdiff`
 FS="$BASEDIR/../models/CMSSMCKM/run_CMSSMCKM.x"
-SS="$BASEDIR/../models/SoftsusyFlavourMSSM/run_softpoint.x"
+SS="$BASEDIR/../test/SOFTSUSY/run_softpoint.x"
 rel_error="3e-3"
 
 if [ -z "$sed_cmd" ]; then

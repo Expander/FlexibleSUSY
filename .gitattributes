@@ -48,6 +48,7 @@ model_files/CMSSMConvergenceTester export-ignore
 model_files/CMSSMYt2L           export-ignore
 model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
+model_files/HSSUSYNoMomIt       export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/LRLR                export-ignore
@@ -62,7 +63,7 @@ model_files/munuSSMSemiAnalytic export-ignore
 model_files/NoInputParameters   export-ignore
 model_files/NoYukawaMSSM        export-ignore
 model_files/NSM                 export-ignore
-model_files/NUHMSSMNoFV         export-ignore
+model_files/NUHMSSMNoFVNoMomIt  export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
@@ -84,9 +85,6 @@ model_files/SMtower             export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
-models/SoftsusyMSSM             export-ignore
-models/SoftsusyNMSSM            export-ignore
-models/SoftsusyFlavourMSSM      export-ignore
 
 release                         export-ignore
 

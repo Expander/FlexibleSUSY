@@ -207,33 +207,33 @@ BOOST_AUTO_TEST_CASE(test_calculate_dirac_singlet_mass)
    BOOST_CHECK_CLOSE(std::arg(phase), Pi/4., 1e-13);
 }
 
-BOOST_AUTO_TEST_CASE(test_If)
+BOOST_AUTO_TEST_CASE(test_IF)
 {
-   BOOST_CHECK_EQUAL(If(true , 1., 2.), 1.);
-   BOOST_CHECK_EQUAL(If(false, 1., 2.), 2.);
-   BOOST_CHECK_EQUAL(If(true , 1 , 2.), 1 );
-   BOOST_CHECK_EQUAL(If(false, 1., 2 ), 2 );
+   BOOST_CHECK_EQUAL(IF(true , 1., 2.), 1.);
+   BOOST_CHECK_EQUAL(IF(false, 1., 2.), 2.);
+   BOOST_CHECK_EQUAL(IF(true , 1 , 2.), 1 );
+   BOOST_CHECK_EQUAL(IF(false, 1., 2 ), 2 );
 
-   BOOST_CHECK_EQUAL(std::real(If(true , std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 1.);
-   BOOST_CHECK_EQUAL(std::real(If(false, std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 2.);
+   BOOST_CHECK_EQUAL(std::real(IF(true , std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 1.);
+   BOOST_CHECK_EQUAL(std::real(IF(false, std::complex<double>(1.,1.), std::complex<double>(2.,2.))), 2.);
 
-   BOOST_CHECK_EQUAL(std::real(If(true , 1, std::complex<double>(2.,2.))), 1);
-   BOOST_CHECK_EQUAL(std::real(If(false, std::complex<double>(1.,1.), 2)), 2);
+   BOOST_CHECK_EQUAL(std::real(IF(true , 1, std::complex<double>(2.,2.))), 1);
+   BOOST_CHECK_EQUAL(std::real(IF(false, std::complex<double>(1.,1.), 2)), 2);
 }
 
-BOOST_AUTO_TEST_CASE(test_Which)
+BOOST_AUTO_TEST_CASE(test_WHICH)
 {
-   // BOOST_CHECK_EQUAL(Which(true), 1.); // must not compile
-   BOOST_CHECK_EQUAL(Which(true , 2.), 2.);
-   BOOST_CHECK_EQUAL(Which(false, 2., true, 3.), 3.);
-   BOOST_CHECK_EQUAL(Which(false, 2., false, 3., true, 4.), 4.);
+   // BOOST_CHECK_EQUAL(WHICH(true), 1.); // must not compile
+   BOOST_CHECK_EQUAL(WHICH(true , 2.), 2.);
+   BOOST_CHECK_EQUAL(WHICH(false, 2., true, 3.), 3.);
+   BOOST_CHECK_EQUAL(WHICH(false, 2., false, 3., true, 4.), 4.);
 
-   BOOST_CHECK_EQUAL(std::real(Which(true , std::complex<double>(2.,2.))), 2.);
-   BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), true, 3.), 3.);
-   BOOST_CHECK_EQUAL(Which(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
+   BOOST_CHECK_EQUAL(std::real(WHICH(true , std::complex<double>(2.,2.))), 2.);
+   BOOST_CHECK_EQUAL(WHICH(false, std::complex<double>(2.,2.), true, 3.), 3.);
+   BOOST_CHECK_EQUAL(WHICH(false, std::complex<double>(2.,2.), false, 3., true, 4.), 4.);
 
-   BOOST_CHECK_EQUAL(Which(false, 0, true, 0.5), 0.5);
-   BOOST_CHECK_EQUAL(Which(false, 0, false, 0, true, 0.5), 0.5);
+   BOOST_CHECK_EQUAL(WHICH(false, 0, true, 0.5), 0.5);
+   BOOST_CHECK_EQUAL(WHICH(false, 0, false, 0, true, 0.5), 0.5);
 }
 
 BOOST_AUTO_TEST_CASE(test_MaxRelDiff)

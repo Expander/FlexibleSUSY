@@ -86,6 +86,7 @@ void compare_SM_pars(const SM_soft_parameters& m1, const standard_model::Standar
    BOOST_CHECK_CLOSE_FRACTION(m1.get_g1()     , m2.get_g1()     , eps);
    BOOST_CHECK_CLOSE_FRACTION(m1.get_g2()     , m2.get_g2()     , eps);
    BOOST_CHECK_CLOSE_FRACTION(m1.get_g3()     , m2.get_g3()     , eps);
+   BOOST_CHECK_CLOSE_FRACTION(m1.get_v()      , m2.get_v()      , eps);
    BOOST_CHECK_CLOSE_FRACTION(m1.get_mu2()    , m2.get_mu2()    , eps);
    BOOST_CHECK_CLOSE_FRACTION(m1.get_Lambdax(), m2.get_Lambdax(), eps);
 

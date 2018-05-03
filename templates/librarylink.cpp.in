@@ -209,7 +209,10 @@ public:
    void check_spectrum(MLINK link) const;
    void calculate_model_observables();
 
-   double get_model_scale() const { return spectrum->get_model_scale(); }
+   double get_model_scale() const {
+      check_spectrum_pointer();
+      return spectrum->get_model_scale();
+   }
 private:
    @ModelName@_input_parameters input{};     ///< model input parameters
    Physical_input physical_input{};          ///< extra non-SLHA physical input
@@ -337,7 +340,8 @@ void put_message(MLINK link,
 void Model_data::check_spectrum_pointer() const
 {
    if (!spectrum) {
-      throw SetupError("no spectrum generator set");
+      throw SetupError("No spectrum generator set! "
+                       "Did you run FS@ModelName@CalculateSpectrum[]?");
    }
 }
 

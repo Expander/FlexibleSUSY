@@ -50,9 +50,9 @@ EOF
 }
 
 # convert scientific notation to bc friendly notation
-amu_fs=$(echo "${amu_fs}" | sed -e 's/[eE]/\*10\^/')
-amu_gm2calc_fs=$(echo "${amu_gm2calc_fs}" | sed -e 's/[eE]/\*10\^/')
-amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/')
+amu_fs=$(echo "${amu_fs}" | sed -e 's/[eE]/\*10\^/' | sed -e 's/\^+/\^/')
+amu_gm2calc_fs=$(echo "${amu_gm2calc_fs}" | sed -e 's/[eE]/\*10\^/' | sed -e 's/\^+/\^/')
+amu_gm2calc=$(echo "${amu_gm2calc}" | sed -e 's/[eE]/\*10\^/' | sed -e 's/\^+/\^/')
 
 ### test GM2Calc vs. embedded GM2Calc
 

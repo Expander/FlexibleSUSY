@@ -19,10 +19,8 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
-#include <algorithm>
 #include <cmath>
 #include <complex>
-#include <functional>
 #include <limits>
 #include <numeric>
 #include <iostream>
@@ -34,12 +32,9 @@
 #include <boost/lexical_cast.hpp>
 
 #include "config.h"
-#include "dilog.hpp"
-#include "error.hpp"
 #include "eigen_tensor.hpp"
 #include "error.hpp"
 #include "if.hpp"
-#include "numerics2.hpp"
 #include "sum.hpp"
 #include "which.hpp"
 
@@ -85,20 +80,9 @@ std::vector<T> Abs(std::vector<T> v) noexcept
    return v;
 }
 
-inline constexpr double AbsSqr(double z) noexcept
-{
-   return z * z;
-}
-
-inline double AbsSqr(const std::complex<double>& z) noexcept
-{
-   return std::norm(z);
-}
-
-inline double AbsSqrt(double x) noexcept
-{
-   return std::sqrt(std::fabs(x));
-}
+double AbsSqr(double) noexcept;
+double AbsSqr(const std::complex<double>&) noexcept;
+double AbsSqrt(double) noexcept;
 
 template <typename Derived>
 Derived AbsSqrt(const Eigen::MatrixBase<Derived>& m)
@@ -165,25 +149,10 @@ double calculate_dirac_singlet_mass(T value, std::complex<double>& phase)
    return std::abs(value);
 }
 
-inline double ArcTan(double a) noexcept
-{
-   return std::atan(a);
-}
-
-inline double ArcSin(double a) noexcept
-{
-   return std::asin(a);
-}
-
-inline double ArcCos(double a) noexcept
-{
-   return std::acos(a);
-}
-
-inline double Arg(const std::complex<double>& z) noexcept
-{
-   return std::arg(z);
-}
+double ArcTan(double) noexcept;
+double ArcSin(double) noexcept;
+double ArcCos(double) noexcept;
+double Arg(const std::complex<double>&) noexcept;
 
 template <typename T>
 constexpr T Cbrt(T a) noexcept
@@ -191,15 +160,8 @@ constexpr T Cbrt(T a) noexcept
    return std::cbrt(a);
 }
 
-inline constexpr double Conj(double a) noexcept
-{
-   return a;
-}
-
-inline std::complex<double> Conj(const std::complex<double>& a) noexcept
-{
-   return std::conj(a);
-}
+double Conj(double a) noexcept;
+std::complex<double> Conj(const std::complex<double>& a) noexcept;
 
 template<typename Scalar, int M, int N>
 Eigen::Matrix<Scalar,M,N> Conj(const Eigen::Matrix<Scalar,M,N>& a) noexcept
@@ -225,80 +187,21 @@ T Exp(T z) noexcept
    return std::exp(z);
 }
 
-inline double Tan(double a) noexcept
-{
-   return std::tan(a);
-}
-
-inline double Cot(double a) noexcept
-{
-   return 1./Tan(a);
-}
-
-inline double Cos(double x) noexcept
-{
-   return std::cos(x);
-}
-
-inline double Sin(double x) noexcept
-{
-   return std::sin(x);
-}
-
-inline double Sec(double x) noexcept
-{
-   return 1./Cos(x);
-}
-
-inline double Csc(double x) noexcept
-{
-   return 1./Sin(x);
-}
-
-inline constexpr int Delta(int i, int j) noexcept
-{
-   return i == j;
-}
+double Tan(double a) noexcept;
+double Cot(double a) noexcept;
+double Cos(double x) noexcept;
+double Sin(double x) noexcept;
+double Sec(double x) noexcept;
+double Csc(double x) noexcept;
+int Delta(int i, int j) noexcept;
 
 #define FSFlagProblem(p) [&](){ (p); return 0.; }()
 #define FSFlagWarning(p) [&](){ (p); return 0.; }()
 
-template <typename T>
-constexpr T If(bool c, T a, T b) noexcept { return c ? a : b; }
-
-template <typename T>
-constexpr T If(bool c, int a, T b)  noexcept{ return c ? T(a) : b; }
-
-template <typename T>
-constexpr T If(bool c, T a, int b) noexcept { return c ? a : T(b); }
-
-inline bool IsClose(double a, double b,
-                    double eps = std::numeric_limits<double>::epsilon()) noexcept
-{
-   return std::abs(a - b) < eps;
-}
-
-inline bool IsCloseRel(double a, double b,
-                       double eps = std::numeric_limits<double>::epsilon()) noexcept
-{
-   if (IsClose(a, b, std::numeric_limits<double>::epsilon()))
-      return true;
-
-   if (std::abs(a) < std::numeric_limits<double>::epsilon())
-      return IsClose(a, b, eps);
-
-   return std::abs((a - b)/a) < eps;
-}
-
-inline bool IsFinite(double x) noexcept
-{
-   return std::isfinite(x);
-}
-
-inline bool IsFinite(const std::complex<double>& x) noexcept
-{
-   return std::isfinite(x.real()) && std::isfinite(x.imag());
-}
+bool IsClose(double, double, double eps = std::numeric_limits<double>::epsilon()) noexcept;
+bool IsCloseRel(double, double, double eps = std::numeric_limits<double>::epsilon()) noexcept;
+bool IsFinite(double) noexcept;
+bool IsFinite(const std::complex<double>&) noexcept;
 
 template <class Derived>
 bool IsFinite(const Eigen::DenseBase<Derived>& m)
@@ -318,10 +221,7 @@ bool IsFinite(const Eigen::DenseBase<Derived>& m)
    return true;
 }
 
-inline constexpr int KroneckerDelta(int i, int j) noexcept
-{
-   return i == j;
-}
+int KroneckerDelta(int, int) noexcept;
 
 template <class Derived>
 typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<Derived>& m) noexcept
@@ -343,21 +243,9 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
    return diag;
 }
 
-inline std::complex<double> ComplexLog(double a) noexcept
-{
-   return fast_log(std::complex<double>(a,0.));
-}
-
-inline std::complex<double> ComplexLog(const std::complex<double>& z) noexcept
-{
-   return fast_log(z);
-}
-
-inline double FiniteLog(double a) noexcept
-{
-   const double l = std::log(a);
-   return std::isfinite(l) ? l : 0.;
-}
+std::complex<double> ComplexLog(double a) noexcept;
+std::complex<double> ComplexLog(const std::complex<double>& z) noexcept;
+double FiniteLog(double a) noexcept;
 
 /**
  * Fills lower triangle of hermitian matrix from values
@@ -452,10 +340,7 @@ double PrintWARNING(Ts&&... vs)
 
 ///////////////////////// end of logger commands /////////////////////////
 
-inline double Log(double a) noexcept
-{
-   return std::log(a);
-}
+double Log(double a) noexcept;
 
 double MaxRelDiff(double, double);
 double MaxRelDiff(const std::complex<double>&, const std::complex<double>&);
@@ -482,15 +367,8 @@ double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
    return MaxRelDiff(a.matrix(), b.matrix());
 }
 
-inline double MaxAbsValue(double x) noexcept
-{
-   return Abs(x);
-}
-
-inline double MaxAbsValue(const std::complex<double>& x) noexcept
-{
-   return Abs(x);
-}
+double MaxAbsValue(double x) noexcept;
+double MaxAbsValue(const std::complex<double>& x) noexcept;
 
 template <class Derived>
 double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
@@ -528,15 +406,8 @@ typename std::common_type<T0, T1, Ts...>::type Min(T0&& val1, T1&& val2, Ts&&...
       return Min(val1, std::forward<Ts>(vs)...);
 }
 
-inline constexpr int Sign(double x) noexcept
-{
-   return (x >= 0.0 ? 1 : -1);
-}
-
-inline constexpr int Sign(int x) noexcept
-{
-   return (x >= 0 ? 1 : -1);
-}
+int Sign(double x) noexcept;
+int Sign(int x) noexcept;
 
 template <typename T>
 constexpr T Quad(T a) noexcept
@@ -544,12 +415,8 @@ constexpr T Quad(T a) noexcept
    return a * a * a * a;
 }
 
-template <typename T>
-T PolyLog(int n, T z) {
-   if (n == 2)
-      return gm2calc::dilog(z);
-   throw SetupError("PolyLog(n!=2) not implemented");
-}
+double PolyLog(int, double);
+std::complex<double> PolyLog(int, const std::complex<double>&);
 
 template <typename Base, typename Exponent>
 Base Power(Base base, Exponent exp) noexcept
@@ -631,15 +498,8 @@ constexpr Base Power12(Base b) noexcept
           b * b;
 }
 
-inline constexpr double Re(double x) noexcept
-{
-   return x;
-}
-
-inline double Re(const std::complex<double>& x) noexcept
-{
-   return std::real(x);
-}
+double Re(double) noexcept;
+double Re(const std::complex<double>&) noexcept;
 
 template<int M, int N>
 Eigen::Matrix<double,M,N> Re(const Eigen::Matrix<double,M,N>& x)
@@ -657,15 +517,8 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
-inline constexpr double Im(double) noexcept
-{
-   return 0.;
-}
-
-inline double Im(const std::complex<double>& x) noexcept
-{
-   return std::imag(x);
-}
+double Im(double) noexcept;
+double Im(const std::complex<double>&) noexcept;
 
 template<int M, int N>
 Eigen::Matrix<double,M,N> Im(const Eigen::Matrix<double,M,N>&)
@@ -694,22 +547,9 @@ T RelDiff(T a, T b, T eps = std::numeric_limits<T>::epsilon()) noexcept
    return (a - b) / max;
 }
 
-inline int Round(double a) noexcept
-{
-   return static_cast<int>(a >= 0. ? a + 0.5 : a - 0.5);
-}
+int Round(double a) noexcept;
 
-template<int N>
-void Sort(Eigen::Array<double, N, 1>& v)
-{
-   std::sort(v.data(), v.data() + v.size(),
-             [] (double a, double b) { return std::abs(a) < std::abs(b); });
-}
-
-inline double SignedAbsSqrt(double a) noexcept
-{
-   return Sign(a) * AbsSqrt(a);
-}
+double SignedAbsSqrt(double a) noexcept;
 
 template <typename Derived>
 Derived SignedAbsSqrt(const Eigen::ArrayBase<Derived>& m)
@@ -843,15 +683,8 @@ std::string ToString(T a)
    return boost::lexical_cast<std::string>(a);
 }
 
-inline double Total(double a) noexcept
-{
-   return a;
-}
-
-inline std::complex<double> Total(const std::complex<double>& a) noexcept
-{
-   return a;
-}
+double Total(double) noexcept;
+std::complex<double> Total(const std::complex<double>&) noexcept;
 
 template <class T>
 T Total(const std::vector<T>& v)
@@ -904,13 +737,7 @@ constexpr auto UnitVector(int i) -> Eigen::Matrix<Scalar,N,1>
 }
 
 /// unit vector of length N into direction i
-inline Eigen::VectorXd UnitVector(int N, int i)
-{
-   Eigen::VectorXd v = Eigen::VectorXd::Zero(N);
-   v(i) = 1;
-
-   return v;
-}
+Eigen::VectorXd UnitVector(int N, int i);
 
 /// matrix projector of size MxN into direction i, j
 template <int M, int N, int i, int j, typename Scalar = double>
@@ -933,13 +760,7 @@ auto MatrixProjector(int i, int j) -> Eigen::Matrix<Scalar,M,N>
 }
 
 /// unit matrix projector of size MxN into direction i, j
-inline Eigen::MatrixXd MatrixProjector(int M, int N, int i, int j)
-{
-   Eigen::MatrixXd m = Eigen::MatrixXd::Zero(M,N);
-   m(i,j) = 1;
-
-   return m;
-}
+Eigen::MatrixXd MatrixProjector(int M, int N, int i, int j);
 
 /// step function (0 for x < 0, 1 otherwise)
 template <typename T>
@@ -948,22 +769,7 @@ constexpr int UnitStep(T x) noexcept
    return x < T() ? 0 : 1;
 }
 
-template <typename T>
-constexpr T Which(bool cond, T value) noexcept
-{
-   return cond ? value : T(0);
-}
-
-template<typename T, typename ... Trest>
-constexpr typename std::common_type<T, Trest...>::type Which(bool cond, T value, Trest... rest) noexcept
-{
-   return cond ? value : Which(rest...);
-}
-
-inline double ZeroSqrt(double x) noexcept
-{
-   return (x > 0.0 ? std::sqrt(x) : 0.0);
-}
+double ZeroSqrt(double x) noexcept;
 
 template <typename Derived>
 Derived ZeroSqrt(const Eigen::ArrayBase<Derived>& m)

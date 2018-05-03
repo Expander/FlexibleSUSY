@@ -21,12 +21,12 @@
 #include <cstring>
 #include <cstdlib>
 #include <cmath>
-#include <def.h>
-#include <utils.h>
-#include <numerics.h>
-#include <physpars.h>
-#include <lowe_legacy.h>
-#include <softpars.h>
+#include "def.h"
+#include "utils.h"
+#include "numerics.h"
+#include "physpars.h"
+#include "lowe_legacy.h"
+#include "softpars.h"
 
 #include "mssm_twoloophiggs.h"
 #include "mssmUtils.h"

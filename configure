@@ -990,15 +990,6 @@ check_models() {
 
     MODELS=$(make_unique "${MODELS}")
 
-    # enforce model dependencies (SoftsusyFlavourMSSM -> SoftsusyNMSSM -> SoftsusyMSSM)
-    if contains "${MODELS}" "models/SoftsusyNMSSM"; then
-        MODELS=$(make_unique "models/SoftsusyMSSM models/SoftsusyNMSSM ${MODELS}")
-    fi
-
-    if contains "${MODELS}" "models/SoftsusyFlavourMSSM"; then
-        MODELS=$(make_unique "models/SoftsusyMSSM models/SoftsusyNMSSM models/SoftsusyFlavourMSSM ${MODELS}")
-    fi
-
     # check for Makefile module, start script and FlexibleSUSY model
     # file
     for m in ${MODELS}; do

@@ -1,3 +1,5 @@
+include test/SOFTSUSY/module.mk
+
 DIR      := test
 MODNAME  := test
 WITH_$(MODNAME) := yes
@@ -92,16 +94,12 @@ TEST_SRC += \
 		$(DIR)/test_thread_pool.cpp
 endif
 
-ifneq ($(findstring lattice,$(SOLVERS)),)
-TEST_SRC +=
-endif # ifneq($(findstring lattice,$(SOLVERS)),)
-
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 TEST_SRC += \
 		$(DIR)/test_two_scale_running_precision.cpp \
 		$(DIR)/test_two_scale_solver.cpp
 
-ifeq ($(WITH_SoftsusyMSSM),yes)
+ifeq ($(WITH_SOFTSUSY),yes)
 TEST_SRC += \
 		$(DIR)/test_betafunction.cpp \
 		$(DIR)/test_legacy_diagonalization.cpp \
@@ -112,13 +110,13 @@ TEST_SRC += \
 		$(DIR)/test_two_scale_mssm_initial_guesser.cpp
 endif
 
-ifeq ($(WITH_SM) $(WITH_SoftsusyMSSM),yes yes)
+ifeq ($(WITH_SM) $(WITH_SOFTSUSY),yes yes)
 TEST_SRC += \
 		$(DIR)/test_SM_weinberg_angle.cpp \
 		$(DIR)/test_SM_weinberg_angle_meta.cpp
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM),yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_loopfunctions.cpp \
 		$(DIR)/test_sfermions.cpp \
@@ -135,7 +133,7 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSMMassWInput),yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMMassWInput),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMMassWInput_spectrum.cpp
 endif
@@ -144,14 +142,14 @@ ifeq ($(WITH_CMSSMLowPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMLowPrecision.cpp
 endif
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSM),yes yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSM_slha_output.cpp
 TEST_SH += \
 		$(DIR)/test_CMSSM_gluino.sh
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyFlavourMSSM) $(WITH_CMSSMCKM),yes yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMCKM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMCKM_high_scale_constraint.cpp \
 		$(DIR)/test_CMSSMCKM_low_scale_constraint.cpp \
@@ -160,7 +158,7 @@ TEST_SH += \
 		$(DIR)/test_CMSSMCKM_spectrum.sh
 endif
 
-ifeq ($(WITH_SoftsusyNMSSM) $(WITH_NMSSM),yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \
@@ -174,13 +172,13 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_NMSSM),yes yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSM_benchmark.cpp \
 		$(DIR)/test_NMSSM_slha_output.cpp
 endif
 
-ifeq ($(WITH_SoftsusyNMSSM) $(WITH_SMSSM),yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_SMSSM),yes yes)
 TEST_SRC += \
 		$(DIR)/test_SMSSM_beta_functions.cpp \
 		$(DIR)/test_SMSSM_ewsb.cpp \
@@ -343,7 +341,7 @@ TEST_SH += \
 		$(DIR)/test_CMSSMNoFV_profile.sh
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM) $(WITH_CMSSMNoFV),yes yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMNoFV),yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_benchmark.cpp \
 		$(DIR)/test_CMSSMNoFV_two_loop_spectrum.cpp
@@ -360,7 +358,7 @@ TEST_SH += \
 		$(DIR)/test_CMSSMNoFV_GM2Calc.sh
 endif
 
-ifeq ($(WITH_SoftsusyMSSM) $(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes yes)
+ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSM) $(WITH_CMSSMNoFV),yes yes yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMNoFV_beta_functions.cpp \
 		$(DIR)/test_CMSSMNoFV_tree_level_spectrum.cpp \
@@ -452,7 +450,7 @@ TEST_SH += \
 		$(DIR)/test_lowMSSM.sh
 endif
 
-ifeq ($(WITH_lowNMSSM) $(WITH_SoftsusyMSSM) $(WITH_SoftsusyNMSSM),yes yes yes)
+ifeq ($(WITH_lowNMSSM) $(WITH_SOFTSUSY),yes yes)
 TEST_SH += \
 		$(DIR)/test_lowNMSSM_spectrum.sh
 endif
@@ -491,7 +489,7 @@ TEST_SH += \
 		$(DIR)/test_NUTNMSSM.sh
 endif
 
-ifeq ($(WITH_NUTNMSSM) $(WITH_SoftsusyNMSSM),yes yes)
+ifeq ($(WITH_NUTNMSSM) $(WITH_SOFTSUSY),yes yes)
 TEST_SRC += \
 		$(DIR)/test_NUTNMSSM_spectrum.cpp
 endif
@@ -506,6 +504,8 @@ endif
 ifeq ($(WITH_HSSUSY),yes)
 TEST_SH += \
 		$(DIR)/test_HSSUSY_SUSYHD.sh
+TEST_META += \
+		$(DIR)/test_HSSUSY_uncertainty.m
 endif
 
 ifeq ($(WITH_NUHMSSMaltEFTHiggs) $(WITH_NUHMSSMalt),yes yes)
@@ -523,27 +523,11 @@ TEST_SH += \
 		$(DIR)/test_Mh_uncertainties.sh
 endif
 
-ifeq ($(WITH_HSSUSY),yes)
-TEST_META += \
-		$(DIR)/test_HSSUSY_uncertainty.m
-endif
-
 ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_META += \
 		$(DIR)/test_MSSMEFTHiggs_uncertainty.m
-endif
-
-ifeq ($(WITH_NUHMSSMNoFVHimalaya),yes)
-TEST_META += \
-		$(DIR)/test_NUHMSSMNoFVHimalaya_uncertainty.m
-endif
-
-ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SRC += \
 		$(DIR)/test_MSSMEFTHiggs_lambda_threshold_correction.cpp
-endif
-
-ifeq ($(WITH_MSSMEFTHiggs),yes)
 TEST_SH += \
 		$(DIR)/test_MSSMEFTHiggs_librarylink.sh \
 		$(DIR)/test_MSSMEFTHiggs_profile.sh
@@ -557,6 +541,11 @@ endif
 ifeq ($(WITH_NMSSMEFTHiggs) $(WITH_lowNMSSM),yes yes)
 TEST_SH += \
 		$(DIR)/test_NMSSMEFTHiggs.sh
+endif
+
+ifeq ($(WITH_NUHMSSMNoFVHimalaya),yes)
+TEST_META += \
+		$(DIR)/test_NUHMSSMNoFVHimalaya_uncertainty.m
 endif
 
 ifeq ($(WITH_SMHighPrecision) $(WITH_SMEFTHiggs),yes yes)
@@ -652,18 +641,18 @@ endif
 all-$(MODNAME): $(LIBTEST) $(TEST_EXE) $(TEST_XML)
 		@true
 
-clean-$(MODNAME)-dep:
+clean-$(MODNAME)-dep: clean-SOFTSUSY-dep
 		-rm -f $(TEST_DEP)
 		-rm -f $(LIBTEST_DEP)
 
-clean-$(MODNAME)-lib:
+clean-$(MODNAME)-lib: clean-SOFTSUSY-lib
 		-rm -f $(LIBTEST)
 
-clean-$(MODNAME)-obj:
+clean-$(MODNAME)-obj: clean-SOFTSUSY-obj
 		-rm -f $(TEST_OBJ)
 		-rm -f $(LIBTEST_OBJ)
 
-clean-$(MODNAME)-log:
+clean-$(MODNAME)-log: clean-SOFTSUSY-log
 		-rm -f $(TEST_XML)
 		-rm -f $(TEST_ALL_XML)
 		-rm -f $(TEST_ALL_LOG)
@@ -959,14 +948,14 @@ $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAt
 
 # general test rule
 $(DIR)/test_%.x: $(DIR)/test_%.o \
-	$(LIBSoftsusyMSSM) $(LIBSoftsusyNMSSM) $(LIBSoftsusyFlavourMSSM) \
+	$(LIBSOFTSUSY) \
 	$(MODtest_LIB) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ -Wl,--start-group $(call abspathx,$^) -Wl,--end-group \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
 		$(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 # add boost and eigen flags for the test object files and dependencies
-$(TEST_OBJ) $(TEST_DEP): CPPFLAGS += $(MODtest_INC) $(BOOSTFLAGS) $(EIGENFLAGS)
+$(TEST_OBJ) $(TEST_DEP): CPPFLAGS += -Itest/SOFTSUSY $(MODtest_INC) $(BOOSTFLAGS) $(EIGENFLAGS)
 
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBTEST): $(LIBTEST_OBJ)

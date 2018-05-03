@@ -310,17 +310,23 @@ CoEPP--MN--17--16
 
 \clearpage
 \newgeometry{top=2.5cm,left=3cm,right=3cm,bottom=4cm,footskip=3em}
-\section*{Program Summary}
+\section*{New version program summary}
 \noindent
 {\em Program title:} \fs\\[0.5em]
+{\em Licensing provisions:} GPLv3\\[0.5em]
 {\em Program obtainable from:} \url{http://flexiblesusy.hepforge.org/}\\[0.5em]
-{\em Distribution format:} tar.gz\\[0.5em]
 {\em Programming language:} C++, Wolfram/Mathematica, FORTRAN, Bourne shell\\[0.5em]
-{\em Computer:} Personal computer\\[0.5em]
 {\em Operating system:} Tested on FreeBSD, Linux, Mac OS X, Windows/Cygwin\\[0.5em]
 {\em External routines:} \sarah, Boost library, Eigen library, GNU Scientific Library\\[0.5em]
 {\em Optional external routines:} BLAS, Himalaya, LAPACK, LoopTools, SQLite, TSIL\\[0.5em]
-{\em Typical running time:} 0.02--0.2 seconds per parameter point\\[0.5em]
+{\em Journal reference of previous version:} Comput.Phys.Commun.\ 190 (2015) 139-172\\[0.5em]
+{\em Does the new version supersede the previous version?:} yes \\[0.5em]
+{\em Reasons for the new version:} Program extension including new models, observables and algorithms\\[0.5em]
+{\em Summary of revisions:} Extension to non-supersymmetric models
+(\fbsm), complex parameters (\fcpv), prediction of $W$ boson mass from
+muon decay (\fmw), calculation of anomalous magnetic moment of the
+muon (\famu), semi-analytic boundary value problem solver (\fsas),
+improved hybrid Higgs mass calculation (\feft).\\[0.5em]
 {\em Nature of problem:}
 %
 Determining the mass spectrum, mixings and further observables for an arbitrary extension
@@ -3544,7 +3550,7 @@ In the left panel, $\phi_{\mhalf} \equiv \arg \mhalf$ and
 $\phi_\mu \equiv \arg \mu$ are varied
 while $\arg(\mu A_e)$ is constrained to be zero.
 From the directions of the contours it is clear
-that \fs correctly reproduces the behaviour of
+that \fs correctly reproduces the behavior of
 $\edm{e}$ depending only on the rephasing invariant $\arg(\mu \mhalf)$.
 In the right panel, the roles of $\phi_{A_e} \equiv \arg A_e$ and
 $\phi_{\mhalf}$ are swapped so that $\arg(\mu \mhalf)$ stays at zero.
@@ -3564,7 +3570,7 @@ of the complex $\mu$ parameter, $\phi_\mu \equiv \arg \mu$.
 We use a low-energy scenario with $\mzero = \mhalf = 500\unit{GeV}$,
 $\tan\beta = 10$ and $\azero = 0$.  Even though this scenario is
 excluded, the figure illustrates that both \fs and \spheno show the
-same behaviour of the Higgs pole mass as a function of $\phi_\mu$.
+same behavior of the Higgs pole mass as a function of $\phi_\mu$.
 The $\phi_\mu$-independent shift of around $0.7\unit{GeV}$ between the
 Higgs masses calculated by the two programs is mainly caused by the
 different treatment of higher-order corrections to
@@ -4829,7 +4835,7 @@ solution for $\mu$, fails to converge; for this choice of input parameters
 and initial guess, the iteration enters a periodic orbit in which the
 approximations to the solution are close to, but do not correspond to, the
 fixed point found by the two-scale solver.  To avoid the observed cyclic
-behaviour here, it is necessary to either fine-tune the provided input
+behavior here, it is necessary to either fine-tune the provided input
 parameters or otherwise modify the initial guess made by \fs.  Due to the
 differing choice of input and output parameters between the two algorithms
 in general, certain regions of the parameter space can also be susceptible to
@@ -5223,7 +5229,7 @@ remain. Such terms effectively shift the quartic Higgs coupling of the
 SM by  next-to-leading logarithmic 2-loop terms.%
 \footnote{If the self energies are evaluated at the
   2-loop level, the problem repeats itself one order higher, i.e., the
-  term in Eq.~\eqref{eq:twolooplogsyt} is cancelled but similar terms of
+  term in Eq.~\eqref{eq:twolooplogsyt} is canceled but similar terms of
   next-to-leading logarithmic 3-loop order remain.}
 
 In order to avoid large higher-order logarithms originating from the

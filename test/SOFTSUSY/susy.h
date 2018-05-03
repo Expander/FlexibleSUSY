@@ -15,10 +15,10 @@
 #include <iostream>
 #include <cmath>
 #include <fstream>
-#include <linalg.h>
-#include <lowe_legacy.h>
-#include <rge.h>
-#include <utils.h>
+#include "linalg.h"
+#include "lowe_legacy.h"
+#include "rge.h"
+#include "utils.h"
 
 namespace softsusy {
 

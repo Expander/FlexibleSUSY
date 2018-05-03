@@ -89,6 +89,7 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::apply()
    update_scale();
    qedqcd.run_to(scale, 1.0e-5);
    calculate_DRbar_gauge_couplings();
+   calculate_running_SM_masses();
 
 @applyConstraint@
 @saveBoundaryValueParameters@
@@ -109,6 +110,9 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::clear()
    qedqcd = softsusy::QedQcd();
    ckm.setIdentity();
    pmns.setIdentity();
+   upQuarksDRbar.setZero();
+   downQuarksDRbar.setZero();
+   downLeptonsDRbar.setZero();
    neutrinoDRbar.setZero();
    mW_run = 0.;
    mZ_run = 0.;
@@ -130,7 +134,10 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::initialize()
 
    ckm = qedqcd.get_complex_ckm();
    pmns = qedqcd.get_complex_pmns();
-   neutrinoDRbar = Eigen::Matrix<double,3,3>::Zero();
+   upQuarksDRbar.setZero();
+   downQuarksDRbar.setZero();
+   downLeptonsDRbar.setZero();
+   neutrinoDRbar.setZero();
    mW_run = 0.;
    mZ_run = 0.;
    AlphaS = 0.;
@@ -235,53 +242,37 @@ double @ModelName@_low_scale_constraint<Semi_analytic>::calculate_alpha_s_SM5_at
    return qedqcd_tmp.displayAlpha(softsusy::ALPHAS);
 }
 
-void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_DRbar_yukawa_couplings()
-{
-   calculate_@UpYukawa@_DRbar();
-   calculate_@DownYukawa@_DRbar();
-   calculate_@ElectronYukawa@_DRbar();
-}
-
-void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@UpYukawa@_DRbar()
+void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_running_SM_masses()
 {
    check_model_ptr();
 
-   Eigen::Matrix<std::complex<double>,3,3> upQuarksDRbar(ZEROMATRIXCOMPLEX(3,3));
-   upQuarksDRbar(0,0)      = qedqcd.displayMass(softsusy::mUp);
-   upQuarksDRbar(1,1)      = qedqcd.displayMass(softsusy::mCharm);
-   upQuarksDRbar(2,2)      = qedqcd.displayPoleMt();
+   upQuarksDRbar.setZero();
+   upQuarksDRbar(0,0) = qedqcd.displayMass(softsusy::mUp);
+   upQuarksDRbar(1,1) = qedqcd.displayMass(softsusy::mCharm);
+   upQuarksDRbar(2,2) = qedqcd.displayPoleMt();
+
+   downQuarksDRbar.setZero();
+   downQuarksDRbar(0,0) = qedqcd.displayMass(softsusy::mDown);
+   downQuarksDRbar(1,1) = qedqcd.displayMass(softsusy::mStrange);
+   downQuarksDRbar(2,2) = qedqcd.displayMass(softsusy::mBottom);
+
+   downLeptonsDRbar.setZero();
+   downLeptonsDRbar(0,0) = qedqcd.displayPoleMel();
+   downLeptonsDRbar(1,1) = qedqcd.displayPoleMmuon();
+   downLeptonsDRbar(2,2) = qedqcd.displayPoleMtau();
+
+   neutrinoDRbar.setZero();
+   neutrinoDRbar(0,0) = qedqcd.displayNeutrinoPoleMass(1);
+   neutrinoDRbar(1,1) = qedqcd.displayNeutrinoPoleMass(2);
+   neutrinoDRbar(2,2) = qedqcd.displayNeutrinoPoleMass(3);
 
    if (model->get_thresholds() && model->get_threshold_corrections().mt > 0) {
 @calculateDRbarMassTop@
    }
 
-@setDRbarUpQuarkYukawaCouplings@
-}
-
-void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@DownYukawa@_DRbar()
-{
-   check_model_ptr();
-
-   Eigen::Matrix<std::complex<double>,3,3> downQuarksDRbar(ZEROMATRIXCOMPLEX(3,3));
-   downQuarksDRbar(0,0)   = qedqcd.displayMass(softsusy::mDown);
-   downQuarksDRbar(1,1)   = qedqcd.displayMass(softsusy::mStrange);
-   downQuarksDRbar(2,2)   = qedqcd.displayMass(softsusy::mBottom);
-
    if (model->get_thresholds() && model->get_threshold_corrections().mb > 0) {
 @calculateDRbarMassBottom@
    }
-
-@setDRbarDownQuarkYukawaCouplings@
-}
-
-void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@ElectronYukawa@_DRbar()
-{
-   check_model_ptr();
-
-   Eigen::Matrix<std::complex<double>,3,3> downLeptonsDRbar(ZEROMATRIXCOMPLEX(3,3));
-   downLeptonsDRbar(0,0) = qedqcd.displayPoleMel();
-   downLeptonsDRbar(1,1) = qedqcd.displayPoleMmuon();
-   downLeptonsDRbar(2,2) = qedqcd.displayPoleMtau();
 
    if (model->get_thresholds()) {
 @calculateDRbarMassElectron@
@@ -291,16 +282,35 @@ void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@ElectronYukawa@
    if (model->get_thresholds() && model->get_threshold_corrections().mtau > 0) {
 @calculateDRbarMassTau@
    }
-
-@setDRbarElectronYukawaCouplings@
 }
 
-void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_MNeutrino_DRbar()
+void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_DRbar_yukawa_couplings()
 {
-   neutrinoDRbar.setZero();
-   neutrinoDRbar(0,0) = qedqcd.displayNeutrinoPoleMass(1);
-   neutrinoDRbar(1,1) = qedqcd.displayNeutrinoPoleMass(2);
-   neutrinoDRbar(2,2) = qedqcd.displayNeutrinoPoleMass(3);
+   calculate_running_SM_masses();
+   calculate_@UpYukawa@_DRbar();
+   calculate_@DownYukawa@_DRbar();
+   calculate_@ElectronYukawa@_DRbar();
+}
+
+void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@UpYukawa@_DRbar()
+{
+   check_model_ptr();
+
+@setDRbarUpQuarkYukawaCouplings@
+}
+
+void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@DownYukawa@_DRbar()
+{
+   check_model_ptr();
+
+@setDRbarDownQuarkYukawaCouplings@
+}
+
+void @ModelName@_low_scale_constraint<Semi_analytic>::calculate_@ElectronYukawa@_DRbar()
+{
+   check_model_ptr();
+
+@setDRbarElectronYukawaCouplings@
 }
 
 void @ModelName@_low_scale_constraint<Semi_analytic>::check_model_ptr() const

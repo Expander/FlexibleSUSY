@@ -73,6 +73,12 @@ TOWER_DEP := \
 TOWER_EXE := \
 		run_tower.x
 
+# set default shell
+SHELL = /bin/sh
+
+# disable built-in rules to improve speed
+MAKEFLAGS += -rR --include-dir=$(CURDIR)
+
 # returns file name with absolute path, taking whitespace in directory
 # names into account
 abspathx        = $(foreach name,$(1),\
@@ -121,6 +127,9 @@ endif
 %.d: %.f
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 showbuild:
 	@echo "# package information"

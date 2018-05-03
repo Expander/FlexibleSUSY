@@ -66,7 +66,7 @@ void run_point(const std::string& slha_file, Data& fs_data, Data& ss_data)
    }
 
    stopwatch.start();
-   status = run_cmd("./models/SoftsusyFlavourMSSM/run_softpoint.x leshouches < " +
+   status = run_cmd("./test/SOFTSUSY/run_softpoint.x leshouches < " +
                     slha_file + " > " + slha_output_file);
    stopwatch.stop();
 

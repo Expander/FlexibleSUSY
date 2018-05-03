@@ -17,7 +17,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
 		$(DIR)/global_thread_pool.cpp \
-		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/gsl_vector.cpp \
 		$(DIR)/lowe.cpp \
@@ -66,7 +65,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
 		$(DIR)/global_thread_pool.hpp \
-		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gsl_vector.hpp \

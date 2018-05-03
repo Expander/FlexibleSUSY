@@ -12,13 +12,12 @@
 #define NMSSMSOFTPARS_H
 
 #include <cmath>
-//#include <susy.h>
-#include <def.h>
-#include <linalg.h>
-#include <utils.h>
-#include <numerics.h>
-#include <nmssmsusy.h>
-#include <softpars.h>
+#include "def.h"
+#include "linalg.h"
+#include "utils.h"
+#include "numerics.h"
+#include "nmssmsusy.h"
+#include "softpars.h"
 
 namespace softsusy {
 

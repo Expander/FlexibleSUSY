@@ -183,6 +183,23 @@ if (get_thresholds() > 1 && threshold_corrections.mb > 1) {
        ""
       ];
 
+Get[FileNameJoin[{"meta", "SM", "mf_3loop_qcd.m"}]];
+
+Get3LQCDMtRelations[particle_, scale_] :=
+    Module[{},
+           k^3 { Coefficient[MtOvermt, k, 3], Coefficient[mtOverMt, k, 3] } //. {
+               L -> Log[mf^2/scale^2],
+               mf -> FlexibleSUSY`M[particle],
+               Log[m_/scale^2] :> -Log[scale^2/m],
+               k -> 1/(4Pi)^2,
+               NL -> 5,
+               NH -> 1
+           }
+          ];
+
+Get3LQCDMtOvermt[particle_, scale_] := Get3LQCDMtRelations[particle, scale][[1]];
+Get3LQCDmtOverMt[particle_, scale_] := Get3LQCDMtRelations[particle, scale][[2]];
+
 Do1DimScalar[particle_, particleName_String, massName_String, massMatrixName_String,
              selfEnergyFunction_String, momentum_String, tadpole_String:""] :=
     "const double p = " <> momentum <> ";\n" <>
@@ -227,8 +244,7 @@ Do1DimFermion[particle_ /; particle === TreeMasses`GetSMTopQuarkMultiplet[], mas
            qcdOneLoop = N[-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDOneLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]];
            qcdTwoLoop = N[Expand[(-TwoLoopQCD`GetDeltaMPoleOverMRunningQCDTwoLoop[particle, Global`currentScale, FlexibleSUSY`FSRenormalizationScheme]) /. Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]]];
            qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
-                             Simplify @ N[ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
-                                          Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
+                             Simplify @ N[Get3LQCDMtOvermt[particle, Global`currentScale]],
                              0];
            (* adding split-MSSM contributions if enabled *)
            If[FlexibleSUSY`UseHiggs3LoopSplit === True,
@@ -583,8 +599,7 @@ DoMediumDiagonalization[particle_Symbol /; IsFermion[particle], inputMomentum_, 
                 ];
               qcdThreeLoop = If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
                                 (* contribution to self-energy => neg. sign *)
-                                Simplify @ N[-ThreeLoopQCD`GetMTopPoleOverMTopMSbar[{0,0,0,1}, particle, Global`currentScale] /.
-                                             Log[m_/Global`currentScale^2] :> -Log[Global`currentScale^2/m]],
+                                Simplify @ N[-Get3LQCDMtOvermt[particle, Global`currentScale]],
                                 0];
               qcdCorrections = AddMtPoleQCDCorrections[1, qcdOneLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>
                                AddMtPoleQCDCorrections[2, qcdTwoLoop /. FlexibleSUSY`M[particle] -> thirdGenMass] <> "\n" <>
@@ -1182,7 +1197,7 @@ CreateRunningDRbarMassFunction[particle_ /; particle === TreeMasses`GetSMTopQuar
               If[FlexibleSUSY`UseYukawa3LoopQCD === True ||
                  FlexibleSUSY`UseYukawa3LoopQCD === Automatic,
                  If[FlexibleSUSY`FSRenormalizationScheme === FlexibleSUSY`MSbar,
-                    qcdThreeLoop = N[Expand[ThreeLoopQCD`GetMTopMSbarOverMTopPole[{0,0,0,1}, particle, Global`currentScale]]];
+                    qcdThreeLoop = N[Expand[Get3LQCDmtOverMt[particle, Global`currentScale]]];
                    ];
                 ];
               If[dimParticle == 1,
