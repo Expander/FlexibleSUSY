@@ -373,6 +373,20 @@ double CLASSNAME::calculate_delta_vb_sm(double sinThetaW) const
 }
 
 /**
+ * Calculates the index of the neutrino belonging to the charged lepton with
+ * index FeIdx (in NoFV models there are no such indices since every lepton
+ * has its own field)
+ *
+ * @param index of the charged lepton
+ *
+ * @return index of the corresponding neutrino
+ */
+int CLASSNAME::get_neutrino_index(int FeIdx) const
+{
+@GetNeutrinoIndex@
+}
+
+/**
  * Calculates the BSM vertex, box and external wave-function renormalization
  * corrections \f$\delta_{\text{VB}}^{\text{BSM}}\f$ for the specific model
  * as e.g. given in Eqs. (C.13)-(C.16), (C.20) from hep-ph/9606211 for the MSSM.
@@ -391,6 +405,9 @@ double CLASSNAME::calculate_delta_vb_bsm(double sinThetaW) const
 
    const double eDRbar     = gY * g2 / Sqrt(Sqr(gY) + Sqr(g2));
    const double alphaDRbar = Sqr(eDRbar) / (4.0 * Pi);
+
+   const int FveIdx = get_neutrino_index(0);
+   const int FvmIdx = get_neutrino_index(1);
 
 @DeltaVBcalculation@
 

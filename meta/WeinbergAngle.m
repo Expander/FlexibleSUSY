@@ -41,6 +41,7 @@ DeltaVBwave::usage="";
 DeltaVBvertex::usage="";
 DeltaVBbox::usage="";
 CreateDeltaVBContributions::usage="";
+GetNeutrinoIndex::usage="";
 CreateDeltaVBCalculation::usage="";
 
 Begin["`Private`"];
@@ -882,23 +883,56 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
            {prototypes, defs}
           ];
 
+GetNeutrinoIndex[] :=
+    Module[{neutrinofield, chargedleptonfield, coupl, result = ""},
+           If[!MuonDecayWorks,
+              Return["return 0;"]];
+           neutrinofield = TreeMasses`GetSMNeutralLeptons[];
+           If[Length[neutrinofield] == 3,
+              Return["return 0;"]];
+           neutrinofield = neutrinofield[[1]];
+           chargedleptonfield = TreeMasses`GetSMChargedLeptons[][[1]];
+           coupl = SARAH`Cp[SARAH`bar[neutrinofield][{SARAH`gO2}], chargedleptonfield[{Global`FeIdx}],
+                            Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL];
+           (*follow vertex conventions:*)
+           coupl = Vertices`SortCp[coupl];
+           (*omit a possible minus sign:*)   
+           If[MatchQ[coupl, Times[-1, _]], coupl = -coupl];
+           coupl = SelfEnergies`CreateCouplingSymbol[coupl];
+           For[k = 0, k <= 2, k++,
+               result = result <> "double Cp" <> ToString[k] <> " = Abs(";
+               result = result <> CConversion`RValueToCFormString[coupl /. SARAH`gO2 -> k] <> ");\n"];
+           For[k = 0, k <= 2, k++,
+               result = result <> "\nif (Cp" <> ToString[k] <> " >= std::max(";
+               result = result <> StringRiffle[("Cp" <> ToString[#])& /@ Complement[{0,1,2},{k}], ","];
+               result = result <> "))\n   return " <> ToString[k] <> ";"];
+           result
+          ];
+
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
        WeinbergAngle`DeltaVB[{_, {}, ___}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "()";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1},_}, _]]] :=
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1},
+                              TreeMasses`GetSMChargedLeptons[][[1]]}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "(0) + " <>
     CreateContributionName[deltaVBcontri] <> "(1)";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1},
+                              TreeMasses`GetSMNeutralLeptons[][[1]]}, _]]] :=
+    CreateContributionName[deltaVBcontri] <> "(FveIdx) + " <>
+    CreateContributionName[deltaVBcontri] <> "(FvmIdx)";
+
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
        WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {SARAH`gO1, SARAH`gO2}}, _]]] :=
-    CreateContributionName[deltaVBcontri] <> "(0, 0) + " <>
-    CreateContributionName[deltaVBcontri] <> "(1, 1)";
+    CreateContributionName[deltaVBcontri] <> "(0, FveIdx) + " <>
+    CreateContributionName[deltaVBcontri] <> "(1, FvmIdx)";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
        WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}}, _]]] :=
-    CreateContributionName[deltaVBcontri] <> "(1, 1, 0, 0)";
+    CreateContributionName[deltaVBcontri] <> "(1, FvmIdx, FveIdx, 0)";
 
 CreateContributionCall[0] := "0."; (*needed in case of an error*)
 
