@@ -887,17 +887,17 @@ CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
     CreateContributionName[deltaVBcontri] <> "()";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{_, {SARAH`gO1}, ___}, _]]] :=
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1},_}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "(0) + " <>
     CreateContributionName[deltaVBcontri] <> "(1)";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2}, ___}, _]]] :=
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {SARAH`gO1, SARAH`gO2}}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "(0, 0) + " <>
     CreateContributionName[deltaVBcontri] <> "(1, 1)";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}, ___}, _]]] :=
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "(1, 1, 0, 0)";
 
 CreateContributionCall[0] := "0."; (*needed in case of an error*)
