@@ -81,7 +81,7 @@ InitMuonDecay[eigenstates_:FlexibleSUSY`FSEigenstates] :=
 
 DefSMhyperCoupling[] :=
     Module[{result},
-           result = "const double gY = ";
+           result = "const auto gY = ";
            If[!MuonDecayWorks,
               Return[result <> "1.;"]];
            result = result <> ThresholdCorrections`GetParameter[SARAH`hyperchargeCoupling] <> " * ";
@@ -92,7 +92,7 @@ DefSMhyperCoupling[] :=
 
 DefSMleftCoupling[] :=
     Module[{result},
-           result = "const double g2 = ";
+           result = "const auto g2 = ";
            If[!MuonDecayWorks,
               Return[result <> "1.;"]];
            result = result <> ThresholdCorrections`GetParameter[SARAH`leftCoupling] <> " * ";
@@ -107,7 +107,7 @@ GetTopMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`
 
 DefVZSelfEnergy[] :=
     Module[{result},
-           result = "const double pizzt   = ";
+           result = "const auto pizzt   = ";
            If[!MuonDecayWorks,
               Return[result <> "0.;"]];
            result <> "Re(model->" <> SelfEnergies`CreateSelfEnergyFunctionName[SARAH`VectorZ, 1] <> "(p));"
@@ -115,7 +115,7 @@ DefVZSelfEnergy[] :=
 
 DefVWSelfEnergy[] :=
     Module[{result},
-           result = "const double piwwt   = ";
+           result = "const auto piwwt   = ";
            If[!MuonDecayWorks,
               Return[result <> "0.;"]];
            result <> "Re(model->" <> SelfEnergies`CreateSelfEnergyFunctionName[SARAH`VectorW, 1] <> "(p));"
@@ -900,7 +900,7 @@ GetNeutrinoIndex[] :=
            If[MatchQ[coupl, Times[-1, _]], coupl = -coupl];
            coupl = SelfEnergies`CreateCouplingSymbol[coupl];
            For[k = 0, k <= 2, k++,
-               result = result <> "double Cp" <> ToString[k] <> " = Abs(";
+               result = result <> "const auto Cp" <> ToString[k] <> " = Abs(";
                result = result <> CConversion`RValueToCFormString[coupl /. SARAH`gO2 -> k] <> ");\n"];
            For[k = 0, k <= 2, k++,
                result = result <> "\nif (Cp" <> ToString[k] <> " >= std::max(";
