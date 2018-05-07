@@ -904,7 +904,8 @@ GetNeutrinoIndex[] :=
                result = result <> CConversion`RValueToCFormString[coupl /. SARAH`gO2 -> k] <> ");\n"];
            For[k = 0, k <= 2, k++,
                result = result <> "\nif (Cp" <> ToString[k] <> " >= std::max(";
-               result = result <> StringRiffle[("Cp" <> ToString[#])& /@ Complement[{0,1,2},{k}], ","];
+               result = result <> Utils`StringJoinWithSeparator[
+                                      ("Cp" <> ToString[#])& /@ Complement[{0,1,2},{k}], ","];
                result = result <> "))\n   return " <> ToString[k] <> ";"];
            result
           ];
