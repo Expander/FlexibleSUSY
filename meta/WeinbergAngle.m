@@ -616,10 +616,11 @@ VertexTreeResult[part1_, part2_] :=
 
 (*combines generation of diagrams and calculation of their contributions*)
 CompleteVertexResult[part1_, part2_, includeGoldstones_] :=
-    (Plus @@ (VertexResult[#, includeGoldstones] &) /@
-       ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, GetWPlusBoson[]],
-                       If[includeGoldstones, TreeMasses`IsVector,
-                          TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]]) /
+    HoldForm[Evaluate[
+       (Plus @@ (VertexResult[#, includeGoldstones] &) /@
+          ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, GetWPlusBoson[]],
+                          If[includeGoldstones, TreeMasses`IsVector,
+                             TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]])]] /
     VertexTreeResult[part1, part2];
 
 (*returns the complete vertex part of deltaVB*)
@@ -842,7 +843,7 @@ CreateContributionPrototype[deltaVBcontri_WeinbergAngle`DeltaVB] :=
 (*based on CreateNPointFunction from SelfEnergies.m*)
 CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List] :=
     Module[{expr, functionName, type, prototype, decl, body},
-           expr = deltaVBcontri[[2]];
+           expr = ReleaseHold[deltaVBcontri[[2]]];
            functionName = CreateContributionPrototype[deltaVBcontri];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
