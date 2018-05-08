@@ -101,6 +101,13 @@ DefSMleftCoupling[] :=
            result
           ];
 
+GetWPlusBoson[] :=
+    Switch[TreeMasses`GetElectricCharge[SARAH`VectorW],
+            1, SARAH`VectorW,
+           -1, Susyno`LieGroups`conj[SARAH`VectorW],
+            _, Print["Error: W Boson has charge of neither +1 nor -1"]; Null
+          ];
+
 GetBottomMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]]];
 
 GetTopMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]]];
@@ -604,13 +611,13 @@ VertexTreeResult[part1_, part2_] :=
               MuonDecayWorks = False;
               DebugPrint["Error: W boson is not defined uniquely or at all"];
               Return[1]];
-           SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
+           SARAH`Cp[part2withindex, part1withindex, GetWPlusBoson[]][SARAH`PL]
           ];
 
 (*combines generation of diagrams and calculation of their contributions*)
 CompleteVertexResult[part1_, part2_, includeGoldstones_] :=
     (Plus @@ (VertexResult[#, includeGoldstones] &) /@
-       ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]],
+       ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, GetWPlusBoson[]],
                        If[includeGoldstones, TreeMasses`IsVector,
                           TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]]) /
     VertexTreeResult[part1, part2];
@@ -893,7 +900,7 @@ GetNeutrinoIndex[] :=
            neutrinofield = neutrinofield[[1]];
            chargedleptonfield = TreeMasses`GetSMChargedLeptons[][[1]];
            coupl = SARAH`Cp[SARAH`bar[neutrinofield][{SARAH`gO2}], chargedleptonfield[{Global`FeIdx}],
-                            Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL];
+                            GetWPlusBoson[]][SARAH`PL];
            (*follow vertex conventions:*)
            coupl = Vertices`SortCp[coupl];
            (*omit a possible minus sign:*)   
