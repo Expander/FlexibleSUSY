@@ -31,6 +31,10 @@
 #include "threshold_loop_functions.hpp"
 #include "numerics2.hpp"
 
+#ifdef ENABLE_HIMALAYA
+#include "HierarchyCalculator.hpp"
+#endif
+
 #include <cmath>
 #include <cerrno>
 #include <cstring>
@@ -54,6 +58,52 @@ namespace flexiblesusy {
 #define THRESHOLD static_cast<int>(model->get_thresholds())
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+
+#ifdef ENABLE_HIMALAYA
+#define FSHimalayaMh23L [&] () {                                        \
+      himalaya::Parameters pars;                                        \
+      pars.scale = MODELPARAMETER(scale);                               \
+      pars.mu = INPUTPARAMETER(MuInput);                                \
+      pars.g3 = MODELPARAMETER(g3);                                     \
+      pars.vd = MODELPARAMETER(v) * Cos(ArcTan(INPUTPARAMETER(TanBeta))); \
+      pars.vu = MODELPARAMETER(v) * Sin(ArcTan(INPUTPARAMETER(TanBeta))); \
+      pars.mq2 = Re(INPUTPARAMETER(msq2));                              \
+      pars.md2 = Re(INPUTPARAMETER(msd2));                              \
+      pars.mu2 = Re(INPUTPARAMETER(msu2));                              \
+      pars.At = INPUTPARAMETER(AtInput);                                \
+      pars.Ab = INPUTPARAMETER(AbInput);                                \
+      pars.MG = INPUTPARAMETER(M3Input);                                \
+      pars.MW = 0.5*MODELPARAMETER(@leftCoupling@)*MODELPARAMETER(v);   \
+      pars.MZ = 0.5*Sqrt(Sqr(MODELPARAMETER(@hyperchargeCoupling@)*HSSUSY_info::normalization_@hyperchargeCoupling@) + Sqr(MODELPARAMETER(@leftCoupling@)))*MODELPARAMETER(v); \
+      pars.Mt = MODELPARAMETER(Yu)(2,2)*MODELPARAMETER(v)/Sqrt(2.);     \
+      pars.Mb = MODELPARAMETER(Yd)(2,2)*MODELPARAMETER(v)/Sqrt(2.);     \
+      pars.MA = INPUTPARAMETER(mAInput);                                \
+                                                                        \
+      double lambda_3L = 0.;                                            \
+                                                                        \
+      try {                                                             \
+         const bool verbose = false;                                    \
+         himalaya::HierarchyCalculator hc(pars, verbose);               \
+                                                                        \
+         const auto ho = hc.calculateDMh3L(false);                      \
+                                                                        \
+         lambda_3L = ho.getDeltaLambdaEFT()                             \
+                   + ho.getDRbarPrimeToMSbarShift();                    \
+                                                                        \
+         VERBOSE_MSG("Himalaya top (hierarchy, Dlambda_3L) = ("         \
+                     << ho.getSuitableHierarchy() << ", "               \
+                     << lambda_3L <<")");                               \
+      } catch (const std::exception& e) {                               \
+         VERBOSE_MSG(e.what());                                         \
+         VERBOSE_MSG(pars);                                             \
+         throw HimalayaError(e.what());                                 \
+      }                                                                 \
+                                                                        \
+      return lambda_3L;                                                 \
+   }()
+#else
+#define FSHimalayaMh23L 0.
+#endif
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
    @ModelName@<Two_scale>* model_)
