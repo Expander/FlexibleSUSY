@@ -61,23 +61,10 @@ namespace flexiblesusy {
 
 #ifdef ENABLE_HIMALAYA
 #define FSHimalayaMh23L [&] () {                                        \
+      MODEL->calculate_DRbar_masses();                                  \
+                                                                        \
       himalaya::Parameters pars;                                        \
-      pars.scale = MODELPARAMETER(scale);                               \
-      pars.mu = INPUTPARAMETER(MuInput);                                \
-      pars.g3 = MODELPARAMETER(g3);                                     \
-      pars.vd = MODELPARAMETER(v) * Cos(ArcTan(INPUTPARAMETER(TanBeta))); \
-      pars.vu = MODELPARAMETER(v) * Sin(ArcTan(INPUTPARAMETER(TanBeta))); \
-      pars.mq2 = Re(INPUTPARAMETER(msq2));                              \
-      pars.md2 = Re(INPUTPARAMETER(msd2));                              \
-      pars.mu2 = Re(INPUTPARAMETER(msu2));                              \
-      pars.At = INPUTPARAMETER(AtInput);                                \
-      pars.Ab = INPUTPARAMETER(AbInput);                                \
-      pars.MG = INPUTPARAMETER(M3Input);                                \
-      pars.MW = 0.5*MODELPARAMETER(@leftCoupling@)*MODELPARAMETER(v);   \
-      pars.MZ = 0.5*Sqrt(Sqr(MODELPARAMETER(@hyperchargeCoupling@)*HSSUSY_info::normalization_@hyperchargeCoupling@) + Sqr(MODELPARAMETER(@leftCoupling@)))*MODELPARAMETER(v); \
-      pars.Mt = MODELPARAMETER(Yu)(2,2)*MODELPARAMETER(v)/Sqrt(2.);     \
-      pars.Mb = MODELPARAMETER(Yd)(2,2)*MODELPARAMETER(v)/Sqrt(2.);     \
-      pars.MA = INPUTPARAMETER(mAInput);                                \
+@fillHimalayaInput@
                                                                         \
       double lambda_3L = 0.;                                            \
                                                                         \
@@ -88,7 +75,7 @@ namespace flexiblesusy {
          const auto ho = hc.calculateDMh3L(false);                      \
                                                                         \
          lambda_3L = ho.getDeltaLambdaEFT()                             \
-                   + ho.getDRbarPrimeToMSbarShift();                    \
+            + msbar_scheme*ho.getDRbarPrimeToMSbarShift();              \
                                                                         \
          VERBOSE_MSG("Himalaya top (hierarchy, Dlambda_3L) = ("         \
                      << ho.getSuitableHierarchy() << ", "               \

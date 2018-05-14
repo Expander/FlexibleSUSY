@@ -193,3 +193,22 @@ SARAH`ParameterDefinitions = Append[
 
 Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_corrections.m"}]];
 Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_scale_variation.m"}]];
+
+FSHimalayaInput = {
+    RenormalizationScheme -> MSbar,
+    \[Mu] -> MuInput,
+    g3 -> SARAH`strongCoupling,
+    vu -> v Sin[ArcTan[TanBeta]],
+    vd -> v Cos[ArcTan[TanBeta]],
+    MSQ2 -> msq2,
+    MSD2 -> msd2,
+    MSU2 -> msu2,
+    At -> AtInput,
+    Ab -> AbInput,
+    mG -> M3Input,
+    mW -> FlexibleSUSY`M[SARAH`VectorW],
+    mZ -> FlexibleSUSY`M[SARAH`VectorZ],
+    mt -> FlexibleSUSY`M[SARAH`TopQuark[3]],
+    mb -> FlexibleSUSY`M[SARAH`BottomQuark[3]],
+    mA -> mAInput
+};
