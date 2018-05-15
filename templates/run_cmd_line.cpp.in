@@ -83,7 +83,7 @@ int run_solver(const @ModelName@_input_parameters& input)
    spectrum_generator.set_settings(settings);
    spectrum_generator.run(qedqcd, input);
 
-   const auto model = std::get<0>(spectrum_generator.get_models_slha());
+   auto model = std::get<0>(spectrum_generator.get_models_slha());
 
    @ModelName@_scales scales;
    scales.HighScale = spectrum_generator.get_high_scale();

@@ -1,4 +1,3 @@
-
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MSSMNoFV;
@@ -11,6 +10,10 @@ MINPAR = {
     {3, TanBeta},
     {4, Sign[\[Mu]]},
     {5, Azero}
+};
+
+EXTPAR = {
+    {100, Mlow}
 };
 
 EWSBOutputParameters = { B[\[Mu]], \[Mu] };
@@ -41,9 +44,9 @@ HighScaleInput = {
    {MassG,m12}
 };
 
-LowScale = LowEnergyConstant[MZ];
+LowScale = If[Mlow != 0, Mlow, LowEnergyConstant[MZ]];
 
-LowScaleFirstGuess = LowEnergyConstant[MZ];
+LowScaleFirstGuess = If[Mlow != 0, Mlow, LowEnergyConstant[MZ]];
 
 LowScaleInput = {
    {Yu, Automatic},

@@ -47,6 +47,8 @@ Alternatively, the Mathematica interface of FlexibleSUSY may be used:
 \subsection Documentation_Models FlexibleSUSY models
 
 - @ref hssusy
+- @ref mssmefthiggs
+- @ref nuhmssmnofvhimalaya
 
 \subsection Documentation_Extensions Extensions
 

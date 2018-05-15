@@ -24,7 +24,7 @@ BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Verti
 
 (* This module generates c++ code intended to be used similarly to SARAH's fields and Vertex[] function *)
 
-Initialize::usage="";
+CXXDiagramsInitialize::usage="";
 VertexTypes::usage="";
 CXXNameOfField::usage="";
 LorentzConjugateOperation::usage="";
@@ -39,9 +39,9 @@ CreateMassFunctions::usage="";
 CreateUnitCharge::usage="";
 NumberOfFieldIndices::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
-Initialize[] := LoadVerticesIfNecessary[]
+CXXDiagramsInitialize[] := LoadVerticesIfNecessary[]
 
 (* The supported vertex types.
  They have the same names as their c++ counterparts. *)
@@ -441,15 +441,6 @@ StripLorentzIndices[p_] := Module[{remainingIndices},
                                   If[Length[remainingIndices] === 0, Head[p],
                                      Head[p][remainingIndices]]
                                   ];
-
-FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] := 
-    Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
-                                {SARAH`getParticleName @ field, ___}][[1]]},
-            fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
-            If[!OptionValue[includeLorentzIndices],
-               DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
-               fieldInfo]
-          ]
         
 End[];
 EndPackage[];

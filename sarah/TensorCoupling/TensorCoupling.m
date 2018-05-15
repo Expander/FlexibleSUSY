@@ -141,8 +141,7 @@ DEFINITION[EWSB][MatterSector] = {
     {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}}, 
     {{{FeL},{conj[FeR]}},{{FEL,ZEL},{FER,ZER}}},
     {{{FdL},{conj[FdR]}},{{FDL,ZDL},{FDR,ZDR}}},
-    {{{FuL},{conj[FuR]}},{{FUL,ZUL},{FUR,ZUR}}},
-    {{FDxL}, {FDXL,ZDXL}}
+    {{{FuL},{conj[FuR]}},{{FUL,ZUL},{FUR,ZUR}}}
 }; 
        
 DEFINITION[EWSB][Phases] = {
@@ -158,5 +157,5 @@ DEFINITION[EWSB][DiracSpinors] = {
     Chi -> {L0, conj[L0]},
     Cha -> {Lm, conj[Lp]},
     Glu -> {fG, conj[fG]},
-    FDX -> {FDXL, FDXL}
+    FDX -> {FDxL, 0}
 };	

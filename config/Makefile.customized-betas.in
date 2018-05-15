@@ -17,6 +17,8 @@ CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
+MSSMHODIR       := $(ABSBASEDIR)/model_specific/MSSM_higgs
+SMHODIR         := $(ABSBASEDIR)/model_specific/SM
 
 INCMODEL        := -I$(MODELDIR)
 INCCONFIG       := -I$(CONFIGDIR)
@@ -26,11 +28,13 @@ INCSLHAEA       := -I$(SLHAEADIR)
 LIBMODEL        := $(MODELDIR)/lib$(MODEL)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
+LIBMSSMHO       := $(MSSMHODIR)/libmodel_specific_MSSM_higgs$(MODULE_LIBEXT)
+LIBSMHO         := $(SMHODIR)/libmodel_specific_SM$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
 CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) \
-                   $(INCSLHAEA) $(INCMODEL)
+                   $(INCSLHAEA) -I$(SMHODIR) -I$(MSSMHODIR) $(INCMODEL)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
@@ -68,6 +72,12 @@ CUSTOMBETAS_DEP := \
 CUSTOMBETAS_EXE := \
 		custombetas.x
 
+# set default shell
+SHELL = /bin/sh
+
+# disable built-in rules to improve speed
+MAKEFLAGS += -rR --include-dir=$(CURDIR)
+
 # returns file name with absolute path, taking whitespace in directory
 # names into account
 abspathx        = $(foreach name,$(1),\
@@ -95,7 +105,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(CUSTOMBETAS_DEP) $(CUSTOMBETAS_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(CUSTOMBETAS_EXE): $(CUSTOMBETAS_OBJ) $(LIBMODEL) $(LIBMSSMHO) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -116,6 +126,9 @@ endif
 %.d: %.f
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 showbuild:
 	@echo "# package information"

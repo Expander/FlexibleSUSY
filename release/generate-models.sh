@@ -42,6 +42,7 @@ echo "Using $number_of_jobs parallel jobs"
 # models and corresponding SARAH model files
 models_array="             \
    CMSSM,MSSM              \
+   CMSSMSemiAnalytic,MSSM  \
    MSSM,MSSM               \
    MSSMatMGUT,MSSM         \
    MSSMNoFV,MSSMNoFV       \

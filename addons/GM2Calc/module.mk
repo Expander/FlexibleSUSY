@@ -12,6 +12,7 @@ LIBGM2Calc_SRC := \
 		$(DIR)/gm2_mb.cpp \
 		$(DIR)/gm2_slha_io.cpp \
 		$(DIR)/gm2_uncertainty.cpp \
+		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/MSSMNoFV_onshell.cpp \
 		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.cpp \
 		$(DIR)/MSSMNoFV_onshell_physical.cpp \
@@ -32,6 +33,7 @@ LIBGM2Calc_HDR := \
 		$(DIR)/gm2_mb.hpp \
 		$(DIR)/gm2_slha_io.hpp \
 		$(DIR)/gm2_uncertainty.hpp \
+		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/MSSMNoFV_onshell.hpp \
 		$(DIR)/MSSMNoFV_onshell_mass_eigenstates.hpp \
 		$(DIR)/MSSMNoFV_onshell_physical.hpp \

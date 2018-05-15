@@ -17,19 +17,10 @@ LIBFLEXI_SRC := \
 		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
 		$(DIR)/global_thread_pool.cpp \
-		$(DIR)/gm2calc_interface.cpp \
 		$(DIR)/gsl_utils.cpp \
 		$(DIR)/gsl_vector.cpp \
 		$(DIR)/lowe.cpp \
 		$(DIR)/sfermions.cpp \
-		$(DIR)/mssm_twoloop_as.cpp \
-		$(DIR)/mssm_twoloop_mb.cpp \
-		$(DIR)/mssm_twoloop_mt.cpp \
-		$(DIR)/mssm_twoloop_mtau.cpp \
-		$(DIR)/mssm_twoloophiggs.cpp \
-		$(DIR)/mssm_twoloophiggs_impl.f \
-		$(DIR)/nmssm_twoloophiggs.cpp \
-		$(DIR)/nmssm2loop.f \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
 		$(DIR)/physical_input.cpp \
@@ -39,19 +30,8 @@ LIBFLEXI_SRC := \
 		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \
 		$(DIR)/slha_io.cpp \
-		$(DIR)/sm_threeloop_as.cpp \
-		$(DIR)/sm_threeloophiggs.cpp \
-		$(DIR)/sm_twoloophiggs.cpp \
 		$(DIR)/spectrum_generator_problems.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
-		$(DIR)/splitmssm_threeloophiggs.cpp \
-		$(DIR)/splitmssm_thresholds.cpp \
-		$(DIR)/standard_model.cpp \
-		$(DIR)/standard_model_effective_couplings.cpp \
-		$(DIR)/standard_model_physical.cpp \
-		$(DIR)/standard_model_two_scale_convergence_tester.cpp \
-		$(DIR)/standard_model_two_scale_low_scale_constraint.cpp \
-		$(DIR)/standard_model_two_scale_model.cpp \
 		$(DIR)/string_utils.cpp \
 		$(DIR)/threshold_corrections.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
@@ -85,7 +65,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/fixed_point_iterator.hpp \
 		$(DIR)/functors.hpp \
 		$(DIR)/global_thread_pool.hpp \
-		$(DIR)/gm2calc_interface.hpp \
 		$(DIR)/gsl.hpp \
 		$(DIR)/gsl_utils.hpp \
 		$(DIR)/gsl_vector.hpp \
@@ -98,14 +77,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/mathlink_utils.hpp \
 		$(DIR)/minimizer.hpp \
 		$(DIR)/model.hpp \
-		$(DIR)/mssm_twoloop_as.hpp \
-		$(DIR)/mssm_twoloop_mb.hpp \
-		$(DIR)/mssm_twoloop_mt.hpp \
-		$(DIR)/mssm_twoloop_mtau.hpp \
-		$(DIR)/mssm_twoloophiggs.h \
-		$(DIR)/mssm_twoloophiggs.hpp \
-		$(DIR)/nmssm_twoloophiggs.hpp \
-		$(DIR)/nmssm2loop.h \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
 		$(DIR)/physical_input.hpp \
@@ -123,21 +94,8 @@ LIBFLEXI_HDR := \
 		$(DIR)/single_scale_constraint.hpp \
 		$(DIR)/single_scale_matching.hpp \
 		$(DIR)/slha_io.hpp \
-		$(DIR)/sm_threeloop_as.hpp \
-		$(DIR)/sm_threeloophiggs.hpp \
-		$(DIR)/sm_twoloophiggs.hpp \
-		$(DIR)/splitmssm_threeloophiggs.hpp \
-		$(DIR)/splitmssm_thresholds.hpp \
 		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \
-		$(DIR)/standard_model.hpp \
-		$(DIR)/standard_model_convergence_tester.hpp \
-		$(DIR)/standard_model_effective_couplings.hpp \
-		$(DIR)/standard_model_low_scale_constraint.hpp \
-		$(DIR)/standard_model_physical.hpp \
-		$(DIR)/standard_model_two_scale_convergence_tester.hpp \
-		$(DIR)/standard_model_two_scale_low_scale_constraint.hpp \
-		$(DIR)/standard_model_two_scale_model.hpp \
 		$(DIR)/string_utils.hpp \
 		$(DIR)/sum.hpp \
 		$(DIR)/thread_pool.hpp \

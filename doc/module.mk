@@ -5,7 +5,6 @@ DOC_MK       := \
 		$(DIR)/module.mk
 
 DOC_TMPL     := \
-		$(DIR)/mainpage.dox.in \
 		$(DIR)/addons.dox \
 		$(DIR)/building.dox \
 		$(DIR)/documentation.dox \
@@ -13,8 +12,11 @@ DOC_TMPL     := \
 		$(DIR)/hssusy.dox \
 		$(DIR)/install.dox \
 		$(DIR)/librarylink.dox \
+		$(DIR)/mainpage.dox.in \
 		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.dox \
+		$(DIR)/mssmefthiggs.dox \
+		$(DIR)/nuhmssmnofvhimalaya.dox \
 		$(DIR)/package.dox \
 		$(DIR)/slha_input.dox \
 		$(DIR)/utilities.dox
@@ -25,7 +27,16 @@ HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
 IMAGE_DIR       := $(DIR)/images
-IMAGES          := $(IMAGE_DIR)/Mh_Xt.png
+IMAGES          := $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
+		   $(IMAGE_DIR)/HSSUSY_Mh_Xt.png \
+		   $(IMAGE_DIR)/HSSUSY_tower.svg \
+		   $(IMAGE_DIR)/MSSMEFTHiggs_Mh_MS.png \
+		   $(IMAGE_DIR)/MSSMEFTHiggs_tower.svg \
+		   $(IMAGE_DIR)/NUHMSSMNoFVHimalaya_tower.svg
+EXAMPLES_DIR    := $(DIR)/examples
+EXAMPLES        := $(EXAMPLES_DIR)/HSSUSY_uncertainty_estimate.m \
+		   $(EXAMPLES_DIR)/MSSMEFTHiggs_uncertainty_estimate.m \
+		   $(EXAMPLES_DIR)/NUHMSSMNoFVHimalaya_uncertainty_estimate.m
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
@@ -72,6 +83,8 @@ install-src::
 		install -m u=rw,g=r,o=r $(PAPER_STY) $(DOC_INSTALL_DIR)
 		install -d $(INSTALL_DIR)/$(IMAGE_DIR)
 		install -m u=rw,g=r,o=r $(IMAGES) $(INSTALL_DIR)/$(IMAGE_DIR)
+		install -d $(INSTALL_DIR)/$(EXAMPLES_DIR)
+		install -m u=rw,g=r,o=r $(EXAMPLES) $(INSTALL_DIR)/$(EXAMPLES_DIR)
 endif
 
 clean-$(MODNAME):
@@ -94,6 +107,8 @@ $(INDEX_PAGE):
 		        $(TEST_SRC) $(TEST_META)"; \
 		  echo "EXCLUDE_PATTERNS = */meta/* */test/*"; \
 		  echo "IMAGE_PATH = $(IMAGE_DIR)"; \
+		  echo "INCLUDE_PATH = $(MODULES)"; \
+		  echo "EXAMPLE_PATH = $(EXAMPLES_DIR)"; \
 		) | doxygen -
 
 $(MAN_PAGE):
@@ -104,6 +119,8 @@ $(MAN_PAGE):
 		        $(TEST_SRC) $(TEST_META)"; \
 		  echo "EXCLUDE_PATTERNS = */meta/* */test/*"; \
 		  echo "IMAGE_PATH = $(IMAGE_DIR)"; \
+		  echo "INCLUDE_PATH = $(MODULES)"; \
+		  echo "EXAMPLE_PATH = $(EXAMPLES_DIR)"; \
 		  echo "GENERATE_MAN = YES"; \
 		  echo "GENERATE_HTML = NO"; \
 		) | doxygen -

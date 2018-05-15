@@ -110,6 +110,8 @@ CalcNUHMSSMNoFVHimalayaMh[asLoops_?NumericQ, ytLoops_?NumericQ, Qpole_?NumericQ,
            tc = thresholdCorrections /. { args };
            tc = If[IntegerQ[tc], tc,
                    thresholdCorrections /. Options[FSNUHMSSMNoFVHimalayaOpenHandle]];
+           If[asLoops >= 0, tc = SetDigit[tc, 2, asLoops]];
+           If[ytLoops >= 0, tc = SetDigit[tc, 6, ytLoops]];
            handle = FSNUHMSSMNoFVHimalayaOpenHandle[args];
            FSNUHMSSMNoFVHimalayaSet[handle,
                fsSettings -> {
@@ -117,7 +119,7 @@ CalcNUHMSSMNoFVHimalayaMh[asLoops_?NumericQ, ytLoops_?NumericQ, Qpole_?NumericQ,
                    calculateBSMMasses -> 1,
                    thresholdCorrectionsLoopOrder -> 3,
                    poleMassScale -> Qpole,
-                   thresholdCorrections -> SetDigit[SetDigit[tc, 2, asLoops], 6, ytLoops]
+                   thresholdCorrections -> tc
                }
            ];
            spec = FSNUHMSSMNoFVHimalayaCalculateSpectrum[handle];
@@ -131,22 +133,25 @@ CalcNUHMSSMNoFVHimalayaDMh[a___, (fsSettings | fsSMParameters | fsModelParameter
     CalcNUHMSSMNoFVHimalayaDMh[a, Sequence @@ s, r];
 
 CalcNUHMSSMNoFVHimalayaDMh[args__] :=
-    Module[{Mh, MhAs, MhYt, varyQpole, DMh,
+    Module[{Mh0, Mh, MhAs, MhYt, varyQpole, DMh,
             mhLoops = poleMassLoopOrder /. { args }, ytLoops, asLoops,
             MS = Qin /. { args }},
            ytLoops    = Max[mhLoops - 1, 1];
            asLoops    = Max[mhLoops - 2, 1];
+           Mh0        = CalcNUHMSSMNoFVHimalayaMh[-1         , -1         , 0, args];
+           If[Mh0 === $Failed, Return[{ $Failed, $Failed }]];
            Mh         = CalcNUHMSSMNoFVHimalayaMh[asLoops    , ytLoops    , 0, args];
+           If[Mh === $Failed, Return[{ Mh0, $Failed }]];
            MhAs       = CalcNUHMSSMNoFVHimalayaMh[asLoops + 1, ytLoops    , 0, args];
+           If[MhAs === $Failed, Return[{ Mh0, $Failed }]];
            MhYt       = CalcNUHMSSMNoFVHimalayaMh[asLoops    , ytLoops + 1, 0, args];
+           If[MhYt === $Failed, Return[{ Mh0, $Failed }]];
            varyQpole  = CalcNUHMSSMNoFVHimalayaMh[asLoops    , ytLoops    , #, args]& /@
                         LogRange[MS/2, 2 MS, 10];
-           If[Mh === $Failed, Return[{ $Failed, $Failed }]];
-           If[MhAs === $Failed || MhYt === $Failed || MemberQ[varyQpole, $Failed],
-              Return[{ Mh, $Failed }]];
+           If[MemberQ[varyQpole, $Failed], Return[{ Mh0, $Failed }]];
            (* combine uncertainty estimates *)
            DMh   = Max[Abs[Max[varyQpole] - Mh],
                        Abs[Min[varyQpole] - Mh]] +
                    Abs[Mh - MhAs] + Abs[Mh - MhYt];
-           { Mh, DMh }
+           { Mh0, DMh }
           ];

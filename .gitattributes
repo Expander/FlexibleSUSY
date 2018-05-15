@@ -28,7 +28,9 @@ meta/SM/extract_*.m             export-ignore
 model_files/BetaSM              export-ignore
 model_files/cCMSSM              export-ignore
 model_files/complexMSSM         export-ignore
+model_files/CMSSMSemiAnalyticMW export-ignore
 model_files/CMSSMCPVSemiAnalytic export-ignore
+model_files/CMSSMCPVSemiAnalyticMW export-ignore
 model_files/CMSSMFPIAbsolute    export-ignore
 model_files/CMSSMFPIRelative    export-ignore
 model_files/CMSSMFPITadpole     export-ignore
@@ -43,11 +45,11 @@ model_files/CMSSMMediumPrecision export-ignore
 model_files/CMSSMHighPrecision  export-ignore
 model_files/CMSSMMassWInput     export-ignore
 model_files/CMSSMConvergenceTester export-ignore
-model_files/CMSSMSemiAnalytic   export-ignore
 model_files/CMSSMYt2L           export-ignore
 model_files/cSM                 export-ignore
 model_files/BLSMlightZp         export-ignore
 model_files/HSSUSYSQCD          export-ignore
+model_files/HSSUSYNoMomIt       export-ignore
 model_files/InertMSSM           export-ignore
 model_files/LHInputMSSM         export-ignore
 model_files/LRLR                export-ignore
@@ -65,6 +67,7 @@ model_files/NSM                 export-ignore
 model_files/NUHMSSMNoFV         export-ignore
 model_files/NUHMSSMNoFVSQCD     export-ignore
 model_files/NUHMSSMNoFVHimalayaSQCD export-ignore
+model_files/NUHMSSMNoFVNoMomIt  export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
@@ -86,9 +89,6 @@ model_files/SMtower             export-ignore
 
 models/fmssm                    export-ignore
 models/fmssmn                   export-ignore
-models/SoftsusyMSSM             export-ignore
-models/SoftsusyNMSSM            export-ignore
-models/SoftsusyFlavourMSSM      export-ignore
 
 release                         export-ignore
 

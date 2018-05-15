@@ -93,6 +93,10 @@ run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/comment.cpp"
 # test circular dependence
 run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/circular.cpp"
 
+# test #ifdef (currently fails)
+flags="-MM"
+# run_depgens "$CXX $flags" "$DEPGEN $flags" "${BASEDIR}/depgen/ifdef.cpp"
+
 rm -f ${OUTPUT}*
 
 echo ""

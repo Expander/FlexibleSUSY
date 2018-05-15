@@ -25,6 +25,27 @@
 #include <iostream>
 
 namespace flexiblesusy {
+namespace {
+
+template <class T>
+void vector_or(std::vector<T>& v1, const std::vector<T>& v2)
+{
+   if (v1.size() != v2.size()) {
+      ERROR("Cannot combine vectors of incompatible size.");
+      return;
+   }
+
+   for (int i = 0; i < v2.size(); i++)
+      if (v2[i]) v1[i] = v2[i];
+}
+
+template <class T1, class T2>
+void map_or(std::map<T1,T2>& m1, const std::map<T1,T2>& m2)
+{
+   m1.insert(m2.cbegin(), m2.cend());
+}
+
+} // anonymous namespace
 
 Problems::Problems(const std::string& model_name_,
                    const Names* particle_names_, const Names* parameter_names_)
@@ -47,13 +68,34 @@ void Problems::clear()
    non_pert_pars.clear();
    exception_msg = "";
    failed_ewsb = false;
+   failed_ewsb_tree_level = false;
    non_perturbative = false;
    failed_sinThetaW_convergence = false;
 }
 
+void Problems::add(const Problems& other)
+{
+   if (model_name != other.get_model_name())
+      WARNING("Adding problems from " << other.get_model_name() << " to " << model_name);
+
+   vector_or(bad_masses, other.bad_masses);
+   vector_or(running_tachyons, other.running_tachyons);
+   vector_or(pole_tachyons, other.pole_tachyons);
+   vector_or(failed_pole_mass_convergence, other.failed_pole_mass_convergence);
+   map_or(non_pert_pars, other.non_pert_pars);
+
+   if (exception_msg.empty() && !other.exception_msg.empty())
+      exception_msg = other.exception_msg;
+
+   failed_ewsb = failed_ewsb || other.failed_ewsb;
+   failed_ewsb_tree_level = failed_ewsb_tree_level || other.failed_ewsb_tree_level;
+   non_perturbative = non_perturbative || other.non_perturbative;
+   failed_sinThetaW_convergence = failed_sinThetaW_convergence || other.failed_sinThetaW_convergence;
+}
+
 bool Problems::have_problem() const
 {
-   return have_tachyon() || failed_ewsb
+   return have_tachyon() || failed_ewsb || failed_ewsb_tree_level
       || non_perturbative || failed_sinThetaW_convergence
       || have_thrown()
       || have_failed_pole_mass_convergence()
@@ -88,6 +130,8 @@ std::vector<std::string> Problems::get_problem_strings() const
    }
    if (failed_ewsb)
       strings.emplace_back("no ewsb");
+   if (failed_ewsb_tree_level)
+      strings.emplace_back("no ewsb at tree-level");
    if (non_perturbative)
       strings.emplace_back("non-perturbative");
    if (failed_sinThetaW_convergence)
@@ -197,6 +241,11 @@ void Problems::flag_no_ewsb()
    failed_ewsb = true;
 }
 
+void Problems::flag_no_ewsb_tree_level()
+{
+   failed_ewsb_tree_level = true;
+}
+
 void Problems::flag_no_perturbative()
 {
    non_perturbative = true;
@@ -257,6 +306,11 @@ void Problems::unflag_thrown()
 void Problems::unflag_no_ewsb()
 {
    failed_ewsb = false;
+}
+
+void Problems::unflag_no_ewsb_tree_level()
+{
+   failed_ewsb_tree_level = false;
 }
 
 void Problems::unflag_no_perturbative()
@@ -342,6 +396,11 @@ bool Problems::have_failed_pole_mass_convergence() const
 bool Problems::no_ewsb() const
 {
    return failed_ewsb;
+}
+
+bool Problems::no_ewsb_tree_level() const
+{
+   return failed_ewsb_tree_level;
 }
 
 bool Problems::no_perturbative() const

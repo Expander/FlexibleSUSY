@@ -134,6 +134,7 @@ void print_usage(const std::string& program_name)
       "  -I<path>      Search for header files in <path>\n"
       "  -MF <file>    Write dependencies to <file>\n"
       "  -MG           Add missing headers to dependency list\n"
+      "  -MI           Ignore errors of non-existing header(s)\n"
       "  -MM           Ignore system headers enclosed by < and >\n"
       "  -MMD <file>   Equivalent to -MM -MF <file>\n"
       "  -MP           Add phony target for each dependency other than main file\n"
@@ -304,6 +305,7 @@ void search_includes(const std::string& file_name,
                      const std::vector<std::string>& paths,
                      std::vector<std::string>& result,
                      bool include_non_existing,
+                     bool ignore_non_existing,
                      int max_depth)
 {
    if (max_depth <= 0) {
@@ -326,12 +328,13 @@ void search_includes(const std::string& file_name,
 
    // search recursively for included files in existing headers
    for (const auto& f: existing)
-      search_includes(f, paths, result, include_non_existing, max_depth - 1);
+      search_includes(f, paths, result, include_non_existing,
+                      ignore_non_existing, max_depth - 1);
 
    // search for non-existing headers
    const auto non_existing = complement(filenames(includes), filenames(existing));
 
-   if (!include_non_existing && !non_existing.empty()) {
+   if (!ignore_non_existing && !include_non_existing && !non_existing.empty()) {
       throw std::runtime_error(
          "Error: cannot find the following header file(s): "
          + concat(non_existing, ' '));
@@ -347,11 +350,13 @@ void search_includes(const std::string& file_name,
 /// taking into account only directories given in `paths'
 std::vector<std::string> search_includes(const std::string& file_name,
                                          const std::vector<std::string>& paths,
-                                         bool include_non_existing = false,
+                                         bool include_non_existing,
+                                         bool ignore_non_existing,
                                          int max_depth = 100)
 {
    std::vector<std::string> result;
-   search_includes(file_name, paths, result, include_non_existing, max_depth);
+   search_includes(file_name, paths, result, include_non_existing,
+                   ignore_non_existing, max_depth);
    return result;
 }
 
@@ -372,6 +377,7 @@ int main(int argc, char* argv[])
    std::vector<std::string> paths;
    std::string file_name, target_name, output_file;
    bool include_non_existing = false; // -MG
+   bool ignore_non_existing = false; // -MI
    bool add_empty_phony_targets = false; // -MP
 
    for (int i = 1; i < argc; i++) {
@@ -385,6 +391,10 @@ int main(int argc, char* argv[])
       }
       if (arg == "-MG") {
          include_non_existing = true;
+         continue;
+      }
+      if (arg == "-MI") {
+         ignore_non_existing = true;
          continue;
       }
       if (arg == "-MM") {
@@ -452,7 +462,8 @@ int main(int argc, char* argv[])
       // search for header inclusions in file
       const auto dependencies
          = delete_duplicates(
-            search_includes(file_name, paths, include_non_existing),
+            search_includes(file_name, paths, include_non_existing,
+                            ignore_non_existing),
             Is_not_duplicate_ignore_path());
 
       if (target_name.empty())

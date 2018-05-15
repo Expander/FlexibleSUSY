@@ -1487,9 +1487,9 @@ EffectiveMASqr = (T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2) (vu^2
 #### Standard Model (SM) ####
 
 In the Standard Model the two-loop Higgs pole mass corrections of the
-order \f$O(\alpha_t\alpha_s)\f$ [arxiv:1407.4336, Eq.(2.47)] and
-\f$O(\alpha_t^2)\f$ [arxiv:1205.6497, Eq.(20)] can be used by setting
-in the model file
+order \f$O(\alpha_t\alpha_s + \alpha_b\alpha_s)\f$ [arxiv:1407.4336],
+\f$O((\alpha_t + \alpha_b)^2)\f$ [arxiv:1205.6497] and
+\f$O(\alpha_\tau^2)\f$ can be used by setting in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 UseHiggs2LoopSM = True;
@@ -1510,6 +1510,25 @@ UseHiggs2LoopSM = True;
 UseSMAlphaS3Loop = True;    (* use 2- and 3-loop QCD corrections to alpha_s *)
 UseYukawa3LoopQCD = True;   (* use 2- and 3-loop QCD corrections to m_t *)
 UseSM3LoopRGEs = True;      (* use 3-loop RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Standard Model the 4-loop Higgs pole mass corrections of the order
+\f$O(\alpha_t\alpha_s^3)\f$ [arxiv:1508.00912, Eq.(5.5)] can be used
+by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs4LoopSM = True;
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+\note When the 4-loop corrections are used, the following switches
+will be set automatically for consistency:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseHiggs2LoopSM = True;
+UseHiggs3LoopSM = True;
+UseSMAlphaS3Loop = True;    (* use 2- and 3-loop QCD corrections to alpha_s *)
+UseYukawa3LoopQCD = True;   (* use 2- and 3-loop QCD corrections to m_t *)
+UseSM3LoopRGEs = True;      (* use 3-loop RGEs *)
+UseSM4LoopRGEs = True;      (* use 4-loop RGEs *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #### Split-MSSM (SplitMSSM) ####
@@ -1560,6 +1579,17 @@ in the model file
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
 UseMSSM3LoopRGEs = True; (* use three-loop MSSM RGEs *)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+### Four-loop RGEs for specific models ###
+
+#### Standard Model ####
+
+In the Standard Model the known four-loop RGEs from [arxiv:1508.00912,
+arXiv:1604.00853, 1508.02680] can be used by setting in the model file
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.m}
+UseSM4LoopRGEs = True; (* use four-loop SM RGEs *)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### Two-loop threshold corrections ###

@@ -32,6 +32,7 @@
 
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_ewsb_solver_interface.hpp"
+#include "config.h"
 #include "eigen_utils.hpp"
 #include "ewsb_solver.hpp"
 #include "wrappers.hpp"
@@ -44,11 +45,10 @@
 #include "thread_pool.hpp"
 #include "functors.hpp"
 
-#include "config.h"
-
 @ewsbSolverHeaders@
 @twoLoopHiggsHeaders@
 @threeLoopHiggsHeaders@
+@fourLoopHiggsHeaders@
 @twoLoopThresholdHeaders@
 
 #include <array>
@@ -69,16 +69,17 @@ namespace flexiblesusy {
 #define MODELPARAMETER(parameter) model.get_##parameter()
 #define EXTRAPARAMETER(parameter) model.get_##parameter()
 
-#define HIGGS_2LOOP_CORRECTION_AT_AS     loop_corrections.higgs_at_as
-#define HIGGS_2LOOP_CORRECTION_AB_AS     loop_corrections.higgs_ab_as
-#define HIGGS_2LOOP_CORRECTION_AT_AT     loop_corrections.higgs_at_at
-#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU loop_corrections.higgs_atau_atau
-#define TOP_POLE_QCD_CORRECTION          loop_corrections.top_qcd
-#define HIGGS_3LOOP_CORRECTION_AT_AS_AS  loop_corrections.higgs_at_as_as
-#define HIGGS_3LOOP_CORRECTION_AB_AS_AS  loop_corrections.higgs_ab_as_as
-#define HIGGS_3LOOP_MDR_SCHEME           loop_corrections.higgs_3L_mdr_scheme
-#define HIGGS_3LOOP_CORRECTION_AT_AT_AS  loop_corrections.higgs_at_at_as
-#define HIGGS_3LOOP_CORRECTION_AT_AT_AT  loop_corrections.higgs_at_at_at
+#define HIGGS_2LOOP_CORRECTION_AT_AS       loop_corrections.higgs_at_as
+#define HIGGS_2LOOP_CORRECTION_AB_AS       loop_corrections.higgs_ab_as
+#define HIGGS_2LOOP_CORRECTION_AT_AT       loop_corrections.higgs_at_at
+#define HIGGS_2LOOP_CORRECTION_ATAU_ATAU   loop_corrections.higgs_atau_atau
+#define TOP_POLE_QCD_CORRECTION            loop_corrections.top_qcd
+#define HIGGS_3LOOP_CORRECTION_AT_AS_AS    loop_corrections.higgs_at_as_as
+#define HIGGS_3LOOP_CORRECTION_AB_AS_AS    loop_corrections.higgs_ab_as_as
+#define HIGGS_3LOOP_MDR_SCHEME             loop_corrections.higgs_3L_mdr_scheme
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AS    loop_corrections.higgs_at_at_as
+#define HIGGS_3LOOP_CORRECTION_AT_AT_AT    loop_corrections.higgs_at_at_at
+#define HIGGS_4LOOP_CORRECTION_AT_AS_AS_AS loop_corrections.higgs_at_as_as_as
 
 CLASSNAME::@ModelName@_mass_eigenstates(const @ModelName@_input_parameters& input_)
    : @ModelName@_soft_parameters(input_)
@@ -612,6 +613,8 @@ void CLASSNAME::run_to(double scale, double eps)
 @twoLoopTadpoleFunctions@
 
 @threeLoopSelfEnergyFunctions@
+
+@fourLoopSelfEnergyFunctions@
 
 @loopMassesFunctions@
 

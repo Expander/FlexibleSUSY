@@ -211,6 +211,8 @@ void match_high_to_low_scale_model_1loop(
    const double Mh2_bsm = calculate_Mh2_pole(model_0l, model_1l, idx);
 
    sm.set_Lambdax((Mh2_bsm - Mh2_sm + mh2_sm)/Sqr(sm.get_v()));
+
+   sm.get_problems().add(sm_0l.get_problems());
 }
 
 double calculate_delta_alpha_em(double alpha_em, const @ModelName@_mass_eigenstates& model)
@@ -649,6 +651,9 @@ void match_low_to_high_scale_model_1loop(
    const auto model_1l = calculate_@ModelName@_1loop(sm_0l, sm, model_0l, model);
 
 @setBSMParameters@
+
+   model.get_problems().add(model_0l.get_problems());
+   model.get_problems().add(model_1l.get_problems());
 }
 
 } // anonymous namespace

@@ -66,6 +66,7 @@ void CMSSMMassWInput_precise_gauge_couplings_low_scale_constraint::apply()
 
    update_scale();
    calculate_DRbar_gauge_couplings();
+   calculate_running_SM_masses();
 
    const double TanBeta = model->get_input().TanBeta;
    const double g1 = model->get_g1();
@@ -156,6 +157,7 @@ void CMSSMMassWInput_weinberg_angle_low_scale_constraint::apply()
    model->calculate_DRbar_masses();
    update_scale();
    calculate_DRbar_gauge_couplings();
+   calculate_running_SM_masses();
 
    // save gauge couplings calculated from MW, MZ
    const double g1_mw_mz = new_g1;

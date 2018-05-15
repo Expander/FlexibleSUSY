@@ -880,23 +880,16 @@ SetTreeLevelSolution[ewsbSolution_, substitutions_List:{}, struct_String:"model.
                   parStr = CConversion`ToValidCSymbolString[par];
                   body = body <> Parameters`SetParameter[par, parStr, struct, None];
                  ];
-              If[substitutions === {},
-                 result = result <>
-                          "if (is_finite) {\n" <>
-                          IndentText[body] <>
-                          IndentText["model.get_problems().unflag_no_ewsb();\n"] <>
-                          "} else {\n" <>
-                          IndentText["error = EWSB_solver::FAIL;\nmodel.get_problems().flag_no_ewsb();\n"] <>
-                          "}";,
-                 result = result <>
-                          "if (is_finite) {\n" <>
-                          IndentText[body] <>
-                          IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]] <>
-                          IndentText["model.get_problems().unflag_no_ewsb();\n"] <>
-                          "} else {\n" <>
-                          IndentText["error = EWSB_solver::FAIL;\nmodel.get_problems().flag_no_ewsb();\n"] <>
-                          "}";
-                ];
+              result = result <>
+                       "if (is_finite) {\n" <>
+                       IndentText[body] <>
+                       If[substitutions === {}, "",
+                          IndentText[WrapLines[SetModelParametersFromEWSB[parametersFixedByEWSB, substitutions, struct]]]
+                         ] <>
+                       IndentText["model.get_problems().unflag_no_ewsb_tree_level();\n"] <>
+                       "} else {\n" <>
+                       IndentText["error = EWSB_solver::FAIL;\nmodel.get_problems().flag_no_ewsb_tree_level();\n"] <>
+                       "}";
              ];
            result
           ];
@@ -1075,16 +1068,17 @@ ApplyEWSBSubstitutions[parametersFixedByEWSB_List, substitutions_List, class_Str
           ];
 
 SolveEWSBIgnoringFailures[loops_Integer] :=
-    Module[{flagEWSB, unflagEWSB, warning, result},
-           flagEWSB = "this->problems.flag_no_ewsb();\n";
-           unflagEWSB = "this->problems.unflag_no_ewsb();\n";
+    Module[{flagEWSB, unflagEWSB, warning, result,
+            flagFunc = "flag_no_ewsb" <> If[loops == 0, "_tree_level", ""]},
+           flagEWSB = "this->problems." <> flagFunc <> "();\n";
+           unflagEWSB = "this->problems.un" <> flagFunc <> "();\n";
            body = "if (has_no_ewsb_flag) {\n" <> IndentText[flagEWSB]
                   <> "} else {\n" <> IndentText[unflagEWSB] <> "}\n";
            body = "[this, has_no_ewsb_flag] () {\n" <> IndentText[body] <> "}\n";
            result = "const bool has_no_ewsb_flag = problems.no_ewsb();\n";
            result = result <> "const auto save_ewsb_flag = make_raii_guard(\n"
                     <> IndentText[body] <> ");\n";
-           result = result <> "problems.unflag_no_ewsb();\n";
+           result = result <> "problems.un" <> flagFunc <> "();\n";
            If[loops == 0,
               result = result <> "solve_ewsb_tree_level();\n";,
               result = result <> "const auto save_ewsb_loop_order = make_raii_save(ewsb_loop_order);\n"

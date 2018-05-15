@@ -60,6 +60,7 @@ Block FlexibleSUSY
    27   1                    # Higgs 3-loop corrections O(alpha_b alpha_s^2)
    28   1                    # Higgs 3-loop corrections O(alpha_t^2 alpha_s)
    29   1                    # Higgs 3-loop corrections O(alpha_t^3)
+   30   1                    # Higgs 4-loop corrections O(alpha_t alpha_s^3)
 Block FlexibleSUSYInput
     0   0.00729735           # alpha_em(0)
     1   125.09               # Mh pole

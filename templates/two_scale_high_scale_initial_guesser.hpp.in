@@ -28,6 +28,7 @@
 #include "initial_guesser.hpp"
 
 #include <sstream>
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
@@ -71,6 +72,9 @@ private:
    @ModelName@_low_scale_constraint<Two_scale> low_constraint{};
    @ModelName@_susy_scale_constraint<Two_scale> susy_constraint{};
    @ModelName@_high_scale_constraint<Two_scale> high_constraint{};
+   Eigen::Matrix<std::complex<double>,3,3> upQuarksDRbar{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> downQuarksDRbar{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
+   Eigen::Matrix<std::complex<double>,3,3> downLeptonsDRbar{Eigen::Matrix<std::complex<double>,3,3>::Zero()};
 
    void guess_susy_parameters();
    void guess_soft_parameters();
@@ -78,6 +82,7 @@ private:
    void calculate_@UpYukawa@_DRbar();
    void calculate_@DownYukawa@_DRbar();
    void calculate_@ElectronYukawa@_DRbar();
+   void calculate_running_SM_masses();
 };
 
 } // namespace flexiblesusy

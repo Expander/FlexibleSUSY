@@ -23,12 +23,16 @@
 #include "@ModelName@_a_muon.hpp"
 #include "@ModelName@_edm.hpp"
 #include "@ModelName@_effective_couplings.hpp"
-#include "gm2calc_interface.hpp"
+#include "config.h"
 #include "eigen_utils.hpp"
 #include "numerics2.hpp"
 #include "wrappers.hpp"
 #include "lowe.h"
 #include "physical_input.hpp"
+
+#ifdef ENABLE_GM2Calc
+#include "gm2calc_interface.hpp"
+#endif
 
 #define MODEL model
 #define AMU a_muon
@@ -81,26 +85,36 @@ void @ModelName@_observables::set(const Eigen::ArrayXd& vec)
 @setObservables@
 }
 
-@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+@ModelName@_observables calculate_observables(@ModelName@_mass_eigenstates& model,
                                               const softsusy::QedQcd& qedqcd,
                                               const Physical_input& physical_input,
                                               double scale)
 {
    auto model_at_scale = model;
 
-   if (scale > 0.)
-      model_at_scale.run_to(scale);
+   if (scale > 0.) {
+      try {
+         model_at_scale.run_to(scale);
+      } catch (const Error& e) {
+         model.get_problems().flag_thrown(e.what());
+         return @ModelName@_observables();
+      }
+   }
 
    return calculate_observables(model_at_scale, qedqcd, physical_input);
 }
 
-@ModelName@_observables calculate_observables(const @ModelName@_mass_eigenstates& model,
+@ModelName@_observables calculate_observables(@ModelName@_mass_eigenstates& model,
                                               const softsusy::QedQcd& qedqcd,
                                               const Physical_input& physical_input)
 {
    @ModelName@_observables observables;
 
+   try {
 @calculateObservables@
+   } catch (const Error& e) {
+      model.get_problems().flag_thrown(e.what());
+   }
 
    return observables;
 }

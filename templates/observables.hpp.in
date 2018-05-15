@@ -47,11 +47,11 @@ struct @ModelName@_observables {
 };
 
 @ModelName@_observables calculate_observables(
-   const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&,
+   @ModelName@_mass_eigenstates&, const softsusy::QedQcd&,
    const Physical_input&);
 
 @ModelName@_observables calculate_observables(
-   const @ModelName@_mass_eigenstates&, const softsusy::QedQcd&,
+   @ModelName@_mass_eigenstates&, const softsusy::QedQcd&,
    const Physical_input&, double scale);
 
 } // namespace flexiblesusy

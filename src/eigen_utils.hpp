@@ -20,10 +20,9 @@
 #define EIGEN_UTILS_H
 
 #include <Eigen/Core>
+#include <algorithm>
 #include <cassert>
 #include <complex>
-#include <iomanip>
-#include <sstream>
 #include <string>
 #include <limits>
 
@@ -75,30 +74,6 @@ Derived div_safe(
          return std::isfinite(q) ? q : Scalar{};
       });
 }
-
-/**
- * Calls eval() on any Eigen expression.  If the argument is not an
- * Eigen expression, the argument is returned.
- *
- * @param expr expression
- *
- * @return evaluated expression or argument
- */
-template <class Derived>
-auto Eval(const Eigen::DenseBase<Derived>& expr) -> decltype(expr.eval())
-{
-   return expr.eval();
-}
-
-inline char                 Eval(char                        expr) { return expr; }
-inline short                Eval(short                       expr) { return expr; }
-inline int                  Eval(int                         expr) { return expr; }
-inline long                 Eval(long                        expr) { return expr; }
-inline unsigned short       Eval(unsigned short              expr) { return expr; }
-inline unsigned int         Eval(unsigned int                expr) { return expr; }
-inline unsigned long        Eval(unsigned long               expr) { return expr; }
-inline double               Eval(double                      expr) { return expr; }
-inline std::complex<double> Eval(const std::complex<double>& expr) { return expr; }
 
 /**
  * The element of v, which is closest to mass, is moved to the
@@ -243,21 +218,12 @@ void reorder_vector(
    reorder_vector(v, matrix.diagonal().array().eval());
 }
 
-template<class Derived>
-std::string print_scientific(const Eigen::DenseBase<Derived>& v,
-                             int number_of_digits = std::numeric_limits<typename Derived::Scalar>::digits10 + 1)
+/// sorts an Eigen array
+template<int N>
+void sort(Eigen::Array<double, N, 1>& v)
 {
-   std::ostringstream sstr;
-
-   for (int k = 0; k < v.cols(); k++) {
-      for (int i = 0; i < v.rows(); i++) {
-         sstr << std::setprecision(number_of_digits)
-              << std::scientific << v(i,k) << ' ';
-      }
-      sstr << '\n';
-   }
-
-   return sstr.str();
+   std::sort(v.data(), v.data() + v.size(),
+             [] (double a, double b) { return std::abs(a) < std::abs(b); });
 }
 
 } // namespace flexiblesusy

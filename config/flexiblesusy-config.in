@@ -9,7 +9,6 @@ CONFIGDIR="${BASEDIR}/config"
 packagename="@PKGNAME@"
 version="@FLEXIBLESUSY_VERSION@"
 
-solvers="@ALGORITHMS@"
 addons="@ADDONS@"
 blaslibs="@BLASLIBS@"
 boostflags="@BOOSTFLAGS@"
@@ -48,8 +47,69 @@ tsilflags="@TSILFLAGS@"
 tsillibs="@TSILLIBS@"
 gm2calclibs=""
 
+#_____________________________________________________________________
+string_trim() {
+    echo "$1" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//'
+}
+
+#_____________________________________________________________________
+make_unique() {
+    # removes duplicate words from the string $1 (preserves order)
+    local str="$1"
+    local res=""
+
+    for s in ${str}; do
+        contains "${res}" "${s}" && continue
+        res="${res} ${s}"
+    done
+
+    echo "${res}" | sed -e 's/^ *//' -e 's/ *$//'
+}
+
+#_____________________________________________________________________
+contains() {
+    # Check if string $1 contains $2
+    if test $# -lt 2 ; then
+        echo "contains: Too few arguments"
+        return 1
+    fi
+    local string="$1"
+    local substring="$2"
+    for f in ${string}; do
+        test "x$f" = "x$substring" && return 0
+    done
+    return 1 # not found
+}
+
+#_____________________________________________________________________
+create_model_specific_modules_list() {
+    local mods=
+    local tmp=
+
+    # get list of model-specific modules
+    for a in $addons $models ; do
+        local mk="${ABSBASEDIR}/${a}/module.mk"
+        test -e "$mk" && {
+            local m="$(echo "$a" | sed -e 's|models/||' -e 's|addons/||')"
+            local rex="MOD${m}_MOD *:="
+            m="$(grep "$rex" "$mk" | sed -e "s/${rex} *\(.*\)$/\1/")"
+            tmp="$tmp $m"
+        }
+    done
+
+    # prepend path to model-specific modules
+    for m in ${tmp} ; do
+        mods="$mods model_specific/$m"
+    done
+
+    mods="$(make_unique "$mods")"
+    mods="$(string_trim "$mods")"
+
+    echo "$mods"
+}
+
 create_module_list() {
-    echo "config src fflite slhaea doc $models $addons $optional_modules"
+    echo "config src fflite slhaea doc $models $addons $model_specific_modules $optional_modules"
 }
 
 create_include_directives_for_FS_modules() {
@@ -89,6 +149,11 @@ create_flexiblesusy_libs() {
         flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/lib$(basename $a)${module_lib_ext}"
     done
 
+    for a in $model_specific_modules ; do
+        [ "x$(basename $a)" = "xGM2Calc" ] && continue
+        flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/${a}/libmodel_specific_$(basename $a)${module_lib_ext}"
+    done
+
     flexiblesusylibs="$flexiblesusylibs ${ABSBASEDIR}/src/libflexisusy${module_lib_ext}"
 
     echo "$flexiblesusylibs"
@@ -104,6 +169,7 @@ create_gm2calc_libs() {
     echo ""
 }
 
+model_specific_modules="$(create_model_specific_modules_list)"
 incl_FS_modules="$(create_include_directives_for_FS_modules)"
 incl_external_modules="$(create_include_directives_for_external_modules)"
 cppflags_without_modules="$cppflags_from_configure $incl_external_modules"

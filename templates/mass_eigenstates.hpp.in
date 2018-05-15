@@ -37,9 +37,7 @@
 #include "@ModelName@_soft_parameters.hpp"
 #include "loop_corrections.hpp"
 #include "threshold_corrections.hpp"
-#include "error.hpp"
 #include "problems.hpp"
-#include "config.h"
 
 #include <iosfwd>
 #include <memory>
@@ -136,17 +134,18 @@ public:
 @twoLoopSelfEnergyPrototypes@
 @twoLoopTadpolePrototypes@
 @threeLoopSelfEnergyPrototypes@
+@fourLoopSelfEnergyPrototypes@
 @loopMassesPrototypes@
 @runningDRbarMassesPrototypes@
 @dependencePrototypes@
 
 private:
-   int ewsb_loop_order{2};           ///< loop order for EWSB
-   int pole_mass_loop_order{2};      ///< loop order for pole masses
+   int ewsb_loop_order{4};           ///< loop order for EWSB
+   int pole_mass_loop_order{4};      ///< loop order for pole masses
    bool calculate_sm_pole_masses{false};  ///< switch to calculate the pole masses of the Standard Model particles
    bool calculate_bsm_pole_masses{true};  ///< switch to calculate the pole masses of the BSM particles
    bool force_output{false};              ///< switch to force output of pole masses
-   double precision{1.e-3};               ///< RG running precision
+   double precision{1.e-4};               ///< RG running precision
    double ewsb_iteration_precision{1.e-5};///< precision goal of EWSB solution
    @ModelName@_physical physical{}; ///< contains the pole masses and mixings
    Problems problems{@ModelName@_info::model_name,

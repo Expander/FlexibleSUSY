@@ -95,6 +95,14 @@ ALLLL    :=
 ALLTST   :=
 # the addons add libraries to this variable to be linked against executables
 ADDONLIBS:=
+# the modules add dependent modules to this variable to be included in the makefile
+ALLMODDEP:=
+
+# set default shell
+SHELL = /bin/sh
+
+# disable built-in rules to improve speed
+MAKEFLAGS += -rR --include-dir=$(CURDIR)
 
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
@@ -107,6 +115,7 @@ DEPGEN = $(DEPGEN_EXE)
 
 # script which lists the SARAH model files
 SARAH_DEP_GEN := @SARAH_DEP_GEN@
+SARAH_MODEL_DIR := @SARAH_MODEL_DIR@
 
 # script which installs a file without export markers
 INSTALL_STRIPPED := config/install_stripped.sh
@@ -159,6 +168,7 @@ endif
 
 include config/abspathx.mk
 include $(patsubst %, %/module.mk, $(MODULES))
+include $(patsubst %, %/module.mk, $(sort $(ALLMODDEP)))
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),distclean)
@@ -209,16 +219,25 @@ depend:  clean-dep
 depend:  $(ALLDEP)
 
 %.d: %.cpp | $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
+	$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
 
 %.d: %.c | $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
+	$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
 
 %.d: %.f | $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
+	$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
 
 %.d: %.F | $(DEPGEN)
-	$(DEPGEN) $(CPPFLAGS) -MM -o '$@' -MT '$*.o' $^
+	$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+%.o: %.f
+	$(FC) $(FFLAGS) -c $< -o $@
+
+%.o: %.F
+	$(FC) $(FFLAGS) $(CPPFLAGS) -c $< -o $@
 
 distclean::
 	-rm -f Makefile

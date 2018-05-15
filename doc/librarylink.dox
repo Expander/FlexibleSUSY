@@ -60,11 +60,11 @@ CalcMh[TB_, Xtt_, MS_] := Module[{handle, spec},
         fsSettings -> {
             precisionGoal -> 1.*^-5,
             calculateStandardModelMasses -> 1,
-            poleMassLoopOrder -> 2,
-            ewsbLoopOrder -> 2,
-            betaFunctionLoopOrder -> 3,
-            thresholdCorrectionsLoopOrder -> 2,
-            poleMassScale -> 173.34,
+            poleMassLoopOrder -> 4,
+            ewsbLoopOrder -> 4,
+            betaFunctionLoopOrder -> 4,
+            thresholdCorrectionsLoopOrder -> 3,
+            thresholdCorrections -> 123111321,
             parameterOutputScale -> 173.34
         },
         fsModelParameters -> {
@@ -77,6 +77,8 @@ CalcMh[TB_, Xtt_, MS_] := Module[{handle, spec},
             MuInput -> MS,
             mAInput -> MS,
             AtInput -> (Xtt + 1/TB) * MS,
+            AbInput -> 0,
+            AtauInput -> 0,
             msq2 -> MS^2 IdentityMatrix[3],
             msu2 -> MS^2 IdentityMatrix[3],
             msd2 -> MS^2 IdentityMatrix[3],
@@ -109,12 +111,12 @@ plot = ListPlot[data,
                 Axes -> False, Frame -> True,
                 FrameLabel -> {"Xt / MS", "Mh / GeV"}];
 
-Export["Mh_Xt.png", plot, ImageSize -> 1000];
+Export["HSSUSY_Mh_Xt.png", plot, ImageSize -> 1000];
 ~~~~~~~~~~~~~~~~~~~~
 
 _Output_:
 
-\image html Mh_Xt.png
+\image html HSSUSY_Mh_Xt.png
 
 \subsection math_interface_defs Using the Mathematica interface functions
 

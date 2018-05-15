@@ -19,6 +19,7 @@ CONFIGDIR       := $(ABSBASEDIR)/config
 FLEXIDIR        := $(ABSBASEDIR)/src
 FFLITEDIR       := $(ABSBASEDIR)/fflite
 SLHAEADIR       := $(ABSBASEDIR)/slhaea
+SMHODIR         := $(ABSBASEDIR)/model_specific/SM
 
 INCMODEL1       := -I$(MODEL1DIR)
 INCMODEL2       := -I$(MODEL2DIR)
@@ -30,11 +31,12 @@ LIBMODEL1       := $(MODEL1DIR)/lib$(MODEL1)$(MODULE_LIBEXT)
 LIBMODEL2       := $(MODEL2DIR)/lib$(MODEL2)$(MODULE_LIBEXT)
 LIBFLEXI        := $(FLEXIDIR)/libflexisusy$(MODULE_LIBEXT)
 LIBFFLITE       := $(FFLITEDIR)/libfflite$(MODULE_LIBEXT)
+LIBSMHO         := $(SMHODIR)/libmodel_specific_SM$(MODULE_LIBEXT)
 
 # Variables for compilation
 CXX             := @CXX@
 CPPFLAGS        := @CPPFLAGS@ -I. $(INCCONFIG) $(INCFLEXI) \
-                   $(INCSLHAEA) $(INCMODEL1) $(INCMODEL2)
+                   $(INCSLHAEA) -I$(SMHODIR) $(INCMODEL1) $(INCMODEL2)
 CXXFLAGS        := @CXXFLAGS@
 CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
@@ -71,6 +73,12 @@ TOWER_DEP := \
 TOWER_EXE := \
 		run_tower.x
 
+# set default shell
+SHELL = /bin/sh
+
+# disable built-in rules to improve speed
+MAKEFLAGS += -rR --include-dir=$(CURDIR)
+
 # returns file name with absolute path, taking whitespace in directory
 # names into account
 abspathx        = $(foreach name,$(1),\
@@ -98,7 +106,7 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
 		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -119,6 +127,9 @@ endif
 %.d: %.f
 	$(FOR_DEP_GEN) $(CPPFLAGS) -cpp -MM -MP -MG $^ -MT '$*.o' | \
 	sed 's|.*\.o:|$*.o:|' > $@
+
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 showbuild:
 	@echo "# package information"

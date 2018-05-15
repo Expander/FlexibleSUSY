@@ -76,4 +76,22 @@ namespace flexiblesusy {
    return beta_@parameterName@;
 }
 
+/**
+ * Calculates the 4-loop beta function of @parameterName@.
+ *
+ * @return 4-loop beta function
+ */
+@parameterType@ @ModelName@_susy_parameters::calc_beta_@parameterName@_4_loop(const Susy_traces& susy_traces) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+@localDeclFourLoop@
+
+   @parameterType@ beta_@parameterName@;
+
+@betaFourLoop@
+
+   return beta_@parameterName@;
+}
+
 } // namespace flexiblesusy

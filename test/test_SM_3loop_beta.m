@@ -29,11 +29,11 @@ Print["testing BetaSM[] ..."];
 
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`hyperchargeCoupling]], 3];
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`leftCoupling       ]], 3];
-TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`strongCoupling     ]], 3];
-TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`UpYukawa           ]], 3];
+TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`strongCoupling     ]], 4];
+TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`UpYukawa           ]], 4];
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`DownYukawa         ]], 3];
 TestEquality[Length[ThreeLoopSM`BetaSM[SARAH`ElectronYukawa     ]], 3];
-TestEquality[Length[ThreeLoopSM`BetaSM[\[Lambda]                ]], 3];
+TestEquality[Length[ThreeLoopSM`BetaSM[\[Lambda]                ]], 4];
 
 Print["checking BetaSM[] and SM[] ..."];
 

@@ -19,7 +19,7 @@
 #ifndef MATHLINK_UTILS_H
 #define MATHLINK_UTILS_H
 
-#include "mathlink.h"
+#include <mathlink.h>
 
 #include <complex>
 #include <string>
