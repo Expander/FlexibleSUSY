@@ -6,6 +6,7 @@
 
 #define private public
 
+#include "config.h"
 #include "SM_two_scale_model.hpp"
 #include "SM_two_scale_low_scale_constraint.hpp"
 #include "wrappers.hpp"
@@ -15,6 +16,10 @@
 #include "standard_model.hpp"
 #include "standard_model_two_scale_model.hpp"
 #include "standard_model_two_scale_low_scale_constraint.hpp"
+
+#define SARAH_VERSION_AT_LEAST(x,y,z) (SARAH_MAJOR > x || (SARAH_MAJOR >= x && \
+                                      (SARAH_MINOR > y || (SARAH_MINOR >= y && \
+                                                           SARAH_PATCH >= z))))
 
 using namespace flexiblesusy;
 using namespace softsusy;
@@ -122,7 +127,14 @@ BOOST_AUTO_TEST_CASE( test_low_scale_constraint )
    BOOST_CHECK_CLOSE_FRACTION(m.get_g3(), sm.get_g3(), eps);
    BOOST_CHECK_CLOSE_FRACTION(m.get_Lambdax(), sm.get_Lambdax(), eps);
    BOOST_CHECK_CLOSE_FRACTION(m.get_v(), sm.get_v(), eps);
+
+   // Note: in SARAH v4.13.0 the definition of mu2 was changed by an
+   // overall sign
+#if SARAH_VERSION_AT_LEAST(4,13,0)
+   BOOST_CHECK_CLOSE_FRACTION(-m.get_mu2(), sm.get_mu2(), eps);
+#else
    BOOST_CHECK_CLOSE_FRACTION(m.get_mu2(), sm.get_mu2(), eps);
+#endif
 
    for (int i = 0; i < 3; i++) {
       for (int k = 0; k < 3; k++) {
