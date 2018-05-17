@@ -652,7 +652,7 @@ clean-$(MODNAME)-obj: clean-SOFTSUSY-obj
 		-rm -f $(TEST_OBJ)
 		-rm -f $(LIBTEST_OBJ)
 
-clean-$(MODNAME)-log: clean-SOFTSUSY-log
+clean-$(MODNAME)-log:
 		-rm -f $(TEST_XML)
 		-rm -f $(TEST_ALL_XML)
 		-rm -f $(TEST_ALL_LOG)
