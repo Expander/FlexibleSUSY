@@ -9,6 +9,11 @@
 #include "pv.hpp"
 #include "SM_two_scale_model.hpp"
 #include "standard_model.hpp"
+#include "config.h"
+
+#define SARAH_VERSION_AT_LEAST(x,y,z) (SARAH_MAJOR > x || (SARAH_MAJOR >= x && \
+                                      (SARAH_MINOR > y || (SARAH_MINOR >= y && \
+                                                           SARAH_PATCH >= z))))
 
 using namespace flexiblesusy;
 using namespace passarino_veltman;
@@ -53,7 +58,14 @@ BOOST_AUTO_TEST_CASE( test_SM_one_loop_Higgs_masses )
 
    // check Higgs pole mass
    const double Mhh_1l(m.get_physical().Mhh);
+
+   // Note: in SARAH v4.13.0 the definition of mu2 was changed by an
+   // overall sign
+#if SARAH_VERSION_AT_LEAST(4,13,0)
+   const double hh_1l = Sqrt(m.get_mu2() + 1.5*lambda*Sqr(v) - Re(m.self_energy_hh_1loop(Mhh_1l)));
+#else
    const double hh_1l = Sqrt(-m.get_mu2() + 1.5*lambda*Sqr(v) - Re(m.self_energy_hh_1loop(Mhh_1l)));
+#endif
 
    BOOST_CHECK_CLOSE(Mhh_1l, hh_1l, 2.0e-4);
 
