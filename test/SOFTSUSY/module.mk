@@ -78,7 +78,7 @@ RUN_SOFTPOINT_DEP := $(RUN_SOFTPOINT_OBJ:.o=.d)
 RUN_SOFTPOINT_EXE := $(RUN_SOFTPOINT_OBJ:.o=.x)
 
 .PHONY:         all-$(MODNAME) clean-$(MODNAME) distclean-$(MODNAME) \
-		clean-$(MODNAME)-dep clean-$(MODNAME)-obj
+		clean-$(MODNAME)-dep clean-$(MODNAME)-lib clean-$(MODNAME)-obj
 
 all-$(MODNAME): $(LIBSOFTSUSY)
 
@@ -86,6 +86,9 @@ clean-$(MODNAME)-dep:
 		-rm -f $(LIBSOFTSUSY_DEP)
 		-rm -f $(RUN_SOFTSUSY_DEP)
 		-rm -f $(RUN_SOFTPOINT_DEP)
+
+clean-$(MODNAME)-lib:
+		-rm -f $(LIBSOFTSUSY)
 
 clean-$(MODNAME)-obj:
 		-rm -f $(LIBSOFTSUSY_OBJ)

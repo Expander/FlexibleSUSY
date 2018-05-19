@@ -27,6 +27,7 @@ mssmGaugeRGEs = FileNameJoin[{Directory[], "Output", "MSSM", "RGEs", "BetaGauge.
 thdmLambdaRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaLijkl.m"}];
 thdmGaugeRGEs = FileNameJoin[{Directory[], "Output", "THDM-II", "RGEs", "BetaGauge.m"}];
 
+conj[0] = 0;
 gRules = {g1 -> Sqrt[5/3] gY};
 
 (* Note: Yukawa couplings are transposed, compared to SARAH *)
