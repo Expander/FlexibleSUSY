@@ -18,6 +18,13 @@ FlexibleSUSY 2.1.1 [not released yet]
 
    Thanks to Wojciech Kotlarski.
 
+ * Bugfix (commit f2b91c358): Flag error when non-perturbative
+   corrections appear in calculation of Weinberg angle.
+
+ * Bugfix (commits 38e5b30, 5c64b0c): Pick correct neutrino mass
+   eigenstate in Delta_VB calculation in models with neutrino mixing.
+   This avoids a division by zero if neutrinos are strongly mixed.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,

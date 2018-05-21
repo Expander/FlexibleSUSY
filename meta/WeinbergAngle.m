@@ -41,6 +41,7 @@ DeltaVBwave::usage="";
 DeltaVBvertex::usage="";
 DeltaVBbox::usage="";
 CreateDeltaVBContributions::usage="";
+GetNeutrinoIndex::usage="";
 CreateDeltaVBCalculation::usage="";
 
 Begin["`Private`"];
@@ -80,7 +81,7 @@ InitMuonDecay[eigenstates_:FlexibleSUSY`FSEigenstates] :=
 
 DefSMhyperCoupling[] :=
     Module[{result},
-           result = "const double gY = ";
+           result = "const auto gY = ";
            If[!MuonDecayWorks,
               Return[result <> "1.;"]];
            result = result <> ThresholdCorrections`GetParameter[SARAH`hyperchargeCoupling] <> " * ";
@@ -91,7 +92,7 @@ DefSMhyperCoupling[] :=
 
 DefSMleftCoupling[] :=
     Module[{result},
-           result = "const double g2 = ";
+           result = "const auto g2 = ";
            If[!MuonDecayWorks,
               Return[result <> "1.;"]];
            result = result <> ThresholdCorrections`GetParameter[SARAH`leftCoupling] <> " * ";
@@ -100,13 +101,20 @@ DefSMleftCoupling[] :=
            result
           ];
 
+GetWPlusBoson[] :=
+    Switch[TreeMasses`GetElectricCharge[SARAH`VectorW],
+            1, SARAH`VectorW,
+           -1, Susyno`LieGroups`conj[SARAH`VectorW],
+            _, Print["Error: W Boson has charge of neither +1 nor -1"]; Null
+          ];
+
 GetBottomMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]]];
 
 GetTopMass[] := ThresholdCorrections`GetParameter[TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]]];
 
 DefVZSelfEnergy[] :=
     Module[{result},
-           result = "const double pizzt   = ";
+           result = "const auto pizzt   = ";
            If[!MuonDecayWorks,
               Return[result <> "0.;"]];
            result <> "Re(model->" <> SelfEnergies`CreateSelfEnergyFunctionName[SARAH`VectorZ, 1] <> "(p));"
@@ -114,7 +122,7 @@ DefVZSelfEnergy[] :=
 
 DefVWSelfEnergy[] :=
     Module[{result},
-           result = "const double piwwt   = ";
+           result = "const auto piwwt   = ";
            If[!MuonDecayWorks,
               Return[result <> "0.;"]];
            result <> "Re(model->" <> SelfEnergies`CreateSelfEnergyFunctionName[SARAH`VectorW, 1] <> "(p));"
@@ -603,15 +611,16 @@ VertexTreeResult[part1_, part2_] :=
               MuonDecayWorks = False;
               DebugPrint["Error: W boson is not defined uniquely or at all"];
               Return[1]];
-           SARAH`Cp[part2withindex, part1withindex, Susyno`LieGroups`conj[SARAH`VectorW]][SARAH`PL]
+           SARAH`Cp[part2withindex, part1withindex, GetWPlusBoson[]][SARAH`PL]
           ];
 
 (*combines generation of diagrams and calculation of their contributions*)
 CompleteVertexResult[part1_, part2_, includeGoldstones_] :=
-    (Plus @@ (VertexResult[#, includeGoldstones] &) /@
-       ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, Susyno`LieGroups`conj[SARAH`VectorW]],
-                       If[includeGoldstones, TreeMasses`IsVector,
-                          TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]]) /
+    HoldForm[Evaluate[
+       (Plus @@ (VertexResult[#, includeGoldstones] &) /@
+          ExcludeDiagrams[GenerateDiagramsVertex[part1, part2, GetWPlusBoson[]],
+                          If[includeGoldstones, TreeMasses`IsVector,
+                             TreeMasses`IsVector[#] || TreeMasses`IsGoldstone[#] &]])]] /
     VertexTreeResult[part1, part2];
 
 (*returns the complete vertex part of deltaVB*)
@@ -834,7 +843,7 @@ CreateContributionPrototype[deltaVBcontri_WeinbergAngle`DeltaVB] :=
 (*based on CreateNPointFunction from SelfEnergies.m*)
 CreateDeltaVBContribution[deltaVBcontri_WeinbergAngle`DeltaVB, vertexRules_List] :=
     Module[{expr, functionName, type, prototype, decl, body},
-           expr = deltaVBcontri[[2]];
+           expr = ReleaseHold[deltaVBcontri[[2]]];
            functionName = CreateContributionPrototype[deltaVBcontri];
            type = CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]];
            prototype = type <> " " <> functionName <> ";\n";
@@ -882,23 +891,57 @@ CreateDeltaVBContributions[deltaVBcontris_List, vertexRules_List] :=
            {prototypes, defs}
           ];
 
+GetNeutrinoIndex[] :=
+    Module[{neutrinofield, chargedleptonfield, coupl, result = ""},
+           If[!MuonDecayWorks,
+              Return["return 0;"]];
+           neutrinofield = TreeMasses`GetSMNeutralLeptons[];
+           If[Length[neutrinofield] == 3,
+              Return["return 0;"]];
+           neutrinofield = neutrinofield[[1]];
+           chargedleptonfield = TreeMasses`GetSMChargedLeptons[][[1]];
+           coupl = SARAH`Cp[SARAH`bar[neutrinofield][{SARAH`gO2}], chargedleptonfield[{Global`FeIdx}],
+                            GetWPlusBoson[]][SARAH`PL];
+           (*follow vertex conventions:*)
+           coupl = Vertices`SortCp[coupl];
+           (*omit a possible minus sign:*)   
+           If[MatchQ[coupl, Times[-1, _]], coupl = -coupl];
+           coupl = SelfEnergies`CreateCouplingSymbol[coupl];
+           For[k = 0, k <= 2, k++,
+               result = result <> "const auto Cp" <> ToString[k] <> " = Abs(";
+               result = result <> CConversion`RValueToCFormString[coupl /. SARAH`gO2 -> k] <> ");\n"];
+           For[k = 0, k <= 2, k++,
+               result = result <> "\nif (Cp" <> ToString[k] <> " >= std::max(";
+               result = result <> Utils`StringJoinWithSeparator[
+                                      ("Cp" <> ToString[#])& /@ Complement[{0,1,2},{k}], ","];
+               result = result <> "))\n   return " <> ToString[k] <> ";"];
+           result
+          ];
+
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
        WeinbergAngle`DeltaVB[{_, {}, ___}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "()";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{_, {SARAH`gO1}, ___}, _]]] :=
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1},
+                              TreeMasses`GetSMChargedLeptons[][[1]]}, _]]] :=
     CreateContributionName[deltaVBcontri] <> "(0) + " <>
     CreateContributionName[deltaVBcontri] <> "(1)";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2}, ___}, _]]] :=
-    CreateContributionName[deltaVBcontri] <> "(0, 0) + " <>
-    CreateContributionName[deltaVBcontri] <> "(1, 1)";
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fswave, {SARAH`gO1},
+                              TreeMasses`GetSMNeutralLeptons[][[1]]}, _]]] :=
+    CreateContributionName[deltaVBcontri] <> "(FveIdx) + " <>
+    CreateContributionName[deltaVBcontri] <> "(FvmIdx)";
 
 CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
-       WeinbergAngle`DeltaVB[{_, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}, ___}, _]]] :=
-    CreateContributionName[deltaVBcontri] <> "(1, 1, 0, 0)";
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fsvertex, {SARAH`gO1, SARAH`gO2}}, _]]] :=
+    CreateContributionName[deltaVBcontri] <> "(0, FveIdx) + " <>
+    CreateContributionName[deltaVBcontri] <> "(1, FvmIdx)";
+
+CreateContributionCall[deltaVBcontri_ /; MatchQ[deltaVBcontri,
+       WeinbergAngle`DeltaVB[{WeinbergAngle`fsbox, {SARAH`gO1, SARAH`gO2, SARAH`gO3, SARAH`gO4}}, _]]] :=
+    CreateContributionName[deltaVBcontri] <> "(1, FvmIdx, FveIdx, 0)";
 
 CreateContributionCall[0] := "0."; (*needed in case of an error*)
 

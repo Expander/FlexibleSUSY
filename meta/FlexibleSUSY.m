@@ -1047,6 +1047,7 @@ WriteWeinbergAngleClass[deltaVBcontributions_List, vertexRules_List, files_List]
                    "@GetTopMass@"         -> WeinbergAngle`GetTopMass[],
                    "@DefVZSelfEnergy@"    -> WeinbergAngle`DefVZSelfEnergy[],
                    "@DefVWSelfEnergy@"    -> WeinbergAngle`DefVWSelfEnergy[],
+                   "@GetNeutrinoIndex@"   -> IndentText[WeinbergAngle`GetNeutrinoIndex[]],
                    "@DeltaVBprototypes@"  -> IndentText[deltaVBprototypes],
                    "@DeltaVBfunctions@"   -> deltaVBfunctions,
                    "@DeltaVBcalculation@" -> IndentText[deltaVBcalculation],

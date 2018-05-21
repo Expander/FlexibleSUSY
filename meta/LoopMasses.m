@@ -193,7 +193,8 @@ Get3LQCDMtRelations[particle_, scale_] :=
                Log[m_/scale^2] :> -Log[scale^2/m],
                k -> 1/(4Pi)^2,
                NL -> 5,
-               NH -> 1
+               NH -> 1,
+               g3 -> SARAH`strongCoupling
            }
           ];
 

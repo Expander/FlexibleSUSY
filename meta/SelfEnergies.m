@@ -84,6 +84,7 @@ CreateThreeLoopSelfEnergiesSplit::usage="Creates function prototypes and
 definitions for three-loop Higgs self-energies in split-SUSY";
 
 SelfEnergyIsSymmetric::usage = "";
+CreateCouplingSymbol::usage = "";
 
 Begin["`Private`"];
 
