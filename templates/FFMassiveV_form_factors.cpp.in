@@ -207,8 +207,8 @@ FermionIn, FermionOut, Spectator, Fermion, Scalar
          const auto indexFBarFVBar = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, fermionFieldIndicesOut ), fermionFieldIndicesIn );
          const auto FBarFVBar = VertexFbarFVbar::evaluate(indexFBarFVBar, context);
 
-         const auto fIn = context.mass<FermionIn>(fermionFieldIndicesIn);
-         const auto fOut = context.mass<FermionOut>(fermionFieldIndicesOut);
+         const auto mfIn = context.mass<FermionIn>(edmFieldIndicesIn);
+         const auto mfOut = context.mass<FermionOut>(edmFieldIndicesOut);
 
          const auto mF = context.mass<Fermion>(fermionFieldIndicesIn);
          const auto mS = context.mass<Scalar>(scalarFieldIndicesIn);
