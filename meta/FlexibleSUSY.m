@@ -4095,7 +4095,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             (* TODO: find a nice way to add additional vertices needed for mu to e conversion *)
             conversionVertices = {};
             conversionVertices = {{SARAH`VZ, TreeMasses`GetSMQuarks[][[1]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[1]]]},
-                {SARAH`VZ, TreeMasses`GetSMQuarks[][[2]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[2]]]}
+                {SARAH`VZ, TreeMasses`GetSMQuarks[][[2]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[2]]]},
+                {SARAH`VZ, SARAH`Ah, SARAH`Ah},
+                {SARAH`VZ, SARAH`Cha1, CXXDiagrams`LorentzConjugate[SARAH`Cha1]},
+                {SARAH`VZ, SARAH`hh, CXXDiagrams`LorentzConjugate[SARAH`hh]},
+                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Sv], SARAH`Sv},
+                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Hpm], SARAH`Hpm},
+                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Fv], SARAH`Fv},
+                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Se], SARAH`Se}
             };
 
            Print["Creating FFMasslessV form factor class ..."];

@@ -100,14 +100,44 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "// Hisano defines form factors A2 through a matrix element in eq. 14\n" <>
                 "// Kitano uses a lagrangian with F_munu. There is a factor of 2 from translation\n" <>
                 "// because Fmunu = qeps - eps q\n" <>
-                "const auto A2L = 0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
-                "const auto A2R = 0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
+                "const auto A2L = -0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
+                "const auto A2R = -0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
 
                 "\n// construct 4-fermion operators from A1 form factors\n" <>
-                "const auto gpLV = photon_exchange[0]/(GF/sqrt(2.0)) * e * (2.*2./3.-1./3.);\n" <>
-                "const auto gpRV = photon_exchange[1]/(GF/sqrt(2.0)) * e * (2.*2./3.-1./3.);\n" <>
-                "const auto gnLV = photon_exchange[0]/(GF/sqrt(2.0)) * e * (2.*(-1./3.)+2./3.);\n" <>
-                "const auto gnRV = photon_exchange[1]/(GF/sqrt(2.0)) * e * (2.*(-1./3.)+2./3.);\n" <>
+                "// i q^2 A1 * (- i gmunu/q^2) * (-i Qq e) = GF/sqrt2 * gpV\n" <>
+                "auto gpLV = sqrt(2.0)/GF * e*(2.*2./3. - 1./3.) * photon_exchange[0];\n" <>
+                "auto gpRV = sqrt(2.0)/GF * e*(2.*2./3. - 1./3.) * photon_exchange[1];\n" <>
+                "auto gnLV = sqrt(2.0)/GF * e*(2.*(-1./3.) + 2./3.) * photon_exchange[0];\n" <>
+                "auto gnRV = sqrt(2.0)/GF * e*(2.*(-1./3.) + 2./3.) * photon_exchange[1];\n" <>
+
+                "\n// add contributions from penguins with massive gauge bosons\n" <>
+                StringJoin @ Map[
+                    ("const auto " <> CXXNameOfField[#] <> "_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
+                        CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[#] <> "_form_factors (" <>
+                        If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
+                        If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
+                        "model);\n" <>
+                        "gpLV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[0];\n" <>
+                        "gpRV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[1];\n" <>
+                        "gnLV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[0];\n" <>
+                        "gnRV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[1];\n")&,
+
+                    (* create a list of massive and electrically neutral gauge bosons *)
+                    Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]
+                ] <>
+
+                (* TODO: add contributions from scalar penguins *)
+                "\n// add contributions from scalar penguins\n" <>
+                "gpLV += sqrt(2.0)/GF * 0.;\n" <>
+                "gpRV += sqrt(2.0)/GF * 0.;\n" <>
+                "gnLV += sqrt(2.0)/GF * 0.;\n" <>
+                "gnRV += sqrt(2.0)/GF * 0.;\n" <>
+
+                "\n// add contributions from box diagrams\n" <>
+                "gpLV += 0.;\n" <>
+                "gpRV += 0.;\n" <>
+                "gnLV += 0.;\n" <>
+                "gnRV += 0.;\n" <>
 
                 "\nconst auto left {A2L*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn};\n" <>
                 "const auto right {A2R*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn};\n" <>

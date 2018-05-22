@@ -186,7 +186,7 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
         colorFactorStr = "std::complex<double> " <>
             ToString @ (N[#, 16]& /@ (ReIm[colorFactor]/EvaluateColorStruct[Emitter, exchangeParticle]));
 
-        colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, Emitter, exchangeParticle}]
+        colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, exchangeParticle}]
     ];
 
 (* loop diagrams
@@ -206,7 +206,7 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
 
 CXXEvaluator[external_List, internal_List] :=
     "FFMassiveVVertexCorrection" <>
-    StringJoin @@ (ToString /@ (SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@ internal)) <>
+    "FS" <>    (*StringJoin @@ (ToString /@ (SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@ internal)) <>*)
     "<" <>
         StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, internal], ", "] <>
     ">";

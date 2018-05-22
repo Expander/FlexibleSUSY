@@ -38,6 +38,7 @@
 using namespace flexiblesusy;
 using namespace cxx_diagrams;
 using namespace @ModelName@_FFV_form_factors;
+using namespace @ModelName@_FFMassiveV_form_factors;
 
 namespace flexiblesusy {
 namespace @ModelName@_f_to_f_conversion {
