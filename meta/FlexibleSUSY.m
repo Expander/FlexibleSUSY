@@ -4115,7 +4115,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Se],CXXDiagrams`LorentzConjugate[SARAH`Chi]},
               {SARAH`Fe,SARAH`Se,CXXDiagrams`LorentzConjugate[SARAH`Chi]},
               {SARAH`Fe,SARAH`Se,SARAH`Chi},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Hpm],CXXDiagrams`LorentzConjugate[SARAH`Fv]}
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Hpm],CXXDiagrams`LorentzConjugate[SARAH`Fv]},
+                {SARAH`Fe,SARAH`Hpm,SARAH`Fv},
               {SARAH`Fe,SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Cha1]}
             }];
 Print["Conversion vertices: ", conversionVertices];
@@ -4152,7 +4153,7 @@ Print["Massive vertices: ", fFFMassiveVFormFactorVertices];
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
-           
+
 
            WriteCXXDiagramClass[
              DeleteDuplicates @ Join[edmVertices, aMuonVertices, fFFMasslessVFormFactorVertices, fFFMassiveVFormFactorVertices, conversionVertices],Lat$massMatrices,
