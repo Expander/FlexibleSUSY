@@ -208,7 +208,7 @@ CXXEvaluator[external_List, internal_List] :=
     "FFMassiveVVertexCorrection" <>
     "FS" <>    (*StringJoin @@ (ToString /@ (SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@ internal)) <>*)
     "<" <>
-        StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, internal], ", "] <>
+        StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, SortBy[internal, IsScalar]], ", "] <>
     ">";
 
 (* Divide by this factor because we some over color indices. *)

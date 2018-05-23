@@ -2003,20 +2003,28 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
 
 (* Write c++ files for the FF conversion *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
-    Module[{interfacePrototypes,interfaceDefinitions},
+    Module[{interfacePrototypes,interfaceDefinitions, vertices, massiveNeutralVectorBosons},
+
+        (* additional vertices needed for the calculation *)
+        (* coupling of vector bozons to quarks *)
+        massiveNeutralVectorBosons = Select[GetVectorBosons[], !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&];
+        vertices = Flatten /@ Tuples[{massiveNeutralVectorBosons, {#, CXXDiagrams`LorentzConjugate[#]}& /@ TreeMasses`GetSMQuarks[]}];
+        Print[vertices];
     
-    {interfacePrototypes, interfaceDefinitions} =
-        If[leptonPairs === {},
-            {"",""},
-            StringJoin @@@
-          (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface /@ leptonPairs])
-        ];
+        {interfacePrototypes, interfaceDefinitions} =
+          If[leptonPairs === {},
+              {"",""},
+              StringJoin @@@
+            (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface /@ leptonPairs])
+          ];
 
         WriteOut`ReplaceInFiles[files,
             {"@FToFConversion_InterfacePrototypes@"     -> interfacePrototypes,
              "@FToFConversion_InterfaceDefinitions@"    -> interfaceDefinitions,
              Sequence @@ GeneralReplacementRules[]}
         ];
+
+        vertices
     ];
 
 (* Write the AMuon c++ files *)
@@ -4084,26 +4092,33 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            fieldsForFToFConversion =
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                 FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, nucleus}];
+            Print[fieldsForFToFConversion];
 
-            conversionVerticesTemp =
+            conversionVertices =
              WriteFToFConversionInNucleusClass[fieldsForFToFConversion,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.cpp"}]}}];
-            Print["Conversion vertices: ", conversionVerticesTemp];
+            Print["Conversion vertices: ", conversionVertices];
             (* TODO: find a nice way to add additional vertices needed for mu to e conversion *)
-            conversionVertices = {};
-            conversionVertices = {{SARAH`VZ, TreeMasses`GetSMQuarks[][[1]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[1]]]},
-                {SARAH`VZ, TreeMasses`GetSMQuarks[][[2]], CXXDiagrams`LorentzConjugate[TreeMasses`GetSMQuarks[][[2]]]},
+            conversionVertices = Join[conversionVertices, {
                 {SARAH`VZ, SARAH`Ah, SARAH`Ah},
                 {SARAH`VZ, SARAH`Cha1, CXXDiagrams`LorentzConjugate[SARAH`Cha1]},
                 {SARAH`VZ, SARAH`hh, CXXDiagrams`LorentzConjugate[SARAH`hh]},
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Sv], SARAH`Sv},
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Hpm], SARAH`Hpm},
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Fv], SARAH`Fv},
-                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Se], SARAH`Se}
-            };
+                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Se], SARAH`Se},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`Cha1},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`Chi},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Se],CXXDiagrams`LorentzConjugate[SARAH`Chi]},
+              {SARAH`Fe,SARAH`Se,CXXDiagrams`LorentzConjugate[SARAH`Chi]},
+              {SARAH`Fe,SARAH`Se,SARAH`Chi},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Hpm],CXXDiagrams`LorentzConjugate[SARAH`Fv]}
+              {SARAH`Fe,SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Cha1]}
+            }];
+Print["Conversion vertices: ", conversionVertices];
 
            Print["Creating FFMasslessV form factor class ..."];
            fFFMasslessVFormFactorVertices =
