@@ -75,7 +75,8 @@ namespace flexiblesusy {
          const auto ho = hc.calculateDMh3L(false);                      \
                                                                         \
          lambda_3L = ho.getDeltaLambdaEFT()                             \
-            + msbar_scheme*ho.getDRbarPrimeToMSbarShiftEFT();           \
+            + msbar_scheme*ho.getDRbarPrimeToMSbarShiftEFT()            \
+            + delta_lambda_3L_flag*ho.getDeltaLambdaUncertaintyEFT();   \
                                                                         \
          VERBOSE_MSG("Himalaya top (hierarchy, Dlambda_3L) = ("         \
                      << ho.getSuitableHierarchy() << ", "               \

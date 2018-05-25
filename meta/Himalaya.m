@@ -26,7 +26,7 @@ BeginPackage["Himalaya`", {"SARAH`", "TextFormatting`", "CConversion`",
 FillHimalayaInput::usage = "Fills parameters into Himalaya input
  struct.";
 
-{ RenormalizationScheme,
+{ RenormalizationScheme, DeltaLambda3LFlag,
   \[Mu], g3, vu, vd, MSQ2, MSD2, MSU2, At, Ab, mG, mW, mZ, Global`mt, mb, mA };
 
 Begin["`Private`"];
@@ -59,6 +59,7 @@ pars.Mb = " <> CConversion`RValueToCFormString[mb /. inPars] <> ";
 pars.MA = " <> CConversion`RValueToCFormString[mA /. inPars] <> ";
 
 const double msbar_scheme = " <> ToString[If[(RenormalizationScheme /. inPars) === DRbar, 0, 1]] <> ";
+const double delta_lambda_3L_flag = " <> CConversion`RValueToCFormString[DeltaLambda3LFlag /. inPars] <> ";
 ";
            AppendAtEnd[result, " \\"]
           ];
