@@ -66,6 +66,36 @@ struct FFMassiveVVertexCorrectionFS {
                        EvaluationContext& context);
 };
 
+template<class FIn, class FOut, class V, class F, class S>
+struct FFVEmitterFIn {
+   static std::valarray<std::complex<double>> value(
+         const typename field_indices<FIn>::type& indices_in,
+         const typename field_indices<FOut>::type& indices_out,
+                       EvaluationContext& context);
+};
+
+template<class FIn, class FOut, class V, class F, class S>
+struct FFVEmitterFOut {
+   static std::valarray<std::complex<double>> value(
+         const typename field_indices<FIn>::type& indices_in,
+         const typename field_indices<FOut>::type& indices_out,
+                       EvaluationContext& context);
+};
+template<class FIn, class FOut, class V, class F, class S>
+struct FFVEmitterS {
+   static std::valarray<std::complex<double>> value(
+         const typename field_indices<FIn>::type& indices_in,
+         const typename field_indices<FOut>::type& indices_out,
+                       EvaluationContext& context);
+};
+
+template<class FIn, class FOut, class V, class F, class S>
+struct FFVEmitterF {
+   static std::valarray<std::complex<double>> value(
+         const typename field_indices<FIn>::type& indices_in,
+         const typename field_indices<FOut>::type& indices_out,
+                       EvaluationContext& context);
+};
 } // anonymous namespace
 
 namespace flexiblesusy {
@@ -132,6 +162,7 @@ FermionIn, FermionOut, Spectator, Fermion, Scalar
       const typename field_indices<FermionOut>::type& indices_out, 
       EvaluationContext& context)
 {
+   const auto hhhh = FFVEmitterFIn<FermionIn, FermionOut, Spectator, Fermion, Scalar>::value(indices_in, indices_out, context);   
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
 
    using VertexFbarFinS = Vertex<
@@ -251,4 +282,72 @@ FermionIn, FermionOut, Spectator, Fermion, Scalar
    return res;
 }
 
+// emit V for incoming fermion
+template<class FIn, class FOut, class V, class F, class S>
+std::valarray<std::complex<double>> FFVEmitterFIn<FIn, FOut, V, F, S>::value(
+      const typename field_indices<FIn>::type& indices_in, 
+      const typename field_indices<FOut>::type& indices_out, 
+      EvaluationContext& context)
+{
+   using VertexFInBarFInVBar = Vertex<
+                         typename FIn::lorentz_conjugate,
+                         FIn,
+                         typename V::lorentz_conjugate
+                         >;
+   using VertexFbarFinS = Vertex<
+                         typename F::lorentz_conjugate,
+                         FIn,
+                         S
+                         >;
+   using VertexFoutbarFSbar = Vertex<
+                         typename FOut::lorentz_conjugate,
+                         typename S::lorentz_conjugate,
+                         F
+                         >;
+
+   constexpr auto indexBoundsOut = VertexFoutbarFSbar::index_bounds;
+   constexpr auto indexBoundsIn = VertexFbarFinS::index_bounds;
+
+//   const auto F
+
+   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
+
+   return res;
+}
+
+// emit V for outgoing fermion
+template<class FIn, class FOut, class V, class F, class S>
+std::valarray<std::complex<double>> FFVEmitterFOut<
+FIn, FOut, V, F, S
+>::value(
+      const typename field_indices<FIn>::type& indices_in, 
+      const typename field_indices<FOut>::type& indices_out, 
+      EvaluationContext& context)
+{
+   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
+}
+
+// emit V from fermion in the loop
+template<class FIn, class FOut, class V, class F, class S>
+std::valarray<std::complex<double>> FFVEmitterF<
+FIn, FOut, V, F, S
+>::value(
+      const typename field_indices<FIn>::type& indices_in, 
+      const typename field_indices<FOut>::type& indices_out, 
+      EvaluationContext& context)
+{
+   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
+}
+
+// emit V from scalar in the loop
+template<class FIn, class FOut, class V, class F, class S>
+std::valarray<std::complex<double>> FFVEmitterS<
+FIn, FOut, V, F, S
+>::value(
+      const typename field_indices<FIn>::type& indices_in, 
+      const typename field_indices<FOut>::type& indices_out, 
+      EvaluationContext& context)
+{
+   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
+}
 } // anonymous namespace
