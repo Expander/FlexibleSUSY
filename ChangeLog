@@ -25,6 +25,12 @@ FlexibleSUSY 2.1.1 [not released yet]
    eigenstate in Delta_VB calculation in models with neutrino mixing.
    This avoids a division by zero if neutrinos are strongly mixed.
 
+ * Bugfix (commit 8d508521d): Correcting 4-loop beta function of the
+   Standard Model top Yukawa coupling.  Note: A factor yt is missing
+   in the expression betaytl4 in the file ttp16_008.m at
+   https://www.ttp.kit.edu/Progdata/ttp16/ttp16-008/ .  This factor yt
+   is present in Eq.(3.5) of 1604.00853.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,

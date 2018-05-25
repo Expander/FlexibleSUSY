@@ -915,6 +915,7 @@ GetNeutrinoIndex[] :=
                result = result <> Utils`StringJoinWithSeparator[
                                       ("Cp" <> ToString[#])& /@ Complement[{0,1,2},{k}], ","];
                result = result <> "))\n   return " <> ToString[k] <> ";"];
+           result = result <> "\n\nthrow NonPerturbativeSinThetaW();";
            result
           ];
 
