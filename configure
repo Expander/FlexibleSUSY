@@ -1248,7 +1248,7 @@ check_platform() {
     IFS=":"
     for p in $PATH; do
         unset IFS
-        logmsg "PATH: ${p}"
+        logmsg "PATH: \"${p}\""
     done
     unset IFS
     logmsg ""
@@ -1256,7 +1256,23 @@ check_platform() {
     IFS=":"
     for p in $LD_LIBRARY_PATH; do
         unset IFS
-        logmsg "LD_LIBRARY_PATH: ${p}"
+        logmsg "LD_LIBRARY_PATH: \"${p}\""
+    done
+    unset IFS
+    logmsg ""
+
+    IFS=":"
+    for p in $CPATH; do
+        unset IFS
+        logmsg "CPATH: \"${p}\""
+    done
+    unset IFS
+    logmsg ""
+
+    IFS=":"
+    for p in $CPLUS_INCLUDE_PATH; do
+        unset IFS
+        logmsg "CPLUS_INCLUDE_PATH: \"${p}\""
     done
     unset IFS
     logmsg ""
