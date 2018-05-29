@@ -462,8 +462,8 @@ check_library() {
             liblist=$(echo $p/$l) # expands wildcard
             for n in ${liblist} ; do
                 if test -f $n ; then
-                    found_dir=$p
-                    found_lib=$l
+                    found_dir=$(echo $p) # strip whitespace
+                    found_lib=$(echo $l) # strip whitespace
                     break 3
                 fi
             done
@@ -529,8 +529,8 @@ check_header() {
             hdrlist=$(echo $p/$h) # expands wildcard
             for n in ${hdrlist} ; do
                 if test -f $n ; then
-                    found_dir=$p
-                    found_hdr=$hdr
+                    found_dir=$(echo $p)   # strip whitespace
+                    found_hdr=$(echo $hdr) # strip whitespace
                     break 3
                 fi
             done
