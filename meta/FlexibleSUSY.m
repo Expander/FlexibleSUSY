@@ -2002,6 +2002,7 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
   ]
 
 (* Write c++ files for the FF conversion *)
+(* leptonPairs is a list of lists, sth like {{F1, F2, Au}, {F2, F3, Al}} etc *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
     Module[{interfacePrototypes,interfaceDefinitions, vertices, massiveNeutralVectorBosons},
 
@@ -2009,7 +2010,8 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
         (* coupling of vector bozons to quarks *)
         massiveNeutralVectorBosons = Select[GetVectorBosons[], !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&];
         vertices = Flatten /@ Tuples[{massiveNeutralVectorBosons, {#, CXXDiagrams`LorentzConjugate[#]}& /@ TreeMasses`GetSMQuarks[]}];
-        Print[vertices];
+        (* @TODO: map over list of {F,F,Nucleus} instead of picking only the first 1 *)
+        vertices = Join[vertices, {SARAH`VP, CXXDiagrams`LorentzConjugate[#], #}& /@ Flatten[{TreeMasses`GetSMQuarks[], Drop[leptonPairs[[1]],-1]}]];
     
         {interfacePrototypes, interfaceDefinitions} =
           If[leptonPairs === {},
@@ -4109,6 +4111,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Sv], SARAH`Sv},
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Hpm], SARAH`Hpm},
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Fv], SARAH`Fv},
+              {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Fe], SARAH`Fe},
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Se], SARAH`Se},
               {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`Cha1},
                 {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`Ah},
