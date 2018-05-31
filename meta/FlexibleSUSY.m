@@ -2004,15 +2004,24 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
 (* Write c++ files for the FF conversion *)
 (* leptonPairs is a list of lists, sth like {{F1, F2, Au}, {F2, F3, Al}} etc *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
-    Module[{interfacePrototypes,interfaceDefinitions, vertices, massiveNeutralVectorBosons},
+    Module[{interfacePrototypes, interfaceDefinitions, vertices,
+      massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions},
 
         (* additional vertices needed for the calculation *)
         (* coupling of vector bozons to quarks *)
-        massiveNeutralVectorBosons = Select[GetVectorBosons[], !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&];
-        vertices = Flatten /@ Tuples[{massiveNeutralVectorBosons, {#, CXXDiagrams`LorentzConjugate[#]}& /@ TreeMasses`GetSMQuarks[]}];
+        massiveNeutralVectorBosons = Select[GetVectorBosons[],
+          !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&
+        ];
+        masslessNeutralVectorBosons = {SARAH`VP};
+        externalFermions = Flatten[{TreeMasses`GetSMQuarks[], Drop[leptonPairs[[1]],-1]}];
+        vertices = Flatten /@ Tuples[
+          {{CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions,
+          Join[masslessNeutralVectorBosons, massiveNeutralVectorBosons]}
+        ];
+        Print[vertices];
         (* @TODO: map over list of {F,F,Nucleus} instead of picking only the first 1 *)
-        vertices = Join[vertices, {SARAH`VP, CXXDiagrams`LorentzConjugate[#], #}& /@ Flatten[{TreeMasses`GetSMQuarks[], Drop[leptonPairs[[1]],-1]}]];
-    
+        (*vertices = Join[vertices, {SARAH`VP, CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions];*)
+
         {interfacePrototypes, interfaceDefinitions} =
           If[leptonPairs === {},
               {"",""},
@@ -4129,8 +4138,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               {SARAH`Fe,SARAH`Se,CXXDiagrams`LorentzConjugate[SARAH`Chi]},
               {SARAH`Fe,SARAH`Se,SARAH`Chi},
               {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Hpm],CXXDiagrams`LorentzConjugate[SARAH`Fv]},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Fv],CXXDiagrams`LorentzConjugate[SARAH`Hpm]},
                 {SARAH`Fe,SARAH`Hpm,SARAH`Fv},
-              {SARAH`Fe,SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Cha1]}
+              {SARAH`Fe,SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Cha1]},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe], SARAH`Cha1, CXXDiagrams`LorentzConjugate[SARAH`Sv]},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe], SARAH`Chi, CXXDiagrams`LorentzConjugate[SARAH`Se]},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe], CXXDiagrams`LorentzConjugate[SARAH`Chi], CXXDiagrams`LorentzConjugate[SARAH`Se]}
             }];
 Print["Conversion vertices: ", conversionVertices];
 

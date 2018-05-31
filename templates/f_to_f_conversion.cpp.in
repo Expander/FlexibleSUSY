@@ -71,15 +71,15 @@ overlap_integrals get_overlap_integrals(Nucleus N, const softsusy::QedQcd& qedqc
 }
 
 std::valarray<std::complex<double>> create_Z_penguin_amp(const EvaluationContext& context) {
-   using FermionVertexEmit = Vertex<
-      typename VZ::lorentz_conjugate,
+      using FermionVertexEmit = Vertex<
+      typename Fu::lorentz_conjugate,
       Fu,
-      typename Fu::lorentz_conjugate
+      typename VZ::lorentz_conjugate
       >;
    using FermionVertexEmit1 = Vertex<
-      typename VZ::lorentz_conjugate,
+      typename Fd::lorentz_conjugate,
       Fd,
-      typename Fd::lorentz_conjugate
+      typename VZ::lorentz_conjugate
       >;
    std::array<int, 4> indices = { 0, 0, 0, 0 };
    const auto vertexEmit = FermionVertexEmit::evaluate(indices, context);
