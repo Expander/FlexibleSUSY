@@ -38,6 +38,7 @@ using namespace flexiblesusy;
 using namespace cxx_diagrams;
 
 namespace {
+#include "clooptools.h"
 using ChargedHiggsMultiplet = @FFMassiveVFormFactors_ChargedHiggsMultiplet@;
 static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
 
@@ -139,9 +140,7 @@ default_indices_for_spectator<VG>( void )
 }
 
 template<class Fj, class Fi, class V, class F, class S>
-std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFS<
-Fj, Fi, V, F, S
->::value(
+std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFS<Fj, Fi, V, F, S>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out, 
       EvaluationContext& context) {
@@ -154,18 +153,22 @@ Fj, Fi, V, F, S
              spectator_indices);
          const auto FiBarFjVBar = VertexFiBarFjVBar::evaluate(indexFiBarFjVBar, context);
    
-   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0};
    
+   setmudim(1000.);
    if(is_zero(abs(FiBarFjVBar.left())) &&  is_zero(abs(FiBarFjVBar.right()))) {
       res += FFVEmitterFj<Fj, Fi, V, F, S>::value(indices_in, indices_out, context);   
       res += FFVEmitterFi<Fj, Fi, V, F, S>::value(indices_in, indices_out, context);   
       res += FFVEmitterF<Fj, Fi, V, F, S>::value(indices_in, indices_out, context);   
       res += FFVEmitterS<Fj, Fi, V, F, S>::value(indices_in, indices_out, context);   
    } 
+   for (const auto el : res) 
+   std::cout << el << ' ';
+   std::cout << std::endl;
+   // else {
    // @TODO: if vector couples directly to the incoming and outgoing fermion we need to do sth else
-   else {
-      BOOST_ASSERT_MSG(is_zero(abs(FiBarFjVBar.left())) &&  is_zero(abs(FiBarFjVBar.right())), "We don't handle this case");
-   }
+      // BOOST_ASSERT_MSG(is_zero(abs(FiBarFjVBar.left())) &&  is_zero(abs(FiBarFjVBar.right())), "We don't handle this case");
+   // }
 
 /*
 
@@ -244,7 +247,7 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
    constexpr auto indexBoundsOut = VertexFibarFSbar::index_bounds;
    constexpr auto indexBoundsIn = VertexFbarFjS::index_bounds;
 
-   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0};
 
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
@@ -274,7 +277,7 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
 
          // get me the FjbarFjV vertex   
          auto spectator_indices = default_indices_for_spectator<V>();
-         const auto indexFjbarFjVbar = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, jFieldIndices), jFieldIndices );
+         const auto indexFjbarFjVbar = flexiblesusy::cxx_diagrams::impl::concatenate( flexiblesusy::cxx_diagrams::impl::concatenate(  jFieldIndices, jFieldIndices), spectator_indices);
          const auto FjBarFjVBar = VertexFjBarFjVBar::evaluate(indexFjbarFjVbar, context);
          const auto FjBarFjVBarL = FjBarFjVBar.left();
          const auto FjBarFjVBarR = FjBarFjVBar.right();
@@ -291,7 +294,6 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
          const auto FiBarFSL = FiBarFSBar.left();
          const auto FiBarFSR = FiBarFSBar.right();
          
-         double Mu = 100.;
 
          // there seem to not be any q^2 terms
          const std::complex<double> A1Lq2div = 0.;
@@ -301,34 +303,42 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
 
          // q^0 terms
          
-         // divergent
-         const std::complex<double> A1Lq0div = (FjBarFjVBarL*mi*(FBarFjSBarL*FiBarFSR*mi + FBarFjSBarR*FiBarFSL*mj) + 
-     2*FjBarFjVBarL*(FBarFjSBarL*FiBarFSL*mi + FBarFjSBarR*FiBarFSR*mj)*mS*Sqrt(x))/(32.*Power(mi,2)*Power(Pi,2));
+         const std::complex<double> A1L = 
+         (-((FBarFjSBarL*FiBarFSR*FjBarFjVBarL*A0i(aa0,Power(mF,2)))/(Power(mi,2) - Power(mj,2))) + 
+     (FBarFjSBarL*FiBarFSR*FjBarFjVBarL*A0i(aa0,Power(mS,2)))/(Power(mi,2) - Power(mj,2)) + 
+     (FBarFjSBarL*FiBarFSR*FjBarFjVBarL*Power(mF,2)*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) + (FBarFjSBarL*FiBarFSL*FjBarFjVBarL*mF*mi*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) + (FBarFjSBarR*FiBarFSR*FjBarFjVBarL*mF*mj*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) + (FBarFjSBarR*FiBarFSL*FjBarFjVBarL*mi*mj*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) - (FBarFjSBarL*FiBarFSR*FjBarFjVBarL*Power(mS,2)*
+        B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2)) + 
+     (mi*((-2*FBarFjSBarL*FiBarFSR*FjBarFjVBarL*mi*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/
+           (Power(mi,2) - Power(mj,2)) + (2*FBarFjSBarR*FiBarFSL*FjBarFjVBarL*mj*
+             B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2))))/2. + 
+     mj*((FBarFjSBarR*FiBarFSL*FjBarFjVBarR*mi*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2)) - 
+        (FBarFjSBarL*FiBarFSR*FjBarFjVBarR*mj*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2))) + 
+     (mj*((-2*FBarFjSBarR*FiBarFSL*FjBarFjVBarR*mi*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/
+           (Power(mi,2) - Power(mj,2)) + (2*FBarFjSBarL*FiBarFSR*FjBarFjVBarR*mj*
+             B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2))))/2.)/(16.*Power(Pi,2));
+         const std::complex<double> A1R = (-((FBarFjSBarR*FiBarFSL*FjBarFjVBarR*A0i(aa0,Power(mF,2)))/(Power(mi,2) - Power(mj,2))) + 
+     (FBarFjSBarR*FiBarFSL*FjBarFjVBarR*A0i(aa0,Power(mS,2)))/(Power(mi,2) - Power(mj,2)) + 
+     (FBarFjSBarR*FiBarFSL*FjBarFjVBarR*Power(mF,2)*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) + (FBarFjSBarR*FiBarFSR*FjBarFjVBarR*mF*mi*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) + (FBarFjSBarL*FiBarFSL*FjBarFjVBarR*mF*mj*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) + (FBarFjSBarL*FiBarFSR*FjBarFjVBarR*mi*mj*B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/
+      (Power(mi,2) - Power(mj,2)) - (FBarFjSBarR*FiBarFSL*FjBarFjVBarR*Power(mS,2)*
+        B0i(bb0,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2)) + 
+     mj*((FBarFjSBarL*FiBarFSR*FjBarFjVBarL*mi*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2)) - 
+        (FBarFjSBarR*FiBarFSL*FjBarFjVBarL*mj*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2))) + 
+     (mj*((-2*FBarFjSBarL*FiBarFSR*FjBarFjVBarL*mi*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/
+           (Power(mi,2) - Power(mj,2)) + (2*FBarFjSBarR*FiBarFSL*FjBarFjVBarL*mj*
+             B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2))))/2. + 
+     (mi*((-2*FBarFjSBarR*FiBarFSL*FjBarFjVBarR*mi*B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/
+           (Power(mi,2) - Power(mj,2)) + (2*FBarFjSBarL*FiBarFSR*FjBarFjVBarR*mj*
+             B0i(bb1,Power(mi,2),Power(mS,2),Power(mF,2)))/(Power(mi,2) - Power(mj,2))))/2.)/(16.*Power(Pi,2));
          
-         const std::complex<double> A1Rq0div = (FjBarFjVBarR*mi*(FBarFjSBarR*FiBarFSL*mi + FBarFjSBarL*FiBarFSR*mj) + 
-     2*FjBarFjVBarR*(FBarFjSBarR*FiBarFSR*mi + FBarFjSBarL*FiBarFSL*mj)*mS*Sqrt(x))/(32.*Power(mi,2)*Power(Pi,2));
-         
-         // finite
-         const std::complex<double> A1Lq0fin = -(FjBarFjVBarL*((1 - x)*(FBarFjSBarL*mi*mS*(-1 + x)*(4*FiBarFSL*mS*(-1 + x)*Sqrt(x) + FiBarFSR*mi*(-1 + 3*x)) + 
-           FBarFjSBarR*mj*(FiBarFSL*mi*mS*(-1 + x)*(-1 + 3*x) + 
-              2*FiBarFSR*Sqrt(x)*(2*Power(mS,2)*Power(-1 + x,2) + Power(mi,2)*(1 + x)))) + 
-        2*(FBarFjSBarL*mi*mS*(-1 + x)*(2*FiBarFSL*mS*(-1 + x)*Sqrt(x) + FiBarFSR*mi*(-1 + 2*x)) + 
-           FBarFjSBarR*mj*(FiBarFSL*mi*mS*(-1 + x)*(-1 + 2*x) + 
-              2*FiBarFSR*Sqrt(x)*(Power(mS,2)*Power(-1 + x,2) + Power(mi,2)*x)))*Log(x)))/
-   (64.*Power(mi,2)*mS*Power(Pi,2)*Power(-1 + x,3));
-         
-         const std::complex<double> A1Rq0fin = -(FjBarFjVBarR*((1 - x)*(FBarFjSBarR*mi*mS*(-1 + x)*(4*FiBarFSR*mS*(-1 + x)*Sqrt(x) + FiBarFSL*mi*(-1 + 3*x)) + 
-           FBarFjSBarL*mj*(FiBarFSR*mi*mS*(-1 + x)*(-1 + 3*x) + 
-              2*FiBarFSL*Sqrt(x)*(2*Power(mS,2)*Power(-1 + x,2) + Power(mi,2)*(1 + x)))) + 
-        2*(FBarFjSBarR*mi*mS*(-1 + x)*(2*FiBarFSR*mS*(-1 + x)*Sqrt(x) + FiBarFSL*mi*(-1 + 2*x)) + 
-           FBarFjSBarL*mj*(FiBarFSR*mi*mS*(-1 + x)*(-1 + 2*x) + 
-              2*FiBarFSL*Sqrt(x)*(Power(mS,2)*Power(-1 + x,2) + Power(mi,2)*x)))*Log(x)))/
-   (64.*Power(mi,2)*mS*Power(Pi,2)*Power(-1 + x,3));
-         
-         res += std::complex<double>(0.,-1.) * std::valarray<std::complex<double>> {
-            // order q^0 of charge radius
-            A1Lq0div, A1Lq0fin, A1Rq0div, A1Rq0fin, 
-            A1Lq2div, A1Lq2fin, A1Rq2div, A1Rq2fin
+         res -= std::valarray<std::complex<double>> {
+            A1L, A1R
          };
       }
    }
@@ -350,7 +360,7 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
    constexpr auto indexBoundsOut = VertexFiBarFSBar::index_bounds;
    constexpr auto indexBoundsIn = VertexFBarFjS::index_bounds;
 
-   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0};
 
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
@@ -380,15 +390,14 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
          // get me the FjbarFjV vertex   
          auto spectator_indices = default_indices_for_spectator<V>();
          const auto indexFiBarFiVBar = flexiblesusy::cxx_diagrams::impl::concatenate( 
-            flexiblesusy::cxx_diagrams::impl::concatenate( spectator_indices, iFieldIndices), 
-            iFieldIndices );
+            flexiblesusy::cxx_diagrams::impl::concatenate( iFieldIndices, iFieldIndices), 
+             spectator_indices);
          const auto FiBarFiVBar = VertexFiBarFiVBar::evaluate(indexFiBarFiVBar, context);
          const auto FiBarFiVBarL = FiBarFiVBar.left();
          const auto FiBarFiVBarR = FiBarFiVBar.right();
 
          const auto mF = context.mass<F>(fermionFieldIndicesIn);
          const auto mS = context.mass<S>(scalarFieldIndicesIn);
-         const auto x {pow(mF/mS,2)};
 
          const auto FBarFjSBar = VertexFBarFjS::evaluate(indexIn, context);
          const auto FBarFjSBarL = FBarFjSBar.left();
@@ -398,26 +407,36 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
          const auto FiBarFSL = FiBarFSBar.left();
          const auto FiBarFSR = FiBarFSBar.right();
          
-         // double Mu = 100.;
-
-         // there seem to not be any q^2 terms
-         const std::complex<double> A1Lq2div = 0.;
-         const std::complex<double> A1Rq2div = 0.;
-         const std::complex<double> A1Lq2fin = 0.;
-         const std::complex<double> A1Rq2fin = 0.;
-
-         const std::complex<double> A1Lq0div = 0.;
-         const std::complex<double> A1Rq0div = 0.;
-         const std::complex<double> A1Lq0fin = 0.;
-         const std::complex<double> A1Rq0fin = 0.;
-
-         res += std::complex<double>(0.,-1.) * std::valarray<std::complex<double>> {
-            // order q^0 of charge radius
-            A1Lq0div, A1Lq0fin, A1Rq0div, A1Rq0fin, 
-            A1Lq2div, A1Lq2fin, A1Rq2div, A1Rq2fin
+         const std::complex<double> A1L = 
+         (-((FBarFjSBarL*FiBarFiVBarL*FiBarFSR*A0i(aa0,Power(mF,2)))/(-Power(mi,2) + Power(mj,2))) + 
+     (FBarFjSBarL*FiBarFiVBarL*FiBarFSR*A0i(aa0,Power(mS,2)))/(-Power(mi,2) + Power(mj,2)) + 
+     (FBarFjSBarL*FiBarFiVBarL*FiBarFSR*Power(mF,2)*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) + (FBarFjSBarL*FiBarFiVBarL*FiBarFSL*mF*mi*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) + (FBarFjSBarR*FiBarFiVBarL*FiBarFSR*mF*mj*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) + (FBarFjSBarR*FiBarFiVBarL*FiBarFSL*mi*mj*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) - (FBarFjSBarL*FiBarFiVBarL*FiBarFSR*Power(mS,2)*
+        B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/(-Power(mi,2) + Power(mj,2)) + 
+     mj*((FBarFjSBarR*FiBarFiVBarL*FiBarFSL*mi*B0i(bb1,Power(mj,2),Power(mS,2),Power(mF,2)))/(-Power(mi,2) + Power(mj,2)) - 
+        (FBarFjSBarL*FiBarFiVBarL*FiBarFSR*mj*B0i(bb1,Power(mj,2),Power(mS,2),Power(mF,2)))/(-Power(mi,2) + Power(mj,2))))/
+   (16.*Power(Pi,2));
+         const std::complex<double> A1R = 
+         (-((FBarFjSBarR*FiBarFiVBarR*FiBarFSL*A0i(aa0,Power(mF,2)))/(-Power(mi,2) + Power(mj,2))) + 
+     (FBarFjSBarR*FiBarFiVBarR*FiBarFSL*A0i(aa0,Power(mS,2)))/(-Power(mi,2) + Power(mj,2)) + 
+     (FBarFjSBarR*FiBarFiVBarR*FiBarFSL*Power(mF,2)*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) + (FBarFjSBarR*FiBarFiVBarR*FiBarFSR*mF*mi*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) + (FBarFjSBarL*FiBarFiVBarR*FiBarFSL*mF*mj*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) + (FBarFjSBarL*FiBarFiVBarR*FiBarFSR*mi*mj*B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/
+      (-Power(mi,2) + Power(mj,2)) - (FBarFjSBarR*FiBarFiVBarR*FiBarFSL*Power(mS,2)*
+        B0i(bb0,Power(mj,2),Power(mS,2),Power(mF,2)))/(-Power(mi,2) + Power(mj,2)) + 
+     mj*((FBarFjSBarL*FiBarFiVBarR*FiBarFSR*mi*B0i(bb1,Power(mj,2),Power(mS,2),Power(mF,2)))/(-Power(mi,2) + Power(mj,2)) - 
+        (FBarFjSBarR*FiBarFiVBarR*FiBarFSL*mj*B0i(bb1,Power(mj,2),Power(mS,2),Power(mF,2)))/(-Power(mi,2) + Power(mj,2))))/
+   (16.*Power(Pi,2));
+         res -= std::valarray<std::complex<double>> {
+            A1L, A1R
          };
       }
    }
+   return res;
 }
 
 // emit V from fermion in the loop
@@ -442,7 +461,7 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
    auto spectator_indices = default_indices_for_spectator<V>();
 
    // loop over all possible particle "generations" attached to both vertices
-   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0};
    for (const auto& indexIn: indexBoundsIn) {
       for (const auto& indexOut: indexBoundsOut) {
          // cycle if generations of external fermions  are different then requested   
@@ -466,9 +485,9 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
          const auto FBarFVBarL = FBarFVBar.left();
          const auto FBarFVBarR = FBarFVBar.right();
 
-         const auto mF = context.mass<F>(fermionFieldIndicesIn);
+         const auto mFB = context.mass<F>(fermionFieldIndicesIn);
+         const auto mFA = context.mass<F>(fermionFieldIndicesOut);
          const auto mS = context.mass<S>(scalarFieldIndicesIn);
-         const auto x {pow(mF/mS,2)};
 
          const auto FBarFjSBar = VertexFBarFjS::evaluate(indexIn, context);
          const auto FBarFjSBarL = FBarFjSBar.left();
@@ -479,25 +498,72 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
          const auto FiBarFSR = FiBarFSBar.right();
 
          // @todo: for now set to 0
-         const std::complex<double> A1Lq2div = 0.;
-         const std::complex<double> A1Rq2div = 0.;
-         const std::complex<double> A1Lq2fin = 0.;
-         const std::complex<double> A1Rq2fin = 0.;
-
-         const std::complex<double> A1Lq0div = -(FBarFjSBarL*FBarFVBarR*FiBarFSR)/(32.*Power(Pi,2));
-         const std::complex<double> A1Rq0div = -(FBarFjSBarR*FBarFVBarL*FiBarFSL)/(32.*Power(Pi,2));
-         const std::complex<double> A1Lq0fin = (FiBarFSR*((-1 + x)*(-2*FBarFjSBarR*FBarFVBarL*mj*Sqrt(x)*(1 + x) + 
-          FBarFjSBarL*mS*(-1 + x)*(FBarFVBarR - 4*FBarFVBarL*x + FBarFVBarR*x)) + 
-       2*(2*FBarFjSBarR*FBarFVBarL*mj*Power(x,1.5) + FBarFjSBarL*mS*(-1 + x)*(-FBarFVBarR + 2*FBarFVBarL*x))*Log(x)))/
-   (64.*mS*Power(Pi,2)*Power(-1 + x,3));
-        const std::complex<double> A1Rq0fin = (FiBarFSL*((-1 + x)*(-2*FBarFjSBarL*FBarFVBarR*mj*Sqrt(x)*(1 + x) + 
-          FBarFjSBarR*mS*(-1 + x)*(FBarFVBarL + FBarFVBarL*x - 4*FBarFVBarR*x)) + 
-       2*(2*FBarFjSBarL*FBarFVBarR*mj*Power(x,1.5) + FBarFjSBarR*mS*(-1 + x)*(-FBarFVBarL + 2*FBarFVBarR*x))*Log(x)))/
-   (64.*mS*Power(Pi,2)*Power(-1 + x,3));
-         res += std::complex<double>(0.,-1.) * std::valarray<std::complex<double>> {
-            // order q^0 of charge radius
-            A1Lq0div, A1Lq0fin, A1Rq0div, A1Rq0fin, 
-            A1Lq2div, A1Lq2fin, A1Rq2div, A1Rq2fin
+         const std::complex<double> A1L = (-(FBarFjSBarL*FBarFVBarR*FiBarFSR*B0i(bb0,0,Power(mFA,2),Power(mFB,2))) + 
+     FBarFjSBarL*FBarFVBarL*FiBarFSR*mFA*mFB*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*mi*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarL*FiBarFSR*mFA*mj*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarL*FiBarFSL*mi*mj*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+     FBarFjSBarL*FBarFVBarR*FiBarFSR*Power(mS,2)*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     2*FBarFjSBarL*FBarFVBarR*FiBarFSR*C0i(cc00,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     (mi*(2*FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarR*FBarFVBarL*FiBarFSL*mj*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + mj*(FBarFjSBarR*FBarFVBarL*FiBarFSR*mFA*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+        FBarFjSBarR*FBarFVBarL*FiBarFSL*mi*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarL*FBarFVBarR*FiBarFSR*mj*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))) + 
+     (mj*(2*FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarL*FBarFVBarR*FiBarFSR*mj*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + FBarFjSBarL*FBarFVBarR*FiBarFSR*Power(mi,2)*
+      C0i(cc11,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarL*FiBarFSL*mi*mj*C0i(cc11,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarR*FiBarFSR*Power(mi,2)*C0i(cc12,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     2*FBarFjSBarR*FBarFVBarL*FiBarFSL*mi*mj*C0i(cc12,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarR*FiBarFSR*Power(mj,2)*C0i(cc12,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     (mi*(2*FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarR*FBarFVBarL*FiBarFSL*mj*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + mj*(FBarFjSBarR*FBarFVBarL*FiBarFSR*mFA*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+        FBarFjSBarR*FBarFVBarL*FiBarFSL*mi*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarL*FBarFVBarR*FiBarFSR*mj*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))) + 
+     (mj*(2*FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarL*FBarFVBarR*FiBarFSR*mj*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + FBarFjSBarR*FBarFVBarL*FiBarFSL*mi*mj*C0i(cc22,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarR*FiBarFSR*Power(mj,2)*C0i(cc22,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)))/
+   (16.*Power(Pi,2));
+        const std::complex<double> A1R = (-(FBarFjSBarR*FBarFVBarL*FiBarFSL*B0i(bb0,0,Power(mFA,2),Power(mFB,2))) + 
+     FBarFjSBarR*FBarFVBarR*FiBarFSL*mFA*mFB*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*mi*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarR*FiBarFSL*mFA*mj*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarR*FiBarFSR*mi*mj*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+     FBarFjSBarR*FBarFVBarL*FiBarFSL*Power(mS,2)*C0i(cc0,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     2*FBarFjSBarR*FBarFVBarL*FiBarFSL*C0i(cc00,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     mj*(FBarFjSBarL*FBarFVBarR*FiBarFSL*mFA*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+        FBarFjSBarL*FBarFVBarR*FiBarFSR*mi*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarR*FBarFVBarL*FiBarFSL*mj*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))) + 
+     (mj*(2*FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarR*FBarFVBarL*FiBarFSL*mj*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + (mi*(2*FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarL*FBarFVBarR*FiBarFSR*mj*C0i(cc1,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + FBarFjSBarR*FBarFVBarL*FiBarFSL*Power(mi,2)*
+      C0i(cc11,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarL*FBarFVBarR*FiBarFSR*mi*mj*C0i(cc11,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarL*FiBarFSL*Power(mi,2)*C0i(cc12,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     2*FBarFjSBarL*FBarFVBarR*FiBarFSR*mi*mj*C0i(cc12,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarL*FiBarFSL*Power(mj,2)*C0i(cc12,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     mj*(FBarFjSBarL*FBarFVBarR*FiBarFSL*mFA*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+        FBarFjSBarL*FBarFVBarR*FiBarFSR*mi*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) - 
+        FBarFjSBarR*FBarFVBarL*FiBarFSL*mj*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))) + 
+     (mj*(2*FBarFjSBarL*FBarFVBarL*FiBarFSL*mFB*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarR*FBarFVBarL*FiBarFSL*mj*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + (mi*(2*FBarFjSBarR*FBarFVBarR*FiBarFSR*mFB*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+          2*FBarFjSBarL*FBarFVBarR*FiBarFSR*mj*C0i(cc2,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2))))/2.\
+      + FBarFjSBarL*FBarFVBarR*FiBarFSR*mi*mj*C0i(cc22,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)) + 
+     FBarFjSBarR*FBarFVBarL*FiBarFSL*Power(mj,2)*C0i(cc22,Power(mi,2),0,Power(mj,2),Power(mS,2),Power(mFA,2),Power(mFB,2)))/
+   (16.*Power(Pi,2));
+         res -= std::valarray<std::complex<double>> {
+            A1L, A1R
          };
       }
    }
@@ -517,8 +583,12 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
 
    auto spectator_indices = default_indices_for_spectator<V>();
 
+   // masses of external fermions
+   const auto mj = context.mass<Fj>(indices_in);
+   const auto mi = context.mass<Fi>(indices_out);
+
    // loop over all possible particle "generations" attached to both vertices
-   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+   std::valarray<std::complex<double>> res {0.0, 0.0};
    constexpr auto indexBoundsOut = VertexFiBarFSBar::index_bounds;
    constexpr auto indexBoundsIn = VertexFBarFjS::index_bounds;
    for (const auto& indexIn: indexBoundsIn) {
@@ -540,11 +610,11 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
          const auto scalarFieldIndicesOut = VertexFiBarFSBar::template fieldIndices<2>(indexOut);
          const auto indexSBarSVBar = flexiblesusy::cxx_diagrams::impl::concatenate(scalarFieldIndicesOut, 
             flexiblesusy::cxx_diagrams::impl::concatenate( scalarFieldIndicesIn, spectator_indices));
-         const auto SBarSVBar = VertexSBarSVBar::evaluate(indexSBarSVBar, context);
+         const auto SBarSVBar = VertexSBarSVBar::evaluate(indexSBarSVBar, context).value();
 
          const auto mF = context.mass<F>(fermionFieldIndicesIn);
-         const auto mS = context.mass<S>(scalarFieldIndicesIn);
-         const auto x {pow(mF/mS,2)};
+         const auto mSB = context.mass<S>(scalarFieldIndicesIn);
+         const auto mSA = context.mass<S>(scalarFieldIndicesOut);
 
          const auto FBarFjSBar = VertexFBarFjS::evaluate(indexIn, context);
          const auto FBarFjSBarL = FBarFjSBar.left();
@@ -555,20 +625,113 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
          const auto FiBarFSR = FiBarFSBar.right();
 
          // @todo: for now set to 0
-         const std::complex<double> A1Lq2div = 0.;
-         const std::complex<double> A1Rq2div = 0.;
-         const std::complex<double> A1Lq2fin = 0.;
-         const std::complex<double> A1Rq2fin = 0.;
+         const std::complex<double> A1L = (-2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc00,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+     (mi*(FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mj*(FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(-(FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mi,2)*(-(FBarFjSBarL*FiBarFSR*SBarSVBar*
+             C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mi,2)*(FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mj,2)*(FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*(-(FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mj*(-(FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(-(FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          4*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc22,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mj,2)*(-(FBarFjSBarL*FiBarFSR*SBarSVBar*
+             C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          4*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc22,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2.)/
+   (16.*Power(Pi,2));
+         const std::complex<double> A1R = (-2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc00,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+     (mj*(FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*(FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mi,2)*(-(FBarFjSBarR*FiBarFSL*SBarSVBar*
+             C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(-(FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mi,2)*(FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mj,2)*(FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) + 
+          FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mj*(-(FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSL*mF*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSL*mj*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*(-(FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc0,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSR*mF*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSR*mj*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (Power(mj,2)*(-(FBarFjSBarR*FiBarFSL*SBarSVBar*
+             C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          4*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarR*FiBarFSL*SBarSVBar*C0i(cc22,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2. + 
+     (mi*mj*(-(FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc1,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))) - 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc11,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          4*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc12,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc2,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2)) - 
+          2*FBarFjSBarL*FiBarFSR*SBarSVBar*C0i(cc22,0,Power(mi,2),Power(mj,2),Power(mSB,2),Power(mSA,2),Power(mF,2))))/2.)/
+   (16.*Power(Pi,2));
 
-         const std::complex<double> A1Lq0div = 0.;
-         const std::complex<double> A1Rq0div = 0.;
-         const std::complex<double> A1Lq0fin = 0.;
-        const std::complex<double> A1Rq0fin = 0.;
-
-         res += std::complex<double>(0.,-1.) * std::valarray<std::complex<double>> {
-            // order q^0 of charge radius
-            A1Lq0div, A1Lq0fin, A1Rq0div, A1Rq0fin, 
-            A1Lq2div, A1Lq2fin, A1Rq2div, A1Rq2fin
+         res -= std::valarray<std::complex<double>> {
+            A1L, A1R
          };
       }
    }
