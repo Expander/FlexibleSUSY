@@ -112,15 +112,14 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
 
                 "\n// add contributions from penguins with massive gauge bosons\n" <>
                 StringJoin @ Map[
-                    ("const auto " <> CXXNameOfField[#] <> "_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
-                        CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[#] <> "_form_factors (" <>
+                    ("const auto " <> CXXNameOfField[#] <> "_exchange = create_massive_penguin_amp(" <>
                         If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                         If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
-                        "model);\n" <>
-                        "gpLV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[0];\n" <>
-                        "gpRV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[1];\n" <>
-                        "gnLV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[0];\n" <>
-                        "gnRV += sqrt(2.0)/GF * pow(context.mass<" <> CXXNameOfField[#] <> ">({}), -2) * " <> CXXNameOfField[#] <> "_exchange[1];\n")&,
+                        "model, qedqcd);\n" <>
+                        "gpLV += (2.*" <> CXXNameOfField[#] <> "_exchange[0] +" <> CXXNameOfField[#] <> "_exchange[2]);\n" <>
+                        "gpRV += (2.*" <> CXXNameOfField[#] <> "_exchange[1] +" <> CXXNameOfField[#] <> "_exchange[3]);\n" <>
+                        "gnLV += (" <> CXXNameOfField[#] <> "_exchange[0] + 2.*" <> CXXNameOfField[#] <> "_exchange[2]);\n" <>
+                        "gnRV += (" <> CXXNameOfField[#] <> "_exchange[1] + 2.*" <> CXXNameOfField[#] <> "_exchange[3]);\n")&,
 
                     (* create a list of massive and electrically neutral gauge bosons *)
                     Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]

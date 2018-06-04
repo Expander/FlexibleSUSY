@@ -70,25 +70,32 @@ overlap_integrals get_overlap_integrals(Nucleus N, const softsusy::QedQcd& qedqc
    } 
 }
 
-std::valarray<std::complex<double>> create_Z_penguin_amp(const EvaluationContext& context) {
-      using FermionVertexEmit = Vertex<
-      typename Fu::lorentz_conjugate,
-      Fu,
-      typename VZ::lorentz_conjugate
-      >;
-   using FermionVertexEmit1 = Vertex<
-      typename Fd::lorentz_conjugate,
-      Fd,
-      typename VZ::lorentz_conjugate
-      >;
+std::valarray<std::complex<double>> create_massive_penguin_amp(int generationIndex1,  int generationIndex2,const MRSSM2_mass_eigenstates& model, const softsusy::QedQcd& qedqcd) {
+   MRSSM2_mass_eigenstates model_ = model;
+   EvaluationContext context{ model_ };
+   const auto GF {qedqcd.displayFermiConstant()};
+   const auto VZ_exchange = calculate_Fe_Fe_VZ_form_factors (generationIndex1,  generationIndex2, model);
+
+   using FermionVertexEmit = Vertex<typename Fu::lorentz_conjugate, Fu, typename VZ::lorentz_conjugate>;
+   using FermionVertexEmit1 = Vertex<typename Fd::lorentz_conjugate, Fd, typename VZ::lorentz_conjugate>;
+   
    std::array<int, 4> indices = { 0, 0, 0, 0 };
    const auto vertexEmit = FermionVertexEmit::evaluate(indices, context);
    std::cout << vertexEmit.left() << ' ' << vertexEmit.right() << std::endl;
 
-   indices = { 1, 1, 1, 1 };
-   const auto vertexEmit1 = FermionVertexEmit::evaluate(indices, context);
+   const auto indices2 = flexiblesusy::cxx_diagrams::impl::concatenate( std::array<int, 2> {0, 0}, std::array<int, 2> {0, 0});
+   const auto vertexEmit1 = FermionVertexEmit1::evaluate(indices2, context);
    std::cout << vertexEmit1.left() << ' ' << vertexEmit1.right() << std::endl;
-   return {0.,0.,0.,0.};
+
+   const auto uVectorCurrent = vertexEmit.left() + vertexEmit.right();
+   const auto dVectorCurrent = vertexEmit1.left() + vertexEmit1.right();
+
+   std::complex<double> guLV = -sqrt(2.0)/GF * pow(context.mass<VZ>({}), -2) * VZ_exchange[0] * uVectorCurrent;
+   std::complex<double> guRV = -sqrt(2.0)/GF * pow(context.mass<VZ>({}), -2) * VZ_exchange[1] * uVectorCurrent;
+   std::complex<double> gdLV = -sqrt(2.0)/GF * pow(context.mass<VZ>({}), -2) * VZ_exchange[0] * dVectorCurrent;
+   std::complex<double> gdRV = -sqrt(2.0)/GF * pow(context.mass<VZ>({}), -2) * VZ_exchange[1] * dVectorCurrent;
+
+   return {guLV, guRV, gdLV, gdRV};
 }
 
 @FToFConversion_InterfaceDefinitions@
