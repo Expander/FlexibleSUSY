@@ -28,7 +28,9 @@ EXTPAR = {
     {201, DeltaYt},
     {202, DeltaOS},
     {203, Qmatch},
-    {204, DeltaLambda3L}
+    {204, DeltaLambda3L},
+    {205, ThreeLoopAtAsAsEFT},
+    {206, ThreeLoopAtAsAsH3m}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -246,5 +248,7 @@ FSHimalayaInput = {
     mt -> FlexibleSUSY`M[SARAH`TopQuark[3]],
     mb -> FlexibleSUSY`M[SARAH`BottomQuark[3]],
     mA -> mAInput,
-    DeltaLambda3LFlag -> DeltaLambda3L
+    Lambda3LEFT -> ThreeLoopAtAsAsEFT,
+    Lambda3LH3m -> ThreeLoopAtAsAsH3m,
+    Lambda3LUncertainty -> DeltaLambda3L
 };
