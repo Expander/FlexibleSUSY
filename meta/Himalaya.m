@@ -27,35 +27,59 @@ FillHimalayaInput::usage = "Fills parameters into Himalaya input
  struct.";
 
 { RenormalizationScheme, Lambda3LEFT, Lambda3LH3m, Lambda3LUncertainty,
-  \[Mu], g3, vu, vd, MSQ2, MSD2, MSU2, At, Ab, mG, mW, mZ, Global`mt, mb, mA };
+  \[Mu], SARAH`g1, Susyno`LieGroups`g2, g3, vd, vu,
+  MSQ2, MSD2, MSU2, MSL2, MSE2,
+  Au, Ad, Ae, Yu, Yd, Ye, M1, M2, M3, mA };
 
 Begin["`Private`"];
 
 AppendAtEnd[str_, char_] :=
     StringReplace[str, EndOfLine|EndOfString -> char];
 
+HimalayaIsScalar[par_] :=
+    MatchQ[Parameters`GetType[par], CConversion`ScalarType[_]];
+
 FillHimalayaInput[inputPars_, struct_:"pars"] :=
     Module[{result = "",
             inPars = Parameters`DecreaseIndexLiterals[inputPars],
-            pars = First /@ Reverse /@ inputPars
+            pars = First /@ Reverse /@ inputPars,
+            isScalarAu, isScalarAd, isScalarAe
            },
+           isScalarAu = HimalayaIsScalar[Au /. inPars];
+           isScalarAd = HimalayaIsScalar[Ad /. inPars];
+           isScalarAe = HimalayaIsScalar[Ae /. inPars];
            result = Parameters`CreateLocalConstRefs[pars] <> "
 
 pars.scale = MODELPARAMETER(scale);
 pars.mu = Re(" <> CConversion`RValueToCFormString[\[Mu] /. inPars] <> ");
+pars.g1 = Re(" <> CConversion`RValueToCFormString[Sqrt[5/3] SARAH`g1 FlexibleSUSY`GUTNormalization[SARAH`g1] /. inPars] <> ");
+pars.g2 = Re(" <> CConversion`RValueToCFormString[Susyno`LieGroups`g2 /. inPars] <> ");
 pars.g3 = Re(" <> CConversion`RValueToCFormString[g3 /. inPars] <> ");
 pars.vd = Re(" <> CConversion`RValueToCFormString[vd /. inPars] <> ");
 pars.vu = Re(" <> CConversion`RValueToCFormString[vu /. inPars] <> ");
 pars.mq2 = Re(" <> CConversion`RValueToCFormString[MSQ2 /. inPars] <> ");
 pars.md2 = Re(" <> CConversion`RValueToCFormString[MSD2 /. inPars] <> ");
 pars.mu2 = Re(" <> CConversion`RValueToCFormString[MSU2 /. inPars] <> ");
-pars.At = Re(" <> CConversion`RValueToCFormString[At /. inPars] <> ");
-pars.Ab = Re(" <> CConversion`RValueToCFormString[Ab /. inPars] <> ");
-pars.MG = " <> CConversion`RValueToCFormString[mG /. inPars] <> ";
-pars.MW = " <> CConversion`RValueToCFormString[mW /. inPars] <> ";
-pars.MZ = " <> CConversion`RValueToCFormString[mZ /. inPars] <> ";
-pars.Mt = " <> CConversion`RValueToCFormString[Global`mt /. inPars] <> ";
-pars.Mb = " <> CConversion`RValueToCFormString[mb /. inPars] <> ";
+pars.ml2 = Re(" <> CConversion`RValueToCFormString[MSL2 /. inPars] <> ");
+pars.me2 = Re(" <> CConversion`RValueToCFormString[MSE2 /. inPars] <> ");
+" <> If[isScalarAu,
+        "pars.Au(2,2) = Re(" <> CConversion`RValueToCFormString[Au /. inPars] <> ");",
+        "pars.Au = Re(" <> CConversion`RValueToCFormString[Au /. inPars] <> ");"
+       ] <> "
+" <> If[isScalarAd,
+        "pars.Ad(2,2) = Re(" <> CConversion`RValueToCFormString[Ad /. inPars] <> ");",
+        "pars.Ad = Re(" <> CConversion`RValueToCFormString[Ad /. inPars] <> ");"
+       ] <> "
+" <> If[isScalarAe,
+        "pars.Ae(2,2) = Re(" <> CConversion`RValueToCFormString[Ae /. inPars] <> ");",
+        "pars.Ae = Re(" <> CConversion`RValueToCFormString[Ae /. inPars] <> ");"
+       ] <> "
+pars.yu = Re(" <> CConversion`RValueToCFormString[Yu /. inPars] <> ");
+pars.yd = Re(" <> CConversion`RValueToCFormString[Yd /. inPars] <> ");
+pars.ye = Re(" <> CConversion`RValueToCFormString[Ye /. inPars] <> ");
+pars.M1 = " <> CConversion`RValueToCFormString[M1 /. inPars] <> ";
+pars.M2 = " <> CConversion`RValueToCFormString[M2 /. inPars] <> ";
+pars.MG = " <> CConversion`RValueToCFormString[M3 /. inPars] <> ";
 pars.MA = " <> CConversion`RValueToCFormString[mA /. inPars] <> ";
 
 const double msbar_scheme = " <> ToString[If[(RenormalizationScheme /. inPars) === DRbar, 0, 1]] <> ";
