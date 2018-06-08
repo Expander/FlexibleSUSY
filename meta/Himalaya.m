@@ -74,9 +74,9 @@ pars.me2 = Re(" <> CConversion`RValueToCFormString[MSE2 /. inPars] <> ");
         "pars.Ae(2,2) = Re(" <> CConversion`RValueToCFormString[Ae /. inPars] <> ");",
         "pars.Ae = Re(" <> CConversion`RValueToCFormString[Ae /. inPars] <> ");"
        ] <> "
-pars.yu = Re(" <> CConversion`RValueToCFormString[Yu /. inPars] <> ");
-pars.yd = Re(" <> CConversion`RValueToCFormString[Yd /. inPars] <> ");
-pars.ye = Re(" <> CConversion`RValueToCFormString[Ye /. inPars] <> ");
+pars.Yu = Re(" <> CConversion`RValueToCFormString[Yu /. inPars] <> ");
+pars.Yd = Re(" <> CConversion`RValueToCFormString[Yd /. inPars] <> ");
+pars.Ye = Re(" <> CConversion`RValueToCFormString[Ye /. inPars] <> ");
 pars.M1 = " <> CConversion`RValueToCFormString[M1 /. inPars] <> ";
 pars.M2 = " <> CConversion`RValueToCFormString[M2 /. inPars] <> ";
 pars.MG = " <> CConversion`RValueToCFormString[M3 /. inPars] <> ";
