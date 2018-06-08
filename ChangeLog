@@ -31,6 +31,9 @@ FlexibleSUSY 2.1.1 [not released yet]
    https://www.ttp.kit.edu/Progdata/ttp16/ttp16-008/ .  This factor yt
    is present in Eq.(3.5) of 1604.00853.
 
+ * Bugfix (commit a2de8a30d): Stripping leading/trailing whitespace
+   from system directory paths used in the configure script.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,

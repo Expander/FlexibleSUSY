@@ -462,8 +462,8 @@ check_library() {
             liblist=$(echo $p/$l) # expands wildcard
             for n in ${liblist} ; do
                 if test -f $n ; then
-                    found_dir=$p
-                    found_lib=$l
+                    found_dir=$(echo $p) # strip whitespace
+                    found_lib=$(echo $l) # strip whitespace
                     break 3
                 fi
             done
@@ -529,8 +529,8 @@ check_header() {
             hdrlist=$(echo $p/$h) # expands wildcard
             for n in ${hdrlist} ; do
                 if test -f $n ; then
-                    found_dir=$p
-                    found_hdr=$hdr
+                    found_dir=$(echo $p)   # strip whitespace
+                    found_hdr=$(echo $hdr) # strip whitespace
                     break 3
                 fi
             done
@@ -1248,7 +1248,7 @@ check_platform() {
     IFS=":"
     for p in $PATH; do
         unset IFS
-        logmsg "PATH: ${p}"
+        logmsg "PATH: \"${p}\""
     done
     unset IFS
     logmsg ""
@@ -1256,7 +1256,23 @@ check_platform() {
     IFS=":"
     for p in $LD_LIBRARY_PATH; do
         unset IFS
-        logmsg "LD_LIBRARY_PATH: ${p}"
+        logmsg "LD_LIBRARY_PATH: \"${p}\""
+    done
+    unset IFS
+    logmsg ""
+
+    IFS=":"
+    for p in $CPATH; do
+        unset IFS
+        logmsg "CPATH: \"${p}\""
+    done
+    unset IFS
+    logmsg ""
+
+    IFS=":"
+    for p in $CPLUS_INCLUDE_PATH; do
+        unset IFS
+        logmsg "CPLUS_INCLUDE_PATH: \"${p}\""
     done
     unset IFS
     logmsg ""
