@@ -1433,44 +1433,60 @@ pars.MA = " <> mA0Str <> ";
 #endif
 
 try {
-   const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
+   const auto ren_scheme = HIGGS_3LOOP_SCHEME;
    const bool verbose = false;
    himalaya::HierarchyCalculator hc(pars, verbose);
 
    if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
-      const auto hier = hc.calculateDMh3L(false, mdrScheme);
-
-      VERBOSE_MSG(\"Himalaya top (hierarchy, uncertainties) = (\"
-                  << hier.getSuitableHierarchy() << \", {\"
-                  << hier.getExpUncertainty(1) << \", \"
-                  << hier.getExpUncertainty(2) << \", \"
-                  << hier.getExpUncertainty(3) << \"})\");
+#if Himalaya_VERSION_MAJOR < 2
+      const auto hier = hc.calculateDMh3L(false, ren_scheme);
+#else
+      const auto hier = hc.calculateDMh3L(false);
+#endif
 
       // calculate the 3-loop corrections
       self_energy_3l += - hier.getDMh(3);
 
-      if (mdrScheme) {
-         // calculate the 1- and 2-loop shift DR -> MDR
+#if Himalaya_VERSION_MAJOR < 2
+      if (ren_scheme) {
+         // calculate shift DR -> MDR
          self_energy_3l += - hier.getDRToMDRShift();
       }
+#else
+      if (ren_scheme == 1) {
+         // calculate shift DR' -> MDR'
+         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+      } else if (ren_scheme == 1) {
+         // calculate shift DR' -> H3m
+         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+      }
+#endif
    }
 
    if (HIGGS_3LOOP_CORRECTION_AB_AS_AS) {
-      const auto hier = hc.calculateDMh3L(true, mdrScheme);
-
-      VERBOSE_MSG(\"Himalaya bottom (hierarchy, uncertainties) = (\"
-                  << hier.getSuitableHierarchy() << \", {\"
-                  << hier.getExpUncertainty(1) << \", \"
-                  << hier.getExpUncertainty(2) << \", \"
-                  << hier.getExpUncertainty(3) << \"})\");
+#if Himalaya_VERSION_MAJOR < 2
+      const auto hier = hc.calculateDMh3L(true, ren_scheme);
+#else
+      const auto hier = hc.calculateDMh3L(false);
+#endif
 
       // calculate the 3-loop corrections
       self_energy_3l += - hier.getDMh(3);
 
-      if (mdrScheme) {
-         // calculate the 1- and 2-loop shift DR -> MDR
+#if Himalaya_VERSION_MAJOR < 2
+      if (ren_scheme) {
+         // calculate the shift DR -> MDR
          self_energy_3l += - hier.getDRToMDRShift();
       }
+#else
+      if (ren_scheme == 1) {
+         // calculate shift DR' -> MDR'
+         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+      } else if (ren_scheme == 1) {
+         // calculate shift DR' -> H3m
+         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+      }
+#endif
    }
 } catch (const std::exception& e) {
    VERBOSE_MSG(e.what());
