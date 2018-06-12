@@ -24,7 +24,7 @@ $flexiblesusyCSrcChunkSize = 2^21;
 
 BeginPackage["TextFormatting`"];
 
-WrapLines::usage="breaks text lines";
+WrapLines::usage="Breaks long text lines.  This function is a wrapper around WrapText[].";
 WrapText::usage="WrapText[text, maxWidth, indentation] breaks text lines.  It tries to wrap a line at a blank or a special character that maximizes the line length within maxWidth characters.";
 IndentText::usage="indents text by a given number of spaces";
 
@@ -64,26 +64,7 @@ SplitLine[line_String, maxWidth_:79] :=
           ];
 
 WrapLines[text_String, maxWidth_:79, offset_:"   "] :=
-    Module[{result = "", lines, line, i, k, indent, splitLines},
-           lines = StringSplit[text, "\n"];
-           For[i = 1, i <= Length[lines], i++,
-               line = lines[[i]];
-               (* get intentation of line *)
-               indent = StringReplace[line, x:(StartOfString ~~ Whitespace...) ~~ ___ -> x];
-               splitLines = SplitLine[line, maxWidth - StringLength[indent]
-                                      - StringLength[offset]];
-               (* remove strings that consist of whitespace only *)
-               splitLines = Cases[StringReplace[#,StartOfString ~~ Whitespace.. ~~ EndOfString -> EmptyString]& /@ splitLines, _String];
-               For[k = 1, k <= Length[splitLines], k++,
-                   (* strip whitespace *)
-                   splitLines[[k]] = StringTrim[splitLines[[k]]];
-                   result = result <> indent;
-                   If[k > 1, result = result <> offset];
-                   result = result <> splitLines[[k]] <> "\n";
-                  ];
-              ];
-           Return[result];
-          ];
+    WrapText[text, maxWidth, StringLength[offset]];
 
 IndentText[text_String, spaces_Integer:3] :=
     Module[{i, whiteSpace = ""},
