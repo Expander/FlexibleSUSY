@@ -114,7 +114,7 @@ NLeadingSpaces[line_String] := Module[{
 ProtectCTokens[line_String] :=
   DeleteCases[StringSplit[
       line,
-      s:RegularExpression["\".*?(?<!\\\\)\"|##|<:|:>|<%|%>|(%:){1,2}|[0-9]+\\.[0-9]*|\\.\\.\\.|::|\\.\\*|[-+*/%&|^]=|(<<|>>)=?|[=!<>]=|&&|\\|\\||\\+\\+|--|->\\*?"]
+      s:RegularExpression["\".*?(?<!\\\\)\"|##|<:|:>|<%|%>|(%:){1,2}|[0-9]+\\.[0-9]*|[[:alnum:]_]+|\\.\\.\\.|::|\\.\\*|[-+*/%&|^]=|(<<|>>)=?|[=!<>]=|&&|\\|\\||\\+\\+|--|->\\*?"]
       :> Hold[s]], ""];
 
 SplitLine[fstLen_Integer, strs_List] :=
