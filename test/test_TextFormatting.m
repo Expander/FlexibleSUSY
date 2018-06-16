@@ -49,24 +49,23 @@ TestEquality[TextFormatting`Private`SplitLine["abcdefghij",5], {"abcdefghij"}];
 
 Print["testing WrapLines[] ..."];
 
-TestEquality[WrapLines["a"  ,1,""], "a\n"];
+TestEquality[WrapLines["a"  ,1,""], "a"];
 TestEquality[WrapLines["a\n",1,""], "a\n"];
-TestEquality[WrapLines["a  ",1,""], "a\n"];
-TestEquality[WrapLines["a b",2,""], "a\nb\n"];
-TestEquality[WrapLines["a b c",1,""], "a\nb\nc\n"];
-TestEquality[WrapLines["abc def",3,""], "abc\ndef\n"];
-TestEquality[WrapLines["abc def",4,""], "abc\ndef\n"];
+TestEquality[WrapLines["a  ",1,""], "a"];
+TestEquality[WrapLines["a b",2,""], "a\nb"];
+TestEquality[WrapLines["a b c",1,""], "a\n \nb\n \nc"];
+TestEquality[WrapLines["abc def",3,""], "abc\n \ndef"];
+TestEquality[WrapLines["abc def",4,""], "abc\ndef"];
 
 (* test indentation *)
-TestEquality[WrapLines[" abc,def",5,""], " abc\n ,def\n"];
-TestEquality[WrapLines[" abc,def",6,""], " abc,\n def\n"];
-TestEquality[WrapLines[" abc def",5,""], " abc\n def\n"];
+TestEquality[WrapLines[" abc,def",5,""], " abc,\n def"];
+TestEquality[WrapLines[" abc,def",6,""], " abc,\n def"];
+TestEquality[WrapLines[" abc def",5,""], " abc\n def"];
 
 (* test indentation + offset *)
-TestEquality[WrapLines[" abc,def",5,"x"], " abc\n x,\n xdef\n"];
-TestEquality[WrapLines[" abc,def",6,"x"], " abc\n x,def\n"];
-(* no break possible because offset is too long *)
-TestEquality[WrapLines[" abc,def",5,"xxx"], " abc,def\n"];
+TestEquality[WrapLines[" abc,def",5,"x"], " abc,\n  def"];
+TestEquality[WrapLines[" abc,def",6,"x"], " abc,\n  def"];
+TestEquality[WrapLines[" abc,def",5,"xxx"], " abc,\n    def"];
 
 Print["testing IndentText[] ..."];
 
