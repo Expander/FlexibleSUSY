@@ -53,8 +53,8 @@ TestEquality[WrapLines["a"  ,1,""], "a"];
 TestEquality[WrapLines["a\n",1,""], "a\n"];
 TestEquality[WrapLines["a  ",1,""], "a"];
 TestEquality[WrapLines["a b",2,""], "a\nb"];
-TestEquality[WrapLines["a b c",1,""], "a\n \nb\n \nc"];
-TestEquality[WrapLines["abc def",3,""], "abc\n \ndef"];
+TestEquality[WrapLines["a b c",1,""], "a\nb\nc"];
+TestEquality[WrapLines["abc def",3,""], "abc\ndef"];
 TestEquality[WrapLines["abc def",4,""], "abc\ndef"];
 
 (* test indentation *)

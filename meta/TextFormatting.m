@@ -87,6 +87,12 @@ WrapText[text_String, maxWidth_Integer:79, indentation_Integer:2] := Block[{
   StringJoin @ Riffle[WrapLine /@ StringSplit[text, "\n", All], "\n"]
 ];
 
+RemoveTrailingWhitespace[str_] :=
+    StringTrim[str, Whitespace.. ~~ EndOfString];
+
+RemoveEmptyLines[l_List] :=
+    Select[l, !StringMatchQ[#, StartOfString ~~ Whitespace... ~~ EndOfString]&];
+
 WrapLine[blank_String] := {} /;
   StringMatchQ[blank, RegularExpression["^[[:space:]]*$"]];
 
@@ -98,7 +104,7 @@ WrapLine[line_String] := Block[{
     otherBlankStr
   },
   absSkip = nLeadingSpaces + relSkip;
-  lst = SplitLine[nLeadingSpaces, ProtectCTokens@StringTrim[line]];
+  lst = RemoveEmptyLines[RemoveTrailingWhitespace /@ SplitLine[nLeadingSpaces, ProtectCTokens@StringTrim[line]]];
   firstBlankStr = StringJoin@Table[" ", {nLeadingSpaces}];
   otherBlankStr = StringJoin@Table[" ", {absSkip}];
   If[lst === {}, {},
