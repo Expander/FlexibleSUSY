@@ -23,30 +23,6 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["TextFormatting`", "TextFormatting.m"];
 
-Print["testing GetBestSplitPoint[] ..."];
-
-TestEquality[TextFormatting`Private`GetBestSplitPoint["",0], 0];
-TestEquality[TextFormatting`Private`GetBestSplitPoint["a",1], 1];
-TestEquality[TextFormatting`Private`GetBestSplitPoint["a b",1], 1];
-TestEquality[TextFormatting`Private`GetBestSplitPoint["a b",2], 2];
-TestEquality[TextFormatting`Private`GetBestSplitPoint["a b c",4], 4];
-TestEquality[TextFormatting`Private`GetBestSplitPoint["a b c",10], StringLength["a b c"]];
-
-(* test that we do not split a C string *)
-TestEquality[TextFormatting`Private`GetBestSplitPoint["\"a,b\"\"cd\"",2], StringLength["\"a,b\"\"cd\""]];
-TestEquality[TextFormatting`Private`GetBestSplitPoint["1 + \"a,b\"",7], 4];
-
-Print["testing SplitLine[] ..."];
-
-TestEquality[TextFormatting`Private`SplitLine["",0], {""}];
-TestEquality[TextFormatting`Private`SplitLine["",1], {""}];
-TestEquality[TextFormatting`Private`SplitLine["a b",1], {"a", " ", "b"}];
-TestEquality[TextFormatting`Private`SplitLine["a b",2], {"a ", "b"}];
-TestEquality[TextFormatting`Private`SplitLine["a b c",3], {"a b", " c"}];
-TestEquality[TextFormatting`Private`SplitLine["a b c",4], {"a b ", "c"}];
-(* no break possible *)
-TestEquality[TextFormatting`Private`SplitLine["abcdefghij",5], {"abcdefghij"}];
-
 Print["testing WrapLines[] ..."];
 
 TestEquality[WrapLines["a"  ,1,""], "a"];

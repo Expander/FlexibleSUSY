@@ -30,39 +30,6 @@ IndentText::usage="indents text by a given number of spaces";
 
 Begin["`Private`"];
 
-GetBestSplitPoint[line_String, maxWidth_:79] :=
-    Module[{chars, lastSplitPoint, i, char, nextChar, numberOfQuotes = 0,
-            splitChars = StringSplit["(){}[]*+,;<> ", ""]},
-           If[StringLength[line] <= maxWidth, Return[StringLength[line]]];
-           chars = StringSplit[line, ""];
-           lastSplitPoint = StringLength[line];
-           For[i = 1, i < Length[chars] && i <= maxWidth, i++,
-               char = chars[[i]];
-               If[char == "\"", numberOfQuotes++;];
-               nextChar = chars[[i+1]];
-               If[(MemberQ[splitChars, char] || MemberQ[splitChars, nextChar])
-                  && EvenQ[numberOfQuotes],
-                  lastSplitPoint = i;
-                 ];
-              ];
-           Return[lastSplitPoint];
-          ];
-
-SplitLine[line_String, maxWidth_:79] :=
-    Module[{bestSplitPoint, first, rest, result = {}},
-           bestSplitPoint = GetBestSplitPoint[line, maxWidth];
-           first = StringTake[line, bestSplitPoint];
-           AppendTo[result, first];
-           rest = StringDrop[line, bestSplitPoint];
-           While[rest != "",
-                 bestSplitPoint = GetBestSplitPoint[rest, maxWidth];
-                 first = StringTake[rest, bestSplitPoint];
-                 AppendTo[result, first];
-                 rest = StringDrop[rest, bestSplitPoint];
-                ];
-           Return[result];
-          ];
-
 WrapLines[text_String, maxWidth_:79, offset_:"   "] :=
     WrapText[text, maxWidth, StringLength[offset]];
 
