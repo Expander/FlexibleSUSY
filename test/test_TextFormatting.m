@@ -43,6 +43,9 @@ TestEquality[WrapLines[" abc,def",5,"x"], " abc,\n  def"];
 TestEquality[WrapLines[" abc,def",6,"x"], " abc,\n  def"];
 TestEquality[WrapLines[" abc,def",5,"xxx"], " abc,\n    def"];
 
+(* test for bug *)
+TestEquality[WrapLines["   a*bc - d*e*f",8,""], "   a*bc \n   - d*e\n   *f"];
+
 Print["testing IndentText[] ..."];
 
 TestEquality[IndentText["abc",1], " abc"];
