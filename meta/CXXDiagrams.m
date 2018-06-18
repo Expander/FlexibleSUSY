@@ -239,7 +239,8 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
           fieldsOrdering, sortedFieldsOrdering, inverseFOrdering,
           fOrderingWRTSortedF, vertex, vExpression, vertexIsZero = False,
           vertexType = VertexTypeForFields[fields], expr, exprL, exprR,
-          vertexRules, incomingScalar, outgoingScalar},
+          vertexRules, incomingScalar, outgoingScalar, 
+          stripGroupStructure = {SARAH`Lam[__] -> 2, SARAH`fSU3[__] -> 1}},
     sortedFields = Vertices`SortFieldsInCp[fields];
     
     vertex = Select[vertexList, StripFieldIndices[#[[1]]] === sortedFields &, 1];
@@ -278,7 +279,10 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
       ScalarVertex,
       vertexRules = {(SARAH`Cp @@ sortedIndexedFields) ->
         Vertices`FindVertexWithLorentzStructure[Rest[vertex], 1][[1]]};
-      expr = Vertices`SortCp[SARAH`Cp @@ indexedFields] /. vertexRules;
+      
+      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
+        sortedFields, sortedIndexedFields] /. vertexRules /. stripGroupStructure;
+      
       expr = Vertices`SarahToFSVertexConventions[sortedFields, expr];
       expr = TreeMasses`ReplaceDependenciesReverse[expr];
       DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
@@ -294,8 +298,11 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
         (SARAH`Cp @@ sortedIndexedFields)[SARAH`PR] ->
           Vertices`FindVertexWithLorentzStructure[Rest[vertex], SARAH`PR][[1]]};
 
-      exprL = Vertices`SortCp[(SARAH`Cp @@ indexedFields)[SARAH`PL]] /. vertexRules;
-      exprR = Vertices`SortCp[(SARAH`Cp @@ indexedFields)[SARAH`PR]] /. vertexRules;
+      exprL = CanonicalizeCoupling[(SARAH`Cp @@ fields)[SARAH`PL],
+        sortedFields, sortedIndexedFields] /. vertexRules /. stripGroupStructure;
+      exprR = CanonicalizeCoupling[(SARAH`Cp @@ fields)[SARAH`PR],
+        sortedFields, sortedIndexedFields] /. vertexRules /. stripGroupStructure;
+
       exprL = Vertices`SarahToFSVertexConventions[sortedFields, exprL];
       exprR = Vertices`SarahToFSVertexConventions[sortedFields, exprR];
       exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
@@ -312,7 +319,10 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
       {incomingScalar, outgoingScalar} = Replace[vertex[[2,2]],
         SARAH`Mom[is_,_] - SARAH`Mom[os_,_] :> {is, os}];
       vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
-      expr = Vertices`SortCp[SARAH`Cp @@ indexedFields] /. vertexRules;
+      
+      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
+        sortedFields, sortedIndexedFields] /. vertexRules /. stripGroupStructure;
+      
       expr = Vertices`SarahToFSVertexConventions[sortedFields, expr];
       expr = TreeMasses`ReplaceDependenciesReverse[expr];
       "int minuend_index = " <> 
@@ -327,7 +337,10 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
 
       InverseMetricVertex,
       vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
-      expr = Vertices`SortCp[SARAH`Cp @@ indexedFields] /. vertexRules;
+      
+      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
+        sortedFields, sortedIndexedFields] /. vertexRules /. stripGroupStructure;
+      
       expr = Vertices`SarahToFSVertexConventions[sortedFields, expr];
       expr = TreeMasses`ReplaceDependenciesReverse[expr];
       DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
