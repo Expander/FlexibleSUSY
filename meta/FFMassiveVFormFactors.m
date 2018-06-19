@@ -136,7 +136,7 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                              ""]
                          ] <> "};\n\n" <>
 
-               "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
+               "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
                
                StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
