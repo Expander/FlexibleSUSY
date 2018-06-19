@@ -325,9 +325,9 @@ SarahToFSVertexConventions[sortedFields_List, expr_] :=
 	},
 	ExpandSarahSum @ SimplifyContraction @ expr];
     (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
-       for the following sign factor *)
-    factor = If[GetFieldType /@ sortedFields === {S,S,V}, -1, 1];
-    -I factor TreeMasses`ReplaceDependencies[contraction] /.
+       for the following sign factor 
+    factor = If[GetFieldType /@ sortedFields === {S,S,V}, -1, 1];*)
+    -I TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
   ]
 
