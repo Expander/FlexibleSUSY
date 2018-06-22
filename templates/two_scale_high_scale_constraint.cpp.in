@@ -90,9 +90,9 @@ namespace flexiblesusy {
                      << ho.getSuitableHierarchy() << ", "               \
                      << lambda_3L <<")");                               \
       } catch (const std::exception& e) {                               \
-         VERBOSE_MSG(e.what());                                         \
+         model->get_problems().flag_bad_mass(@ModelName@_info::@HiggsBoson@); \
+         WARNING(e.what());                                             \
          VERBOSE_MSG(pars);                                             \
-         throw HimalayaError(e.what());                                 \
       }                                                                 \
                                                                         \
       return lambda_3L;                                                 \
