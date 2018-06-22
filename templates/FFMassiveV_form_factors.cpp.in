@@ -182,7 +182,7 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
    const auto mj2 = mj*mj;
-   const auto mi = context.mass<Fi>(indices_out)*0.;
+   const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
 
    std::valarray<std::complex<double>> res {0.0, 0.0};
@@ -345,7 +345,7 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
    const auto mj2 = mj*mj;
-   const auto mi = context.mass<Fi>(indices_out)*0.;
+   const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
 
    auto spectator_indices = default_indices_for_spectator<V>();
@@ -393,7 +393,6 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
          const auto FiBarFSL = FiBarFSBar.left();
          const auto FiBarFSR = FiBarFSBar.right();
 
-         // @todo: for now set to 0
          const std::complex<double> A1L = 
          (-(FBarFjSBarL*FBarFVBarR*FiBarFSR*B0i(bb0,0,mFA2,mFB2)) + (FBarFVBarL*(FiBarFSR*mFA + FiBarFSL*mi)*(FBarFjSBarL*mFB + FBarFjSBarR*mj) - 
         FBarFjSBarL*FBarFVBarR*FiBarFSR*mS2)*C0i(cc0,mi2,0,mj2,mS2,mFA2,mFB2) + 2*FBarFjSBarL*FBarFVBarR*FiBarFSR*C0i(cc00,mi2,0,mj2,mS2,mFA2,mFB2) + 
@@ -468,7 +467,9 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
             flexiblesusy::cxx_diagrams::impl::concatenate(scalarFieldIndicesOut, scalarFieldIndicesIn), 
             spectator_indices
          );
-         const auto SBarSVBar = VertexSBarSVBar::evaluate(indexSBarSVBar, context).value();
+         // not clear what the sign
+         const auto SBarSVBar = -VertexSBarSVBar::evaluate(indexSBarSVBar, context).value();
+         // const auto SBarSVBar = VertexSBarSVBar::evaluate(indexSBarSVBar, context).value(positive momentum index, negative momentum index);
 
          const auto mF = context.mass<F>(fermionFieldIndicesIn);
          const auto mF2 = mF*mF;
@@ -486,14 +487,14 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
          const auto FiBarFSR = FiBarFSBar.right();
 
          const std::complex<double> A1L = 
-         (SBarSVBar*(-2*FBarFjSBarL*FiBarFSR*C0i(cc00,0,mi2,mj2,mSB2,mSA2,mF2) /*+ FBarFjSBarL*FiBarFSR*(mi - mj)*(mi + mj)*C0i(cc12,0,mi2,mj2,mSB2,mSA2,mF2) - 
+         (SBarSVBar*(-2*FBarFjSBarL*FiBarFSR*C0i(cc00,0,mi2,mj2,mSB2,mSA2,mF2) + FBarFjSBarL*FiBarFSR*(mi - mj)*(mi + mj)*C0i(cc12,0,mi2,mj2,mSB2,mSA2,mF2) - 
        (FBarFjSBarL*FiBarFSL*mF*mi + FBarFjSBarR*FiBarFSR*mF*mj + FBarFjSBarR*FiBarFSL*mi*mj + FBarFjSBarL*FiBarFSR*mj2)*C0i(cc2,0,mi2,mj2,mSB2,mSA2,mF2) - 
-       mj*(FBarFjSBarR*FiBarFSL*mi + FBarFjSBarL*FiBarFSR*mj)*C0i(cc22,0,mi2,mj2,mSB2,mSA2,mF2)*/))/(16.*Power(Pi,2));
+       mj*(FBarFjSBarR*FiBarFSL*mi + FBarFjSBarL*FiBarFSR*mj)*C0i(cc22,0,mi2,mj2,mSB2,mSA2,mF2)))/(16.*Power(Pi,2));
 
          const std::complex<double> A1R = 
-         (SBarSVBar*(-2*FBarFjSBarR*FiBarFSL*C0i(cc00,0,mi2,mj2,mSB2,mSA2,mF2) /*+ FBarFjSBarR*FiBarFSL*(mi2 - mj2)*C0i(cc12,0,mi2,mj2,mSB2,mSA2,mF2) - 
+         (SBarSVBar*(-2*FBarFjSBarR*FiBarFSL*C0i(cc00,0,mi2,mj2,mSB2,mSA2,mF2) + FBarFjSBarR*FiBarFSL*(mi2 - mj2)*C0i(cc12,0,mi2,mj2,mSB2,mSA2,mF2) - 
        (FBarFjSBarR*FiBarFSR*mF*mi + FBarFjSBarL*FiBarFSL*mF*mj + FBarFjSBarL*FiBarFSR*mi*mj + FBarFjSBarR*FiBarFSL*Power(mj,2))*
-        C0i(cc2,0,mi2,mj2,mSB2,mSA2,mF2) - (FBarFjSBarL*FiBarFSR*mi*mj + FBarFjSBarR*FiBarFSL*mj2)*C0i(cc22,0,mi2,mj2,mSB2,mSA2,mF2)*/))/(16.*Power(Pi,2));
+        C0i(cc2,0,mi2,mj2,mSB2,mSA2,mF2) - (FBarFjSBarL*FiBarFSR*mi*mj + FBarFjSBarR*FiBarFSL*mj2)*C0i(cc22,0,mi2,mj2,mSB2,mSA2,mF2)))/(16.*Power(Pi,2));
          
          res -= std::valarray<std::complex<double>> {A1L, A1R};
       }
