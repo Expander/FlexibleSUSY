@@ -1455,10 +1455,10 @@ try {
 #else
       if (ren_scheme == 1) {
          // calculate shift DR' -> MDR'
-         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToMDRbarPrimeShift();
       } else if (ren_scheme == 1) {
          // calculate shift DR' -> H3m
-         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToH3mShift();
       }
 #endif
    }
@@ -1481,10 +1481,10 @@ try {
 #else
       if (ren_scheme == 1) {
          // calculate shift DR' -> MDR'
-         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToMDRbarPrimeShift();
       } else if (ren_scheme == 1) {
          // calculate shift DR' -> H3m
-         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToH3mShift();
       }
 #endif
    }
