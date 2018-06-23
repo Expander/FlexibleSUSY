@@ -80,10 +80,6 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                     If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                     "model);\n" <>
 
-                "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <>
-                    ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
-                    ", qedqcd" <> ");\n" <>
-
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF {qedqcd.displayFermiConstant()};\n" <>
                 (* TODO: replace with the value from qedqcd *)

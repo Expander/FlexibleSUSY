@@ -65,6 +65,13 @@ overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd&
          res.Sp = 0.0523*pow(muon_pole_mass, 5./2.);
          res.Sn = 0.0610*pow(muon_pole_mass, 5./2.);
          return res;
+      case Nucleus::Al:
+         res.D  = 0.0357*pow(muon_pole_mass, 5./2.);
+         res.Vp = 0.0159*pow(muon_pole_mass, 5./2.);
+         res.Vn = 0.0169*pow(muon_pole_mass, 5./2.);
+         res.Sp = 0.0153*pow(muon_pole_mass, 5./2.);
+         res.Sn = 0.0163*pow(muon_pole_mass, 5./2.);
+         return res;
       default:
          std::cout << "Unknown nucleus\n";
       break;
@@ -77,7 +84,7 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
       const MRSSM2_mass_eigenstates& model, 
       const softsusy::QedQcd& qedqcd) {
 
-   MRSSM2_mass_eigenstates model_ = model;
+   @ModelName@_mass_eigenstates model_ = model;
    EvaluationContext context{ model_ };
 
    const auto V_exchange = calculate_Fe_Fe_VZ_form_factors (generationIndex1,  generationIndex2, model);

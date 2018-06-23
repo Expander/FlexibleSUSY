@@ -34,7 +34,7 @@ namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
 
 namespace @ModelName@_f_to_f_conversion {
-enum class Nucleus { Au };
+enum class Nucleus { Au, Al };
 @FToFConversion_InterfacePrototypes@
 }
 } // namespace flexiblesusy
