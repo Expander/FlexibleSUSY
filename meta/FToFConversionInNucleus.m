@@ -30,14 +30,28 @@ FToFConversionInNucleusCreateInterface::usage = "";
 
 Begin["Private`"];
 
+(* we pass the generation index but a particle might also have other indices, like color, so we need to construct full vector of indices *)
+CreateIndexArray[particle_, idxName_String, generationIndex_String] :=
+    Module[{numberOfIndices = CXXDiagrams`NumberOfFieldIndices[particle]},
+        "std::array<int, " <> ToString @ numberOfIndices <>
+            "> " <> idxName <> " = {" <>
+            If[TreeMasses`GetDimension[particle] =!= 1,
+                generationIndex <>
+                    If[numberOfIndices1 =!= 1,
+                        StringJoin @ Table[", 0", {numberOfIndices-1}],
+                        ""] <> " ",
+                If[numberOfIndices =!= 0,
+                    StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
+                    ""]
+            ] <> "};\n"
+    ];
+
 FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
-    Module[{prototype, definition,
-            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
-            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion]},
+    Module[{prototype, definition},
 
         prototype =
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
-                CXXNameOfField[outFermion] <> "_in_nucleus (" <>
+                CXXNameOfField[outFermion] <> "_in_nucleus (\n" <>
                 If[TreeMasses`GetDimension[inFermion] =!= 1,
                     "int generationIndex1, ",
                     " "
@@ -46,7 +60,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                     " int generationIndex2, ",
                     " "
                 ] <>
-                "const " <> FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus nucleus, " <>
+                "const " <> FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus nucleus,\n" <>
                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model, const softsusy::QedQcd& qedqcd)";
 
         definition =
@@ -54,32 +68,12 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
             IndentText[
                 FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                 "EvaluationContext context{ model_ };\n" <>
-
-                "std::array<int, " <> ToString @ numberOfIndices1 <>
-                    "> indices1 = {" <>
-                    (* TODO: Specify indices correctly *)
-                    If[TreeMasses`GetDimension[inFermion] =!= 1,
-                    " generationIndex1" <>
-                    If[numberOfIndices1 =!= 1,
-                    StringJoin @ Table[", 0", {numberOfIndices1-1}],
-                    ""] <> " ",
-                    If[numberOfIndices1 =!= 0,
-                    StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
-                    ""]
-                    ] <> "};\n" <>
-
-                "std::array<int, " <> ToString @ numberOfIndices2 <>
-                    "> indices2 = {" <>
-                    If[TreeMasses`GetDimension[outFermion] =!= 1,
-                    " generationIndex2" <>
-                    If[numberOfIndices2 =!= 1,
-                    StringJoin @ Table[", 0", {numberOfIndices2-1}],
-                    ""] <> " ",
-                    If[numberOfIndices2 =!= 0,
-                    StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
-                    ""]
-                    ] <> "};\n\n" <>
-
+                    (*
+                StringJoin[
+                    (CreateIndexArray@@#)& /@
+                    {{inFermion, "indices1", "generationIndex1"}, {outFermion, "indices2", "generationIndex2"}}
+                ] <>
+*)
                 "const auto photon_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
                     CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`VP] <> "_form_factors (" <>
                     If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
@@ -103,23 +97,31 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "const auto A2L = -0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
                 "const auto A2R = -0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
 
+                "\n// --- penguins ---\n" <>
+                "// 2 up and 1 down quark in proton (gp couplings)\n" <>
+                "// 1 up and 2 down in neutron (gn couplings)\n" <>
+
+                "\n// mediator: massless vectors\n" <>
                 "\n// construct 4-fermion operators from A1 form factors\n" <>
                 "// i q^2 A1 * (- i gmunu/q^2) * (-i Qq e) = GF/sqrt2 * gpV\n" <>
-                "auto gpLV = sqrt(2.0)/GF * e*(2.*2./3. - 1./3.) * photon_exchange[0];\n" <>
-                "auto gpRV = sqrt(2.0)/GF * e*(2.*2./3. - 1./3.) * photon_exchange[1];\n" <>
-                "auto gnLV = sqrt(2.0)/GF * e*(2.*(-1./3.) + 2./3.) * photon_exchange[0];\n" <>
-                "auto gnRV = sqrt(2.0)/GF * e*(2.*(-1./3.) + 2./3.) * photon_exchange[1];\n" <>
+                "const auto QeUp = 2./3.*e;\n" <>
+                "const auto QeDown = -1./3.*e;\n" <>
+                "auto gpLV = sqrt(2.0)/GF * (2.*QeUp + QeDown) * photon_exchange[0];\n" <>
+                "auto gpRV = sqrt(2.0)/GF * (2.*QeUp + QeDown) * photon_exchange[1];\n" <>
+                "auto gnLV = sqrt(2.0)/GF * (QeUp + 2.*QeDown) * photon_exchange[0];\n" <>
+                "auto gnRV = sqrt(2.0)/GF * (QeUp + 2.*QeDown) * photon_exchange[1];\n" <>
 
-                "\n// add contributions from penguins with massive gauge bosons\n" <>
+                "\n// mediator: massive vectors\n" <>
                 StringJoin @ Map[
-                    ("const auto " <> CXXNameOfField[#] <> "_exchange = create_massive_penguin_amp(" <>
+                    ("\n// " <> CXXNameOfField[#] <> "\n" <>
+                        "const auto " <> CXXNameOfField[#] <> "_exchange = create_massive_penguin_amp<" <> CXXNameOfField[#] <>">(" <>
                         If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                         If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                         "model, qedqcd);\n" <>
-                        "gpLV += (2.*" <> CXXNameOfField[#] <> "_exchange[0] +" <> CXXNameOfField[#] <> "_exchange[2]);\n" <>
-                        "gpRV += (2.*" <> CXXNameOfField[#] <> "_exchange[1] +" <> CXXNameOfField[#] <> "_exchange[3]);\n" <>
-                        "gnLV += (" <> CXXNameOfField[#] <> "_exchange[0] + 2.*" <> CXXNameOfField[#] <> "_exchange[2]);\n" <>
-                        "gnRV += (" <> CXXNameOfField[#] <> "_exchange[1] + 2.*" <> CXXNameOfField[#] <> "_exchange[3]);\n")&,
+                        "gpLV += 2.*" <> CXXNameOfField[#] <> "_exchange[0] + " <> CXXNameOfField[#] <> "_exchange[2];\n" <>
+                        "gpRV += 2.*" <> CXXNameOfField[#] <> "_exchange[1] + " <> CXXNameOfField[#] <> "_exchange[3];\n" <>
+                        "gnLV += " <> CXXNameOfField[#] <> "_exchange[0] + 2.*" <> CXXNameOfField[#] <> "_exchange[2];\n" <>
+                        "gnRV += " <> CXXNameOfField[#] <> "_exchange[1] + 2.*" <> CXXNameOfField[#] <> "_exchange[3];\n")&,
 
                     (* create a list of massive and electrically neutral gauge bosons *)
                     Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]
@@ -138,8 +140,12 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "gnLV += 0.;\n" <>
                 "gnRV += 0.;\n" <>
 
-                "\nconst auto left {A2L*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn};\n" <>
-                "const auto right {A2R*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn};\n" <>
+                "const auto nuclear_form_factors = get_overlap_integrals(flexiblesusy::" <>
+                    ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
+                    ", qedqcd" <> ");\n" <>
+
+                "\nconst auto left {A2R*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn};\n" <>
+                "const auto right {A2L*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn};\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
                 "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
