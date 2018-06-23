@@ -78,6 +78,16 @@ overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd&
    } 
 }
 
+template <class FOutBar, class FIn, class VBar>
+std::complex<double> vectorCurrent(const @ModelName@_mass_eigenstates& model) {
+    @ModelName@_mass_eigenstates model_ = model;
+    EvaluationContext context{ model_ };
+    using vertex = Vertex<FOutBar, FIn, VBar>;
+    std::array<int, 4> indices {0, 0, 0, 0};
+    const auto value =  vertex::evaluate(indices, context);
+    return 0.5*(value.left() + value.right());
+}
+
 template <class V>
 std::valarray<std::complex<double>> create_massive_penguin_amp(
       int generationIndex1,  int generationIndex2, 
@@ -89,15 +99,8 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
 
    const auto V_exchange = calculate_Fe_Fe_VZ_form_factors (generationIndex1,  generationIndex2, model);
 
-   using FuBarFuVbarVertex = Vertex<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>;
-   using FdBarFdVbarVertex = Vertex<typename Fd::lorentz_conjugate, Fd, typename V::lorentz_conjugate>;
-   
-   std::array<int, 4> indices {0, 0, 0, 0};
-   const auto FuBarFuVbarVertexValue = FuBarFuVbarVertex::evaluate(indices, context);
-   const auto FdBarFdVbarVertexValue = FdBarFdVbarVertex::evaluate(indices, context);
-
-   const auto uVectorCurrent = 0.5*(FuBarFuVbarVertexValue.left() + FuBarFuVbarVertexValue.right());
-   const auto dVectorCurrent = 0.5*(FdBarFdVbarVertexValue.left() + FdBarFdVbarVertexValue.right());
+   const auto uVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>(model);
+   const auto dVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename V::lorentz_conjugate>(model);
 
    const auto mVsqr = pow(context.mass<V>({}), 2);
    const auto GF {qedqcd.displayFermiConstant()};

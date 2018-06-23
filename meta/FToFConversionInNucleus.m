@@ -66,24 +66,18 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
         definition =
             prototype <> " {\n" <>
             IndentText[
+                "\n" <>
                 FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                 "EvaluationContext context{ model_ };\n" <>
-                    (*
-                StringJoin[
-                    (CreateIndexArray@@#)& /@
-                    {{inFermion, "indices1", "generationIndex1"}, {outFermion, "indices2", "generationIndex2"}}
-                ] <>
-*)
+
+                "// get Fermi constant from Les Houches input file\n" <>
+                "const auto GF {qedqcd.displayFermiConstant()};\n" <>
+
                 "const auto photon_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
                     CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`VP] <> "_form_factors (" <>
                     If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                     If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                     "model);\n" <>
-
-                "// get Fermi constant from Les Houches input file\n" <>
-                "const auto GF {qedqcd.displayFermiConstant()};\n" <>
-                (* TODO: replace with the value from qedqcd *)
-                "const auto e = sqrt(1./137. * 4. * Pi);\n" <>
 
                 "\n// translate from the convention of Hisano, Moroi & Tobe to Kitano, Koike & Okada\n" <>
                 (* TODO: check the statement below *)
@@ -100,12 +94,15 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "\n// mediator: massless vectors\n" <>
                 "\n// construct 4-fermion operators from A1 form factors\n" <>
                 "// i q^2 A1 * (- i gmunu/q^2) * (-i Qq e) = GF/sqrt2 * gpV\n" <>
-                "const auto QeUp = 2./3.*e;\n" <>
-                "const auto QeDown = -1./3.*e;\n" <>
-                "auto gpLV = sqrt(2.0)/GF * (2.*QeUp + QeDown) * photon_exchange[0];\n" <>
-                "auto gpRV = sqrt(2.0)/GF * (2.*QeUp + QeDown) * photon_exchange[1];\n" <>
-                "auto gnLV = sqrt(2.0)/GF * (QeUp + 2.*QeDown) * photon_exchange[0];\n" <>
-                "auto gnRV = sqrt(2.0)/GF * (QeUp + 2.*QeDown) * photon_exchange[1];\n" <>
+                "// VP\n" <>
+
+                "const auto uEMVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename VP::lorentz_conjugate>(model);\n" <>
+                "const auto dEMVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename VP::lorentz_conjugate>(model);\n\n" <>
+
+                "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[0];\n" <>
+                "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[1];\n" <>
+                "auto gnLV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[0];\n" <>
+                "auto gnRV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[1];\n" <>
 
                 "\n// mediator: massive vectors\n" <>
                 StringJoin @ Map[
@@ -124,7 +121,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 ] <>
 
                 (* TODO: add contributions from scalar penguins *)
-                "\n// add contributions from scalar penguins\n" <>
+                "\n// mediator: massive scalar \n\n" <>
+
                 "gpLV += sqrt(2.0)/GF * 0.;\n" <>
                 "gpRV += sqrt(2.0)/GF * 0.;\n" <>
                 "gnLV += sqrt(2.0)/GF * 0.;\n" <>
