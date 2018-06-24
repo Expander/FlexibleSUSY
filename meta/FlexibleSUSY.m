@@ -4125,6 +4125,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Se], SARAH`Se},
               {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`Cha1},
                 {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`Ah},
+              {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`VP},
               {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`hh},
                 {CXXDiagrams`LorentzConjugate[SARAH`Cha1],SARAH`Cha1,SARAH`VZ},
               {CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`Chi,SARAH`VZ},

@@ -104,10 +104,10 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
 
    const auto mVsqr = pow(context.mass<V>({}), 2);
    const auto GF {qedqcd.displayFermiConstant()};
-   std::complex<double> guLV = -sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * uVectorCurrent;
-   std::complex<double> guRV = -sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * uVectorCurrent;
-   std::complex<double> gdLV = -sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * dVectorCurrent;
-   std::complex<double> gdRV = -sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * dVectorCurrent;
+   std::complex<double> guLV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * uVectorCurrent;
+   std::complex<double> guRV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * uVectorCurrent;
+   std::complex<double> gdLV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * dVectorCurrent;
+   std::complex<double> gdRV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * dVectorCurrent;
    std::cout << "Z-triangle " << V_exchange[0] << ' ' << V_exchange[1] << '\n';
    std::cout << "GF " << GF << '\n';
    std::cout << "mZ " << context.mass<V>({}) << '\n';

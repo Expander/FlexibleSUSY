@@ -84,8 +84,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "// Hisano defines form factors A2 through a matrix element in eq. 14\n" <>
                 "// Kitano uses a lagrangian with F_munu. There is a factor of 2 from translation\n" <>
                 "// because Fmunu = qeps - eps q\n" <>
-                "const auto A2L = -0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
-                "const auto A2R = -0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
+                "const auto A2L = -0.5 * photon_exchange[2]/(4.*GF/sqrt(2.)) *(-1.);\n" <>
+                "const auto A2R = -0.5 * photon_exchange[3]/(4.*GF/sqrt(2.)) *(-1.);\n" <>
 
                 "\n// ------ penguins ------\n" <>
                 "// 2 up and 1 down quark in proton (gp couplings)\n" <>
@@ -99,10 +99,10 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "const auto uEMVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename VP::lorentz_conjugate>(model);\n" <>
                 "const auto dEMVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename VP::lorentz_conjugate>(model);\n\n" <>
 
-                "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[0];\n" <>
-                "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[1];\n" <>
-                "auto gnLV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[0];\n" <>
-                "auto gnRV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[1];\n" <>
+                "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[0] *(-1.);\n" <>
+                "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[1] *(-1.);\n" <>
+                "auto gnLV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[0] *(-1.);\n" <>
+                "auto gnRV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[1] *(-1.);\n" <>
 
                 "\n// mediator: massive vectors\n" <>
                 StringJoin @ Map[
