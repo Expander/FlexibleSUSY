@@ -1378,14 +1378,16 @@ return self_energy_2l;"
 
 GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                               model_String /; model === "MSSM", 3] :=
-    Module[{g3Str, mtStr, mbStr, mTop, mBot,
+    Module[{g3Str, mtStr, mbStr, meStr, mTop, mBot, mTau,
             vuStr, vdStr, muStr, m3Str, mA0Str,
-            AtStr, AbStr, mWStr, mZStr, mq2Str, md2Str, mu2Str},
+            AtStr, AbStr, AeStr, mWStr, mZStr, mq2Str, md2Str, mu2Str},
            AssertFieldDimension[particle, 2, model];
            mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
+           mTau    = TreeMasses`GetMass[TreeMasses`GetDownLepton[3,True]];
            mtStr   = CConversion`RValueToCFormString[mTop];
            mbStr   = CConversion`RValueToCFormString[mBot];
+           meStr   = CConversion`RValueToCFormString[mTau];
            g3Str   = CConversion`RValueToCFormString[SARAH`strongCoupling];
            vdStr   = CConversion`RValueToCFormString[SARAH`VEVSM1];
            vuStr   = CConversion`RValueToCFormString[SARAH`VEVSM2];
@@ -1394,6 +1396,7 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            mA0Str  = TreeMasses`CallPseudoscalarHiggsMassGetterFunction[] <> "(0)";
            AtStr   = CConversion`RValueToCFormString[SARAH`TrilinearUp[2,2] / SARAH`UpYukawa[2,2]];
            AbStr   = CConversion`RValueToCFormString[SARAH`TrilinearDown[2,2] / SARAH`DownYukawa[2,2]];
+           AeStr   = CConversion`RValueToCFormString[SARAH`TrilinearLepton[2,2] / SARAH`ElectronYukawa[2,2]];
            mWStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorW]];
            mZStr   = CConversion`RValueToCFormString[FlexibleSUSY`M[SARAH`VectorZ]];
            mq2Str  = CConversion`RValueToCFormString[SARAH`SoftSquark];
@@ -1420,8 +1423,6 @@ pars.vu = " <> vuStr <> ";
 pars.mq2 = Re(" <> mq2Str <> ");
 pars.md2 = Re(" <> md2Str <> ");
 pars.mu2 = Re(" <> mu2Str <> ");
-pars.At = Re(" <> AtStr <> ");
-pars.Ab = Re(" <> AbStr <> ");
 pars.MG = " <> m3Str <> ";
 pars.MW = " <> mWStr <> ";
 pars.MZ = " <> mZStr <> ";
@@ -1433,55 +1434,71 @@ pars.MSb << msb_1, msb_2;
 pars.s2t = Sin(2*theta_t);
 pars.s2b = Sin(2*theta_b);
 
-if (pars.MSt(0) > pars.MSt(1)) {
-   std::swap(pars.MSt(0), pars.MSt(1));
-   pars.s2t *= -1;
-}
-
-if (pars.MSb(0) > pars.MSb(1)) {
-   std::swap(pars.MSb(0), pars.MSb(1));
-   pars.s2b *= -1;
-}
+#if Himalaya_VERSION_MAJOR < 2
+   pars.At = Re(" <> AtStr <> ");
+   pars.Ab = Re(" <> AbStr <> ");
+#else
+   pars.Au(2,2) = Re(" <> AtStr <> ");
+   pars.Ad(2,2) = Re(" <> AbStr <> ");
+   pars.Ae(2,2) = Re(" <> AeStr <> ");
+   pars.Mtau = " <> meStr <> ";
+#endif
 
 try {
-   const auto mdrScheme = HIGGS_3LOOP_MDR_SCHEME;
+   const auto ren_scheme = HIGGS_3LOOP_SCHEME;
    const bool verbose = false;
    himalaya::HierarchyCalculator hc(pars, verbose);
 
    if (HIGGS_3LOOP_CORRECTION_AT_AS_AS) {
-      const auto hier = hc.calculateDMh3L(false, mdrScheme);
-
-      VERBOSE_MSG(\"Himalaya top (hierarchy, uncertainties) = (\"
-                  << hier.getSuitableHierarchy() << \", {\"
-                  << hier.getExpUncertainty(1) << \", \"
-                  << hier.getExpUncertainty(2) << \", \"
-                  << hier.getExpUncertainty(3) << \"})\");
+#if Himalaya_VERSION_MAJOR < 2
+      const auto hier = hc.calculateDMh3L(false, ren_scheme);
+#else
+      const auto hier = hc.calculateDMh3L(false);
+#endif
 
       // calculate the 3-loop corrections
       self_energy_3l += - hier.getDMh(3);
 
-      if (mdrScheme) {
-         // calculate the 1- and 2-loop shift DR -> MDR
+#if Himalaya_VERSION_MAJOR < 2
+      if (ren_scheme) {
+         // calculate shift DR -> MDR
          self_energy_3l += - hier.getDRToMDRShift();
       }
+#else
+      if (ren_scheme == 1) {
+         // calculate shift DR' -> MDR'
+         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+      } else if (ren_scheme == 1) {
+         // calculate shift DR' -> H3m
+         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+      }
+#endif
    }
 
    if (HIGGS_3LOOP_CORRECTION_AB_AS_AS) {
-      const auto hier = hc.calculateDMh3L(true, mdrScheme);
-
-      VERBOSE_MSG(\"Himalaya bottom (hierarchy, uncertainties) = (\"
-                  << hier.getSuitableHierarchy() << \", {\"
-                  << hier.getExpUncertainty(1) << \", \"
-                  << hier.getExpUncertainty(2) << \", \"
-                  << hier.getExpUncertainty(3) << \"})\");
+#if Himalaya_VERSION_MAJOR < 2
+      const auto hier = hc.calculateDMh3L(true, ren_scheme);
+#else
+      const auto hier = hc.calculateDMh3L(true);
+#endif
 
       // calculate the 3-loop corrections
       self_energy_3l += - hier.getDMh(3);
 
-      if (mdrScheme) {
-         // calculate the 1- and 2-loop shift DR -> MDR
+#if Himalaya_VERSION_MAJOR < 2
+      if (ren_scheme) {
+         // calculate the shift DR -> MDR
          self_energy_3l += - hier.getDRToMDRShift();
       }
+#else
+      if (ren_scheme == 1) {
+         // calculate shift DR' -> MDR'
+         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+      } else if (ren_scheme == 1) {
+         // calculate shift DR' -> H3m
+         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+      }
+#endif
    }
 } catch (const std::exception& e) {
    VERBOSE_MSG(e.what());

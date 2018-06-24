@@ -125,7 +125,7 @@ void Spectrum_generator_settings::set(const Spectrum_generator_settings::Setting
  * | eft_higgs_index                  | any integer >= 0                                | 0 (= lightest)  |
  * | calculate_bsm_masses             | 0 (no) or 1 (yes)                               | 1 (= yes)       |
  * | threshold_corrections            | positive integer                                | 123111321       |
- * | higgs_3loop_ren_scheme_atb_as2   | 0 (DR-bar) or 1 (MDR-bar)                       | 0 (= MDR-bar)   |
+ * | higgs_3loop_ren_scheme_atb_as2   | 0 (DR'), 1 (MDR'), 2 (H3m)                      | 0 (= DR')       |
  * | higgs_3loop_correction_at_as2    | 0, 1                                            | 1 (= enabled)   |
  * | higgs_3loop_correction_ab_as2    | 0, 1                                            | 1 (= enabled)   |
  * | higgs_3loop_correction_at2_as    | 0, 1                                            | 1 (= enabled)   |
@@ -180,7 +180,7 @@ Loop_corrections Spectrum_generator_settings::get_loop_corrections() const
    loop_corrections.higgs_at_at_as  = get(higgs_3loop_correction_at2_as);
    loop_corrections.higgs_at_at_at  = get(higgs_3loop_correction_at3);
    loop_corrections.higgs_at_as_as_as   = get(higgs_4loop_correction_at_as3);
-   loop_corrections.higgs_3L_mdr_scheme = get(higgs_3loop_ren_scheme_atb_as2);
+   loop_corrections.higgs_3L_scheme = get(higgs_3loop_ren_scheme_atb_as2);
    loop_corrections.top_qcd         = get(top_pole_qcd_corrections);
 
    return loop_corrections;
@@ -198,7 +198,7 @@ void Spectrum_generator_settings::set_loop_corrections(
    set(higgs_3loop_correction_at2_as, loop_corrections.higgs_at_at_as);
    set(higgs_3loop_correction_at3   , loop_corrections.higgs_at_at_at);
    set(higgs_4loop_correction_at_as3, loop_corrections.higgs_at_as_as_as);
-   set(higgs_3loop_ren_scheme_atb_as2, loop_corrections.higgs_3L_mdr_scheme);
+   set(higgs_3loop_ren_scheme_atb_as2, loop_corrections.higgs_3L_scheme);
    set(top_pole_qcd_corrections, loop_corrections.top_qcd);
 }
 

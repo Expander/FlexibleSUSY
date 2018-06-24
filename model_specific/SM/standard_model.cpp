@@ -1557,7 +1557,8 @@ Eigen::Matrix<double,3,3> Standard_model::calc_beta_Yu_four_loop(const Beta_trac
 
    Eigen::Matrix<double,3,3> beta_Yu;
 
-   beta_Yu = (1154.09*PROJECTOR*Power8(g3)*Quad(oneOver16PiSqr)).real();
+   beta_Yu = (2308.18*PROJECTOR*Power8(g3)*Quad(oneOver16PiSqr)*Yu(2,2))
+      .real();
 
    return beta_Yu;
 }
