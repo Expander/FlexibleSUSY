@@ -1467,7 +1467,7 @@ try {
 #if Himalaya_VERSION_MAJOR < 2
       const auto hier = hc.calculateDMh3L(true, ren_scheme);
 #else
-      const auto hier = hc.calculateDMh3L(false);
+      const auto hier = hc.calculateDMh3L(true);
 #endif
 
       // calculate the 3-loop corrections
