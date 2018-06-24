@@ -29,7 +29,7 @@ BeginPackage["FToFConversionInNucleus`",
 FToFConversionInNucleusCreateInterface::usage = "";
 
 Begin["Private`"];
-
+(*
 (* we pass the generation index but a particle might also have other indices, like color, so we need to construct full vector of indices *)
 CreateIndexArray[particle_, idxName_String, generationIndex_String] :=
     Module[{numberOfIndices = CXXDiagrams`NumberOfFieldIndices[particle]},
@@ -45,7 +45,7 @@ CreateIndexArray[particle_, idxName_String, generationIndex_String] :=
                     ""]
             ] <> "};\n"
     ];
-
+*)
 FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
     Module[{prototype, definition},
 
@@ -87,7 +87,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "const auto A2L = -0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
                 "const auto A2R = -0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
 
-                "\n// --- penguins ---\n" <>
+                "\n// ------ penguins ------\n" <>
                 "// 2 up and 1 down quark in proton (gp couplings)\n" <>
                 "// 1 up and 2 down in neutron (gn couplings)\n" <>
 
@@ -121,14 +121,15 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 ] <>
 
                 (* TODO: add contributions from scalar penguins *)
-                "\n// mediator: massive scalar \n\n" <>
+                "\n// mediator: massive scalars \n\n" <>
 
                 "gpLV += sqrt(2.0)/GF * 0.;\n" <>
                 "gpRV += sqrt(2.0)/GF * 0.;\n" <>
                 "gnLV += sqrt(2.0)/GF * 0.;\n" <>
                 "gnRV += sqrt(2.0)/GF * 0.;\n" <>
 
-                "\n// add contributions from box diagrams\n" <>
+                "\n// ------ boxes ------\n\n" <>
+
                 "gpLV += 0.;\n" <>
                 "gpRV += 0.;\n" <>
                 "gnLV += 0.;\n" <>

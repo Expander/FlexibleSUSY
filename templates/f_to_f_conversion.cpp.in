@@ -55,22 +55,22 @@ struct overlap_integrals {
 overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd& qedqcd) {
    overlap_integrals res; 
    // get muon pole mass from input slha file
-   const auto muon_pole_mass {qedqcd.displayMass(softsusy::mMuon)};
+   const auto muon_pole_mass_5o2 {pow(qedqcd.displayMass(softsusy::mMuon), 5./2.)};
+   // Tab. 2 of hep-ph/0203110
    switch (N) {
-      // Tab. 2 of hep-ph/0203110
       case Nucleus::Au:
-         res.D  = 0.1670*pow(muon_pole_mass, 5./2.);
-         res.Vp = 0.0859*pow(muon_pole_mass, 5./2.);
-         res.Vn = 0.1080*pow(muon_pole_mass, 5./2.);
-         res.Sp = 0.0523*pow(muon_pole_mass, 5./2.);
-         res.Sn = 0.0610*pow(muon_pole_mass, 5./2.);
+         res.D  = 0.1670 * muon_pole_mass_5o2;
+         res.Vp = 0.0859 * muon_pole_mass_5o2;
+         res.Vn = 0.1080 * muon_pole_mass_5o2;
+         res.Sp = 0.0523 * muon_pole_mass_5o2;
+         res.Sn = 0.0610 * muon_pole_mass_5o2;
          return res;
       case Nucleus::Al:
-         res.D  = 0.0357*pow(muon_pole_mass, 5./2.);
-         res.Vp = 0.0159*pow(muon_pole_mass, 5./2.);
-         res.Vn = 0.0169*pow(muon_pole_mass, 5./2.);
-         res.Sp = 0.0153*pow(muon_pole_mass, 5./2.);
-         res.Sn = 0.0163*pow(muon_pole_mass, 5./2.);
+         res.D  = 0.0357 * muon_pole_mass_5o2;
+         res.Vp = 0.0159 * muon_pole_mass_5o2;
+         res.Vn = 0.0169 * muon_pole_mass_5o2;
+         res.Sp = 0.0153 * muon_pole_mass_5o2;
+         res.Sn = 0.0163 * muon_pole_mass_5o2;
          return res;
       default:
          std::cout << "Unknown nucleus\n";
