@@ -317,16 +317,13 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
 ];
 
 SarahToFSVertexConventions[sortedFields_List, expr_] :=
-  Module[{contraction, factor},
+  Module[{contraction},
     StripGroupStructure[expr, {}];
     contraction = Block[{
 	    SARAH`sum
 	    (* corrupts a polynomial (monomial + monomial + ...) summand *)
 	},
 	ExpandSarahSum @ SimplifyContraction @ expr];
-    (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
-       for the following sign factor 
-    factor = If[GetFieldType /@ sortedFields === {S,S,V}, -1, 1];*)
     -I TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
   ]
