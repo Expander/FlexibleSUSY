@@ -145,8 +145,51 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                   (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n";
 
+      Print[f[inFermion, outFermion, spectator]];
     {prototype, definition}
   ];
+
+
+(* if t is TreeMasses`IsScalar then returns list of scalars and anti-scalar, etc. *)
+getParticlesOfType[t_] :=
+    Join[#, CXXDiagrams`LorentzConjugate /@ #]& @
+      Select[TreeMasses`GetParticles[], t];
+
+vertexNonZero[vertex_] :=
+    Transpose[Drop[vertex, 1]][[1]] =!= {0,0};
+
+singleDiagram[inFermion_, outFermion_, spectator_, S_, F_] :=
+    Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar},
+      FBarFjSBar = SARAH`Vertex[{F, inFermion, CXXDiagrams`LorentzConjugate[S]}];
+      FiBarFS = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[outFermion], F, S}];
+      SBarSVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]}];
+      FBarFVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]}];
+
+      Print[F, " ", TreeMasses`GetElectricCharge[F]];
+      Print[S, " ", TreeMasses`GetElectricCharge[S]];
+      If[
+        vertexNonZero[FBarFjSBar]
+            && vertexNonZero[FiBarFS]
+            && (vertexNonZero[SBarSVBar] || vertexNonZero[FBarFVBar]),
+        True,
+        False
+      ]
+    ];
+
+f[inFermion_, outFermion_, spectator_] := Module[{scalars, fermions, internalParticles = {}},
+  scalars = getParticlesOfType[TreeMasses`IsScalar];
+  fermions = getParticlesOfType[TreeMasses`IsFermion];
+
+  Map[
+    If[
+      singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]],
+      AppendTo[internalParticles, #]
+    ]&,
+    Tuples[{fermions, scalars}]
+  ];
+
+  internalParticles
+];
 
 (* evaluate multiple diagrams *)
 CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_, spectator_}, diagrams_, graph_] :=
