@@ -220,6 +220,7 @@ default_indices_for_spectator<VG>( void )
   return {0};
 }
 
+/*
 // emit spectator from the internal scalar line
 template<class FermionIn, class FermionOut, class Spectator, class Emitter, class ExchangeField>
 std::valarray<std::complex<double>> EDMVertexCorrectionSF<
@@ -413,6 +414,7 @@ FermionIn, FermionOut, Spectator, Emitter, ExchangeField
 
    return res;
 }
+*/
 
 template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
@@ -427,10 +429,10 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
             spectator_indices
          );
    const auto FjBarFjVBar = VertexFjBarFjVBar::evaluate(kuwa, context).left();
-   using VertexFBarFjS     = Vertex<typename F::lorentz_conjugate, Fj, S>;
+   using VertexFBarFjS     = Vertex<typename F::lorentz_conjugate, Fj, typename S::lorentz_conjugate>;
    using VertexSBarSVBar  = Vertex<typename S::lorentz_conjugate, S, typename V::lorentz_conjugate>;
    using VertexFBarFVBar  = Vertex<typename F::lorentz_conjugate, F, typename V::lorentz_conjugate>;
-   using VertexFiBarFSBar  = Vertex<typename Fi::lorentz_conjugate, F, typename S::lorentz_conjugate>;
+   using VertexFiBarFSBar  = Vertex<typename Fi::lorentz_conjugate, F, S>;
 
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);

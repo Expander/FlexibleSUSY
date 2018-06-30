@@ -1931,28 +1931,25 @@ WriteEDMClass[edmFields_List,files_List] :=
 
 (* Write the FFV c++ files *)
 WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
-  Module[{graphs,diagrams,vertices,
-          interfacePrototypes,interfaceDefinitions},
-    graphs = FFVFormFactors`FFVFormFactorsContributingGraphs[];
-    diagrams = Outer[FFVFormFactors`FFVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
-    
-    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
-    
-    {interfacePrototypes,interfaceDefinitions} = 
-      If[diagrams === {},
-         {"",""},
-         StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@@ 
-            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
-    
-    WriteOut`ReplaceInFiles[files,
-                            {"@FFVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
-                             "@FFVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
-                             "@FFVFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
-                             Sequence @@ GeneralReplacementRules[]
-                            }];
-    
-    vertices
+  Module[{
+          interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
+
+     insertionsAndVertices = (f @@ #)& /@ leptonPairs;
+
+     (* todo: this will fail if more pair eqist *)
+     {interfacePrototypes, interfaceDefinitions} =
+        FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair[
+           leptonPairs[[1]], insertionsAndVertices[[1,1]]
+        ];
+
+     WriteOut`ReplaceInFiles[files,
+        {"@FFVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
+           "@FFVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
+           "@FFVFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+           Sequence @@ GeneralReplacementRules[]
+        }];
+
+     Flatten[insertionsAndVertices[[1,2]],1]
   ]
 
 WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
@@ -1961,22 +1958,11 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
 
       insertionsAndVertices = (f @@ #)& /@ leptonPairs;
 
-    (*graphs = FFMassiveVFormFactors`FFMassiveVFormFactorsContributingGraphs[];*)
-    (*diagrams = Outer[FFMassiveVFormFactors`FFMassiveVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];*)
-    
-    (*vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];*)
-
       (* todo: this will fail if more pair eqist *)
       {interfacePrototypes, interfaceDefinitions} =
           FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[
              leptonPairs[[1]], insertionsAndVertices[[1,1]]
           ];
-     (*{interfacePrototypes, interfaceDefinitions} =
-      If[diagrams === {},
-         {"",""},
-         StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
-            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];*)
 
       WriteOut`ReplaceInFiles[files,
                             {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
@@ -1985,7 +1971,6 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
 
-    Print["are vertices ok?", Flatten[insertionsAndVertices[[1,2]],1]];
     Flatten[insertionsAndVertices[[1,2]],1]
   ]
 
@@ -4118,68 +4103,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.cpp"}]}}];
-            Print["Conversion vertices: ", conversionVertices];
-            (* TODO: find a nice way to add additional vertices needed for mu to e conversion *)
-            conversionVertices = Join[conversionVertices, {
-                {SARAH`VZ, SARAH`Ah, SARAH`Ah},
-                {SARAH`VZ, SARAH`Cha1, CXXDiagrams`LorentzConjugate[SARAH`Cha1]},
-                {SARAH`VZ, SARAH`hh, CXXDiagrams`LorentzConjugate[SARAH`hh]},
-                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Sv], SARAH`Sv},
-                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Hpm], SARAH`Hpm},
-              {SARAH`Hpm, CXXDiagrams`LorentzConjugate[SARAH`Hpm], SARAH`VZ},
-                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Fv], SARAH`Fv},
-              {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Fe], SARAH`Fe},
-                {SARAH`VZ, CXXDiagrams`LorentzConjugate[SARAH`Se], SARAH`Se},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`Cha1},
-                {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`Ah},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`VP},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],SARAH`Fe,SARAH`hh},
-                {CXXDiagrams`LorentzConjugate[SARAH`Cha1],SARAH`Cha1,SARAH`VZ},
-              {CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`Chi,SARAH`VZ},
-                {CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`Chi,SARAH`VP},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fv],SARAH`Fv,SARAH`VZ},
-                {CXXDiagrams`LorentzConjugate[SARAH`Fv],SARAH`Fv,SARAH`VP},
-              {CXXDiagrams`LorentzConjugate[SARAH`Hpm],SARAH`Hpm,SARAH`VZ},
-                {CXXDiagrams`LorentzConjugate[SARAH`Hpm],SARAH`Hpm,SARAH`VP},
-              {CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`Sv,SARAH`VZ},
-                {CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`Se,SARAH`VP},
-              {SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`VP},
-              {CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`Se,SARAH`VZ},
-              {SARAH`Se,CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`VZ},
-                {SARAH`Se,CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`VP},
-              {SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Sv],SARAH`VZ},
-              {SARAH`Chi,CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`VZ},
-                {SARAH`Chi,CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`VP},
-              {SARAH`Fv,CXXDiagrams`LorentzConjugate[SARAH`Fv],SARAH`VZ},
-                {SARAH`Fv,CXXDiagrams`LorentzConjugate[SARAH`Fv],SARAH`VP},
-              {SARAH`Cha1,CXXDiagrams`LorentzConjugate[SARAH`Cha1],SARAH`VZ},
-              {SARAH`Cha1,CXXDiagrams`LorentzConjugate[SARAH`Cha1],SARAH`VP},
-                {CXXDiagrams`LorentzConjugate[SARAH`Cha1],SARAH`Fe,SARAH`Sv},
-                {SARAH`Cha1,SARAH`Fe,CXXDiagrams`LorentzConjugate[SARAH`Sv]},
-                {CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`Fe,SARAH`Se},
-                {SARAH`Chi,SARAH`Fe,SARAH`Se},
-                {SARAH`Chi,SARAH`Fe,CXXDiagrams`LorentzConjugate[SARAH`Se]},
-                {CXXDiagrams`LorentzConjugate[SARAH`Chi],SARAH`Fe,CXXDiagrams`LorentzConjugate[SARAH`Se]},
-                {SARAH`Fv,SARAH`Fe,SARAH`Hpm},
-              {SARAH`Ah,SARAH`Ah,SARAH`VZ},
-                {SARAH`Ah,SARAH`Ah,SARAH`VP},
-                {SARAH`hh,SARAH`hh,SARAH`VP},
-              {SARAH`hh,SARAH`hh,SARAH`VZ},
-                {CXXDiagrams`LorentzConjugate[SARAH`Fv],SARAH`Fe ,CXXDiagrams`LorentzConjugate[SARAH`Hpm]},
-                {CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`Fe ,CXXDiagrams`LorentzConjugate[SARAH`Chi]},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Se],SARAH`Chi},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Se],CXXDiagrams`LorentzConjugate[SARAH`Chi]},
-              {SARAH`Fe,SARAH`Se,CXXDiagrams`LorentzConjugate[SARAH`Chi]},
-              {SARAH`Fe,SARAH`Se,SARAH`Chi},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Hpm],CXXDiagrams`LorentzConjugate[SARAH`Fv]},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe],CXXDiagrams`LorentzConjugate[SARAH`Fv],CXXDiagrams`LorentzConjugate[SARAH`Hpm]},
-                {SARAH`Fe,SARAH`Hpm,SARAH`Fv},
-              {SARAH`Fe,SARAH`Sv,CXXDiagrams`LorentzConjugate[SARAH`Cha1]},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe], SARAH`Cha1, CXXDiagrams`LorentzConjugate[SARAH`Sv]},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe], SARAH`Chi, CXXDiagrams`LorentzConjugate[SARAH`Se]},
-              {CXXDiagrams`LorentzConjugate[SARAH`Fe], CXXDiagrams`LorentzConjugate[SARAH`Chi], CXXDiagrams`LorentzConjugate[SARAH`Se]}
-            }];
-Print["Conversion vertices: ", conversionVertices];
 
            Print["Creating FFMasslessV form factor class ..."];
            fFFMasslessVFormFactorVertices =
@@ -4205,7 +4128,6 @@ Print["Conversion vertices: ", conversionVertices];
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}],
                {}
             ];
-Print["Massive vertices: ", fFFMassiveVFormFactorVertices];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 

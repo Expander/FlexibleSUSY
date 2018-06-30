@@ -136,12 +136,17 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
                          ] <> "};\n\n" <>
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
-               
+
+                  StringJoin[("val += FFVEmitterS<" <>
+                     StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1]], #[[2]]}, ","]  <>
+                     ">::value(indices1, indices2, context);\n") & /@ gTaggedDiagrams
+                  ] <> "\n" <>
+                  (*
                StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
+                                       *)
                "return val;"
-                  (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n";
     
     {prototype, definition}
