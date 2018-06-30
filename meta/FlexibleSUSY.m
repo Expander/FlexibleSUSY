@@ -1956,29 +1956,37 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
   ]
 
 WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
-  Module[{graphs,diagrams,vertices,
-          interfacePrototypes,interfaceDefinitions},
+   Module[{graphs,diagrams,vertices,
+          interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
 
-    graphs = FFMassiveVFormFactors`FFMassiveVFormFactorsContributingGraphs[];
-    diagrams = Outer[FFMassiveVFormFactors`FFMassiveVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
+      insertionsAndVertices = (f @@ #)& /@ leptonPairs;
+
+    (*graphs = FFMassiveVFormFactors`FFMassiveVFormFactorsContributingGraphs[];*)
+    (*diagrams = Outer[FFMassiveVFormFactors`FFMassiveVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];*)
     
-    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
-    
-    {interfacePrototypes, interfaceDefinitions} =
+    (*vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];*)
+
+      (* todo: this will fail if more pair eqist *)
+      {interfacePrototypes, interfaceDefinitions} =
+          FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[
+             leptonPairs[[1]], insertionsAndVertices[[1,1]]
+          ];
+     (*{interfacePrototypes, interfaceDefinitions} =
       If[diagrams === {},
          {"",""},
          StringJoin @@@ 
           (Riffle[#, "\n\n"] & /@ Transpose[FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
-            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
+            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];*)
 
-    WriteOut`ReplaceInFiles[files,
+      WriteOut`ReplaceInFiles[files,
                             {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
                              "@FFMassiveVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
                              "@FFMassiveVFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
                              Sequence @@ GeneralReplacementRules[]
                             }];
-    
-    vertices
+
+    Print["are vertices ok?", Flatten[insertionsAndVertices[[1,2]],1]];
+    Flatten[insertionsAndVertices[[1,2]],1]
   ]
 
 (* Write c++ files for the FFV decay *)
@@ -2005,7 +2013,7 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
 (* leptonPairs is a list of lists, sth like {{F1, F2, Au}, {F2, F3, Al}} etc *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
     Module[{interfacePrototypes, interfaceDefinitions, vertices,
-      massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions},
+      massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions, temp, ciekawe},
 
         (* additional vertices needed for the calculation *)
         (* coupling of vector bozons to quarks *)
@@ -2018,7 +2026,6 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
           {{CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions,
           Join[masslessNeutralVectorBosons, massiveNeutralVectorBosons]}
         ];
-        Print[vertices];
         (* @TODO: map over list of {F,F,Nucleus} instead of picking only the first 1 *)
         (*vertices = Join[vertices, {SARAH`VP, CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions];*)
 

@@ -29,6 +29,7 @@ BeginPackage["FFMassiveVFormFactors`",
 FFMassiveVFormFactorsCreateInterfaceFunctionForField::usage="";
 FFMassiveVFormFactorsContributingDiagramsForFieldAndGraph::usage="";
 FFMassiveVFormFactorsContributingGraphs::usage="";
+f::usage="";
 
 (* TODO: uncomment this in the end *)
 (*Begin["Private`"];*)
@@ -41,6 +42,7 @@ FFMassiveVFormFactorsContributingGraphs::usage="";
     2 is its Lorentz conjugate
     3 is the photon
    and all other indices unspecified. *)
+(*
 vertexCorrectionGraph = {{0,0,0,1,0,0},
                          {0,0,0,0,1,0},
                          {0,0,0,0,0,1},
@@ -74,12 +76,16 @@ IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagr
     
     Return[False];
   ]
+*)
 
 FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, gTaggedDiagrams_List] :=
     Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
+            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator],
+    kupa},
+
+        (*kupa = f[inFermion, outFermion, spectator];*)
 
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
@@ -137,65 +143,85 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                          ] <> "};\n\n" <>
 
                "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
-               
+
+               StringJoin[("val += FFMassiveVVertexCorrectionFS<" <>
+                   StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1]], #[[2]]}, ","]  <>
+                   ">::value(indices1, indices2, context);\n") & /@ gTaggedDiagrams
+               ] <> "\n" <>
+               (*
                StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
                      Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
                                        "\n"] <> "\n\n" <>
+                                       *)
                "return val;"
                   (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n";
 
-      Print[f[inFermion, outFermion, spectator]];
     {prototype, definition}
   ];
 
-
 (* if t is TreeMasses`IsScalar then returns list of scalars and anti-scalar, etc. *)
 getParticlesOfType[t_] :=
-    Join[#, CXXDiagrams`LorentzConjugate /@ #]& @
+    DeleteDuplicates@Join[#, CXXDiagrams`LorentzConjugate /@ #]& @
       Select[TreeMasses`GetParticles[], t];
 
 vertexNonZero[vertex_] :=
     Transpose[Drop[vertex, 1]][[1]] =!= {0,0};
 
-singleDiagram[inFermion_, outFermion_, spectator_, S_, F_] :=
-    Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar},
-      FBarFjSBar = SARAH`Vertex[{F, inFermion, CXXDiagrams`LorentzConjugate[S]}];
-      FiBarFS = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[outFermion], F, S}];
-      SBarSVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]}];
-      FBarFVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]}];
+(* if a diagram exists, return a list of particles in vertices, otherwise return an empty list *)
+singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
+   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4},
 
-      Print[F, " ", TreeMasses`GetElectricCharge[F]];
-      Print[S, " ", TreeMasses`GetElectricCharge[S]];
+      (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
+         return an {} *)
+      If[TreeMasses`GetElectricCharge[inFermion] =!= Plus @@ (TreeMasses`GetElectricCharge /@ {S,F}),
+         Return[{}]
+      ];
+
+      v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
+      FBarFjSBar = SARAH`Vertex[v1];
+      v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
+      FiBarFS = SARAH`Vertex[v2];
+      v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
+      SBarSVBar = SARAH`Vertex[v3];
+      v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
+      FBarFVBar = SARAH`Vertex[v4];
+
       If[
         vertexNonZero[FBarFjSBar]
             && vertexNonZero[FiBarFS]
             && (vertexNonZero[SBarSVBar] || vertexNonZero[FBarFVBar]),
-        True,
-        False
+          {v1, v2, v3, v4},
+          {}
       ]
-    ];
+   ];
 
-f[inFermion_, outFermion_, spectator_] := Module[{scalars, fermions, internalParticles = {}},
-  scalars = getParticlesOfType[TreeMasses`IsScalar];
-  fermions = getParticlesOfType[TreeMasses`IsFermion];
+f[inFermion_, outFermion_, spectator_] :=
+    Module[{scalars, fermions, internalParticles = {}, temp, vertices = {}},
+
+        scalars = getParticlesOfType[TreeMasses`IsScalar];
+        fermions = getParticlesOfType[TreeMasses`IsFermion];
 
   Map[
+      (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
     If[
-      singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]],
-      AppendTo[internalParticles, #]
-    ]&,
+       temp =!= {},
+      AppendTo[internalParticles, #];
+        AppendTo[vertices, temp];
+    ])&,
     Tuples[{fermions, scalars}]
   ];
 
-  internalParticles
-];
+        {internalParticles, vertices}
+    ];
 
 (* evaluate multiple diagrams *)
+(*
 CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_, spectator_}, diagrams_, graph_] :=
    CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, spectator, #, graph] & /@ diagrams;
-
+*)
 (* evaluate single diagram *)
+(*
 CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator_, diagram_, vertexCorrectionGraph] := 
     Module[{Emitter, exchangeParticle, colorFactor, colorFactorStr},
 
@@ -231,7 +257,7 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
 
         colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, exchangeParticle}]
     ];
-
+*)
 (* loop diagrams
    naming convention is
    external = {in, out, spectator}
@@ -246,14 +272,14 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
            |
            spectator
 *)
-
+(*
 CXXEvaluator[external_List, internal_List] :=
     "FFMassiveVVertexCorrection" <>
     "FS" <>    (*StringJoin @@ (ToString /@ (SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@ internal)) <>*)
     "<" <>
         StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, SortBy[internal, IsScalar]], ", "] <>
     ">";
-
+*)
 (* Divide by this factor because we some over color indices. *)
 EvaluateColorStruct[Emitter_, exchangeParticle_] := 
  Switch[getColorRep[Emitter] && getColorRep[exchangeParticle], T && T, 3*3, 
