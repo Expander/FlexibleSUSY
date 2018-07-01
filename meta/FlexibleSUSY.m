@@ -1936,10 +1936,10 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
 
      insertionsAndVertices = (f @@ #)& /@ leptonPairs;
 
-     (* todo: this will fail if more pair eqist *)
      {interfacePrototypes, interfaceDefinitions} =
-        FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair[
-           leptonPairs[[1]], insertionsAndVertices[[1,1]]
+        StringJoin /@ Transpose[
+           FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair[
+           #[[1]], #[[2,1]]]& /@ Transpose[{leptonPairs, insertionsAndVertices}]
         ];
 
      WriteOut`ReplaceInFiles[files,
@@ -1949,7 +1949,7 @@ WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
            Sequence @@ GeneralReplacementRules[]
         }];
 
-     Flatten[insertionsAndVertices[[1,2]],1]
+     Flatten[Transpose[insertionsAndVertices][[2]],2]
   ]
 
 WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
@@ -1958,11 +1958,11 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
 
       insertionsAndVertices = (f @@ #)& /@ leptonPairs;
 
-      (* todo: this will fail if more pair eqist *)
       {interfacePrototypes, interfaceDefinitions} =
-          FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[
-             leptonPairs[[1]], insertionsAndVertices[[1,1]]
-          ];
+         StringJoin /@ Transpose[
+            FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[
+               #[[1]], #[[2,1]]]& /@ Transpose[{leptonPairs, insertionsAndVertices}]
+         ];
 
       WriteOut`ReplaceInFiles[files,
                             {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
@@ -1971,7 +1971,7 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
 
-    Flatten[insertionsAndVertices[[1,2]],1]
+      Flatten[Transpose[insertionsAndVertices][[2]],2]
   ]
 
 (* Write c++ files for the FFV decay *)
@@ -1994,41 +1994,46 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
     ];
   ]
 
-(* Write c++ files for the FF conversion *)
-(* leptonPairs is a list of lists, sth like {{F1, F2, Au}, {F2, F3, Al}} etc *)
+(* Write c++ files for the F -> F conversion in nucleus *)
+(* leptonPairs is a list of lists, sth like {{Fe[2], Fe[1], Au}, {Fe[2], Fe[1], Al}} etc *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
-    Module[{interfacePrototypes, interfaceDefinitions, vertices,
-      massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions, temp, ciekawe},
+   Module[{interfacePrototypes, interfaceDefinitions,
+      massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions,
+      vertices = {}
+      },
 
-        (* additional vertices needed for the calculation *)
-        (* coupling of vector bozons to quarks *)
-        massiveNeutralVectorBosons = Select[GetVectorBosons[],
-          !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&
-        ];
-        masslessNeutralVectorBosons = {SARAH`VP};
-        externalFermions = Flatten[{TreeMasses`GetSMQuarks[], Drop[leptonPairs[[1]],-1]}];
-        vertices = Flatten /@ Tuples[
-          {{CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions,
-          Join[masslessNeutralVectorBosons, massiveNeutralVectorBosons]}
-        ];
+
+      If[leptonPairs === {},
+
+         {interfacePrototypes, interfaceDefinitions} = {"",""},
+
+         (* additional vertices needed for the calculation *)
+         (* coupling of vector bozons to quarks *)
+         massiveNeutralVectorBosons = Select[GetVectorBosons[],
+            !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&
+         ];
+         masslessNeutralVectorBosons = {SARAH`Photon};
+         externalFermions = Flatten[{TreeMasses`GetSMQuarks[], Drop[leptonPairs[[1]],-1]}];
+         vertices = Flatten /@ Tuples[
+            {{CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions,
+            Join[masslessNeutralVectorBosons, massiveNeutralVectorBosons]}
+         ];
         (* @TODO: map over list of {F,F,Nucleus} instead of picking only the first 1 *)
         (*vertices = Join[vertices, {SARAH`VP, CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions];*)
 
-        {interfacePrototypes, interfaceDefinitions} =
-          If[leptonPairs === {},
-              {"",""},
+         {interfacePrototypes, interfaceDefinitions} =
               StringJoin @@@
             (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface /@ leptonPairs])
-          ];
+      ];
 
-        WriteOut`ReplaceInFiles[files,
-            {"@FToFConversion_InterfacePrototypes@"     -> interfacePrototypes,
-             "@FToFConversion_InterfaceDefinitions@"    -> interfaceDefinitions,
-             Sequence @@ GeneralReplacementRules[]}
-        ];
+      WriteOut`ReplaceInFiles[files,
+         {"@FToFConversion_InterfacePrototypes@"     -> interfacePrototypes,
+          "@FToFConversion_InterfaceDefinitions@"    -> interfaceDefinitions,
+          Sequence @@ GeneralReplacementRules[]}
+      ];
 
-        vertices
-    ];
+      vertices
+   ];
 
 (* Write the AMuon c++ files *)
 WriteAMuonClass[files_List] :=
@@ -4069,7 +4074,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            
            CXXDiagrams`CXXDiagramsInitialize[];
            
-           Print["Creating EDM class..."];
+           Print["Creating EDM class ..."];
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
            edmVertices =
@@ -4095,7 +4100,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            fieldsForFToFConversion =
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                 FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, nucleus}];
-            Print[fieldsForFToFConversion];
+
+            If[fieldsForFToFConversion =!= {},
+               fieldsForFToFMasslessVDecay =
+                  DeleteDuplicates @ Join[
+                     fieldsForFToFMasslessVDecay,
+                     Append[#, SARAH`Photon]& /@ Transpose[Drop[Transpose[fieldsForFToFConversion],-1]]
+                  ]
+            ];
 
             conversionVertices =
              WriteFToFConversionInNucleusClass[fieldsForFToFConversion,
@@ -4113,21 +4125,23 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
 
-           (* check if we calculate observables which need massive penguins and if yes, generate appropriate form factors *)
-           fFFMassiveVFormFactorVertices =
-           If[fieldsForFToFConversion =!= {},
-               Print["Creating FFMassiveV form factor class ..."];
-               Print["Fields for conversion: ", fieldsForFToFConversion];
-               fieldsForFToFMassiveVFormFactors = fieldsForFToFConversion;
-               fieldsForFToFMassiveVFormFactors[[All,-1]] = SARAH`VZ;
-               fFFMassiveVFormFactorVertices = WriteFFMassiveVFormFactorsClass[
+           (* internally the F -> F conversion routines require form factors with massive vector bosons *)
+            fieldsForFToFMassiveVFormFactors = {};
+            If[fieldsForFToFConversion =!= {},
+               fieldsForFToFMassiveVFormFactors =
+               DeleteDuplicates @ Join[
+                  fieldsForFToFMassiveVFormFactors,
+                  Append[#, SARAH`VZ]& /@ Transpose[Drop[Transpose[fieldsForFToFConversion],-1]]
+               ]
+            ];
+
+            Print["Creating FFMassiveV form factor class ..."];
+            fFFMassiveVFormFactorVertices = WriteFFMassiveVFormFactorsClass[
              DeleteDuplicates @ Join[fieldsForFToFMassiveVFormFactors,{}],
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}],
-               {}
-            ];
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 

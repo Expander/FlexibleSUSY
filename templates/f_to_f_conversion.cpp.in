@@ -91,7 +91,7 @@ std::complex<double> vectorCurrent(const @ModelName@_mass_eigenstates& model) {
 template <class V>
 std::valarray<std::complex<double>> create_massive_penguin_amp(
       int generationIndex1,  int generationIndex2, 
-      const MRSSM2_mass_eigenstates& model, 
+      const @ModelName@_mass_eigenstates& model, 
       const softsusy::QedQcd& qedqcd) {
 
    @ModelName@_mass_eigenstates model_ = model;
