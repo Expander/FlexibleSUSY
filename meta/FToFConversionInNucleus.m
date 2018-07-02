@@ -73,8 +73,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF {qedqcd.displayFermiConstant()};\n" <>
 
-                "const auto photon_exchange = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
-                    CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`VP] <> "_form_factors (" <>
+                "const auto photon_penguin = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
+                    CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`Photon] <> "_form_factors (" <>
                     If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
                     If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
                     "model);\n" <>
@@ -84,14 +84,14 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "// Hisano defines form factors A2 through a matrix element in eq. 14\n" <>
                 "// Kitano uses a lagrangian with F_munu. There is a factor of 2 from translation\n" <>
                 "// because Fmunu = qeps - eps q\n" <>
-                "const auto A2L = -0.5 * photon_exchange[2]/(4.*GF/sqrt(2.));\n" <>
-                "const auto A2R = -0.5 * photon_exchange[3]/(4.*GF/sqrt(2.));\n" <>
+                "const auto A2L = -0.5 * photon_penguin[2]/(4.*GF/sqrt(2.));\n" <>
+                "const auto A2R = -0.5 * photon_penguin[3]/(4.*GF/sqrt(2.));\n" <>
 
                 "\n// ------ penguins ------\n" <>
                 "// 2 up and 1 down quark in proton (gp couplings)\n" <>
                 "// 1 up and 2 down in neutron (gn couplings)\n" <>
 
-                "\n// mediator: massless vectors\n" <>
+                "\n// mediator: massless vector\n" <>
                 "\n// construct 4-fermion operators from A1 form factors\n" <>
                 "// i q^2 A1 * (- i gmunu/q^2) * (-i Qq e) = GF/sqrt2 * gpV\n" <>
                 "// VP\n" <>
@@ -99,29 +99,35 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "const auto uEMVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename VP::lorentz_conjugate>(model);\n" <>
                 "const auto dEMVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename VP::lorentz_conjugate>(model);\n\n" <>
 
-                "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[0];\n" <>
-                "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_exchange[1];\n" <>
-                "auto gnLV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[0];\n" <>
-                "auto gnRV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_exchange[1];\n" <>
+                "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_penguin[0];\n" <>
+                "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_penguin[1];\n" <>
+                "auto gnLV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_penguin[0];\n" <>
+                "auto gnRV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_penguin[1];\n" <>
 
-                "\n// mediator: massive vectors\n" <>
+                "\n// mediator: massive vector\n" <>
                 StringJoin @ Map[
                     ("\n// " <> CXXNameOfField[#] <> "\n" <>
-                        "const auto " <> CXXNameOfField[#] <> "_exchange = create_massive_penguin_amp<" <> CXXNameOfField[#] <>">(" <>
-                        If[TreeMasses`GetDimension[inFermion] =!= 1, "generationIndex1, ", " "] <>
-                        If[TreeMasses`GetDimension[outFermion] =!= 1, " generationIndex2, ", " "] <>
-                        "model, qedqcd);\n" <>
-                        "gpLV += 2.*" <> CXXNameOfField[#] <> "_exchange[0] + " <> CXXNameOfField[#] <> "_exchange[2];\n" <>
-                        "gpRV += 2.*" <> CXXNameOfField[#] <> "_exchange[1] + " <> CXXNameOfField[#] <> "_exchange[3];\n" <>
-                        "gnLV += " <> CXXNameOfField[#] <> "_exchange[0] + 2.*" <> CXXNameOfField[#] <> "_exchange[2];\n" <>
-                        "gnRV += " <> CXXNameOfField[#] <> "_exchange[1] + 2.*" <> CXXNameOfField[#] <> "_exchange[3];\n")&,
+
+                        "const auto " <> CXXNameOfField[#] <> "_FF = " <>
+                           "calculate_" <> CXXNameOfField[inFermion] <> "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[#] <>
+                           "_form_factors (generationIndex1,  generationIndex2, model);\n" <>
+
+                        "const auto " <> CXXNameOfField[#] <> "_penguin = " <>
+                           "create_massive_penguin_amp<" <> CXXNameOfField[#] <> ">(" <>
+                           CXXNameOfField[#] <> "_FF, " <>
+                           "model, qedqcd);\n" <>
+
+                        "gpLV += 2.*" <> CXXNameOfField[#] <> "_penguin[0] + "    <> CXXNameOfField[#] <> "_penguin[2];\n" <>
+                        "gpRV += 2.*" <> CXXNameOfField[#] <> "_penguin[1] + "    <> CXXNameOfField[#] <> "_penguin[3];\n" <>
+                        "gnLV += "    <> CXXNameOfField[#] <> "_penguin[0] + 2.*" <> CXXNameOfField[#] <> "_penguin[2];\n" <>
+                        "gnRV += "    <> CXXNameOfField[#] <> "_penguin[1] + 2.*" <> CXXNameOfField[#] <> "_penguin[3];\n")&,
 
                     (* create a list of massive and electrically neutral gauge bosons *)
                     Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]
                 ] <>
 
                 (* TODO: add contributions from scalar penguins *)
-                "\n// mediator: massive scalars \n\n" <>
+                "\n// mediator: massive scalar\n\n" <>
 
                 "gpLV += sqrt(2.0)/GF * 0.;\n" <>
                 "gpRV += sqrt(2.0)/GF * 0.;\n" <>

@@ -88,16 +88,14 @@ std::complex<double> vectorCurrent(const @ModelName@_mass_eigenstates& model) {
     return 0.5*(value.left() + value.right());
 }
 
-template <class V>
+template <class V, class FormFactor>
 std::valarray<std::complex<double>> create_massive_penguin_amp(
-      int generationIndex1,  int generationIndex2, 
+      FormFactor V_exchange,
       const @ModelName@_mass_eigenstates& model, 
       const softsusy::QedQcd& qedqcd) {
 
    @ModelName@_mass_eigenstates model_ = model;
    EvaluationContext context{ model_ };
-
-   const auto V_exchange = calculate_Fe_Fe_VZ_form_factors (generationIndex1,  generationIndex2, model);
 
    const auto uVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>(model);
    const auto dVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename V::lorentz_conjugate>(model);
