@@ -29,8 +29,7 @@ EXTPAR = {
     {202, DeltaOS},
     {203, Qmatch},
     {204, DeltaLambda3L},
-    {205, ThreeLoopAtAsAsEFT},
-    {206, ThreeLoopAtAsAsH3m}
+    {205, ThreeLoopAtAsAs}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -233,8 +232,7 @@ Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_scale_variation.m"}]];
 
 FSHimalayaInput = {
     RenormalizationScheme -> MSbar,
-    Lambda3LEFT -> ThreeLoopAtAsAsEFT,
-    Lambda3LH3m -> ThreeLoopAtAsAsH3m,
+    Lambda3L -> ThreeLoopAtAsAs,
     Lambda3LUncertainty -> DeltaLambda3L,
     \[Mu] -> MuInput,
     g1 -> g1,

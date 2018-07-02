@@ -308,8 +308,7 @@ scale of the model.";
 (* input parameters for Himalaya *)
 FSHimalayaInput = {
     RenormalizationScheme -> DRbar,
-    Lambda3LEFT -> 1,
-    Lambda3LH3m -> 0,
+    Lambda3L -> 1,
     Lambda3LUncertainty -> 0,
     \[Mu] -> \[Mu],
     SARAH`g1 -> SARAH`hyperchargeCoupling,
