@@ -76,10 +76,10 @@ namespace flexiblesusy {
                                                                         \
          lambda_3L =                                                    \
             lambda_3L_eft * (                                           \
-               ho.getDLambdaEFT()                                       \
-               + msbar_scheme*ho.getDLambdaEFTDRbarPrimeToMSbarShift()  \
-               + lambda_3L_uncertainty*ho.getDLambdaEFTUncertainty()    \
-               );                                                       \
+               ho.getDLambda(3)                                         \
+               + msbar_scheme*ho.getDLambdaDRbarPrimeToMSbarShift(3)    \
+               + lambda_3L_uncertainty*ho.getDLambdaUncertainty(3)      \
+            );                                                          \
                                                                         \
          VERBOSE_MSG("Himalaya top (hierarchy, Dlambda_3L) = ("         \
                      << ho.getSuitableHierarchy() << ", "               \
