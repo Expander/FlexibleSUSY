@@ -25,7 +25,7 @@ namespace gm2calc {
 
 namespace {
    template <typename T>
-   T sqr(T x) { return x*x; }
+   T sqr(T x) noexcept { return x*x; }
 } // namespace
 
 /**
@@ -34,7 +34,7 @@ namespace {
  * @note Implementation translated by R.Brun from CERNLIB DILOG function C332
  * @return \f$\mathrm{Li}_2(z)\f$
  */
-double dilog(double x) {
+double dilog(double x) noexcept {
    const double PI = M_PI;
    const double HF  = 0.5;
    const double PI2 = PI*PI;
@@ -110,7 +110,7 @@ double dilog(double x) {
  *
  * @note not full long double precision yet!
  */
-long double dilog(long double x) {
+long double dilog(long double x) noexcept {
    return dilog(static_cast<double>(x));
 }
 
@@ -120,7 +120,7 @@ long double dilog(long double x) {
  * @note Implementation translated from SPheno to C++
  * @return \f$\mathrm{Li}_2(z)\f$
  */
-std::complex<long double> dilog(const std::complex<long double>& z) {
+std::complex<long double> dilog(const std::complex<long double>& z) noexcept {
    using flexiblesusy::fast_log;
    const long double PI = 3.1415926535897932384626433832795l;
    std::complex<long double> cy, cz;
@@ -215,7 +215,7 @@ std::complex<long double> dilog(const std::complex<long double>& z) {
  * @note Implementation translated from SPheno to C++
  * @return \f$\mathrm{Li}_2(z)\f$
  */
-std::complex<double> dilog(const std::complex<double>& z) {
+std::complex<double> dilog(const std::complex<double>& z) noexcept {
    const auto rz = static_cast<long double>(std::real(z));
    const auto iz = static_cast<long double>(std::imag(z));
    const auto re = dilog(std::complex<long double>(rz, iz));
@@ -227,7 +227,7 @@ std::complex<double> dilog(const std::complex<double>& z) {
  * @param x real angle
  * @return \f$\mathrm{Cl}_2(\theta)\f$
  */
-double clausen_2(double x)
+double clausen_2(double x) noexcept
 {
    using std::exp;
    using gm2calc::dilog;
