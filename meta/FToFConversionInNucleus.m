@@ -49,6 +49,10 @@ CreateIndexArray[particle_, idxName_String, generationIndex_String] :=
 FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
     Module[{prototype, definition},
 
+       On[Assert];
+       (* we assume that there are only 2 massless vector bosons, i.e. photon and gluon *)
+       Assert[Count[GetVectorBosons[], el_ /; IsMassless[el]] === 2];
+
         prototype =
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
                 CXXNameOfField[outFermion] <> "_in_nucleus (\n" <>
