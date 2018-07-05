@@ -48,91 +48,93 @@ namespace threshold_loop_functions {
 
 // loop functions from arXiv:1407.4081
 
-double F1(double) noexcept ATTR(const);
-double F2(double) noexcept ATTR(const);
-double F3(double) noexcept ATTR(const);
-double F4(double) noexcept ATTR(const);
-double F5(double) noexcept ATTR(const);
-double F6(double) noexcept ATTR(const);
-double F7(double) noexcept ATTR(const);
-double F8(double, double) noexcept ATTR(const);
-double F9(double, double) noexcept ATTR(const);
+#define TCFATTR noexcept ATTR(const)
 
-double f(double) noexcept ATTR(const);
-double g(double) noexcept ATTR(const);
+double F1(double) TCFATTR;
+double F2(double) TCFATTR;
+double F3(double) TCFATTR;
+double F4(double) TCFATTR;
+double F5(double) TCFATTR;
+double F6(double) TCFATTR;
+double F7(double) TCFATTR;
+double F8(double, double) TCFATTR;
+double F9(double, double) TCFATTR;
 
-double f1(double) noexcept ATTR(const);
-double f2(double) noexcept ATTR(const);
-double f3(double) noexcept ATTR(const);
-double f4(double) noexcept ATTR(const);
-double f5(double, double) noexcept ATTR(const);
-double f6(double, double) noexcept ATTR(const);
-double f7(double, double) noexcept ATTR(const);
-double f8(double, double) noexcept ATTR(const);
+double f(double) TCFATTR;
+double g(double) TCFATTR;
+
+double f1(double) TCFATTR;
+double f2(double) TCFATTR;
+double f3(double) TCFATTR;
+double f4(double) TCFATTR;
+double f5(double, double) TCFATTR;
+double f6(double, double) TCFATTR;
+double f7(double, double) TCFATTR;
+double f8(double, double) TCFATTR;
 
 // first derivatives
 
-double D1F1(double) noexcept ATTR(const);
-double D1F2(double) noexcept ATTR(const);
-double D1F3(double) noexcept ATTR(const);
-double D1F4(double) noexcept ATTR(const);
-double D1F5(double) noexcept ATTR(const);
-double D1F6(double) noexcept ATTR(const);
-double D1F7(double) noexcept ATTR(const);
-double D1f(double) noexcept ATTR(const);
-double D1g(double) noexcept ATTR(const);
-double D1f1(double) noexcept ATTR(const);
-double D1f2(double) noexcept ATTR(const);
-double D1f3(double) noexcept ATTR(const);
-double D1f4(double) noexcept ATTR(const);
-double D10f5(double, double) noexcept ATTR(const);
-double D01f5(double, double) noexcept ATTR(const);
-double D10f6(double, double) noexcept ATTR(const);
-double D01f6(double, double) noexcept ATTR(const);
-double D10f7(double, double) noexcept ATTR(const);
-double D01f7(double, double) noexcept ATTR(const);
-double D10f8(double, double) noexcept ATTR(const);
-double D01f8(double, double) noexcept ATTR(const);
+double D1F1(double) TCFATTR;
+double D1F2(double) TCFATTR;
+double D1F3(double) TCFATTR;
+double D1F4(double) TCFATTR;
+double D1F5(double) TCFATTR;
+double D1F6(double) TCFATTR;
+double D1F7(double) TCFATTR;
+double D1f(double) TCFATTR;
+double D1g(double) TCFATTR;
+double D1f1(double) TCFATTR;
+double D1f2(double) TCFATTR;
+double D1f3(double) TCFATTR;
+double D1f4(double) TCFATTR;
+double D10f5(double, double) TCFATTR;
+double D01f5(double, double) TCFATTR;
+double D10f6(double, double) TCFATTR;
+double D01f6(double, double) TCFATTR;
+double D10f7(double, double) TCFATTR;
+double D01f7(double, double) TCFATTR;
+double D10f8(double, double) TCFATTR;
+double D01f8(double, double) TCFATTR;
 
 // second derivatives
 
-double D2F1(double) noexcept ATTR(const);
-double D2F2(double) noexcept ATTR(const);
-double D2F3(double) noexcept ATTR(const);
-double D2F4(double) noexcept ATTR(const);
-double D2F5(double) noexcept ATTR(const);
-double D2F6(double) noexcept ATTR(const);
-double D2F7(double) noexcept ATTR(const);
+double D2F1(double) TCFATTR;
+double D2F2(double) TCFATTR;
+double D2F3(double) TCFATTR;
+double D2F4(double) TCFATTR;
+double D2F5(double) TCFATTR;
+double D2F6(double) TCFATTR;
+double D2F7(double) TCFATTR;
 
 /// \f$I_{abc}(a,b,c)\f$ (arguments are interpreted as unsquared)
-double Iabc(double, double, double) noexcept ATTR(const);
+double Iabc(double, double, double) TCFATTR;
 
 /// \f$Delta_{xyz}(x,y,z)\f$ (arguments are interpreted as squared masses)
-double delta_xyz(double, double, double) noexcept ATTR(const);
+double delta_xyz(double, double, double) TCFATTR;
 
 /// \f$phi_{xyz}(x,y,z)\f$ (arguments are interpreted as squared masses)
-double phi_xyz(double, double, double) noexcept ATTR(const);
+double phi_xyz(double, double, double) TCFATTR;
 
 /// \f$B_0(p=0,m_1,m_2,Q)\f$ (arguments are interpreted as unsquared)
-double B0(double, double, double) noexcept ATTR(const);
+double B0(double, double, double) TCFATTR;
 
 /// \f$B_0'(p=0,m_1,m_2)\f$ (arguments are interpreted as unsquared)
-double DB0(double, double) noexcept ATTR(const);
+double DB0(double, double) TCFATTR;
 
 /// \f$C_0(p=0,m_1,m_2,m_3)\f$ (arguments are interpreted as unsquared)
-double C0(double, double, double) noexcept ATTR(const);
+double C0(double, double, double) TCFATTR;
 
 /// \f$D_0(p=0,m_1,m_2,m_3,m_4)\f$ (arguments are interpreted as unsquared)
-double D0(double, double, double, double) noexcept ATTR(const);
+double D0(double, double, double, double) TCFATTR;
 
 /// \f$\tilde{D}_2(m_1,m_2,m_3,m_4)\f$ (arguments are interpreted as unsquared)
-double D2t(double, double, double, double) noexcept ATTR(const);
+double D2t(double, double, double, double) TCFATTR;
 
 /// \f$\tilde{D}_4(m_1,m_2,m_3,m_4,Q)\f$ (arguments are interpreted as unsquared)
-double D4t(double, double, double, double, double) noexcept ATTR(const);
+double D4t(double, double, double, double, double) TCFATTR;
 
 /// \f$Q(m_1,m_2,Q)\f$ (arguments are interpreted as unsquared)
-double W(double, double, double) noexcept ATTR(const);
+double W(double, double, double) TCFATTR;
 
 } // namespace threshold_loop_functions
 } // namespace flexiblesusy
