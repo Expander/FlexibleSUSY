@@ -29,10 +29,11 @@ BeginPackage["FFMassiveVFormFactors`",
 FFMassiveVFormFactorsCreateInterfaceFunctionForField::usage="";
 FFMassiveVFormFactorsContributingDiagramsForFieldAndGraph::usage="";
 FFMassiveVFormFactorsContributingGraphs::usage="";
+FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair::usage="";
 f::usage="";
 
 (* TODO: uncomment this in the end *)
-(*Begin["Private`"];*)
+Begin["Private`"];
 
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate
@@ -287,5 +288,5 @@ EvaluateColorStruct[Emitter_, exchangeParticle_] :=
 
 (* TODO: add other topologies? *)
 
-(*End[];*)
+End[];
 EndPackage[];
