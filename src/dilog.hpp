@@ -20,24 +20,25 @@
 #define DILOG_H
 
 #include <complex>
-#include "cextensions.hpp"
 
 namespace gm2calc {
 
-/// real dilogarithm
-double dilog(double) noexcept ATTR(const);
+#define DILOGATTR noexcept
 
 /// real dilogarithm
-long double dilog(long double) noexcept ATTR(const);
+double dilog(double) DILOGATTR;
+
+/// real dilogarithm
+long double dilog(long double) DILOGATTR;
 
 /// complex dilogarithm
-std::complex<double> dilog(const std::complex<double>&) noexcept ATTR(const);
+std::complex<double> dilog(const std::complex<double>&) DILOGATTR;
 
 /// complex dilogarithm
-std::complex<long double> dilog(const std::complex<long double>&) noexcept ATTR(const);
+std::complex<long double> dilog(const std::complex<long double>&) DILOGATTR;
 
 /// Clausen function Cl_2(x)
-double clausen_2(double) noexcept ATTR(const);
+double clausen_2(double) DILOGATTR;
 
 } // namespace gm2calc
 
