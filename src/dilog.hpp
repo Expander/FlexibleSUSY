@@ -23,20 +23,22 @@
 
 namespace gm2calc {
 
-/// real dilogarithm
-double dilog(double);
+#define DILOGATTR noexcept
 
 /// real dilogarithm
-long double dilog(long double);
+double dilog(double) DILOGATTR;
+
+/// real dilogarithm
+long double dilog(long double) DILOGATTR;
 
 /// complex dilogarithm
-std::complex<double> dilog(const std::complex<double>&);
+std::complex<double> dilog(const std::complex<double>&) DILOGATTR;
 
 /// complex dilogarithm
-std::complex<long double> dilog(const std::complex<long double>&);
+std::complex<long double> dilog(const std::complex<long double>&) DILOGATTR;
 
 /// Clausen function Cl_2(x)
-double clausen_2(double);
+double clausen_2(double) DILOGATTR;
 
 } // namespace gm2calc
 

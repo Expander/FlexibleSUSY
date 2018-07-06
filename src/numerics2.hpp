@@ -32,27 +32,27 @@ namespace flexiblesusy {
 
 template <typename T>
 typename std::enable_if<std::is_unsigned<T>::value, bool>::type
-is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+is_zero(T a, T prec = std::numeric_limits<T>::epsilon()) noexcept
 {
    return a <= prec;
 }
 
 template <typename T>
 typename std::enable_if<!std::is_unsigned<T>::value, bool>::type
-is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+is_zero(T a, T prec = std::numeric_limits<T>::epsilon()) noexcept
 {
    return std::abs(a) <= prec;
 }
 
 template <typename T>
-bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
 {
    return is_zero(a - b, prec);
 }
 
 template <typename T>
 bool is_equal(std::complex<T> a, std::complex<T> b,
-              T prec = std::numeric_limits<T>::epsilon())
+              T prec = std::numeric_limits<T>::epsilon()) noexcept
 {
    return (is_equal(a.real(), b.real(), prec)
            && is_equal(a.imag(), b.imag(), prec));
@@ -60,7 +60,7 @@ bool is_equal(std::complex<T> a, std::complex<T> b,
 
 template <typename T>
 typename std::enable_if<!std::is_unsigned<T>::value, bool>::type
-is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
 {
    if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
       return true;
@@ -74,7 +74,7 @@ is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 
 template <typename T>
 typename std::enable_if<std::is_unsigned<T>::value, bool>::type
-is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
 {
    using ST = typename std::make_signed<T>::type;
    const auto sa = static_cast<ST>(a);
@@ -87,7 +87,7 @@ is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
 bool is_finite(const double*, long length);
 
 template <std::size_t N>
-bool is_finite(const double v[N])
+bool is_finite(const double v[N]) noexcept
 {
    bool is_finite = true;
 
@@ -98,13 +98,13 @@ bool is_finite(const double v[N])
 }
 
 template <typename T, std::size_t N>
-bool is_finite(const std::array<T, N>& v)
+bool is_finite(const std::array<T, N>& v) noexcept
 {
    return is_finite<N>(&v[0]);
 }
 
 template <class T>
-std::complex<T> fast_log(const std::complex<T>& z)
+std::complex<T> fast_log(const std::complex<T>& z) noexcept
 {
    return std::complex<T>(std::log(std::abs(z)), std::arg(z));
 }

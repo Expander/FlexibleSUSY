@@ -1405,6 +1405,14 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
 CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 #ifdef ENABLE_HIMALAYA
+// calculate 3rd generation sfermion masses and mixing angles
+double mst_1, mst_2, theta_t;
+double msb_1, msb_2, theta_b;
+
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`TopSquark, "mst_1", "mst_2", "theta_t"] <>
+";
+" <> TreeMasses`CallGenerationHelperFunctionName[3, SARAH`BottomSquark, "msb_1", "msb_2", "theta_b"] <>
+";
 
 himalaya::Parameters pars;
 pars.scale = get_scale();
@@ -1421,6 +1429,10 @@ pars.MZ = " <> mZStr <> ";
 pars.Mt = " <> mtStr <> ";
 pars.Mb = " <> mbStr <> ";
 pars.MA = " <> mA0Str <> ";
+pars.MSt << mst_1, mst_2;
+pars.MSb << msb_1, msb_2;
+pars.s2t = Sin(2*theta_t);
+pars.s2b = Sin(2*theta_b);
 
 #if Himalaya_VERSION_MAJOR < 2
    pars.At = Re(" <> AtStr <> ");

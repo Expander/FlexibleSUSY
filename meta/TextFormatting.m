@@ -30,39 +30,6 @@ IndentText::usage="indents text by a given number of spaces";
 
 Begin["`Private`"];
 
-GetBestSplitPoint[line_String, maxWidth_:79] :=
-    Module[{chars, lastSplitPoint, i, char, nextChar, numberOfQuotes = 0,
-            splitChars = StringSplit["(){}[]*+,;<> ", ""]},
-           If[StringLength[line] <= maxWidth, Return[StringLength[line]]];
-           chars = StringSplit[line, ""];
-           lastSplitPoint = StringLength[line];
-           For[i = 1, i < Length[chars] && i <= maxWidth, i++,
-               char = chars[[i]];
-               If[char == "\"", numberOfQuotes++;];
-               nextChar = chars[[i+1]];
-               If[(MemberQ[splitChars, char] || MemberQ[splitChars, nextChar])
-                  && EvenQ[numberOfQuotes],
-                  lastSplitPoint = i;
-                 ];
-              ];
-           Return[lastSplitPoint];
-          ];
-
-SplitLine[line_String, maxWidth_:79] :=
-    Module[{bestSplitPoint, first, rest, result = {}},
-           bestSplitPoint = GetBestSplitPoint[line, maxWidth];
-           first = StringTake[line, bestSplitPoint];
-           AppendTo[result, first];
-           rest = StringDrop[line, bestSplitPoint];
-           While[rest != "",
-                 bestSplitPoint = GetBestSplitPoint[rest, maxWidth];
-                 first = StringTake[rest, bestSplitPoint];
-                 AppendTo[result, first];
-                 rest = StringDrop[rest, bestSplitPoint];
-                ];
-           Return[result];
-          ];
-
 WrapLines[text_String, maxWidth_:79, offset_:"   "] :=
     WrapText[text, maxWidth, StringLength[offset]];
 
@@ -87,6 +54,12 @@ WrapText[text_String, maxWidth_Integer:79, indentation_Integer:2] := Block[{
   StringJoin @ Riffle[WrapLine /@ StringSplit[text, "\n", All], "\n"]
 ];
 
+RemoveTrailingWhitespace[str_] :=
+    StringTrim[str, Whitespace.. ~~ EndOfString];
+
+RemoveEmptyLines[l_List] :=
+    Select[l, !StringMatchQ[#, StartOfString ~~ Whitespace... ~~ EndOfString]&];
+
 WrapLine[blank_String] := {} /;
   StringMatchQ[blank, RegularExpression["^[[:space:]]*$"]];
 
@@ -98,7 +71,7 @@ WrapLine[line_String] := Block[{
     otherBlankStr
   },
   absSkip = nLeadingSpaces + relSkip;
-  lst = SplitLine[nLeadingSpaces, ProtectCTokens@StringTrim[line]];
+  lst = RemoveEmptyLines[RemoveTrailingWhitespace /@ SplitLine[nLeadingSpaces, ProtectCTokens@StringTrim[line]]];
   firstBlankStr = StringJoin@Table[" ", {nLeadingSpaces}];
   otherBlankStr = StringJoin@Table[" ", {absSkip}];
   If[lst === {}, {},
@@ -155,14 +128,14 @@ SowStrings[curLen_Integer, str_String] :=
 		       RegularExpression[
 			   "^(.{0," <> ToString[maxLength - curLen - 1] <>
 			   "}(?:" <> splitRegex <>
-			   "|[^[:space:]](?=[[:space:]])))[[:space:]]*(.*)"] :>
+			   "|[^[:space:]]?(?=[[:space:]])))[[:space:]]*(.*)"] :>
 		       (Sow["$1"]; remainder = "$2"; True)]] =!= String,
       SowStrings[absSkip, remainder],
     curLen > absSkip, SowStrings[absSkip, str],
     Head[StringReplace[str,
 		       RegularExpression[
 			   "^(.*?(?:" <> splitRegex <>
-			   "|[^[:space:]](?=[[:space:]])))[[:space:]]*(.*)"] :>
+			   "|[^[:space:]]?(?=[[:space:]])))[[:space:]]*(.*)"] :>
 		       (Sow["$1"]; remainder = "$2"; True)]] =!= String,
       SowStrings[absSkip, remainder],
     True, Sow[str]];
