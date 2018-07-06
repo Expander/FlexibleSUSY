@@ -1493,6 +1493,10 @@ try {
    VERBOSE_MSG(pars);
    throw HimalayaError(e.what());
 }
+#else // ENABLE_HIMALAYA
+throw HimalayaError(\"The 3-loop corrections to Mh require Himalaya 1.0 \"
+                    \"(or higher), but FlexibleSUSY has not been \"
+                    \"configured with Himalaya!\");
 #endif // ENABLE_HIMALAYA
 
 return self_energy_3l;"
