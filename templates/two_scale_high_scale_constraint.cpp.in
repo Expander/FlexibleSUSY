@@ -24,6 +24,7 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
+#include "error.hpp"
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "raii.hpp"
@@ -93,7 +94,13 @@ namespace flexiblesusy {
       return lambda_3L;                                                 \
    }()
 #else
-#define FSHimalayaMh23L 0.
+#define FSHimalayaMh23L [] () {                                         \
+      throw HimalayaError("The 3-loop corrections to lambda "           \
+                          "require Himalaya 2.0.0 (or higher), but "    \
+                          "FlexibleSUSY has not been configured with "  \
+                          "Himalaya!");                                 \
+      return 0.;                                                        \
+   }()
 #endif
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
