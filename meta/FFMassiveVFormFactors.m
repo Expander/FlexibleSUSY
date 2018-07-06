@@ -32,7 +32,6 @@ FFMassiveVFormFactorsContributingGraphs::usage="";
 FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair::usage="";
 f::usage="";
 
-(* TODO: uncomment this in the end *)
 Begin["Private`"];
 
 (* The graphs that contribute to the EDM are precisely those with three
@@ -83,10 +82,7 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
     Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
-            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator],
-    kupa},
-
-        (*kupa = f[inFermion, outFermion, spectator];*)
+            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
 
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>

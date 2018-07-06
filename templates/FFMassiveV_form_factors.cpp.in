@@ -263,7 +263,7 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
    const auto mj2 = mj*mj;
-   const auto mi = context.mass<Fi>(indices_out) *0.;
+   const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
 
    std::valarray<std::complex<double>> res {0.0, 0.0};
