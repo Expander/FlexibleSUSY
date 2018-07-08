@@ -127,16 +127,31 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                         "gnRV += "    <> CXXNameOfField[#] <> "_penguin[1] + 2.*" <> CXXNameOfField[#] <> "_penguin[3];\n")&,
 
                     (* create a list of massive and electrically neutral gauge bosons *)
-                    Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]
+                    Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#] || ColorChargedQ[#])&]
                 ] <>
 
                 (* TODO: add contributions from scalar penguins *)
-                "\n// mediator: massive scalar\n\n" <>
+                "\n// mediator: massive scalar\n" <>
+                    StringJoin @ Map[
+                      ("\n// " <> CXXNameOfField[#] <> "\n")& (*<>
 
-                "gpLV += sqrt(2.0)/GF * 0.;\n" <>
-                "gpRV += sqrt(2.0)/GF * 0.;\n" <>
-                "gnLV += sqrt(2.0)/GF * 0.;\n" <>
-                "gnRV += sqrt(2.0)/GF * 0.;\n" <>
+                          "const auto " <> CXXNameOfField[#] <> "_FF = " <>
+                          "calculate_" <> CXXNameOfField[inFermion] <> "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[#] <>
+                          "_form_factors (generationIndex1,  generationIndex2, model);\n" <>
+
+                          "const auto " <> CXXNameOfField[#] <> "_penguin = " <>
+                          "create_massive_penguin_amp<" <> CXXNameOfField[#] <> ">(" <>
+                          CXXNameOfField[#] <> "_FF, " <>
+                          "model, qedqcd);\n" <>
+
+                          "gpLV += 2.*" <> CXXNameOfField[#] <> "_penguin[0] + "    <> CXXNameOfField[#] <> "_penguin[2];\n" <>
+                          "gpRV += 2.*" <> CXXNameOfField[#] <> "_penguin[1] + "    <> CXXNameOfField[#] <> "_penguin[3];\n" <>
+                          "gnLV += "    <> CXXNameOfField[#] <> "_penguin[0] + 2.*" <> CXXNameOfField[#] <> "_penguin[2];\n" <>
+                          "gnRV += "    <> CXXNameOfField[#] <> "_penguin[1] + 2.*" <> CXXNameOfField[#] <> "_penguin[3];\n")&*),
+
+                      (* create a list of massive and electrically neutral, massive scalars *)
+                      Select[GetParticles[], (IsScalar[#] && !IsMassless[#] && !IsElectricallyCharged[#] && !ColorChargedQ[#])&]
+                    ] <>
 
                 "\n// ------ boxes ------\n\n" <>
 
