@@ -22,14 +22,16 @@
 
 *)
 
-BeginPackage["FFVFormFactors`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}];
+BeginPackage["FFVFormFactors`",
+  {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}
+];
 
 FFVFormFactorsCreateInterfaceFunctionForField::usage="";
 FFVFormFactorsContributingDiagramsForFieldAndGraph::usage="";
 FFVFormFactorsContributingGraphs::usage="";
+FFVFormFactorsCreateInterfaceFunctionForLeptonPair::usage="";
 
-(* TODO: uncomment this in the end *)
-(*Begin["Private`"];*)
+Begin["Private`"];
 
 (* The graphs that contribute to the EDM are precisely those with three
    external lines given by the field in question, its Lorentz conjugate
@@ -92,23 +94,10 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
                " int generationIndex2, ",
                " "
             ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );\n";
+            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )";
                  
       definition =
-         (* calculate form factors A1L, A2L, etc *)
-         "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
-            "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
-            " (\n" <>
-            If[TreeMasses`GetDimension[inFermion] =!= 1,
-               "   int generationIndex1, ",
-               " "
-            ] <>
-            If[TreeMasses`GetDimension[outFermion] =!= 1,
-               " int generationIndex2, ",
-               " "
-            ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
-            "{\n" <>
+          prototype <> "{\n" <>
             IndentText[
                FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                "EvaluationContext context{ model_ };\n" <>
@@ -137,19 +126,23 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
 
-                  StringJoin[("val += FFVEmitterS<" <>
+                  StringJoin[
+                    If[spectator === SARAH`Photon,
+                      If[IsElectricallyCharged[#[[2]]],
+                    ("val += FFVEmitterS<" <>
                      StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1]], #[[2]]}, ","]  <>
-                     ">::value(indices1, indices2, context);\n") & /@ gTaggedDiagrams
+                     ">::value(indices1, indices2, context);\n"), ""] <>
+                          If[IsElectricallyCharged[#[[1]]],
+                            ("val += FFVEmitterF<" <>
+                                StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1]], #[[2]]}, ","]  <>
+                                ">::value(indices1, indices2, context);\n"), ""]
+                      ]& /@ gTaggedDiagrams
                   ] <> "\n" <>
-                  (*
-               StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
-                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"] <> "\n\n" <>
-                                       *)
+
                "return val;"
             ] <> "\n}\n\n";
     
-    {prototype, definition}
+    {prototype <> ";", definition}
   ];
 
 (* evaluate multiple diagrams *)
@@ -221,5 +214,5 @@ EvaluateColorStruct[Emitter_, exchangeParticle_] :=
 
 (* TODO: add other topologies? *)
 
-(*End[];*)
+End[];
 EndPackage[];

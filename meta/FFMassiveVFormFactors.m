@@ -96,23 +96,10 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                " int generationIndex2, ",
                " "
             ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );\n";
+            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )";
 
       definition =
-         (* calculate form factors A1L, A2L, etc *)
-         "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
-            "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
-            " (\n" <>
-            If[TreeMasses`GetDimension[inFermion] =!= 1,
-               "   int generationIndex1, ",
-               " "
-            ] <>
-            If[TreeMasses`GetDimension[outFermion] =!= 1,
-               " int generationIndex2, ",
-               " "
-            ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
-            "{\n" <>
+          prototype <> "{\n" <>
             IndentText[
                FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                "EvaluationContext context{ model_ };\n" <>
@@ -154,7 +141,7 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
                   (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
             ] <> "\n}\n\n";
 
-    {prototype, definition}
+    {prototype <> ";", definition}
   ];
 
 (* if t is TreeMasses`IsScalar then returns list of scalars and anti-scalar, etc. *)
