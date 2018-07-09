@@ -52,6 +52,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
        On[Assert];
        (* we assume that there are only 2 massless vector bosons, i.e. photon and gluon *)
        Assert[Count[GetVectorBosons[], el_ /; IsMassless[el]] === 2];
+       Off[Assert];
 
         prototype =
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
@@ -132,6 +133,12 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
 
                 (* TODO: add contributions from scalar penguins *)
                 "\n// mediator: massive scalar\n" <>
+
+                "std::complex<double> gpLS {0.0};\n" <>
+                "std::complex<double> gpRS {0.0};\n" <>
+                "std::complex<double> gnLS {0.0};\n" <>
+                "std::complex<double> gnRS {0.0};\n" <>
+
                     StringJoin @ Map[
                       ("\n// " <> CXXNameOfField[#] <> "\n")& (*<>
 
@@ -150,7 +157,9 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                           "gnRV += "    <> CXXNameOfField[#] <> "_penguin[1] + 2.*" <> CXXNameOfField[#] <> "_penguin[3];\n")&*),
 
                       (* create a list of massive and electrically neutral, massive scalars *)
-                      Select[GetParticles[], (IsScalar[#] && !IsMassless[#] && !IsElectricallyCharged[#] && !ColorChargedQ[#])&]
+                      Select[GetParticles[],
+                        (IsScalar[#] && !IsMassless[#] && !IsElectricallyCharged[#] && !ColorChargedQ[#])&
+                      ]
                     ] <>
 
                 "\n// ------ boxes ------\n\n" <>
@@ -164,8 +173,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                     ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
                     ", qedqcd" <> ");\n" <>
 
-                "\nconst auto left {A2R*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn};\n" <>
-                "const auto right {A2L*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn};\n" <>
+                "\nconst auto left {A2R*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn + gpLS*nuclear_form_factors.Sp + gnLS*nuclear_form_factors.Sn};\n" <>
+                "const auto right {A2L*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn + gpRS*nuclear_form_factors.Sp + gnRS*nuclear_form_factors.Sn};\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
                 "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
