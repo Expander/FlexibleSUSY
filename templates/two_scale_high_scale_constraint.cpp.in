@@ -60,7 +60,7 @@ namespace flexiblesusy {
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
 
-#ifdef ENABLE_HIMALAYA
+#if defined(ENABLE_HIMALAYA) && Himalaya_VERSION_MAJOR >= 2
 #define FSHimalayaMh23L [&] () {                                        \
       MODEL->calculate_DRbar_masses();                                  \
                                                                         \
@@ -98,7 +98,7 @@ namespace flexiblesusy {
       throw HimalayaError("The 3-loop corrections to lambda "           \
                           "require Himalaya 2.0.0 (or higher), but "    \
                           "FlexibleSUSY has not been configured with "  \
-                          "Himalaya!");                                 \
+                          "this Himalaya version!");                    \
       return 0.;                                                        \
    }()
 #endif
