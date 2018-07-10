@@ -81,7 +81,10 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
          numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
          numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]
       },
-   
+
+     Print[inFermion];
+     Print[gTaggedDiagrams];
+
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
             "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
@@ -128,20 +131,23 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
 
                   StringJoin[
                     If[spectator === SARAH`Photon,
-                      If[IsElectricallyCharged[#[[2]]],
-                    ("val += FFVEmitterS<" <>
-                     StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1]], #[[2]]}, ","]  <>
+                      If[IsElectricallyCharged[#[[1,2]]],
+                    ("val += std::complex<double> {" <> (ToString @ N[#[[2]], 16]) <> "} * FFVEmitterS<" <>
+                     StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                      ">::value(indices1, indices2, context);\n"), ""] <>
-                          If[IsElectricallyCharged[#[[1]]],
-                            ("val += FFVEmitterF<" <>
-                                StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1]], #[[2]]}, ","]  <>
+                          If[IsElectricallyCharged[#[[1,1]]],
+                            ("val += std::complex<double> {" <> (ToString @ N[#[[2]], 16]) <> "} * FFVEmitterF<" <>
+                                StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                                 ">::value(indices1, indices2, context);\n"), ""]
                       ]& /@ gTaggedDiagrams
                   ] <> "\n" <>
 
                "return val;"
             ] <> "\n}\n\n";
-    
+
+     Print[definition];
+   (*CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, spectator, #[[1]], #[[2]]]& /@ gTaggedDiagrams;*)
+
     {prototype <> ";", definition}
   ];
 
@@ -150,10 +156,10 @@ CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_, spectat
    CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, spectator, #, graph] & /@ diagrams;
 
 (* evaluate single diagram *)
-CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator_, diagram_, vertexCorrectionGraph] := 
+CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, V_, F_, S_] :=
    Module[{Emitter, exchangeParticle, colorFactor, colorFactorStr},
-      Emitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
-      exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
+      (*Emitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; * Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+      (*exchangeParticle = diagram[[4,2]]; * Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
       colorFactor = getChargeFactor[
  {
@@ -165,7 +171,7 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
    },
   {
    External[1] -> inFermion, External[2] -> AntiField[outFermion], 
-   External[3] -> spectator,
+   External[3] -> V,
    Internal[1] -> Emitter, Internal[2] -> exchangeParticle, 
    Internal[3] -> AntiField[Emitter]
    }
@@ -182,6 +188,20 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
     
     colorFactorStr = "std::complex<double> " <> 
        ToString @ (N[#, 16]& /@ (ReIm[colorFactor]/EvaluateColorStruct[Emitter, exchangeParticle]));
+
+      Print[StringJoin[
+        If[V === SARAH`Photon,
+          If[IsElectricallyCharged[#[[2]]],
+            ("val += FFVEmitterS<" <>
+                StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, V, F, S}, ","]  <>
+                ">::value(indices1, indices2, context);\n"), ""] <>
+              If[IsElectricallyCharged[#[[1]]],
+                ("val += FFVEmitterF<" <>
+                    StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, V, F, S}, ","]  <>
+                    ">::value(indices1, indices2, context);\n"), ""]
+        ]
+      ]];
+
     If[TreeMasses`IsFermion[Emitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[colorFactorStr <> " * " <> CXXEvaluatorFS[inFermion,outFermion,spectator,Emitter,exchangeParticle]]];
     If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[Emitter],

@@ -237,67 +237,70 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
 
+   auto spectator_indices = default_indices_for_spectator<V>();
+
    // loop over all possible particle "generations" attached to both vertices
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
    for (const auto& indexIn: index_range<VertexFBarFjSBar>()) {
       for (const auto& indexOut: index_range<VertexFiBarFS>()) {
 
          // cycle if generations of external fermions  are different then requested   
-         const auto edmFieldIndicesIn = VertexFBarFjSBar::template field_indices<1>(indexIn);
-         const auto edmFieldIndicesOut = VertexFiBarFS::template field_indices<0>(indexOut);
-         if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
+         const auto jFieldIndices = VertexFBarFjSBar::template field_indices<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFS::template field_indices<0>(indexOut);
+         if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
-         // match indices of the exchange field
-         const auto exchangeFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
-         const auto exchangeFieldIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
-         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut)
+         // match indices of the fermion in the loop
+         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
+         if (fermionFieldIndicesIn != fermionFieldIndicesOut)
             continue;
 
-
-         const auto EmitterIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
-         const auto EmitterIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
-         if (EmitterIndicesIn != EmitterIndicesOut) continue;
+         // match indices of the scalar in the loop
+         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
+         const auto scalarIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
+         if (scalarFieldIndicesIn != scalarIndicesOut) 
+            continue;
 
          // Throw out SM Goldstone, it could crash if SM is used.
          // if ( std::is_same<S, ChargedHiggsMultiplet>::type::value || 
                //   std::is_same<S, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
          // {
-            // if ( EmitterIndicesIn[0] == 0 )
+            // if ( scalarFieldIndicesIn[0] == 0 )
                //  continue;
          // }
 
          const auto vertexIn = VertexFBarFjSBar::evaluate(indexIn, context);
          const auto vertexOut = VertexFiBarFS::evaluate(indexOut, context);
 
-         auto spectator_indices = default_indices_for_spectator<V>();
-         const auto indexEmit = concatenate( EmitterIndicesIn, spectator_indices, EmitterIndicesIn );
+         const auto indexEmit = concatenate(scalarFieldIndicesIn, scalarFieldIndicesIn, spectator_indices);
          const auto vertexEmit = VertexSBarSVBar::evaluate(indexEmit, context);
 
-         const auto EmitterMass = context.mass<S>(EmitterIndicesIn);
-         const auto exchangeFieldMass = context.mass<F>(exchangeFieldIndicesIn);
-         const auto x = pow(exchangeFieldMass/EmitterMass, 2);
+         const auto mS = context.mass<S>(scalarFieldIndicesIn);
+         const auto mF = context.mass<F>(fermionFieldIndicesIn);
+         const auto x = pow(mF/mS, 2);
 
-         std::complex<double> EmitterCharge (vertexEmit.value(1,0));
+         std::complex<double> vector_boson_coupling {vertexEmit.value(1,0)};
+         std::cout << "S: " << vector_boson_coupling << '\n';
 
-         // eq. 15 of hep-ph/9510309
+         // eq. 15 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A1L =
-            1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionA(x);
-         // eq. 16 of hep-ph/9510309
+            - 1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionA(x);
+         // eq. 16 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A2L = 
-            vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
-            + vertexOut.left()* vertexIn.left() * exchangeFieldMass/mj * OneLoopFunctionC(x);
+            - vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
+            - vertexOut.left()* vertexIn.left() * mF/mj * OneLoopFunctionC(x);
 
-         // eq. 15 & 16 of hep-ph/9510309 after replacement L <-> R
+         // eq. 15 & 16 of hep-ph/9510309 after replacement L <-> R (possibly with different sign)
          const std::complex<double> A1R = 
-            1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionA(x);
+            - 1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionA(x);
          const std::complex<double> A2R = 
-            vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
-            + vertexOut.right()* vertexIn.right() * exchangeFieldMass/mj * OneLoopFunctionC(x);
+            - vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
+            - vertexOut.right()* vertexIn.right() * mF/mj * OneLoopFunctionC(x);
 
-         const std::complex<double> massFactor = pow(EmitterMass,-2);
+         const std::complex<double> massFactor = pow(mS,-2);
 
-         res -= oneOver32PiSquared * EmitterCharge * massFactor 
+         res += oneOver32PiSquared * vector_boson_coupling * massFactor 
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
@@ -325,27 +328,27 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
       for (const auto& indexOut: index_range<VertexFiBarFS>()) {
 
          // cycle if generations of external fermions are different then requested   
-         const auto edmFieldIndicesIn = VertexFBarFjSBar::template field_indices<1>(indexIn);
-         const auto edmFieldIndicesOut = VertexFiBarFS::template field_indices<0>(indexOut);
-         if (edmFieldIndicesIn != indices_in || edmFieldIndicesOut != indices_out)
+         const auto jFieldIndices = VertexFBarFjSBar::template field_indices<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFS::template field_indices<0>(indexOut);
+         if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
          // match indices of the exchange field
-         const auto exchangeFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
-         const auto exchangeFieldIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
-         if (exchangeFieldIndicesIn != exchangeFieldIndicesOut )
+         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
+         if (fermionFieldIndicesIn != fermionFieldIndicesOut )
             continue;
 
-         const auto EmitterIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
-         const auto EmitterIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
-         if (EmitterIndicesIn != EmitterIndicesOut) 
+         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
+         const auto scalarIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
+         if (scalarFieldIndicesIn != scalarIndicesOut) 
             continue;
 
          // Throw out SM Goldstone, it could crash if SM is used.
          if ( std::is_same<S, ChargedHiggsMultiplet>::type::value || 
                  std::is_same<S, typename ChargedHiggsMultiplet::lorentz_conjugate>::type::value )
          {
-            if ( exchangeFieldIndicesIn[0] == 0 )
+            if ( fermionFieldIndicesIn[0] == 0 )
                 continue;
          }
 
@@ -353,32 +356,33 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
          const auto vertexOut = VertexFiBarFS::evaluate(indexOut, context);
          
          auto spectator_indices = default_indices_for_spectator<V>();
-         const auto indexEmit = concatenate(EmitterIndicesIn , EmitterIndicesIn, spectator_indices);
+         const auto indexEmit = concatenate(scalarFieldIndicesIn , scalarFieldIndicesIn, spectator_indices);
          const auto vertexEmit = VertexFBarFVBar::evaluate(indexEmit, context);
 
-         const auto EmitterMass = context.mass<F>(EmitterIndicesIn);
-         const auto exchangeFieldMass = context.mass<S>(exchangeFieldIndicesIn);
-         const auto x = pow(EmitterMass/exchangeFieldMass, 2);
+         const auto mF = context.mass<F>(scalarFieldIndicesIn);
+         const auto mS = context.mass<S>(fermionFieldIndicesIn);
+         const auto x = pow(mF/mS, 2);
 
-         std::complex<double> EmitterCharge (vertexEmit.left());
+         std::complex<double> vector_boson_coupling {vertexEmit.left()};
+         std::cout << "F: " << vector_boson_coupling << '\n';
 
-         // eq. 18 of hep-ph/9510309
+         // eq. 18 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A1L =
-            1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionD(x);
-         // eq. 19 of hep-ph/9510309
+            - 1./18. * vertexOut.right() * vertexIn.left() * OneLoopFunctionD(x);
+         // eq. 19 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A2L = 
-            vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
-            + vertexOut.left()* vertexIn.left() * EmitterMass/mj * OneLoopFunctionF(x);
+            - vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
+            - vertexOut.left()* vertexIn.left() * mF/mj * OneLoopFunctionF(x);
 
-         // eq. 18 & 18 of hep-ph/9510309 after replacement L <-> R
+         // eq. 18 & 18 of hep-ph/9510309 after replacement L <-> R (possibly with different sign)
          const std::complex<double> A1R = 
-            1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionD(x);
+            - 1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionD(x);
          const std::complex<double> A2R = 
-            vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
-            + vertexOut.right()* vertexIn.right() * EmitterMass/mj * OneLoopFunctionF(x);
-         const std::complex<double> massFactor = pow(exchangeFieldMass,-2);
+            - vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
+            - vertexOut.right()* vertexIn.right() * mF/mj * OneLoopFunctionF(x);
+         const std::complex<double> massFactor = pow(mS,-2);
 
-         res -= oneOver32PiSquared * EmitterCharge * massFactor 
+         res += oneOver32PiSquared * vector_boson_coupling * massFactor 
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
@@ -386,6 +390,7 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
    return res;
 }
 
+/*
 template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFV<Fj, Fi, V, F, S>::value(
    const typename field_indices<Fj>::type& indices_in, 
@@ -482,4 +487,6 @@ std::valarray<std::complex<double>> FFV<Fj, Fi, V, F, S>::value(
    }
    return res;
 }
+*/
+
 } // anonymous namespace

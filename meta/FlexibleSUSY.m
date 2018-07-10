@@ -1928,26 +1928,36 @@ WriteEDMClass[edmFields_List,files_List] :=
 
 (* Write the FFV c++ files *)
 WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
-  Module[{
-          interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
+   Module[{interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
 
-     insertionsAndVertices = (f @@ #)& /@ leptonPairs;
+      Print["heh?"];
+      insertionsAndVertices = (f @@ #)& /@ leptonPairs;
+      Print[insertionsAndVertices];
 
-     {interfacePrototypes, interfaceDefinitions} =
+      {interfacePrototypes, interfaceDefinitions} =
         StringJoin /@ Transpose[
-           FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair[
-           #[[1]], #[[2,1]]]& /@ Transpose[{leptonPairs, insertionsAndVertices}]
+           (FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@
+               {#[[1]], {#[[1]], #[[2, 1]]} & /@ Transpose[#[[2]]]})& /@
+                   Transpose[{leptonPairs, insertionsAndVertices}]
         ];
 
-     WriteOut`ReplaceInFiles[files,
-        {"@FFVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
-           "@FFVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
-           "@FFVFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+      WriteOut`ReplaceInFiles[files,
+         {"@FFVFormFactors_InterfacePrototypes@"    -> interfacePrototypes,
+           "@FFVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
+           "@FFVFormFactors_ChargedHiggsMultiplet@" -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
            Sequence @@ GeneralReplacementRules[]
-        }];
+         }
+      ];
 
-     Flatten[Transpose[insertionsAndVertices][[2]],2]
-  ]
+      Print[
+      Flatten[
+         Drop[Transpose[Drop[Transpose[insertionsAndVertices], 1][[1, 1]]], 1], 2
+      ]];
+
+      Flatten[
+         Drop[Transpose[Flatten[Drop[Transpose[insertionsAndVertices], 1][[1]],1]], 1], 2
+      ]
+   ];
 
 WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
    Module[{graphs,diagrams,vertices,
@@ -1956,10 +1966,18 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
       insertionsAndVertices = (f @@ #)& /@ leptonPairs;
 
       {interfacePrototypes, interfaceDefinitions} =
+          StringJoin /@ Transpose[
+             (FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@
+                 {#[[1]], {#[[1]], #[[2, 1]]} & /@ Transpose[#[[2]]]})& /@
+                 Transpose[{leptonPairs, insertionsAndVertices}]
+          ];
+      (*
+      {interfacePrototypes, interfaceDefinitions} =
          StringJoin /@ Transpose[
             FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[
                #[[1]], #[[2,1]]]& /@ Transpose[{leptonPairs, insertionsAndVertices}]
          ];
+         *)
 
       WriteOut`ReplaceInFiles[files,
                             {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
@@ -1990,8 +2008,11 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
 
-      Flatten[Transpose[insertionsAndVertices][[2]],2]
-  ]
+      (*Flatten[Transpose[insertionsAndVertices][[2]],2]*)
+      Flatten[
+         Drop[Transpose[Drop[Transpose[insertionsAndVertices], 1][[1, 1]]], 1], 2
+      ]
+  ];
 
 (* Write c++ files for the FFV decay *)
 WriteMuEGammaClass[leptonPairs_List, files_List] :=
@@ -2011,7 +2032,7 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
        "@MuEGamma_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
        Sequence @@ GeneralReplacementRules[]}
     ];
-  ]
+  ];
 
 (* Write c++ files for the F -> F conversion in nucleus *)
 (* leptonPairs is a list of lists, sth like {{Fe[2], Fe[1], Au}, {Fe[2], Fe[1], Al}} etc *)

@@ -23,7 +23,9 @@ Limitations:
 1.  We asumme that there are only 3-particle vertices.
 *)
 
-BeginPackage["ColorMathInterface`", {"SARAH`", "TreeMasses`", "ColorMath`"}];
+BeginPackage["ColorMathInterface`",
+  {"SARAH`", "TreeMasses`", "ColorMath`"}
+];
 
 CalculateColorFactor::usage = "";
    
