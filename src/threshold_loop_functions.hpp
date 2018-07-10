@@ -21,6 +21,7 @@
 
 #define TCF(n) threshold_loop_functions::F ## n
 #define TCf(n) threshold_loop_functions::f ## n
+#define TCfth(n) threshold_loop_functions::fth ## n
 #define TCf0 threshold_loop_functions::f
 #define TCg0 threshold_loop_functions::g
 #define TCIabc threshold_loop_functions::Iabc
@@ -71,6 +72,11 @@ double f5(double, double) TCFATTR;
 double f6(double, double) TCFATTR;
 double f7(double, double) TCFATTR;
 double f8(double, double) TCFATTR;
+
+// 2-loop threshold function fth[y] from MhEFT-1.1
+double fth1(double) TCFATTR;
+double fth2(double) TCFATTR;
+double fth3(double) TCFATTR;
 
 // first derivatives
 

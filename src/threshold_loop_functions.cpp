@@ -1055,6 +1055,67 @@ double f8(double r1, double r2) noexcept
    return 1.5 * result;
 }
 
+double fth1(double y) noexcept
+{
+   using std::log;
+
+   if (is_zero(y))
+      return 0.;
+
+   if (is_equal(std::abs(y), 1.))
+      return -1.;
+
+   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+      const double y2 = sqr(y);
+
+      return y2*log(y2) / (1. - y2);
+   }
+
+   return 0.;
+}
+
+double fth2(double y) noexcept
+{
+   using std::log;
+
+   if (is_zero(y))
+      return 0.;
+
+   if (is_equal(std::abs(y), 1.))
+      return 0.5;
+
+   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+      const double y2 = sqr(y);
+
+      return (1. + y2*log(y2) / (1. - y2)) / (1 - y2);
+   }
+
+   return 0.;
+}
+
+double fth3(double y) noexcept
+{
+   using std::log;
+   const double z2 = sqr(Pi) / 6.;
+
+   if (is_zero(y))
+      return z2;
+
+   if (is_equal(std::abs(y), 1.))
+      return -9./4.;
+
+   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+      const double y2 = sqr(y);
+      const double y4 = sqr(y2);
+
+      return (-1. + 2*y2 + 2*y4)
+         *(-z2 - y2*log(y2) + log(y2)*log(1. - y2) + gm2calc::dilog(y2))
+         / sqr(1 - y2);
+   }
+
+   return 0.;
+}
+
 /// First derivative of F1
 double D1F1(double x) noexcept
 {
