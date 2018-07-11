@@ -1467,10 +1467,10 @@ try {
 #else
       if (ren_scheme == 1) {
          // calculate shift DR' -> MDR'
-         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToMDRbarPrimeShift();
       } else if (ren_scheme == 1) {
          // calculate shift DR' -> H3m
-         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToH3mShift();
       }
 #endif
    }
@@ -1493,10 +1493,10 @@ try {
 #else
       if (ren_scheme == 1) {
          // calculate shift DR' -> MDR'
-         self_energy_3l += - hier.getDRbarPrimeToMDRbarPrimeShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToMDRbarPrimeShift();
       } else if (ren_scheme == 1) {
          // calculate shift DR' -> H3m
-         self_energy_3l += - hier.getDRbarPrimeToH3mShift();
+         self_energy_3l += - hier.getDMhDRbarPrimeToH3mShift();
       }
 #endif
    }
@@ -1505,6 +1505,10 @@ try {
    VERBOSE_MSG(pars);
    throw HimalayaError(e.what());
 }
+#else // ENABLE_HIMALAYA
+throw HimalayaError(\"The 3-loop corrections to Mh require Himalaya 1.0 \"
+                    \"(or higher), but FlexibleSUSY has not been \"
+                    \"configured with Himalaya!\");
 #endif // ENABLE_HIMALAYA
 
 return self_energy_3l;"

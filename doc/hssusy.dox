@@ -17,12 +17,14 @@ __High scale__
 In HSSUSY, the `HighScale` variable is set to the SUSY scale,
 \f$M_{\text{SUSY}}\f$.  At this scale the quartic Higgs coupling,
 \f$\lambda(M_\text{SUSY})\f$, is predicted from the matching to the
-MSSM using the full 1-loop and dominant 2-loop threshold corrections
-of \f$O((\alpha_t + \alpha_b)\alpha_s + (\alpha_t + \alpha_b)^2 +
-\alpha_b\alpha_\tau + \alpha_\tau^2)\f$ from [<a
+MSSM using the full 1-loop and dominant 2- and 3-loop threshold
+corrections of \f$O((\alpha_t + \alpha_b)\alpha_s + (\alpha_t +
+\alpha_b)^2 + \alpha_b\alpha_\tau + \alpha_\tau^2 +
+\alpha_t\alpha_s^2)\f$ from [<a
 href="https://arxiv.org/abs/1407.4081">arXiv:1407.4081</a>, <a
 href="https://arxiv.org/abs/1504.05200">arXiv:1504.05200</a>, <a
-href="https://arxiv.org/abs/1703.08166">arXiv:1703.08166</a>].
+href="https://arxiv.org/abs/1703.08166">arXiv:1703.08166</a>, <a
+href="https://arxiv.org/abs/1807.XXXX">arXiv:1807.XXXX</a>].
 
 The 3- and partial 4-loop renormalization group equations of
 [<a href="https://arxiv.org/abs/1303.4364">arXiv:1303.4364</a>,
@@ -134,7 +136,7 @@ SUSY uncertainty:
 
  Parameter                             | Description                                                                                   | Possible values | Recommended value            | SLHA block/field | Mathematica symbol
 ---------------------------------------|-----------------------------------------------------------------------------------------------|-----------------|------------------------------|------------------|--------------------
- \f$n\f$                               | loop order for \f$\lambda^{(n)}(M_{\text{SUSY}})\f$                                           | 0, 1, 2         | 2                            | `EXTPAR[100]`    | `LambdaLoopOrder`
+ \f$n\f$                               | loop order for \f$\lambda^{(n)}(M_{\text{SUSY}})\f$                                           | 0, 1, 2         | 3                            | `EXTPAR[100]`    | `LambdaLoopOrder`
  \f$\Delta_{\alpha_t\alpha_s}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t\alpha_s)\f$ | 0, 1            | 1                            | `EXTPAR[101]`    | `TwoLoopAtAs`
  \f$\Delta_{\alpha_b\alpha_s}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_b\alpha_s)\f$ | 0, 1            | 1                            | `EXTPAR[102]`    | `TwoLoopAbAs`
  \f$\Delta_{\alpha_t\alpha_b}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t\alpha_b)\f$ | 0, 1            | 1                            | `EXTPAR[103]`    | `TwoLoopAtAb`
@@ -142,8 +144,10 @@ SUSY uncertainty:
  \f$\Delta_{\alpha_t\alpha_t}\f$       | disable/enable 2-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t^2)\f$       | 0, 1            | 1                            | `EXTPAR[105]`    | `TwoLoopAtAt`
  \f$\Delta_{\text{EFT}}\f$             | disable/enable corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(v^2/M_{\text{SUSY}}^2)\f$   | 0, 1            | 0                            | `EXTPAR[200]`    | `DeltaEFT`
  \f$\Delta_{y_t,g_3}\f$                | disable/enable 3-loop corrections from re-parametrization of \f$\lambda(M_{\text{SUSY}})\f$ in terms of \f$y_t^{\text{MSSM}}\f$, \f$g_3^{\text{MSSM}}\f$ | 0, 1            | 0                 | `EXTPAR[201]`    | `DeltaYt`
- \f$\Delta_{\text{OS}}\f$              | disable/enable conversion of stop masses to on-shell scheme                                   | 0, 1            | 0 (= \f$\overline{\text{DR}}\f$                  )       | `EXTPAR[202]`    | `DeltaOS`
- \f$Q_\text{match}\f$                  | scale at which \f$\lambda(Q_\text{match})\f$ is calculated                                    | any real value  | 0 (= \f$M_{\text{SUSY}})\f$  | `EXTPAR[203]`    | `Qmatch`
+ \f$\Delta_{\text{OS}}\f$              | disable/enable conversion of stop masses to on-shell scheme                                   | 0, 1            | 0 (= \f$\overline{\text{DR}}\f$) | `EXTPAR[202]` | `DeltaOS`
+ \f$Q_\text{match}\f$                  | scale at which \f$\lambda(Q_\text{match})\f$ is calculated                                    | any real value  | 0 (= \f$M_{\text{SUSY}}\f$)  | `EXTPAR[203]`    | `Qmatch`
+ \f$\delta(\Delta\lambda^{3L})\f$      | add uncertainty \f$\delta(\Delta\lambda^{3L})\f$ to \f$\Delta\lambda^{3L}\f$ from Himalaya    | -1, 0, 1        | 0 (= uncertainty not added)  | `EXTPAR[204]`    | `DeltaLambda3L`
+ \f$\Delta_{\alpha_t\alpha_s^2}\f$     | disable/enable 3-loop corrections to \f$\lambda(M_{\text{SUSY}})\f$ \f$O(\alpha_t\alpha_s^2)\f$ from Himalaya | 0, 1            | 1                            | `EXTPAR[205]`    | `ThreeLoopAtAsAs`
 
 \subsection hssusy_running Running HSSUSY
 

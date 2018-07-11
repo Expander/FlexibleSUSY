@@ -1921,6 +1921,11 @@ int main() {
 
     result "ok (version ${HIMALAYA_VERSION})"
     logmsg "   Himalaya version found: ${HIMALAYA_VERSION}"
+
+    version_at_least "$HIMALAYA_VERSION" "2.0.0" || {
+        message "Warning: An old version of Himalaya has been detected ($HIMALAYA_VERSION)."
+        message "   Please consider upgrading to version 2.0.0 (or higher)."
+    }
 }
 
 #_____________________________________________________________________
