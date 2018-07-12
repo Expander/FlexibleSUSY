@@ -24,7 +24,7 @@ Limitations:
 *)
 
 BeginPackage["ColorMathInterface`",
-  {"SARAH`", "TreeMasses`", "ColorMath`"}
+   {"SARAH`", "TreeMasses`", "ColorMath`"}
 ];
 
 CalculateColorFactor::usage = "";

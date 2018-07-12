@@ -1927,49 +1927,47 @@ WriteEDMClass[edmFields_List,files_List] :=
   ]
 
 (* Write the FFV c++ files *)
-WriteFFVFormFactorsClass[leptonPairs_List, files_List] :=
-   Module[{interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
+WriteFFVFormFactorsClass[extParticles_List, files_List] :=
+   Module[{interfacePrototypes, interfaceDefinitions, insertionsAndVertices},
 
-      Print["heh?"];
-      insertionsAndVertices = (f @@ #)& /@ leptonPairs;
-      Print[insertionsAndVertices];
+      (* list of following lists:
+         {extF1, extF2, extF3,
+            {{{
+      *)
+      insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
+            {extParticles, f @@@  extParticles}
+         ];
 
       {interfacePrototypes, interfaceDefinitions} =
-        StringJoin /@ Transpose[
-           (FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@
-               {#[[1]], {#[[1]], #[[2, 1]]} & /@ Transpose[#[[2]]]})& /@
-                   Transpose[{leptonPairs, insertionsAndVertices}]
-        ];
+         StringJoin /@ Transpose[
+            FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
+               insertionsAndVertices
+         ];
 
       WriteOut`ReplaceInFiles[files,
-         {"@FFVFormFactors_InterfacePrototypes@"    -> interfacePrototypes,
-           "@FFVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
-           "@FFVFormFactors_ChargedHiggsMultiplet@" -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
-           Sequence @@ GeneralReplacementRules[]
-         }
+         {"@FFVFormFactors_InterfacePrototypes@"   -> interfacePrototypes,
+          "@FFVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
+          "@FFVFormFactors_ChargedHiggsMultiplet@" -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+          Sequence @@ GeneralReplacementRules[]}
       ];
 
-      Print[
       Flatten[
-         Drop[Transpose[Drop[Transpose[insertionsAndVertices], 1][[1, 1]]], 1], 2
-      ]];
-
-      Flatten[
-         Drop[Transpose[Flatten[Drop[Transpose[insertionsAndVertices], 1][[1]],1]], 1], 2
+         Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
       ]
    ];
 
-WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
+WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
    Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
 
-      insertionsAndVertices = (f @@ #)& /@ leptonPairs;
+      insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
+         {extParticles, f @@@  extParticles}
+      ];
 
       {interfacePrototypes, interfaceDefinitions} =
           StringJoin /@ Transpose[
-             (FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@
-                 {#[[1]], {#[[1]], #[[2, 1]]} & /@ Transpose[#[[2]]]})& /@
-                 Transpose[{leptonPairs, insertionsAndVertices}]
+             FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
+                 insertionsAndVertices
           ];
       (*
       {interfacePrototypes, interfaceDefinitions} =
@@ -2009,8 +2007,11 @@ WriteFFMassiveVFormFactorsClass[leptonPairs_List, files_List] :=
                             }];
 
       (*Flatten[Transpose[insertionsAndVertices][[2]],2]*)
+      (*Flatten[*)
+         (*Drop[Transpose[Drop[Transpose[insertionsAndVertices], 1][[1, 1]]], 1], 2*)
+      (*]*)
       Flatten[
-         Drop[Transpose[Drop[Transpose[insertionsAndVertices], 1][[1, 1]]], 1], 2
+         Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
       ]
   ];
 

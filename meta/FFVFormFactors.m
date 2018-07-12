@@ -75,16 +75,14 @@ IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagr
     Return[False];
   ]
 
-FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, gTaggedDiagrams_List] :=
+FFVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spectator_, gTaggedDiagrams_List] :=
    Module[
       {prototype, definition, numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
          numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
          numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]
       },
 
-     Print[inFermion];
-     Print[gTaggedDiagrams];
-
+      Print["gTagged", gTaggedDiagrams];
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
             "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
@@ -132,15 +130,30 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spe
                   StringJoin[
                     If[spectator === SARAH`Photon,
                       If[IsElectricallyCharged[#[[1,2]]],
-                    ("val += std::complex<double> {" <> (ToString @ N[#[[2]], 16]) <> "} * FFVEmitterS<" <>
+                    ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFVEmitterS<" <>
                      StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                      ">::value(indices1, indices2, context);\n"), ""] <>
                           If[IsElectricallyCharged[#[[1,1]]],
-                            ("val += std::complex<double> {" <> (ToString @ N[#[[2]], 16]) <> "} * FFVEmitterF<" <>
+                            ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFVEmitterF<" <>
                                 StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
-                                ">::value(indices1, indices2, context);\n"), ""]
+                                ">::value(indices1, indices2, context);\n"), ""],
+                       ""
                       ]& /@ gTaggedDiagrams
                   ] <> "\n" <>
+
+                   StringJoin[
+                      If[spectator === SARAH`Gluon,
+                         If[IsElectricallyCharged[#[[1,2]]],
+                            ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFVEmitterS<" <>
+                                StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
+                                ">::value(indices1, indices2, context);\n"), ""] <>
+                             If[IsElectricallyCharged[#[[1,1]]],
+                                ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFVEmitterF<" <>
+                                    StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
+                                    ">::value(indices1, indices2, context);\n"), ""],
+                         ""
+                      ]& /@ gTaggedDiagrams
+                   ] <> "\n" <>
 
                "return val;"
             ] <> "\n}\n\n";

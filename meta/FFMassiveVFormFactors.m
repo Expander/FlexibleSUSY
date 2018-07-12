@@ -34,7 +34,7 @@ f::usage="";
 
 Begin["Private`"];
 
-FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator_}, loopParticles_List] :=
+FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spectator_, loopParticles_List] :=
     Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
@@ -84,7 +84,8 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermio
 
                "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
 
-               StringJoin[("val += std::complex<double> {" <> (ToString @ N[#[[2]], 16]) <> "} * FFMassiveVVertexCorrectionFS<" <>
+               StringJoin[
+                  ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFMassiveVVertexCorrectionFS<" <>
                    StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                    ">::value(indices1, indices2, context);\n") & /@ loopParticles
                ] <> "\n" <>
@@ -132,28 +133,26 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             && vertexNonZero[FiBarFS]
             && (vertexNonZero[SBarSVBar] || vertexNonZero[FBarFVBar]),
         {1, {v1, v2, v3, v4}},
-          {}
+        {}
       ]
    ];
 
 f[inFermion_, outFermion_, spectator_] :=
-    Module[{scalars, fermions, internalParticles = {}, temp, vertices = {}},
+   Module[{scalars, fermions, internalParticles = {}, temp},
 
-        scalars = getParticlesOfType[TreeMasses`IsScalar];
-        fermions = getParticlesOfType[TreeMasses`IsFermion];
+      scalars = getParticlesOfType[TreeMasses`IsScalar];
+      fermions = getParticlesOfType[TreeMasses`IsFermion];
 
-  Map[
-      (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
-    If[
-       temp =!= {},
-      AppendTo[internalParticles, #];
-        AppendTo[vertices, temp];
-    ])&,
-    Tuples[{fermions, scalars}]
-  ];
+      Map[
+         (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
+         If[temp =!= {},
+            AppendTo[internalParticles, {#, temp}];
+            ])&,
+         Tuples[{fermions, scalars}]
+      ];
 
-        {internalParticles, vertices}
-    ];
+      internalParticles
+   ];
 
 (* evaluate multiple diagrams *)
 (*
