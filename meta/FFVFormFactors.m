@@ -82,7 +82,6 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spec
          numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]
       },
 
-      Print["gTagged", gTaggedDiagrams];
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[inFermion] <>
             "_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "_form_factors" <>
@@ -158,7 +157,6 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spec
                "return val;"
             ] <> "\n}\n\n";
 
-     Print[definition];
    (*CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, spectator, #[[1]], #[[2]]]& /@ gTaggedDiagrams;*)
 
     {prototype <> ";", definition}
