@@ -173,8 +173,18 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                     ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
                     ", qedqcd" <> ");\n" <>
 
-                "\nconst auto left {A2R*nuclear_form_factors.D + gpLV*nuclear_form_factors.Vp + gnLV*nuclear_form_factors.Vn + gpLS*nuclear_form_factors.Sp + gnLS*nuclear_form_factors.Sn};\n" <>
-                "const auto right {A2L*nuclear_form_factors.D + gpRV*nuclear_form_factors.Vp + gnRV*nuclear_form_factors.Vn + gpRS*nuclear_form_factors.Sp + gnRS*nuclear_form_factors.Sn};\n" <>
+                "\nconst auto left {" <>
+                   "A2R*nuclear_form_factors.D" <>
+                      " + gpLV*nuclear_form_factors.Vp" <>
+                      " + gnLV*nuclear_form_factors.Vn" <>
+                      " + gpLS*nuclear_form_factors.Sp" <>
+                      " + gnLS*nuclear_form_factors.Sn};\n" <>
+                "const auto right {" <>
+                   "A2L*nuclear_form_factors.D" <>
+                      " + gpRV*nuclear_form_factors.Vp" <>
+                      " + gnRV*nuclear_form_factors.Vn" <>
+                      " + gpRS*nuclear_form_factors.Sp" <>
+                      " + gnRS*nuclear_form_factors.Sn};\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
                 "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"

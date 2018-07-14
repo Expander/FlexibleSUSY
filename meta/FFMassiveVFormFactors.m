@@ -26,8 +26,8 @@ BeginPackage["FFMassiveVFormFactors`",
     {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}
 ];
 
-FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair::usage="";
-f::usage="";
+FFMassiveVFormFactorsCreateInterface::usage = "";
+f::usage = "";
 MassiveVIndices::usage = "";
 
 Begin["Private`"];
@@ -45,7 +45,7 @@ MassiveVIndices[V_] :=
       "}\n"
    ];
 
-FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spectator_, loopParticles_List] :=
+FFMassiveVFormFactorsCreateInterface[inFermion_, outFermion_, spectator_, loopParticles_List] :=
     Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],

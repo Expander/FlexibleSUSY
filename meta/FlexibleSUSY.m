@@ -1974,7 +1974,7 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
 
       {interfacePrototypes, interfaceDefinitions} =
           StringJoin /@ Transpose[
-             FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
+             FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterface @@@
                  insertionsAndVertices
           ];
 
@@ -1987,16 +1987,13 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
   Module[{graphs,diagrams,vertices,
           interfacePrototypes,interfaceDefinitions},
     graphs = FFVFormFactors`FFVFormFactorsContributingGraphs[];
-    (*Print["graphs: ", graphs];*)
     diagrams = Outer[FFVFormFactors`FFVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
-    Print["diagrams: ", diagrams];
     For[i = 1, i < Length[diagrams[[1,1]]], i++,
     Print["return from CalculateColorFactor: ", CalculateColorFactor[diagrams[[3,1,i]], graphs[[1]]]];
     ];
     
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
-    (*Print["vertices: ", vertices];*)
-    
+
     {interfacePrototypes,interfaceDefinitions} = 
       If[diagrams === {},
          {"",""},
@@ -2039,7 +2036,6 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
       massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions,
       vertices = {}
       },
-
 
       If[leptonPairs === {},
 
