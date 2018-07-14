@@ -1957,8 +1957,16 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
    ];
 
 WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
-   Module[{graphs,diagrams,vertices,
-          interfacePrototypes,interfaceDefinitions, insertionsAndVertices},
+   Module[{interfacePrototypes, interfaceDefinitions, insertionsAndVertices, massiveVIndices},
+
+      massiveVIndices =
+         StringJoin[
+            Riffle[
+               FFMassiveVFormFactors`MassiveVIndices /@
+                  Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&],
+               "\n"
+            ]
+         ];
 
       insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
          {extParticles, f @@@  extParticles}
@@ -1969,18 +1977,11 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
              FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
                  insertionsAndVertices
           ];
-      (*
-      {interfacePrototypes, interfaceDefinitions} =
-         StringJoin /@ Transpose[
-            FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[
-               #[[1]], #[[2,1]]]& /@ Transpose[{leptonPairs, insertionsAndVertices}]
-         ];
-         *)
 
       WriteOut`ReplaceInFiles[files,
-                            {"@FFMassiveVFormFactors_InterfacePrototypes@"       -> interfacePrototypes,
-                             "@FFMassiveVFormFactors_InterfaceDefinitions@"      -> interfaceDefinitions,
-                             "@FFMassiveVFormFactors_ChargedHiggsMultiplet@"     -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+         {"@FFMassiveVFormFactors_InterfacePrototypes@"  -> interfacePrototypes,
+         "@FFMassiveVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
+         "@FFMassiveVFormFactors_VIndices@" ->  massiveVIndices,
                              (*
                              from color math branchn
   Module[{graphs,diagrams,vertices,
@@ -2006,10 +2007,6 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
 
-      (*Flatten[Transpose[insertionsAndVertices][[2]],2]*)
-      (*Flatten[*)
-         (*Drop[Transpose[Drop[Transpose[insertionsAndVertices], 1][[1, 1]]], 1], 2*)
-      (*]*)
       Flatten[
          Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
       ]

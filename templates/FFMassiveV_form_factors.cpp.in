@@ -44,8 +44,6 @@ namespace {
 using namespace cxx_qft::fields;
 
 #include "clooptools.h"
-using ChargedHiggsMultiplet = @FFMassiveVFormFactors_ChargedHiggsMultiplet@;
-static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
 
 /**
  * @class MuEGammaVertexCorrectionFS
@@ -111,38 +109,12 @@ namespace @ModelName@_FFMassiveV_form_factors {
 } // namespace flexiblesusy
 
 namespace {
-/**
-* @defgroup LoopFunctions Loop functions
-* @brief The loop functions necessary for the Fe_I -> Fe_J gamma one-loop calculations.
-*
-* These are OneLoopFunctionA(), OneLoopFunctionB()
-* as specified in arXiv:0808.1819
-*/
 
 template<class V>
 typename field_indices<V>::type
 default_indices_for_spectator( void );
 
-template<>
-typename field_indices<VP>::type
-default_indices_for_spectator<VP>( void )
-{
-  return {};
-}
-
-template<>
-typename field_indices<VZ>::type
-default_indices_for_spectator<VZ>( void )
-{
-  return {};
-}
-
-template<>
-typename field_indices<VG>::type
-default_indices_for_spectator<VG>( void )
-{
-  return {0};
-}
+@FFMassiveVFormFactors_VIndices@
 
 template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFS<Fj, Fi, V, F, S>::value(

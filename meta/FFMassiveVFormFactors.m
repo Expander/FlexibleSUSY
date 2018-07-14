@@ -26,13 +26,24 @@ BeginPackage["FFMassiveVFormFactors`",
     {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}
 ];
 
-FFMassiveVFormFactorsCreateInterfaceFunctionForField::usage="";
-FFMassiveVFormFactorsContributingDiagramsForFieldAndGraph::usage="";
-FFMassiveVFormFactorsContributingGraphs::usage="";
 FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair::usage="";
 f::usage="";
+MassiveVIndices::usage = "";
 
 Begin["Private`"];
+
+MassiveVIndices[V_] :=
+   Module[{name = CXXNameOfField[V], dim = TreeMasses`GetDimension[V]},
+      (* we expect that the gauge group from which massive vector boson come from is broke *)
+      Assert[dim === 1];
+
+      "template<>\n" <>
+      "typename field_indices<" <> name <> ">::type\n" <>
+      "default_indices_for_spectator<" <> name <> "> (void)\n" <>
+      "{\n" <>
+         "return {};\n" <>
+      "}\n"
+   ];
 
 FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spectator_, loopParticles_List] :=
     Module[{prototype, definition,
@@ -89,13 +100,9 @@ FFMassiveVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion
                    StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                    ">::value(indices1, indices2, context);\n") & /@ loopParticles
                ] <> "\n" <>
-               (*
-               StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices1, indices2, context);") & /@
-                     Flatten[CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion, outFermion, spectator},#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"] <> "\n\n" <>
-                                       *)
+
                "return val;"
-                  (*"return width/(width + sm_width(generationIndex1, generationIndex2, model));"*)
+
             ] <> "\n}\n\n";
 
     {prototype <> ";", definition}
@@ -154,11 +161,6 @@ f[inFermion_, outFermion_, spectator_] :=
       internalParticles
    ];
 
-(* evaluate multiple diagrams *)
-(*
-CXXEvaluatorsForLeptonPairAndDiagramsFromGraph[{inFermion_, outFermion_, spectator_}, diagrams_, graph_] :=
-   CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion, outFermion, spectator, #, graph] & /@ diagrams;
-*)
 (* evaluate single diagram *)
 (*
 CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator_, diagram_, vertexCorrectionGraph] := 
@@ -197,32 +199,6 @@ CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator
         colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, exchangeParticle}]
     ];
 *)
-(* loop diagrams
-   naming convention is
-   external = {in, out, spectator}
-   internal = {B, C, A}
-   routine name BCA =
-
-   in     A     out
-   ----------------
-        \    /
-     B   \  /   C
-          \/
-           |
-           spectator
-*)
-(*
-CXXEvaluator[external_List, internal_List] :=
-    "FFMassiveVVertexCorrection" <>
-    "FS" <>    (*StringJoin @@ (ToString /@ (SARAH`getType[#, False, FlexibleSUSY`FSEigenstates]& /@ internal)) <>*)
-    "<" <>
-        StringRiffle[CXXDiagrams`CXXNameOfField /@  Join[external, SortBy[internal, IsScalar]], ", "] <>
-    ">";
-*)
-(* Divide by this factor because we some over color indices. *)
-EvaluateColorStruct[Emitter_, exchangeParticle_] := 
- Switch[getColorRep[Emitter] && getColorRep[exchangeParticle], T && T, 3*3, 
-  T && O, 3*8, O && T, 8*3, O && O, 8*8, _, 1]
 
 (* TODO: add other topologies? *)
 
