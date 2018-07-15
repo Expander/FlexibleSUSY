@@ -186,13 +186,13 @@ CalculateColorFactor[vertex_List,graph_] :=
 
 ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'"
 ColorIndexQ[x_Symbol] :=
-   (Characters@SymbolName[x])[[1]] == "c"
+   (Characters@SymbolName[x])[[1]] == "c";
    
 GenerationIndexQ[x_Symbol] :=
-   (Characters@SymbolName[x])[[1]] == "g"
+   (Characters@SymbolName[x])[[1]] == "g";
 
 LorentzIndexQ[x_Symbol] :=
-   (Characters@SymbolName[x])[[1]] == "l"
+   (Characters@SymbolName[x])[[1]] == "l";
    
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  "
 DropColorles[vertices_List] :=  
@@ -205,7 +205,7 @@ DropColorles[vertices_List] :=
       ]
    ];
    vert
-   ]
+   ];
    
 
 TakeOnlyColor[v__] :=

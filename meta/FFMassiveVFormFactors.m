@@ -23,7 +23,7 @@
 *)
 
 BeginPackage["FFMassiveVFormFactors`",
-    {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}
+    {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "ColorMathInterface`"}
 ];
 
 FFMassiveVFormFactorsCreateInterface::usage = "";
@@ -118,7 +118,7 @@ vertexNonZero[vertex_] :=
 
 (* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
-   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4},
+   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation},
 
       (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
          return an {} *)
@@ -126,23 +126,56 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
          Return[{}]
       ];
 
+      colorIndexAssociation = Association[{}];
+      If[TreeMasses`ColorChargedQ[#],
+            If[TreeMasses`GetDimension[#] === 1,
+               AssociateTo[colorIndexAssociation, # -> {Unique["ct"]}],
+               AssociateTo[colorIndexAssociation, # -> {Unique["gt"], Unique["ct"]}]
+         ]
+      ]& /@
+          {inFermion, CXXDiagrams`LorentzConjugate[outFermion], CXXDiagrams`LorentzConjugate[spectator], F, S};
+
+      (*Assert[ Keys[colorIndexAssociation]]*)
+
+      Print["========================="];
+      (*Print[colorIndexAssociation];*)
+      (*Print[AddIndices[F, colorIndexAssociation], " ", AddIndices[CXXDiagrams`LorentzConjugate[F], colorIndexAssociation]];*)
+
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
-      FBarFjSBar = SARAH`Vertex[v1];
+      FBarFjSBar = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v1];
       v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
-      FiBarFS = SARAH`Vertex[v2];
+      FiBarFS = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v2];
       v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
-      SBarSVBar = SARAH`Vertex[v3];
+      SBarSVBar = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v3];
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
-      FBarFVBar = SARAH`Vertex[v4];
+      FBarFVBar = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v4];
 
       If[
         vertexNonZero[FBarFjSBar]
             && vertexNonZero[FiBarFS]
             && (vertexNonZero[SBarSVBar] || vertexNonZero[FBarFVBar]),
+         Print[ColorMathInterface`DropColorles[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar}]];
+         Print[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar} //
+             ColorMathInterface`DropColorles (*//
+             ColorMathInterface`TakeOnlyColor*)
+         ];
         {1, {v1, v2, v3, v4}},
         {}
       ]
    ];
+
+AddIndices[field_, ass_] :=
+    Module[{temp, kupa},
+    temp = Lookup[ass, field, {}];
+    (*Print[field, " ", temp];*)
+    kupa = If[temp === {},
+       field,
+       field /. {h_Symbol[f_Symbol] :> h[f[temp]],
+          f_Symbol /; (f =!= bar && f =!= conj && f =!= List) :> f[temp]}
+    ];
+       (*Print["kupa", kupa];*)
+       kupa
+    ];
 
 f[inFermion_, outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
