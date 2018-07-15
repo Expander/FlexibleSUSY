@@ -169,10 +169,10 @@ GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
     res[[1]]
   ];
   
-CalculateColorFactor[vertex_List,graph_] :=
+CalculateColorFactor[vertex_List] :=
    Module[{return},
-      return = 
-         RegenerateIndices[vertex,graph] // DropColorles;
+      return =
+         vertex // DropColorles;
       If[ return === {}, Return[1]];
       return = 
          return //  TakeOnlyColor // 
@@ -208,13 +208,13 @@ DropColorles[vertices_List] :=
    ];
    
 
-TakeOnlyColor[v__] :=
+TakeOnlyColor[vvvv__] :=
     Module[{result},
       (* the generic structure of the Vertex "object" is 
          {{ParticleList},{{Coefficient 1, Lorentz 1},{Coefficient 2, Lorentz 2},...} *)
       (* drop ParticleList *) 
       (*Print["start --------------------------------------------------------------------------------------------------------------"];*)
-      result = Drop[#, 1]& /@ v;
+      result = Drop[#, 1]& /@ vvvv;
       (*Print["1: ", result];*)
       result = (Transpose @ Drop[Transpose[#], -1])& /@ result;
       (*Print["2: ", result];*)
@@ -242,9 +242,9 @@ SARAHToColorMathSymbols[s__] := s //.
     *)
 GenerateUniqueColorAssociationsForExternalParticles::notes=
   "Generates unique color indices for external particles"    
-GenerateUniqueColorAssociationsForExternalParticles[v_List]:=
+GenerateUniqueColorAssociationsForExternalParticles[vvvv_List]:=
   Module[{inOutParticles,inOutColoredParticles,a},
-    inOutParticles=TakeWhile[v,(Head[#]=!=List)&];
+    inOutParticles=TakeWhile[vvvv,(Head[#]=!=List)&];
     (* generate a unique color index for every external particle *)
     a = Association[{}];
     inOutParticlesWithColorIndices = 

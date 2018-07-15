@@ -34,7 +34,8 @@ Begin["Private`"];
 
 MassiveVIndices[V_] :=
    Module[{name = CXXNameOfField[V], dim = TreeMasses`GetDimension[V]},
-      (* we expect that the gauge group from which massive vector boson come from is broke *)
+      (* we expect that the gauge group from which massive vector bosons come from is broken,
+         i.e. there is no index *)
       Assert[dim === 1];
 
       "template<>\n" <>
@@ -118,7 +119,7 @@ vertexNonZero[vertex_] :=
 
 (* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
-   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation},
+   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p},
 
       (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
          return an {} *)
@@ -126,40 +127,39 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
          Return[{}]
       ];
 
-      colorIndexAssociation = Association[{}];
-      If[TreeMasses`ColorChargedQ[#],
+      colorIndexAssociation =
+         If[TreeMasses`ColorChargedQ[#],
             If[TreeMasses`GetDimension[#] === 1,
-               AssociateTo[colorIndexAssociation, # -> {Unique["ct"]}],
-               AssociateTo[colorIndexAssociation, # -> {Unique["gt"], Unique["ct"]}]
-         ]
-      ]& /@
-          {inFermion, CXXDiagrams`LorentzConjugate[outFermion], CXXDiagrams`LorentzConjugate[spectator], F, S};
+               #[{Unique["ct"]}],
+               #[{Unique["gt"], Unique["ct"]}]
+            ], #
+         ]& /@ {inFermion, CXXDiagrams`LorentzConjugate[outFermion], CXXDiagrams`LorentzConjugate[spectator], F, S};
 
+      Print[colorIndexAssociation];
       (*Assert[ Keys[colorIndexAssociation]]*)
 
-      Print["========================="];
       (*Print[colorIndexAssociation];*)
       (*Print[AddIndices[F, colorIndexAssociation], " ", AddIndices[CXXDiagrams`LorentzConjugate[F], colorIndexAssociation]];*)
+      p = colorIndexAssociation;
 
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
-      FBarFjSBar = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v1];
+      FBarFjSBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[5]]]}];
       v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
-      FiBarFS = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v2];
+      FiBarFS = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[2]]], p[[4]], p[[5]]}];
       v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
-      SBarSVBar = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v3];
+      SBarSVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[5]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
-      FBarFVBar = SARAH`Vertex[AddIndices[#, colorIndexAssociation]& /@ v4];
+      FBarFVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
 
+      Print[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar}]];
       If[
         vertexNonZero[FBarFjSBar]
             && vertexNonZero[FiBarFS]
             && (vertexNonZero[SBarSVBar] || vertexNonZero[FBarFVBar]),
-         Print[ColorMathInterface`DropColorles[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar}]];
-         Print[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar} //
-             ColorMathInterface`DropColorles (*//
-             ColorMathInterface`TakeOnlyColor*)
-         ];
-        {1, {v1, v2, v3, v4}},
+        {If[!TreeMasses`ColorChargedQ[inFermion] && !TreeMasses`ColorChargedQ[outFermion],
+           CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar}],
+           1
+        ], {v1, v2, v3, v4}},
         {}
       ]
    ];
