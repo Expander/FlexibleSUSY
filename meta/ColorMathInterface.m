@@ -171,16 +171,20 @@ GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   
 CalculateColorFactor[vertex_List] :=
    Module[{return},
+      (*Print["return 0: ", vertex];*)
       return =
          vertex // DropColorles;
+      (*Print["return 1: ", return];*)
       If[ return === {}, Return[1]];
       return = 
          return //  TakeOnlyColor // 
          SARAHToColorMathSymbols;
+      (*Print["return 2: ", return];*)
       return = Times @@ return;
       return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));
       return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];
       (* CSimplify[1] doesn't evaluate *)
+      (*Print["return 3: ", return];*)
       If[ return === 1, 1, Return[CSimplify[return]]];
    ];
 

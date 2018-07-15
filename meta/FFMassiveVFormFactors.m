@@ -117,6 +117,9 @@ getParticlesOfType[t_] :=
 vertexNonZero[vertex_] :=
     Transpose[Drop[vertex, 1]][[1]] =!= {0,0};
 
+vertexNonZeroS[vertex_] :=
+   Transpose[Drop[vertex, 1]][[1]] =!= {0};
+
 (* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
    Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p},
@@ -133,9 +136,8 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
                #[{Unique["ct"]}],
                #[{Unique["gt"], Unique["ct"]}]
             ], #
-         ]& /@ {inFermion, CXXDiagrams`LorentzConjugate[outFermion], CXXDiagrams`LorentzConjugate[spectator], F, S};
+         ]& /@ {inFermion, outFermion, spectator, F, S};
 
-      Print[colorIndexAssociation];
       (*Assert[ Keys[colorIndexAssociation]]*)
 
       (*Print[colorIndexAssociation];*)
@@ -151,19 +153,49 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
       FBarFVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
 
-      Print[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar}]];
-      If[
-        vertexNonZero[FBarFjSBar]
-            && vertexNonZero[FiBarFS]
-            && (vertexNonZero[SBarSVBar] || vertexNonZero[FBarFVBar]),
-        {If[!TreeMasses`ColorChargedQ[inFermion] && !TreeMasses`ColorChargedQ[outFermion],
-           CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar}],
-           1
-        ], {v1, v2, v3, v4}},
-        {}
-      ]
+      (*Print[p];*)
+      (*Print[{vertexNonZero[FBarFjSBar], vertexNonZero[FiBarFS], vertexNonZeroS[SBarSVBar], vertexNonZero[FBarFVBar]}];*)
+
+      If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
+         If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
+            Return[
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}
+            ]
+            (*Print["A: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]];*)
+         ];
+         If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
+            Return[
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}
+            ]
+            (*Print["B: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]*)
+         ];
+         If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
+            Return[{StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}]
+         ],
+         Return[{}];
+      ];
+
+      Return[{}];
    ];
 
+StripSU3Generators[inP_, outP_, spec_, c_] :=
+   Module[{},
+      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
+         Print["110 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {inP, outP})]
+         ];
+         Return[
+            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {inP, outP})];
+         ];
+      ];
+      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
+         Print["111 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", GetFieldColorIndex[spec], " ",
+            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[inP], GetFieldColorIndex[outP]]]
+         ];
+      ];
+      c
+   ];
+
+(*
 AddIndices[field_, ass_] :=
     Module[{temp, kupa},
     temp = Lookup[ass, field, {}];
@@ -176,6 +208,7 @@ AddIndices[field_, ass_] :=
        (*Print["kupa", kupa];*)
        kupa
     ];
+    *)
 
 f[inFermion_, outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
@@ -185,7 +218,7 @@ f[inFermion_, outFermion_, spectator_] :=
 
       Map[
          (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
-         If[temp =!= {},
+         If[temp =!= {},Print[temp];
             AppendTo[internalParticles, {#, temp}];
             ])&,
          Tuples[{fermions, scalars}]
