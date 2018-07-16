@@ -143,6 +143,8 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       (*Print[colorIndexAssociation];*)
       (*Print[AddIndices[F, colorIndexAssociation], " ", AddIndices[CXXDiagrams`LorentzConjugate[F], colorIndexAssociation]];*)
       p = colorIndexAssociation;
+      {p[[7]], p[[6]]} = {p[[6]], p[[7]]};
+      {p[[4]], p[[5]]} = {p[[5]], p[[4]]};
 
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
       FBarFjSBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[6]]]}];
