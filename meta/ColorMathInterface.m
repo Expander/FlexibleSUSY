@@ -235,6 +235,7 @@ TakeOnlyColor[vvvv__] :=
     ];
 
 SARAHToColorMathSymbols[s__] := s //.
+   (*this line is wrong *)SARAH`Delta[colSeq__] :> ColorMath`delta[colSeq] //.
    SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`t[{colIdx1}, colIdx2, colIdx3] //.
    SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
 
