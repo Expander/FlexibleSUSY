@@ -174,6 +174,7 @@ CalculateColorFactor[vertex_List] :=
       return =
          vertex // DropColorles;
       If[ return === {}, Return[1]];
+      Print["Stupid: ", return//TakeOnlyColor, " ", return//TakeOnlyColor//SARAHToColorMathSymbols];
       return = 
          return //  TakeOnlyColor // 
          SARAHToColorMathSymbols;

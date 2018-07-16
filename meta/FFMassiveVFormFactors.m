@@ -136,7 +136,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
                #[{Unique["ct"]}],
                #[{Unique["gt"], Unique["ct"]}]
             ], #
-         ]& /@ {inFermion, outFermion, spectator, F, S};
+         ]& /@ {inFermion, outFermion, spectator, F, F, S, S};
 
       (*Assert[ Keys[colorIndexAssociation]]*)
 
@@ -145,38 +145,38 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       p = colorIndexAssociation;
 
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
-      FBarFjSBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[5]]]}];
+      FBarFjSBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[6]]]}];
       v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
-      FiBarFS = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[2]]], p[[4]], p[[5]]}];
+      FiBarFS = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[2]]], p[[5]], p[[7]]}];
       v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
-      SBarSVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[5]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
+      SBarSVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[7]]], p[[6]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
-      FBarFVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
+      FBarFVBar = SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
 
-      (*Print[p];*)
+      Print[p];
       (*Print[{vertexNonZero[FBarFjSBar], vertexNonZero[FiBarFS], vertexNonZeroS[SBarSVBar], vertexNonZero[FBarFVBar]}];*)
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Print["why null1? ", {{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}];
-            Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}];
+            (*Print["why null1? ", {{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}];*)
+            (*Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}];*)
             Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],0}, {v1, v2, v3}}
             ]
             (*Print["A: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]];*)
          ];
          If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
-            Print["why null1? ", {{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}];
-            Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}];
+            (*Print["why null1? ", {{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}];*)
+            (*Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}];*)
             Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}, {v1,v2,v4}}
             ]
             (*Print["B: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]*)
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["why null1? ", {{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}];
-            Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}];
-            Return[{StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}]
+            (*Print["why null1? ", {{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}];*)
+            (*Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}];*)
+            Return[{StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]], ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}, {v1, v2, v3, v4}}]
          ],
          Return[{}];
       ];
@@ -207,6 +207,18 @@ StripSU3Generators[inP_, outP_, spec_, c_] :=
 (* for SU(3) *)
 ColorN[expr_] :=
    expr /. ColorMath`Nc -> 3 /. ColorMath`TR -> 1/2;
+
+(* connect color indices of field1 and field2 *)
+ConnectColorLines[field1_, field2_] :=
+   Module[{r1 = getColorRep[field1], r2 = getColorRep[field2]},
+      Assert[r1 === r2];
+      Switch[r1,
+         S, 1,
+         T, ColorMath`delta @@ (GetFieldColorIndex /@ {field1, field2}),
+         O, ColorMath`Delta @@ (GetFieldColorIndex /@ {field1, field2}),
+         _, Abort[]
+      ]
+   ];
 (*
 AddIndices[field_, ass_] :=
     Module[{temp, kupa},
