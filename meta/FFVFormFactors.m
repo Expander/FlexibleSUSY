@@ -142,11 +142,11 @@ FFVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spec
 
                    StringJoin[
                       If[spectator === SARAH`Gluon,
-                         If[IsElectricallyCharged[#[[1,2]]],
+                         If[ColorChargedQ[#[[1,2]]],
                             ("val += std::complex<double> {" <> (ToString @ N[ColorN[#[[2,1,1]]], 16]) <> "} * FFVEmitterS<" <>
                                 StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                                 ">::value(indices1, indices2, context);\n"), ""] <>
-                             If[IsElectricallyCharged[#[[1,1]]],
+                             If[ColorChargedQ[#[[1,1]]],
                                 ("val += std::complex<double> {" <> (ToString @ N[ColorN[#[[2,1,2]]], 16]) <> "} * FFVEmitterF<" <>
                                     StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                                     ">::value(indices1, indices2, context);\n"), ""],
