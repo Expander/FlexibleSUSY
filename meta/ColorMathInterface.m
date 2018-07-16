@@ -176,8 +176,7 @@ CalculateColorFactor[vertex_List] :=
       If[ return === {}, Return[1]];
       Print["Stupid: ", return//TakeOnlyColor, " ", return//TakeOnlyColor//SARAHToColorMathSymbols];
       return = 
-         return //  TakeOnlyColor // 
-         SARAHToColorMathSymbols;
+         return //  TakeOnlyColor;
       return = Times @@ return;
       (*return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));*)
       (*return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];*)
@@ -220,9 +219,10 @@ TakeOnlyColor[vvvv__] :=
       result = (Transpose @ Drop[Transpose[#], -1])& /@ result;
       (*Print["2: ", result];*)
       result = result //. 
-         ___ SARAH`Lam[colIdx__] :> SARAH`Lam[colIdx] //. 
-         ___ SARAH`fSU3[colIdx__] :> SARAH`fSU3[colIdx] //. 
-         ___ SARAH`Delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]] :> SARAH`Delta[c1,c2];
+         ___ ColorMath`t[colIdx__] :> ColorMath`t[colIdx] //.
+         ___ ColorMath`f[colIdx__] :> ColorMath`f[colIdx] //.
+         ___ ColorMath`Delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :> ColorMath`Delta[c1,c2] //.
+         ___ ColorMath`delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :> ColorMath`delta[c1,c2];
       (*Print["3: ", result];*)
       result = DeleteCases[#, {0}]& /@ result;
       Assert[CountDistinct[#] === 1]& /@ result;
@@ -234,10 +234,27 @@ TakeOnlyColor[vvvv__] :=
       result
     ];
 
-SARAHToColorMathSymbols[s__] := s //.
-   (*this line is wrong *)SARAH`Delta[colSeq__] :> ColorMath`delta[colSeq] //.
-   SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`t[{colIdx1}, colIdx2, colIdx3] //.
-   SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
+SARAHToColorMathSymbols[vertex_List] :=
+    Module[{result},
+
+   result = vertex //.
+      SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`t[{colIdx1}, colIdx2, colIdx3] //.
+      SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
+
+   (* if the result has Delta, we need to find out if it's adj. or fundamental *)
+    result = result /. SARAH`Delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :>
+        If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === T,
+           ColorMath`delta[c1, c2]
+        ];
+   result = result /. SARAH`Delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :>
+       If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === O,
+          ColorMath`Delta[c1, c2]
+       ];
+
+    Print["weird", result];
+
+       result
+   ];
 
 (* input
     {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
