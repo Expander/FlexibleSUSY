@@ -158,18 +158,24 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
+            Print["why null1? ", {{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}];
+            Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}];
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}, {v1, v2, v3}}
             ]
             (*Print["A: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]];*)
          ];
          If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
+            Print["why null1? ", {{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}];
+            Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}];
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1,v2,v4}}
             ]
             (*Print["B: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]*)
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
+            Print["why null1? ", {{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}];
+            Print["why null2? ", {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}];
             Return[{StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}, {v1, v2, v3, v4}}]
          ],
          Return[{}];
@@ -181,20 +187,26 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         Print["110 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {inP, outP})]
+         Print[
+            "110 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ",
+            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
          ];
          Return[
-            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {inP, outP})];
+            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
          ];
       ];
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
          Print["111 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", GetFieldColorIndex[spec], " ",
-            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[inP], GetFieldColorIndex[outP]]]
+            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
          ];
+         Return[Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]];
       ];
       c
    ];
 
+(* for SU(3) *)
+ColorN[expr_] :=
+   expr /. ColorMath`Nc -> 3 /. ColorMath`TR -> 1/2;
 (*
 AddIndices[field_, ass_] :=
     Module[{temp, kupa},
@@ -218,7 +230,8 @@ f[inFermion_, outFermion_, spectator_] :=
 
       Map[
          (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
-         If[temp =!= {},Print[temp];
+         If[temp =!= {},
+            Print["entry point: ", temp];
             AppendTo[internalParticles, {#, temp}];
             ])&,
          Tuples[{fermions, scalars}]
