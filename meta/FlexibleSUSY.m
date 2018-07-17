@@ -1937,6 +1937,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
       insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
             {extParticles, f @@@  extParticles}
          ];
+      Print[insertionsAndVertices];
 
       {interfacePrototypes, interfaceDefinitions} =
          StringJoin /@ Transpose[
@@ -2004,11 +2005,6 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
 
-      Print[
-      Flatten[
-         Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
-      ]
-      ]
       Flatten[
          Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
       ]

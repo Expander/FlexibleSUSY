@@ -99,7 +99,7 @@ FFMassiveVFormFactorsCreateInterface[inFermion_, outFermion_, spectator_, loopPa
                "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
 
                StringJoin[
-                  ("val += std::complex<double> {" <> (ToString @ N[1 (*#[[2,1]]*), 16]) <> "} * FFMassiveVVertexCorrectionFS<" <>
+                  ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFMassiveVVertexCorrectionFS<" <>
                    StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                    ">::value(indices1, indices2, context);\n") & /@ loopParticles
                ] <> "\n" <>
@@ -120,7 +120,12 @@ vertexNonZero[vertex_] :=
     Transpose[Drop[vertex, 1]][[1]] =!= {0,0};
 
 vertexNonZeroS[vertex_] :=
-   Print[vertex[[1]], " ", Transpose[Drop[vertex, 1]][[1]] =!= {0}];Transpose[Drop[vertex, 1]][[1]] =!= {0};
+    Transpose[Drop[vertex, 1]][[1]] =!= {0};
+
+VertexIsNonZeroQ[vertex_] :=
+   Module[{},
+      True
+   ];
 
 (* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
@@ -152,37 +157,37 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
       FBarFVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
 
-      (*Print[p];*)
-      (*Print[{vertexNonZero[FBarFjSBar], vertexNonZero[FiBarFS], vertexNonZeroS[SBarSVBar], vertexNonZero[FBarFVBar]}];*)
-
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            (*Print["why null1? ", {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}];*)
-            Print["why null2? ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}];
-            Print["why null2? ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]ConnectColorLines[p[[5]], p[[4]]],0}];
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
                   0
                }, {v1, v2, v3}}
             ]
-            (*Print["A: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]];*)
          ];
          If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
-            (*Print["why null1? ", {0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}];*)
-            (*Print["why null2? ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {0, CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}];*)
             Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{0, ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}, {v1,v2,v4}}
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
+                  0,
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
+                  {v1,v2, v4}
+               }
             ]
-            (*Print["B: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]*)
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            (*Print["why null1? ", {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}];*)
-            (*Print["why null2? ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}], CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]}];*)
-            Return[{StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@{ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
-               ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}, {v1, v2, v3, v4}}]
+            Print["kurwa ", p[[1]], " ", p[[2]], " ", p[[3]], " ", p[[4]], " ", p[[6]], " ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
+                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
+               ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}];
+            Return[
+               {
+                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
+                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
+               ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
+                  {v1, v2, v3, v4}}
+            ]
          ],
-         Return[{}];
+         Return[{}]
       ];
 
       Return[{}];
@@ -191,19 +196,14 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         (*Print[*)
-            (*"110 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ",*)
-            (*Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]*)
-         (*];*)
          Return[
             Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
-         ];
+         ]
       ];
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
-         (*Print["111 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", GetFieldColorIndex[spec], " ",*)
-            (*Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]*)
-         (*];*)
-         Return[Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]];
+         Return[
+            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
+         ]
       ];
       c
    ];
@@ -216,7 +216,6 @@ ColorN[expr_] :=
 ConnectColorLines[field1_, field2_] :=
    Module[{r1 = getColorRep[field1], r2 = getColorRep[field2]},
       Assert[r1 === r2];
-      (*Print[r1];*)
       Switch[r1,
          S, 1,
          T, ColorMath`delta @@ (GetFieldColorIndex /@ {field1, field2}),
@@ -224,20 +223,6 @@ ConnectColorLines[field1_, field2_] :=
          _, Abort[]
       ]
    ];
-(*
-AddIndices[field_, ass_] :=
-    Module[{temp, kupa},
-    temp = Lookup[ass, field, {}];
-    (*Print[field, " ", temp];*)
-    kupa = If[temp === {},
-       field,
-       field /. {h_Symbol[f_Symbol] :> h[f[temp]],
-          f_Symbol /; (f =!= bar && f =!= conj && f =!= List) :> f[temp]}
-    ];
-       (*Print["kupa", kupa];*)
-       kupa
-    ];
-    *)
 
 f[inFermion_, outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
@@ -248,53 +233,13 @@ f[inFermion_, outFermion_, spectator_] :=
       Map[
          (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
          If[temp =!= {},
-            Print["entry point: ", temp];
-            AppendTo[internalParticles, {#, temp}];
+            AppendTo[internalParticles, {#, temp}]
             ])&,
          Tuples[{fermions, scalars}]
       ];
 
       internalParticles
    ];
-
-(* evaluate single diagram *)
-(*
-CXXEvaluatorsForLeptonPairAndDiagramFromGraph[inFermion_, outFermion_, spectator_, diagram_, vertexCorrectionGraph] := 
-    Module[{Emitter, exchangeParticle, colorFactor, colorFactorStr},
-
-        Emitter = CXXDiagrams`LorentzConjugate[diagram[[4,3]]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
-        exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
-    
-        colorFactor = getChargeFactor[
- {
-  {
-   Cp[inFermion, exchangeParticle, AntiField[Emitter]],
-   Cp[spectator, Emitter, AntiField[Emitter]],
-   Cp[AntiField[outFermion], AntiField[exchangeParticle], 
-    Emitter]
-   },
-  {
-   External[1] -> inFermion, External[2] -> AntiField[outFermion], 
-   External[3] -> spectator,
-   Internal[1] -> Emitter, Internal[2] -> exchangeParticle, 
-   Internal[3] -> AntiField[Emitter]
-   }
-  },
- {
-  {{inFermion, ex1}, {exchangeParticle, 
-    in2}, {AntiField[Emitter], in1}},
-  {{spectator, ex3}, {Emitter, in3}, {AntiField[Emitter], in1}},
-  {{AntiField[outFermion], ex2}, {AntiField[exchangeParticle], 
-    in2}, {Emitter, in3}}
-  }
- ];
-
-        colorFactorStr = "std::complex<double> " <>
-            ToString @ (N[#, 16]& /@ (ReIm[colorFactor]/EvaluateColorStruct[Emitter, exchangeParticle]));
-
-        colorFactorStr <> " * " <> CXXEvaluator[{inFermion, outFermion, spectator}, {Emitter, exchangeParticle}]
-    ];
-*)
 
 (* TODO: add other topologies? *)
 
