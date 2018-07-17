@@ -171,12 +171,17 @@ GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   
 CalculateColorFactor[vertex_List] :=
    Module[{return},
+      Print["Passed in vertex list to CalculateColorFactor:"];
+      (*Print[vertex];*)
       return =
          vertex // DropColorles;
+      Print["Dropped colorless:"];
+      (*Print[return];*)
       If[ return === {}, Return[1]];
-      Print["Stupid: ", return//TakeOnlyColor, " ", return//TakeOnlyColor//SARAHToColorMathSymbols];
-      return = 
-         return //  TakeOnlyColor;
+      return =
+         TakeOnlyColor@return;
+      Print["Took only color:"];
+      Print[return];
       return = Times @@ return;
       (*return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));*)
       (*return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];*)
@@ -193,17 +198,35 @@ GenerationIndexQ[x_Symbol] :=
 
 LorentzIndexQ[x_Symbol] :=
    (Characters@SymbolName[x])[[1]] == "l";
-   
+
+ColorStructureFreeQ[el_] :=
+   FreeQ[el,
+      Subscript[Superscript[Superscript[ColorMath`t,List[__]],_],_] |
+         Superscript[ColorMath`f,List[__]] |
+         Subscript[Superscript[ColorMath`\[Delta], _], _] |
+         Superscript[ColorMath`\[CapitalDelta],List[_, _]]
+   ];
+
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  "
 DropColorles[vertices_List] :=  
    Module[{vert},
-   vert = DeleteCases[vertices, el_ /; 
-      FreeQ[el, 
-         SARAH`Lam[__] |
-         SARAH`fSU3[__] | 
-         SARAH`Delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]]
-      ]
+   vert = DeleteCases[vertices,
+      el_ /; ColorStructureFreeQ[el]
    ];
+
+   (*Print[*)
+      (*FreeQ[Print[#];#,*)
+         (*Subscript[Superscript[Superscript[ColorMath`t,List[__]],_],_] |*)
+            (*Superscript[ColorMath`f,List[__]] |*)
+         (*ColorMath`t[__] |*)
+            (*ColorMath`f[__] |*)
+            (*ColorMath`Delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]] |*)
+            (*ColorMath`delta[c1_/;ColorIndexQ[c1], c2_/;ColorIndexQ[c2]]*)
+      (*]& /@ vertices];*)
+   (*Print[*)
+      (*ColorStructureFreeQ /@ vertices];*)
+   (*Abort[];*)
+
    vert
    ];
    
@@ -215,15 +238,12 @@ TakeOnlyColor[vvvv__] :=
       (* drop ParticleList *) 
       (*Print["start --------------------------------------------------------------------------------------------------------------"];*)
       result = Drop[#, 1]& /@ vvvv;
-      (*Print["1: ", result];*)
+      Print["1: ", result];
       result = (Transpose @ Drop[Transpose[#], -1])& /@ result;
-      (*Print["2: ", result];*)
+      Print["2: ", result];
       result = result //. 
-         ___ ColorMath`t[colIdx__] :> ColorMath`t[colIdx] //.
-         ___ ColorMath`f[colIdx__] :> ColorMath`f[colIdx] //.
-         ___ ColorMath`Delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :> ColorMath`Delta[c1,c2] //.
-         ___ ColorMath`delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :> ColorMath`delta[c1,c2];
-      (*Print["3: ", result];*)
+         __?ColorStructureFreeQ el_ /; !ColorStructureFreeQ[el] :> el;
+      Print["3: ", result];
       result = DeleteCases[#, {0}]& /@ result;
       Assert[CountDistinct[#] === 1]& /@ result;
       result = DeleteDuplicates[#]& /@ result;
@@ -250,8 +270,6 @@ SARAHToColorMathSymbols[vertex_List] :=
        If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === O,
           ColorMath`Delta[c1, c2]
        ];
-
-    Print["weird", result];
 
        result
    ];
