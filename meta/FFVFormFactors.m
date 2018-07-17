@@ -49,7 +49,7 @@ vertexCorrectionGraph = {{0,0,0,1,0,0},
                          {0,0,1,1,1,0}};
 contributingGraphs = {vertexCorrectionGraph};
 
-FFVFormFactorsContributingGraphs[] := contributingGraphs
+FFVFormFactorsContributingGraphs[] := contributingGraphs;
 
 FFVFormFactorsContributingDiagramsForLeptonPairAndGraph[{inFermion_, outFermion_, spectator_}, graph_] :=
   Module[{diagrams},
@@ -58,7 +58,7 @@ FFVFormFactorsContributingDiagramsForLeptonPairAndGraph[{inFermion_, outFermion_
           3 -> CXXDiagrams`LorentzConjugate[spectator]}];
 
     Select[diagrams,IsDiagramSupported[inFermion,outFermion,spectator,graph,#] &]
- ]
+ ];
 
 IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagram_] :=
   Module[{Emitter,exchangeParticle},
@@ -73,7 +73,7 @@ IsDiagramSupported[inFermion_,outFermion_,spectator_,vertexCorrectionGraph,diagr
        Return[True]];
     
     Return[False];
-  ]
+  ];
 
 FFVFormFactorsCreateInterfaceFunctionForLeptonPair[inFermion_, outFermion_, spectator_, gTaggedDiagrams_List] :=
    Module[

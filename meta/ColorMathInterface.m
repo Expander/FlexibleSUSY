@@ -28,9 +28,11 @@ BeginPackage["ColorMathInterface`",
 ];
 
 CalculateColorFactor::usage = "";
+SARAHToColorMathSymbols::usage = "";
    
-(*Begin["`Private`"];*)
+Begin["`Private`"];
 
+(*
 RegenerateIndices[l_List, graph_]:=
     Module[{keys, extFields, particlesInVertices,
             vertices, vertex, vertex1, vertex2,
@@ -144,6 +146,7 @@ RegenerateIndices[l_List, graph_]:=
         (*];*)
         vertices
    ];
+*)
 
 (*  given a field will return it's indices,
     e.g. Fd[{a,b}] or bar[Fd[{a,b}] or conj[Sd[{a,b}]] will return {a,b} *)
@@ -181,7 +184,7 @@ CalculateColorFactor[vertex_List] :=
       If[ return === 1, 1, Return[CSimplify[return]]];
    ];
 
-ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'"
+ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'";
 ColorIndexQ[x_Symbol] :=
    (Characters@SymbolName[x])[[1]] == "c";
    
@@ -199,7 +202,7 @@ ColorStructureFreeQ[el_] :=
          Superscript[ColorMath`\[CapitalDelta],List[_, _]]
    ];
 
-DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  "
+DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  ";
 DropColorles[vertices_List] :=  
    Module[{vert},
    vert = DeleteCases[vertices,
@@ -249,6 +252,7 @@ SARAHToColorMathSymbols[vertex_List] :=
 (* input
     {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
     *)
+(*
 GenerateUniqueColorAssociationsForExternalParticles::notes=
   "Generates unique color indices for external particles"    
 GenerateUniqueColorAssociationsForExternalParticles[vvvv_List]:=
@@ -263,7 +267,8 @@ inOutParticles
 ];
 a
     ]
+*)
 
-(*End[];*)
+End[];
 
 EndPackage[];
