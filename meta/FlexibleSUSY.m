@@ -3184,7 +3184,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* adapt SARAH`Conj to our needs *)
            (* Clear[Conj]; *)
-           SARAH`Conj[(B_)[b__]] = .;
+           SARAH`Conj[(B_)[b__]] =.;
            SARAH`Conj /: SARAH`Conj[SARAH`Conj[x_]] := x;
            RXi[_] = 1;
            SARAH`Xi = 1;
