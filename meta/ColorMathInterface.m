@@ -171,17 +171,17 @@ GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   
 CalculateColorFactor[vertex_List] :=
    Module[{return},
-      Print["Passed in vertex list to CalculateColorFactor:"];
+      (*Print["Passed in vertex list to CalculateColorFactor:"];*)
       (*Print[vertex];*)
       return =
          vertex // DropColorles;
-      Print["Dropped colorless:"];
+      (*Print["Dropped colorless:"];*)
       (*Print[return];*)
       If[ return === {}, Return[1]];
       return =
          TakeOnlyColor@return;
-      Print["Took only color:"];
-      Print[return];
+      (*Print["Took only color:"];*)
+      (*Print[return];*)
       return = Times @@ return;
       (*return = return //. (x___ SARAH`Delta[col1_, col2_] y___ :> (x y /. col2 -> col1));*)
       (*return = return //. x___ SARAH`Delta[col1_, col2_] y___ :> x y ColorMath`delta[col1, col2];*)
@@ -238,12 +238,12 @@ TakeOnlyColor[vvvv__] :=
       (* drop ParticleList *) 
       (*Print["start --------------------------------------------------------------------------------------------------------------"];*)
       result = Drop[#, 1]& /@ vvvv;
-      Print["1: ", result];
+      (*Print["1: ", result];*)
       result = (Transpose @ Drop[Transpose[#], -1])& /@ result;
-      Print["2: ", result];
+      (*Print["2: ", result];*)
       result = result //. 
          __?ColorStructureFreeQ el_ /; !ColorStructureFreeQ[el] :> el;
-      Print["3: ", result];
+      (*Print["3: ", result];*)
       result = DeleteCases[#, {0}]& /@ result;
       Assert[CountDistinct[#] === 1]& /@ result;
       result = DeleteDuplicates[#]& /@ result;

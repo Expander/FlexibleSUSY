@@ -2004,6 +2004,11 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
                              Sequence @@ GeneralReplacementRules[]
                             }];
 
+      Print[
+      Flatten[
+         Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
+      ]
+      ]
       Flatten[
          Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
       ]
@@ -4176,6 +4181,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
+Print["heh?", fFFMassiveVFormFactorVertices];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 
@@ -4197,7 +4203,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               CreateDirectory[cxxQFTOutputDir]];
 
            WriteCXXDiagramClass[
-             DeleteDuplicates @ Join[edmVertices, aMuonVertices, fFFMasslessVFormFactorVertices, fFFMassiveVFormFactorVertices, conversionVertices], cxxQFTFiles];
+             DeleteDuplicates @ Join[
+                edmVertices, aMuonVertices, fFFMasslessVFormFactorVertices, fFFMassiveVFormFactorVertices, conversionVertices
+             ], cxxQFTFiles
+           ];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];

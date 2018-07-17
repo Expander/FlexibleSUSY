@@ -120,7 +120,7 @@ vertexNonZero[vertex_] :=
     Transpose[Drop[vertex, 1]][[1]] =!= {0,0};
 
 vertexNonZeroS[vertex_] :=
-   Transpose[Drop[vertex, 1]][[1]] =!= {0};
+   Print[vertex[[1]], " ", Transpose[Drop[vertex, 1]][[1]] =!= {0}];Transpose[Drop[vertex, 1]][[1]] =!= {0};
 
 (* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
@@ -152,15 +152,19 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
       FBarFVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
 
-      Print[p];
+      (*Print[p];*)
       (*Print[{vertexNonZero[FBarFjSBar], vertexNonZero[FiBarFS], vertexNonZeroS[SBarSVBar], vertexNonZero[FBarFVBar]}];*)
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Print["why null1? ", {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}];
+            (*Print["why null1? ", {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}];*)
             Print["why null2? ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}],0}];
+            Print["why null2? ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]ConnectColorLines[p[[5]], p[[4]]],0}];
             Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],0}, {v1, v2, v3}}
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
+                  0
+               }, {v1, v2, v3}}
             ]
             (*Print["A: ", CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]];*)
          ];
@@ -187,18 +191,18 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         Print[
-            "110 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ",
-            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
-         ];
+         (*Print[*)
+            (*"110 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ",*)
+            (*Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]*)
+         (*];*)
          Return[
             Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
          ];
       ];
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
-         Print["111 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", GetFieldColorIndex[spec], " ",
-            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
-         ];
+         (*Print["111 ", c, " ", GetFieldColorIndex[inP], " ", GetFieldColorIndex[outP], " ", GetFieldColorIndex[spec], " ",*)
+            (*Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]*)
+         (*];*)
          Return[Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]];
       ];
       c
@@ -212,7 +216,7 @@ ColorN[expr_] :=
 ConnectColorLines[field1_, field2_] :=
    Module[{r1 = getColorRep[field1], r2 = getColorRep[field2]},
       Assert[r1 === r2];
-      Print[r1];
+      (*Print[r1];*)
       Switch[r1,
          S, 1,
          T, ColorMath`delta @@ (GetFieldColorIndex /@ {field1, field2}),
