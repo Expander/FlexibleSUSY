@@ -1928,22 +1928,27 @@ WriteEDMClass[edmFields_List,files_List] :=
 
 (* Write the FFV c++ files *)
 WriteFFVFormFactorsClass[extParticles_List, files_List] :=
-   Module[{interfacePrototypes, interfaceDefinitions, insertionsAndVertices},
+   Module[{interfacePrototypes = "", interfaceDefinitions = "", insertionsAndVertices, vertices = {}},
 
-      (* list of following lists:
-         {extF1, extF2, extF3,
-            {{{
-      *)
-      insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
-            {extParticles, f @@@  extParticles}
-         ];
-      Print[insertionsAndVertices];
+      If[extParticles =!= {},
 
-      {interfacePrototypes, interfaceDefinitions} =
-         StringJoin /@ Transpose[
-            FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
-               insertionsAndVertices
+         (* list of following lists:
+            {extF1, extF2, extF3,
+               {{{
+         *)
+         insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
+               {extParticles, f @@@  extParticles}
+            ];
+
+         {interfacePrototypes, interfaceDefinitions} =
+            StringJoin /@ Transpose[
+               FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
+                  insertionsAndVertices
+            ];
+         vertices = Flatten[
+            Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
          ];
+      ];
 
       WriteOut`ReplaceInFiles[files,
          {"@FFVFormFactors_InterfacePrototypes@"   -> interfacePrototypes,
@@ -1952,62 +1957,46 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
           Sequence @@ GeneralReplacementRules[]}
       ];
 
-      Flatten[
-         Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
-      ]
+      vertices
    ];
 
 WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
-   Module[{interfacePrototypes, interfaceDefinitions, insertionsAndVertices, massiveVIndices},
+   Module[{interfacePrototypes = "", interfaceDefinitions = "", insertionsAndVertices, massiveVIndices = "", vertices = {}},
 
-      massiveVIndices =
-         StringJoin[
-            Riffle[
-               FFMassiveVFormFactors`MassiveVIndices /@
-                  Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&],
-               "\n"
-            ]
+      If[extParticles =!= {},
+
+         massiveVIndices =
+            StringJoin[
+               Riffle[
+                  FFMassiveVFormFactors`MassiveVIndices /@
+                     Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&],
+                  "\n"
+               ]
+            ];
+
+         insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
+            {extParticles, f @@@  extParticles}
          ];
 
-      insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
-         {extParticles, f @@@  extParticles}
-      ];
+         {interfacePrototypes, interfaceDefinitions} =
+             StringJoin /@ Transpose[
+                FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterface @@@
+                    insertionsAndVertices
+            ];
 
-      {interfacePrototypes, interfaceDefinitions} =
-          StringJoin /@ Transpose[
-             FFMassiveVFormFactors`FFMassiveVFormFactorsCreateInterface @@@
-                 insertionsAndVertices
-          ];
+         vertices = Flatten[
+            Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
+         ];
+      ];
 
       WriteOut`ReplaceInFiles[files,
          {"@FFMassiveVFormFactors_InterfacePrototypes@"  -> interfacePrototypes,
-         "@FFMassiveVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
-         "@FFMassiveVFormFactors_VIndices@" ->  massiveVIndices,
-                             (*
-                             from color math branchn
-  Module[{graphs,diagrams,vertices,
-          interfacePrototypes,interfaceDefinitions},
-    graphs = FFVFormFactors`FFVFormFactorsContributingGraphs[];
-    diagrams = Outer[FFVFormFactors`FFVFormFactorsContributingDiagramsForLeptonPairAndGraph,leptonPairs,graphs,1];
-    For[i = 1, i < Length[diagrams[[1,1]]], i++,
-    Print["return from CalculateColorFactor: ", CalculateColorFactor[diagrams[[3,1,i]], graphs[[1]]]];
-    ];
-    
-    vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
+          "@FFMassiveVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
+          "@FFMassiveVFormFactors_VIndices@" ->  massiveVIndices,
+          Sequence @@ GeneralReplacementRules[]}
+      ];
 
-    {interfacePrototypes,interfaceDefinitions} = 
-      If[diagrams === {},
-         {"",""},
-         StringJoin @@@ 
-          (Riffle[#, "\n\n"] & /@ Transpose[FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@@ 
-            Transpose[{leptonPairs,Transpose[{graphs,#}] & /@ diagrams}]])];
-*)
-                             Sequence @@ GeneralReplacementRules[]
-                            }];
-
-      Flatten[
-         Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
-      ]
+      vertices
   ];
 
 (* Write c++ files for the FFV decay *)
@@ -2033,14 +2022,12 @@ WriteMuEGammaClass[leptonPairs_List, files_List] :=
 (* Write c++ files for the F -> F conversion in nucleus *)
 (* leptonPairs is a list of lists, sth like {{Fe[2], Fe[1], Au}, {Fe[2], Fe[1], Al}} etc *)
 WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
-   Module[{interfacePrototypes, interfaceDefinitions,
+   Module[{interfacePrototypes = "", interfaceDefinitions = "",
       massiveNeutralVectorBosons, masslessNeutralVectorBosons, externalFermions,
       vertices = {}
       },
 
-      If[leptonPairs === {},
-
-         {interfacePrototypes, interfaceDefinitions} = {"",""},
+      If[leptonPairs =!= {},
 
          (* additional vertices needed for the calculation *)
          (* coupling of vector bozons to quarks *)
