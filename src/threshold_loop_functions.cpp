@@ -246,28 +246,28 @@ double F8(double x1, double x2) noexcept
    if (is_equal(x1, 0.) && is_equal(x2, 0.))
       return -2.;
 
-   if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
-      return F8_1_1(x1, x2);
+   if (is_equal(std::fabs(x1), 1., 0.01) && is_equal(std::fabs(x2), 1., 0.01))
+      return F8_1_1(std::fabs(x1), std::fabs(x2));
 
-   if (is_equal(x1, 1., 0.01)) {
+   if (is_equal(std::fabs(x1), 1., 0.01)) {
       if (is_equal(x2, 0., 0.01)) {
          return -2.333333333333332 + 5.66666666666667*sqr(x2) +
-            x1*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
+            std::fabs(x1)*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
             sqr(x1)*(-0.33333333333333215 + 1.6666666666666696*sqr(x2));
       }
 
-      return F8_1_x2(x1, x2);
+      return F8_1_x2(std::fabs(x1), x2);
    }
 
-   if (is_equal(x2, 1., 0.01)) {
+   if (is_equal(std::fabs(x2), 1., 0.01)) {
       if (is_equal(x1, 0., 0.01)) {
-         return -2.3333333333333335 + 2.6666666666666665*x2 -
+         return -2.3333333333333335 + 2.6666666666666665*std::fabs(x2) -
             0.3333333333333333*sqr(x2) +
-            sqr(x1)*(5.666666666666667 - 5.333333333333334*x2 +
+            sqr(x1)*(5.666666666666667 - 5.333333333333334*std::fabs(x2) +
                      1.6666666666666667*sqr(x2));
       }
 
-      return F8_1_x2(x2, x1);
+      return F8_1_x2(std::fabs(x2), x1);
    }
 
    if (is_equal(x1, 0., 0.0001))
@@ -276,8 +276,8 @@ double F8(double x1, double x2) noexcept
    if (is_equal(x2, 0., 0.0001))
       return F8_0_x2(x2, x1);
 
-   if (is_equal(x1, x2, 0.00001))
-      return F8_x1_x2(x1, x2);
+   if (is_equal(std::fabs(x1), std::fabs(x2), 0.00001))
+      return F8_x1_x2(std::fabs(x1), std::fabs(x2));
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -365,24 +365,21 @@ static double F9_x1_x2(double x1, double x2) noexcept
 
 double F9(double x1, double x2) noexcept
 {
-   if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
-      return F9_1_1(x1, x2);
+   if (is_equal(std::fabs(x1), 1., 0.01) && is_equal(std::fabs(x2), 1., 0.01))
+      return F9_1_1(std::fabs(x1), std::fabs(x2));
 
-   if (is_equal(x1, -1., 0.01) && is_equal(x2, -1., 0.01))
-     return F9_1_1(-x1, -x2);
-
-   if (is_equal(x1, 1., 0.01)) {
+   if (is_equal(std::fabs(x1), 1., 0.01)) {
       if (is_equal(x2, 0., 0.01))
-         return 2. - 2.*(-1 + x1) + 5./3.*sqr(-1 + x1);
+         return 2. - 2.*(-1 + std::fabs(x1)) + 5./3.*sqr(-1 + std::fabs(x1));
 
-      return F9_1_x2(x1, x2);
+      return F9_1_x2(std::fabs(x1), x2);
    }
 
-   if (is_equal(x2, 1., 0.01)) {
+   if (is_equal(std::fabs(x2), 1., 0.01)) {
       if (is_equal(x1, 0., 0.01))
-         return 2. - 2.*(-1 + x2) + 5./3.*sqr(-1 + x2);
+         return 2. - 2.*(-1 + std::fabs(x2)) + 5./3.*sqr(-1 + std::fabs(x2));
 
-      return F9_1_x2(x2, x1);
+      return F9_1_x2(std::fabs(x2), x1);
    }
 
    if (is_equal(x1, 0., 0.0001))
@@ -391,8 +388,8 @@ double F9(double x1, double x2) noexcept
    if (is_equal(x2, 0., 0.0001))
       return F9_0_x2(x2, x1);
 
-   if (is_equal(x1, x2, 0.00001))
-      return F9_x1_x2(x1, x2);
+   if (is_equal(std::fabs(x1), std::fabs(x2), 0.00001))
+      return F9_x1_x2(std::fabs(x1), std::fabs(x2));
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
