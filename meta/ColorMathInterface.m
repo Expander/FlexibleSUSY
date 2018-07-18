@@ -29,7 +29,8 @@ BeginPackage["ColorMathInterface`",
 
 CalculateColorFactor::usage = "";
 SARAHToColorMathSymbols::usage = "";
-   
+GetFieldColorIndex::usage = "";
+
 Begin["`Private`"];
 
 (*
