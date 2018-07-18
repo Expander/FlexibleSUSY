@@ -182,7 +182,10 @@ CalculateColorFactor[vertex_List] :=
          TakeOnlyColor@return;
       return = Times @@ return;
       (* CSimplify[1] doesn't evaluate *)
-      If[ return === 1, 1, Return[CSimplify[return]]];
+      If[return === 1,
+         1,
+         CSimplify[return]
+      ]
    ];
 
 ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'";
@@ -205,14 +208,10 @@ ColorStructureFreeQ[el_] :=
 
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  ";
 DropColorles[vertices_List] :=  
-   Module[{vert},
-   vert = DeleteCases[vertices,
+   DeleteCases[vertices,
       el_ /; ColorStructureFreeQ[el]
    ];
 
-   vert
-   ];
-   
 
 TakeOnlyColor[vvvv__] :=
     Module[{result},

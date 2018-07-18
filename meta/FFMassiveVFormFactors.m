@@ -176,7 +176,10 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["kurwa ", p[[1]], " ", p[[2]], " ", p[[3]], " ", p[[4]], " ", p[[6]], " ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
+            Print["kurwa1 ", p];
+            Print["kurwa2 ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]]];
+            Print["kurwa3 ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]];
+            Print["kurwa4 ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
                      {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
                ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}];
             Return[
@@ -196,6 +199,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
+         Print["A ", c, "B ", ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})];
          Return[
             Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
          ]
