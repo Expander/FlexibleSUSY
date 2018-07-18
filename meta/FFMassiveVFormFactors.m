@@ -163,7 +163,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
                   0
-               }, {v1, v2, v3}}
+               }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
             ]
          ];
          If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
@@ -171,7 +171,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   0,
                   ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
-                  {v1,v2, v4}
+                  (*{v1,v2, v4}*){v1, v2, v3, v4}
                }
             ]
          ];
