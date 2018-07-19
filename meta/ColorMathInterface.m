@@ -168,7 +168,7 @@ NumberOfVertices[l_List] :=
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res = GetFieldIndices[field];
-    res = Select[res, ColorIndexQ];
+    res = Select[res, IsColorIndex];
     Assert[Length[res]==1];
     res[[1]]
   ];
@@ -188,10 +188,6 @@ CalculateColorFactor[vertex_List] :=
       ]
    ];
 
-ColorIndexQ::notes="Checks if a field index is a color index. Color indices start with 'c'";
-ColorIndexQ[x_Symbol] :=
-   (Characters@SymbolName[x])[[1]] == "c";
-   
 GenerationIndexQ[x_Symbol] :=
    (Characters@SymbolName[x])[[1]] == "g";
 
@@ -237,11 +233,11 @@ SARAHToColorMathSymbols[vertex_List] :=
       SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
 
    (* if the result has Delta, we need to find out if it's adj. or fundamental *)
-    result = result /. SARAH`Delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :>
+    result = result /. SARAH`Delta[c1_?IsColorIndex, c2_?IsColorIndex] :>
         If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === T,
            ColorMath`delta[c1, c2]
         ];
-   result = result /. SARAH`Delta[c1_?ColorIndexQ, c2_?ColorIndexQ] :>
+   result = result /. SARAH`Delta[c1_?IsColorIndex, c2_?IsColorIndex] :>
        If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === O,
           ColorMath`Delta[c1, c2]
        ];

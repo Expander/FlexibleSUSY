@@ -46,6 +46,9 @@ NumberOfFieldIndices::usage="";
 FieldInfo::usage="";
 includeLorentzIndices::usage="";
 LoadVerticesIfNecessary::usage="";
+IsLorentzIndex::usage = "";
+IsColorIndex::usage = "";
+IsGenerationIndex::usage = "";
 
 Begin["`Private`"];
 
