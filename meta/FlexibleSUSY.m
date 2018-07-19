@@ -3224,6 +3224,8 @@ Options[MakeFlexibleSUSY] :=
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             edmVertices, mu2egammaVertices, aMuonVertices, edmFields, leptonPairs,
+            fFFMasslessVFormFactorVertices, conversionVertices, fieldsForFToFMasslessVDecay,
+            fieldsForFToFMassiveVFormFactors, fieldsForFToFConversion, fFFMassiveVFormFactorVertices,
             cxxQFTTemplateDir, cxxQFTOutputDir, cxxQFTFiles,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
