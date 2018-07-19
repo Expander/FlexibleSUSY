@@ -115,7 +115,7 @@ MediumPrecision::usage="";
 HighPrecision::usage="";
 GUTNormalization::usage="Returns GUT normalization of a given coupling";
 
-BETA::usage = "Head for beta functions"
+BETA::usage = "Head for beta functions";
 FSModelName;
 FSOutputDir = ""; (* directory for generated code *)
 FSLesHouchesList;
@@ -1899,7 +1899,7 @@ WriteCXXDiagramClass[vertices_List,files_List] :=
                              "@CXXDiagrams_UnitCharge@"      -> TextFormatting`IndentText[unitCharge],
                              Sequence @@ GeneralReplacementRules[]
                             }];
- ]
+ ];
 
 (* Write the EDM c++ files *)
 WriteEDMClass[edmFields_List,files_List] :=
@@ -1924,7 +1924,7 @@ WriteEDMClass[edmFields_List,files_List] :=
                             }];
     
     vertices
-  ]
+  ];
 
 (* Write the FFV c++ files *)
 WriteFFVFormFactorsClass[extParticles_List, files_List] :=
@@ -3033,7 +3033,7 @@ AddUnfixedParameterInfo[par_, inputPar_, blockList_] :=
           ];
 
 AddUnfixedParameterBlockInfo[unfixedParameters_List, blockList_List] :=
-    AddUnfixedParameterInfo[#[[1]], #[[2]], blockList]& /@ unfixedParameters
+    AddUnfixedParameterInfo[#[[1]], #[[2]], blockList]& /@ unfixedParameters;
 
 FindFixedParameters[] :=
     If[FlexibleSUSY`FlexibleEFTHiggs === True,
