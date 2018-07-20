@@ -28,6 +28,7 @@ BeginPackage["FFMassiveVFormFactors`",
 
 FFMassiveVFormFactorsCreateInterface::usage = "";
 f::usage = "";
+ff::usage = "";
 MassiveVIndices::usage = "";
 
 Begin["Private`"];
@@ -99,7 +100,7 @@ FFMassiveVFormFactorsCreateInterface[inFermion_, outFermion_, spectator_, loopPa
                "std::valarray<std::complex<double>> val {0.0, 0.0};\n\n" <>
 
                StringJoin[
-                  ("val += std::complex<double> {" <> (ToString @ N[#[[2,1]], 16]) <> "} * FFMassiveVVertexCorrectionFS<" <>
+                  ("val += std::complex<double> " <> (ToString @ N[ReIm@ColorN[#[[2,1]]], 16]) <> " * FFMassiveVVertexCorrectionFS<" <>
                    StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                    ">::value(indices1, indices2, context);\n") & /@ loopParticles
                ] <> "\n" <>
@@ -130,6 +131,10 @@ VertexIsNonZeroQ[vertex_] :=
 (* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
    Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p},
+
+      On[Assert];
+      (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
+      Assert[IsMassless[spectator] || !ColorChargedQ[spectator]];
 
       (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
          return an {} *)
@@ -196,6 +201,58 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       Return[{}];
    ];
 
+singleMassiveDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
+   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, FjBarFjVBar, FiBarFiVBar, v1, v2, v3, v4, v5, v6, colorIndexAssociation, p},
+
+      On[Assert];
+      (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
+      Assert[IsMassless[spectator] || !ColorChargedQ[spectator]];
+
+      (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
+         return an {} *)
+      If[TreeMasses`GetElectricCharge[inFermion] =!= Plus @@ (TreeMasses`GetElectricCharge /@ {S,F}),
+         Return[{}]
+      ];
+
+      colorIndexAssociation =
+         If[TreeMasses`ColorChargedQ[#],
+            If[TreeMasses`GetDimension[#] === 1,
+               #[{Unique["ct"]}],
+               #[{Unique["gt"], Unique["ct"]}]
+            ], #
+         ]& /@ {outFermion, F, S, F, S, inFermion, spectator};
+
+      p = colorIndexAssociation;
+      p = {p[[6]], p[[1]], p[[7]], p[[4]], p[[2]], p[[5]], p[[3]]};
+
+      v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
+      FBarFjSBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[6]]]}];
+      v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
+      FiBarFS = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[2]]], p[[5]], p[[7]]}];
+      v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
+      SBarSVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[7]]], p[[6]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
+      v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
+      FBarFVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
+
+      v5 = {CXXDiagrams`LorentzConjugate[inFermion], inFermion, CXXDiagrams`LorentzConjugate[spectator]};
+      FjBarFjVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[inFermion], inFermion, CXXDiagrams`LorentzConjugate[spectator]}];
+
+      v6 = {CXXDiagrams`LorentzConjugate[outFermion], outFermion, CXXDiagrams`LorentzConjugate[spectator]};
+      FiBarFiVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[outFermion], outFermion, CXXDiagrams`LorentzConjugate[spectator]}];
+
+      If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS]
+         && (vertexNonZeroS[SBarSVBar] || vertexNonZero[FBarFVBar] || vertexNonZero[FiBarFiVBar] || vertexNonZero[FjBarFjVBar]),
+            Return[
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]],
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]]
+                  ]
+               , (*{v1, v2, v3}*){v1, v2, v3, v4}}
+            ]
+         ];
+
+      Return[{}];
+   ];
+
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
@@ -239,6 +296,24 @@ f[inFermion_, outFermion_, spectator_] :=
          If[temp =!= {},
             AppendTo[internalParticles, {#, temp}]
             ])&,
+         Tuples[{fermions, scalars}]
+      ];
+
+      internalParticles
+   ];
+
+ff[inFermion_, outFermion_, spectator_] :=
+   Module[{scalars, fermions, internalParticles = {}, temp},
+
+      scalars = getParticlesOfType[TreeMasses`IsScalar];
+      fermions = getParticlesOfType[TreeMasses`IsFermion];
+
+      Map[
+         (temp = singleMassiveDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
+         If[temp =!= {},
+            Print[temp];
+            AppendTo[internalParticles, {#, temp}]
+         ])&,
          Tuples[{fermions, scalars}]
       ];
 

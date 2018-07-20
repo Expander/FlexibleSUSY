@@ -24,7 +24,7 @@ Limitations:
 *)
 
 BeginPackage["ColorMathInterface`",
-   {"SARAH`", "TreeMasses`", "ColorMath`"}
+   {"SARAH`", "TreeMasses`", (*IsColorIndex is there*)"CXXDiagrams`", "ColorMath`"}
 ];
 
 CalculateColorFactor::usage = "";
@@ -168,6 +168,7 @@ NumberOfVertices[l_List] :=
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res = GetFieldIndices[field];
+    Print[IsColorIndex /@ res];
     res = Select[res, IsColorIndex];
     Assert[Length[res]==1];
     res[[1]]

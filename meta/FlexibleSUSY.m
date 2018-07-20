@@ -1975,7 +1975,7 @@ WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
             ];
 
          insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
-            {extParticles, f @@@  extParticles}
+            {extParticles, ff @@@  extParticles}
          ];
 
          {interfacePrototypes, interfaceDefinitions} =
@@ -4077,6 +4077,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ]; (* If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver] *)
 
            PrintHeadline["Creating observables"];
+           On[Assert];
            Print["Creating class for effective couplings ..."];
            (* @note separating this out for now for simplicity *)
            (* @todo maybe implement a flag (like for addons) to turn on/off? *)
