@@ -197,10 +197,10 @@ LorentzIndexQ[x_Symbol] :=
 
 ColorStructureFreeQ[el_] :=
    FreeQ[el,
-      Subscript[Superscript[Superscript[ColorMath`t,List[__]],_],_] |
-         Superscript[ColorMath`f,List[__]] |
-         Subscript[Superscript[ColorMath`\[Delta], _], _] |
-         Superscript[ColorMath`\[CapitalDelta],List[_, _]]
+      Subscript[Superscript[Superscript[ColorMath`CMt,List[__]],_],_] |
+         Superscript[ColorMath`CMf,List[__]] |
+         Subscript[Superscript[ColorMath`CM\[Delta], _], _] |
+         Superscript[ColorMath`CM\[CapitalDelta],List[_, _]]
    ];
 
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  ";
@@ -230,17 +230,17 @@ SARAHToColorMathSymbols[vertex_List] :=
     Module[{result},
 
    result = vertex //.
-      SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`t[{colIdx1}, colIdx2, colIdx3] //.
-      SARAH`fSU3[colSeq__] :> ColorMath`f[colSeq];
+      SARAH`Lam[colIdx1_, colIdx2_, colIdx3_] :> 2 ColorMath`CMt[{colIdx1}, colIdx2, colIdx3] //.
+      SARAH`fSU3[colSeq__] :> ColorMath`CMf[colSeq];
 
    (* if the result has Delta, we need to find out if it's adj. or fundamental *)
     result = result /. SARAH`Delta[c1_?IsColorIndex, c2_?IsColorIndex] :>
         If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === T,
-           ColorMath`delta[c1, c2]
+           ColorMath`CMdelta[c1, c2]
         ];
    result = result /. SARAH`Delta[c1_?IsColorIndex, c2_?IsColorIndex] :>
        If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === O,
-          ColorMath`Delta[c1, c2]
+          ColorMath`CMDelta[c1, c2]
        ];
 
        result
