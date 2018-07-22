@@ -1942,7 +1942,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
 
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ Transpose[
-               FFVFormFactors`FFVFormFactorsCreateInterfaceFunctionForLeptonPair @@@
+               FFVFormFactors`FFVFormFactorsCreateInterfaceFunction @@@
                   insertionsAndVertices
             ];
          vertices = Flatten[

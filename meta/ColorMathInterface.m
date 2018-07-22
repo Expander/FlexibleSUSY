@@ -30,6 +30,9 @@ BeginPackage["ColorMathInterface`",
 CalculateColorFactor::usage = "";
 SARAHToColorMathSymbols::usage = "";
 GetFieldColorIndex::usage = "";
+ColorN::usage = "Evaluate numerically the analytic form of the color factor.";
+ConnectColorLines::usage = "";
+StripSU3Generators::usage = "";
 
 Begin["`Private`"];
 
@@ -189,12 +192,6 @@ CalculateColorFactor[vertex_List] :=
       ]
    ];
 
-GenerationIndexQ[x_Symbol] :=
-   (Characters@SymbolName[x])[[1]] == "g";
-
-LorentzIndexQ[x_Symbol] :=
-   (Characters@SymbolName[x])[[1]] == "l";
-
 ColorStructureFreeQ[el_] :=
    FreeQ[el,
       Subscript[Superscript[Superscript[ColorMath`CMt,List[__]],_],_] |
@@ -246,6 +243,40 @@ SARAHToColorMathSymbols[vertex_List] :=
        result
    ];
 
+(* for SU(3) *)
+ColorN[expr_] :=
+   expr /. ColorMath`Nc -> 3 /. ColorMath`TR -> 1/2;
+
+(* connect color indices of field1 and field2 *)
+ConnectColorLines[field1_, field2_] :=
+   Module[{r1 = getColorRep[field1], r2 = getColorRep[field2]},
+      Assert[r1 === r2];
+      Switch[r1,
+         S, 1,
+         T, ColorMath`delta @@ (GetFieldColorIndex /@ {field1, field2}),
+         O, ColorMath`Delta @@ (GetFieldColorIndex /@ {field1, field2}),
+         (* for now we only deal with color scalars, triplets and octets *)
+         _, Abort[]
+      ]
+   ];
+
+
+(* coefficient of the generator *)
+StripSU3Generators[inP_, outP_, spec_, c_] :=
+   Module[{},
+      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
+         Print["A ", c, "B ", ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})];
+         Return[
+            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
+         ]
+      ];
+      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
+         Return[
+            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
+         ]
+      ];
+      c
+   ];
 (* input
     {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
     *)

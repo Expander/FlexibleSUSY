@@ -23,11 +23,10 @@
 *)
 
 BeginPackage["FFMassiveVFormFactors`",
-    {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "ColorMathInterface`"}
+   {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "ColorMathInterface`"}
 ];
 
 FFMassiveVFormFactorsCreateInterface::usage = "";
-f::usage = "";
 ff::usage = "";
 MassiveVIndices::usage = "";
 
@@ -128,78 +127,6 @@ VertexIsNonZeroQ[vertex_] :=
       True
    ];
 
-(* if a diagram exists, return a color factor and a list of particles in vertices, otherwise return an empty list *)
-singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
-   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p},
-
-      On[Assert];
-      (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
-      Assert[IsMassless[spectator] || !ColorChargedQ[spectator]];
-
-      (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
-         return an {} *)
-      If[TreeMasses`GetElectricCharge[inFermion] =!= Plus @@ (TreeMasses`GetElectricCharge /@ {S,F}),
-         Return[{}]
-      ];
-
-      colorIndexAssociation =
-         If[TreeMasses`ColorChargedQ[#],
-            If[TreeMasses`GetDimension[#] === 1,
-               #[{Unique["ct"]}],
-               #[{Unique["gt"], Unique["ct"]}]
-            ], #
-         ]& /@ {outFermion, F, S, F, S, inFermion, spectator};
-
-      p = colorIndexAssociation;
-      p = {p[[6]], p[[1]], p[[7]], p[[4]], p[[2]], p[[5]], p[[3]]};
-
-      v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
-      FBarFjSBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[6]]]}];
-      v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
-      FiBarFS = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[2]]], p[[5]], p[[7]]}];
-      v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
-      SBarSVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[7]]], p[[6]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
-      v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
-      FBarFVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
-
-      If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
-         If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
-                  0
-               }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
-            ]
-         ];
-         If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
-            Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                  0,
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
-                  (*{v1,v2, v4}*){v1, v2, v3, v4}
-               }
-            ]
-         ];
-         If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["kurwa1 ", p];
-            Print["kurwa2 ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]]];
-            Print["kurwa3 ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]];
-            Print["kurwa4 ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
-               ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}];
-            Return[
-               {
-                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
-               ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
-                  {v1, v2, v3, v4}}
-            ]
-         ],
-         Return[{}]
-      ];
-
-      Return[{}];
-   ];
 
 singleMassiveDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
    Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, FjBarFjVBar, FiBarFiVBar, v1, v2, v3, v4, v5, v6, colorIndexAssociation, p},
@@ -253,54 +180,6 @@ singleMassiveDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermio
       Return[{}];
    ];
 
-StripSU3Generators[inP_, outP_, spec_, c_] :=
-   Module[{},
-      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         Print["A ", c, "B ", ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})];
-         Return[
-            Coefficient[c, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})]
-         ]
-      ];
-      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
-         Return[
-            Coefficient[c, ColorMath`CMt[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
-         ]
-      ];
-      c
-   ];
-
-(* for SU(3) *)
-ColorN[expr_] :=
-   expr /. ColorMath`Nc -> 3 /. ColorMath`TR -> 1/2;
-
-(* connect color indices of field1 and field2 *)
-ConnectColorLines[field1_, field2_] :=
-   Module[{r1 = getColorRep[field1], r2 = getColorRep[field2]},
-      Assert[r1 === r2];
-      Switch[r1,
-         S, 1,
-         T, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {field1, field2}),
-         O, ColorMath`CMDelta @@ (GetFieldColorIndex /@ {field1, field2}),
-         _, Abort[]
-      ]
-   ];
-
-f[inFermion_, outFermion_, spectator_] :=
-   Module[{scalars, fermions, internalParticles = {}, temp},
-
-      scalars = getParticlesOfType[TreeMasses`IsScalar];
-      fermions = getParticlesOfType[TreeMasses`IsFermion];
-
-      Map[
-         (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
-         If[temp =!= {},
-            AppendTo[internalParticles, {#, temp}]
-            ])&,
-         Tuples[{fermions, scalars}]
-      ];
-
-      internalParticles
-   ];
 
 ff[inFermion_, outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
