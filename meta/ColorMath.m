@@ -9,6 +9,18 @@ Print["Author: Malin Sjodahl"];
 Print["For suggestions and bug reports contact malin.sjodahl@thep.lu.se."];
 Print["If you use this package for research, please cite the ColorMath paper, arXiv:1211.2099."]
 
+CSimplify::usage = "";
+Nc::usage = "";
+TR::usage = "";
+CMf::usage = "";
+CMt::usage = "";
+CM\[Delta]::usage = "";
+CM\[delta]::usage = "";
+CMdelta::usage = "";
+CMDelta::usage = "";
+
+
+Begin["Private`"]
 Unprotect[Conjugate];
 Conjugate[Nc]=Nc;
 Conjugate[TR]=TR;
@@ -16,12 +28,12 @@ Conjugate[Nc^Expr_ ]=Nc^Expr;
 Conjugate[TR^Expr_ ]=TR^Expr;
 Conjugate[Sqrt[Nc] ]=Sqrt[Nc];
 Conjugate[Sqrt[TR] ]=Sqrt[TR];
-Conjugate[Superscript[f,{G1$1_,G2$1_,G3$1_}]]:=Superscript[f,{G1$1,G2$1,G3$1}]
+Conjugate[Superscript[CMf,{G1$1_,G2$1_,G3$1_}]]:=Superscript[CMf,{G1$1,G2$1,G3$1}]
 Conjugate[Superscript[d,{G1$1_,G2$1_,G3$1_}]]:=Superscript[d,{G1$1,G2$1,G3$1}]
 Conjugate[Subscript[(Superscript[(Superscript[CMt,G1$1s_]),Q2$1_]), Q1$1_]]:=Subscript[(Superscript[(Superscript[CMt,Reverse[G1$1s]]),Q1$1]), Q2$1];
 Conjugate[Superscript[o,G1$1s_]]:=Superscript[o,Reverse[G1$1s]];
-Conjugate[Superscript[\[CapitalDelta],{G1$1_,G2$1_}]]:=Superscript[\[CapitalDelta],{G1$1,G2$1}]
-Conjugate[Subscript[(Superscript[\[Delta],Q1$1_]), Q2$1_]]:=Subscript[(Superscript[\[Delta],Q2$1]), Q1$1]
+Conjugate[Superscript[CM\[CapitalDelta],{G1$1_,G2$1_}]]:=Superscript[CM\[CapitalDelta],{G1$1,G2$1}]
+Conjugate[Subscript[(Superscript[CM\[Delta],Q1$1_]), Q2$1_]]:=Subscript[(Superscript[CM\[Delta],Q2$1]), Q1$1]
 Protect[Conjugate ];
 
 AllIndices[CMExpr$_] := Module[{AllInd$, LowerQuarks$, UpperQuarks$, GluInd$, 
@@ -46,8 +58,8 @@ LowerQuarkIndices[CMExpr$_] := Module[{AllInd$, NewInd$},
           Module[{}, Sow[Q2$1]; Subscript[Superscript[Superscript[CMt, {Gs$}],
               Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
-      NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[\[Delta], Q1$1_], 
-           Q2$1_] :> Module[{}, Sow[Q2$1]; Subscript[Superscript[\[Delta], 
+      NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[CM\[Delta], Q1$1_], 
+           Q2$1_] :> Module[{}, Sow[Q2$1]; Subscript[Superscript[CM\[Delta], 
               Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       AllInd$]
@@ -66,7 +78,7 @@ Attributes[Superscript] = {NHoldRest, ReadProtected}
  
 CMt[Gs$_, Q1$_, Q2$_] := Subscript[Superscript[Superscript[CMt, Gs$], Q1$], Q2$]
  
-\[Delta][Q1$_, Q2$_] := Subscript[Superscript[\[Delta], Q1$], Q2$]
+CM\[Delta][Q1$_, Q2$_] := Subscript[Superscript[CM\[Delta], Q1$], Q2$]
  
 UpperQuarkIndices[CMExpr$_] := Module[{AllInd$, NewInd$}, 
      AllInd$ = {}; NewInd$ = Reap[CMExpr$ /. 
@@ -74,8 +86,8 @@ UpperQuarkIndices[CMExpr$_] := Module[{AllInd$, NewInd$},
           Module[{}, Sow[Q1$1]; Subscript[Superscript[Superscript[CMt, {Gs$}],
               Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
-      NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[\[Delta], Q1$1_], 
-           Q2$1_] :> Module[{}, Sow[Q1$1]; Subscript[Superscript[\[Delta], 
+      NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[CM\[Delta], Q1$1_], 
+           Q2$1_] :> Module[{}, Sow[Q1$1]; Subscript[Superscript[CM\[Delta], 
               Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       AllInd$]
@@ -89,13 +101,13 @@ RowBox[{\"{\", RowBox[{\"G1\", \",\", RowBox[{\"...\", \"GNg\"}]}], \"}\"}]}, \
 \"Superscript\"],\"Q1\"},\n\"Superscript\"], \"Q2\"]\)."
  
 GluonIndices[CMExpr$_] := Module[{AllInd$, NewInd$}, 
-     AllInd$ = {}; NewInd$ = Reap[CMExpr$ /. Superscript[\[CapitalDelta], 
+     AllInd$ = {}; NewInd$ = Reap[CMExpr$ /. Superscript[CM\[CapitalDelta], 
            {G1$1_, G2$1_}] :> Module[{}, Sow[G1$1]; Sow[G2$1]; 
-            Superscript[\[CapitalDelta], {G1$1, G2$1}]; ]]; 
+            Superscript[CM\[CapitalDelta], {G1$1, G2$1}]; ]]; 
       If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
-      NewInd$ = Reap[CMExpr$ /. Superscript[f, {G1$1_, G2$1_, G3$1_}] :> 
-          Module[{}, Sow[G1$1]; Sow[G2$1]; Sow[G3$1]; Superscript[f, 
+      NewInd$ = Reap[CMExpr$ /. Superscript[CMf, {G1$1_, G2$1_, G3$1_}] :>
+          Module[{}, Sow[G1$1]; Sow[G2$1]; Sow[G3$1]; Superscript[CMf,
              {G1$1, G2$1, G3$1}]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       NewInd$ = Reap[CMExpr$ /. Superscript[d, {G1$1_, G2$1_, G3$1_}] :> 
@@ -109,16 +121,16 @@ GluonIndices[CMExpr$_] := Module[{AllInd$, NewInd$},
       NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[Superscript[CMt, Gs$_],
             Q1$1_], Q2$1_] :> Module[{}, Table[Sow[Gs$[[gInd$]]], 
              {gInd$, 1, Length[Gs$]}]; Subscript[Superscript[Superscript[CMt, {
-                Gs$}], Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
+                Gs$}], Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0,
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       AllInd$]
  
 GluonIndices /: GluonIndices::usage = "GluonIndices[Expr] returns a list of \
 all gluon indices (external and dummy) in the expression Expr."
  
-\[CapitalDelta][G1$_, G2$_] := Superscript[\[CapitalDelta], {G1$, G2$}]
+CM\[CapitalDelta][G1$_, G2$_] := Superscript[CM\[CapitalDelta], {G1$, G2$}]
  
-f[G1$_, G2$_, G3$_] := Superscript[f, {G1$, G2$, G3$}]
+CMf[G1$_, G2$_, G3$_] := Superscript[CMf, {G1$, G2$, G3$}]
  
 d[G1$_, G2$_, G3$_] := Superscript[d, {G1$, G2$, G3$}]
  
@@ -138,9 +150,9 @@ FindSymbols /: FindSymbols::usage = "FindSymbols[Expr] returns a list of all \
 symbols used in an expression. If they appear more than once, they will be \
 listed more than once."
  
-AllPermutations[Superscript[T\[CapitalDelta]$_, {G1$1_, G2$1_}]] := 
-    Superscript[T\[CapitalDelta]$, {G1$1, G2$1}] | 
-     Superscript[T\[CapitalDelta]$, {G2$1, G1$1}]
+AllPermutations[Superscript[TCM\[CapitalDelta]$_, {G1$1_, G2$1_}]] := 
+    Superscript[TCM\[CapitalDelta]$, {G1$1, G2$1}] | 
+     Superscript[TCM\[CapitalDelta]$, {G2$1, G1$1}]
  
 AllPermutations[Superscript[Tfd$_, {G1$1_, G2$1_, G3$1_}]] := 
     Superscript[Tfd$, {G1$1, G2$1, G3$1}] | Superscript[Tfd$, 
@@ -163,19 +175,19 @@ RowBox[{\"G1\", \",\", \"...\", \",\", \"Gk\"}], \"}\"}]}, \
 the number of terms, i.e. the union of SimpleRules, Remove0To2ORules and \
 OTSimpleRules."
  
-SimpleRules = {Subscript[Superscript[\[Delta], Q1$1_], q2$1_]*
+SimpleRules = {Subscript[Superscript[CM\[Delta], Q1$1_], q2$1_]*
        Subscript[Superscript[Superscript[CMt, G1$1s_], q2$1_], Q3$1_] ->
       Subscript[Superscript[Superscript[CMt, G1$1s], Q1$1], Q3$1],
-     Subscript[Superscript[\[Delta], Q1$1_], Q2$1_]*
+     Subscript[Superscript[CM\[Delta], Q1$1_], Q2$1_]*
        Subscript[Superscript[Superscript[CMt, G1$1s_], Q3$1_], Q1$1_] ->
       Subscript[Superscript[Superscript[CMt, G1$1s], Q3$1], Q2$1],
-     Subscript[Superscript[\[Delta], Q1$1_], q2$1_]*
-       Subscript[Superscript[\[Delta], q2$1_], Q3$1_] -> 
-      Subscript[Superscript[\[Delta], Q1$1], Q3$1], 
-     Subscript[Superscript[\[Delta], q1$1_], q1$1_] -> Nc, 
+     Subscript[Superscript[CM\[Delta], Q1$1_], q2$1_]*
+       Subscript[Superscript[CM\[Delta], q2$1_], Q3$1_] -> 
+      Subscript[Superscript[CM\[Delta], Q1$1], Q3$1], 
+     Subscript[Superscript[CM\[Delta], q1$1_], q1$1_] -> Nc, 
      Subscript[Superscript[Superscript[CMt, {G1$1_}], q1$1_], q2$1_]*
        Subscript[Superscript[Superscript[CMt, {G2$1_}], q2$1_], q1$1_] ->
-      TR*Superscript[\[CapitalDelta], {G1$1, G2$1}], 
+      TR*Superscript[CM\[CapitalDelta], {G1$1, G2$1}], 
      Subscript[Superscript[Superscript[CMt, {G1$1_}], q1$1_], q1$1_] -> 0,
      Subscript[Superscript[Superscript[CMt, G1$1s_], q1$1_], q2$1_]*
        Subscript[Superscript[Superscript[CMt, G2$1s_], q2$1_], q1$1_] ->
@@ -186,36 +198,36 @@ SimpleRules = {Subscript[Superscript[\[Delta], Q1$1_], q2$1_]*
        Subscript[Superscript[Superscript[CMt, G2$1s_], q1$1_], Q2$1_] ->
       Subscript[Superscript[Superscript[CMt, Join[G1$1s, G2$1s]], Q1$1], Q2$1],
      Subscript[Superscript[Superscript[CMt, {}], Q1$1_], Q2$1_] ->
-      Subscript[Superscript[\[Delta], Q1$1], Q2$1], 
-     Superscript[o, {G1$1_, G2$1_}] -> TR*Superscript[\[CapitalDelta], 
-        {G1$1, G2$1}], (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-        Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
+      Subscript[Superscript[CM\[Delta], Q1$1], Q2$1], 
+     Superscript[o, {G1$1_, G2$1_}] -> TR*Superscript[CM\[CapitalDelta], 
+        {G1$1, G2$1}], (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+        Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
        (Superscript[d, {g2$1_, G3$1_, G4$1_}] | Superscript[d, 
          {G3$1_, G4$1_, g2$1_}] | Superscript[d, {G4$1_, g2$1_, G3$1_}] | 
         Superscript[d, {g2$1_, G4$1_, G3$1_}] | Superscript[d, 
          {G3$1_, g2$1_, G4$1_}] | Superscript[d, {G4$1_, G3$1_, g2$1_}]) -> 
       Superscript[d, {G1$1, G3$1, G4$1}], 
-     (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-        Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
-       (Superscript[f, {g2$1_, G3$1_, G4$1_}] | Superscript[f, 
-         {G3$1_, G4$1_, g2$1_}] | Superscript[f, {G4$1_, g2$1_, G3$1_}]) -> 
-      Superscript[f, {G1$1, G3$1, G4$1}], 
-     (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-        Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
-       (Superscript[\[CapitalDelta], {g2$1_, G2$1_}] | 
-        Superscript[\[CapitalDelta], {G2$1_, g2$1_}]) -> 
-      Superscript[\[CapitalDelta], {G1$1, G2$1}], 
-     Superscript[\[CapitalDelta], {G1$1_, G1$1_}] -> -1 + Nc^2, 
-     (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-         Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
+     (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+        Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
+       (Superscript[CMf, {g2$1_, G3$1_, G4$1_}] | Superscript[CMf,
+         {G3$1_, G4$1_, g2$1_}] | Superscript[CMf, {G4$1_, g2$1_, G3$1_}]) ->
+      Superscript[CMf, {G1$1, G3$1, G4$1}],
+     (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+        Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
+       (Superscript[CM\[CapitalDelta], {g2$1_, G2$1_}] | 
+        Superscript[CM\[CapitalDelta], {G2$1_, g2$1_}]) -> 
+      Superscript[CM\[CapitalDelta], {G1$1, G2$1}], 
+     Superscript[CM\[CapitalDelta], {G1$1_, G1$1_}] -> -1 + Nc^2, 
+     (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+         Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
         Subscript[Superscript[Superscript[CMt, G3$1s_], Q1$1_], Q2$1_] /;
        Count[G3$1s, g2$1] == 1 :> Subscript[Superscript[
         Superscript[CMt, G3$1s /. g2$1 -> G1$1], Q1$1], Q2$1],
-     (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-         Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
+     (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+         Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
         Superscript[o, G3$1s_] /; Count[G3$1s, g2$1] == 1 :> 
       Superscript[o, G3$1s /. g2$1 -> G1$1], 
-     Superscript[\[CapitalDelta], {G1$1_, G2$1_}]^2 -> -1 + Nc^2}
+     Superscript[CM\[CapitalDelta], {G1$1_, G2$1_}]^2 -> -1 + Nc^2}
  
 SimpleRules /: SimpleRules::usage = "Basic rules for quark and gluon \
 contraction. These rules, which involve \
@@ -282,7 +294,7 @@ list contains two gluons of the same kind."
  
 Remove0To2ORules = {Superscript[o, LIndV$_ /; Length[LIndV$] == 1] -> 0, 
      Superscript[o, LIndV$_ /; Length[LIndV$] == 0] -> Nc, 
-     Superscript[o, {G1$1_, G2$1_}] -> TR*Superscript[\[CapitalDelta], 
+     Superscript[o, {G1$1_, G2$1_}] -> TR*Superscript[CM\[CapitalDelta], 
         {G1$1, G2$1}]}
  
 Remove0To2ORules /: Remove0To2ORules::usage = "Rules for simplifying closed \
@@ -296,7 +308,7 @@ quark-lines with 0 to 2 gluons, \!\(\*TemplateBox[{\"o\",RowBox[{\"{\", \
  
 Remove0ORules = {Subscript[Superscript[Superscript[CMt,
          LIndV$_ /; Length[LIndV$] == 0], Q1$1_], Q2$1_] -> 
-      Subscript[Superscript[\[Delta], Q1$1], Q2$1]}
+      Subscript[Superscript[CM\[Delta], Q1$1], Q2$1]}
  
 Remove0ORules /: Remove0ORules::usage = "Rule for simplifying closed \
 quark-lines with 0 gluons,\!\(\*TemplateBox[{RowBox[{\" \", \
@@ -446,10 +458,10 @@ OTGluonRules = {Superscript[o, g1$1s_]*Superscript[o, g2$1s_] /;
                 (1/Nc)*Superscript[o, Newgs1$]) /. Remove0To2ORules; }]]; 
         CMres$], Subscript[Superscript[Superscript[CMt, {g1$1_}], Q1$1_], Q2$1_]*
        Subscript[Superscript[Superscript[CMt, {g1$1_}], Q3$1_], Q4$1_] ->
-      TR*(Subscript[Superscript[\[Delta], Q1$1], Q4$1]*
-         Subscript[Superscript[\[Delta], Q3$1], Q2$1] - 
-        (Subscript[Superscript[\[Delta], Q1$1], Q2$1]*
-          Subscript[Superscript[\[Delta], Q3$1], Q4$1])/Nc)}
+      TR*(Subscript[Superscript[CM\[Delta], Q1$1], Q4$1]*
+         Subscript[Superscript[CM\[Delta], Q3$1], Q2$1] - 
+        (Subscript[Superscript[CM\[Delta], Q1$1], Q2$1]*
+          Subscript[Superscript[CM\[Delta], Q3$1], Q4$1])/Nc)}
  
 OTGluonRules /: OTGluonRules::usage = "Rules for contracting repeated gluon \
 indices in \!\(\*TemplateBox[{\"o\",RowBox[{\"{\", RowBox[{\"G1\", \",\", \
@@ -564,7 +576,7 @@ RowBox[{\"G1\", \",\", \"...\", \",\", \"GNg\"}], \"}\"}]}, \
 \"G3\"}], \"}\"}]},\n\"Superscript\"]\), and False otherwise."
  
 ContainsFD[CMExpr$_] := Module[{TrueOrFalse$}, TrueOrFalse$ = False; 
-      If[ !(FreeQ[CMExpr$, Superscript[f, {g1$1_, g2$1_, g3$1_}]] && 
+      If[ !(FreeQ[CMExpr$, Superscript[CMf, {g1$1_, g2$1_, g3$1_}]] &&
          FreeQ[CMExpr$, Superscript[d, {g1$1_, g2$1_, g3$1_}]]), 
        TrueOrFalse$ = True]; TrueOrFalse$]
  
@@ -597,7 +609,7 @@ otherwise."
  
 ContainsQuarkDelta[CMExpr$_] := Module[{TrueOrFalse$}, 
      TrueOrFalse$ = False; 
-      If[ !FreeQ[CMExpr$, Subscript[Superscript[\[Delta], Q1$1_], Q2$1_]], 
+      If[ !FreeQ[CMExpr$, Subscript[Superscript[CM\[Delta], Q1$1_], Q2$1_]], 
        TrueOrFalse$ = True]; TrueOrFalse$]
  
 ContainsQuarkDelta /: ContainsQuarkDelta::usage = "ContainsQuarkDelta[Expr] \
@@ -606,7 +618,7 @@ returns True if the expression Expr contains a quark delta function, \
 \"Q2\"]\), and False otherwise."
  
 ContainsGluonDelta[CMExpr$_] := Module[{TrueOrFalse$}, 
-     TrueOrFalse$ = False; If[ !FreeQ[CMExpr$, Superscript[\[CapitalDelta], 
+     TrueOrFalse$ = False; If[ !FreeQ[CMExpr$, Superscript[CM\[CapitalDelta], 
           {G1$1_, G2$1_}]], TrueOrFalse$ = True]; TrueOrFalse$]
  
 ContainsGluonDelta /: ContainsGluonDelta::usage = "ContainsGluonDelta[Expr] \
@@ -615,7 +627,7 @@ returns True if the expression Expr contains a gluon delta function, \
 \"G2\"}], \"}\"}]},\n\"Superscript\"]\), and False otherwise."
  
 FDRules = {Superscript[d, {g1$1_, g2$1_, g3$1_}]^2 -> 
-      (2*(4 - 5*Nc^2 + Nc^4)*TR)/Nc, Superscript[f, {g1$1_, g2$1_, g3$1_}]^
+      (2*(4 - 5*Nc^2 + Nc^4)*TR)/Nc, Superscript[CMf, {g1$1_, g2$1_, g3$1_}]^
        2 -> 2*Nc*(-1 + Nc^2)*TR, (Superscript[d, {g1$1_, g2$1_, G1$1_}] | 
         Superscript[d, {g2$1_, G1$1_, g1$1_}] | Superscript[d, 
          {G1$1_, g1$1_, g2$1_}] | Superscript[d, {g1$1_, G1$1_, g2$1_}] | 
@@ -625,85 +637,85 @@ FDRules = {Superscript[d, {g1$1_, g2$1_, g3$1_}]^2 ->
          {G2$1_, g1$1_, g2$1_}] | Superscript[d, {g1$1_, G2$1_, g2$1_}] | 
         Superscript[d, {g2$1_, g1$1_, G2$1_}] | Superscript[d, 
          {G2$1_, g2$1_, g1$1_}]) -> 
-      (2*(-4 + Nc^2)*TR*Superscript[\[CapitalDelta], {G1$1, G2$1}])/Nc, 
-     (Superscript[f, {g1$1_, g2$1_, G1$1_}] | Superscript[f, 
-         {g2$1_, G1$1_, g1$1_}] | Superscript[f, {G1$1_, g1$1_, g2$1_}])*
-       (Superscript[f, {g1$1_, g2$1_, G2$1_}] | Superscript[f, 
-         {g2$1_, G2$1_, g1$1_}] | Superscript[f, {G2$1_, g1$1_, g2$1_}]) -> 
-      2*Nc*TR*Superscript[\[CapitalDelta], {G1$1, G2$1}], 
-     (Superscript[f, {g1$1_, g2$1_, G1$1_}] | Superscript[f, 
-         {g2$1_, G1$1_, g1$1_}] | Superscript[f, {G1$1_, g1$1_, g2$1_}])*
-       (Superscript[f, {g2$1_, g1$1_, G2$1_}] | Superscript[f, 
-         {g1$1_, G2$1_, g2$1_}] | Superscript[f, {G2$1_, g2$1_, g1$1_}]) -> 
-      -2*Nc*TR*Superscript[\[CapitalDelta], {G1$1, G2$1}], 
+      (2*(-4 + Nc^2)*TR*Superscript[CM\[CapitalDelta], {G1$1, G2$1}])/Nc, 
+     (Superscript[CMf, {g1$1_, g2$1_, G1$1_}] | Superscript[CMf,
+         {g2$1_, G1$1_, g1$1_}] | Superscript[CMf, {G1$1_, g1$1_, g2$1_}])*
+       (Superscript[CMf, {g1$1_, g2$1_, G2$1_}] | Superscript[CMf,
+         {g2$1_, G2$1_, g1$1_}] | Superscript[CMf, {G2$1_, g1$1_, g2$1_}]) ->
+      2*Nc*TR*Superscript[CM\[CapitalDelta], {G1$1, G2$1}], 
+     (Superscript[CMf, {g1$1_, g2$1_, G1$1_}] | Superscript[CMf,
+         {g2$1_, G1$1_, g1$1_}] | Superscript[CMf, {G1$1_, g1$1_, g2$1_}])*
+       (Superscript[CMf, {g2$1_, g1$1_, G2$1_}] | Superscript[CMf,
+         {g1$1_, G2$1_, g2$1_}] | Superscript[CMf, {G2$1_, g2$1_, g1$1_}]) ->
+      -2*Nc*TR*Superscript[CM\[CapitalDelta], {G1$1, G2$1}], 
      (Superscript[d, {g1$1_, g2$1_, G2$1_}] | Superscript[d, 
          {g2$1_, G2$1_, g1$1_}] | Superscript[d, {G2$1_, g1$1_, g2$1_}] | 
         Superscript[d, {g1$1_, G2$1_, g2$1_}] | Superscript[d, 
          {g2$1_, g1$1_, G2$1_}] | Superscript[d, {G2$1_, g2$1_, g1$1_}])*
-       (Superscript[f, {g1$1_, g2$1_, G1$1_}] | Superscript[f, 
-         {g2$1_, G1$1_, g1$1_}] | Superscript[f, {G1$1_, g1$1_, g2$1_}] | 
-        Superscript[f, {g1$1_, G1$1_, g2$1_}] | Superscript[f, 
-         {g2$1_, g1$1_, G1$1_}] | Superscript[f, {G1$1_, g2$1_, g1$1_}]) -> 
-      0, (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-        Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
+       (Superscript[CMf, {g1$1_, g2$1_, G1$1_}] | Superscript[CMf,
+         {g2$1_, G1$1_, g1$1_}] | Superscript[CMf, {G1$1_, g1$1_, g2$1_}] |
+        Superscript[CMf, {g1$1_, G1$1_, g2$1_}] | Superscript[CMf,
+         {g2$1_, g1$1_, G1$1_}] | Superscript[CMf, {G1$1_, g2$1_, g1$1_}]) ->
+      0, (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+        Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
        (Superscript[d, {g2$1_, G3$1_, G4$1_}] | Superscript[d, 
          {G3$1_, G4$1_, g2$1_}] | Superscript[d, {G4$1_, g2$1_, G3$1_}] | 
         Superscript[d, {g2$1_, G4$1_, G3$1_}] | Superscript[d, 
          {G3$1_, g2$1_, G4$1_}] | Superscript[d, {G4$1_, G3$1_, g2$1_}]) -> 
       Superscript[d, {G1$1, G3$1, G4$1}], 
-     (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-        Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
-       (Superscript[f, {g2$1_, G3$1_, G4$1_}] | Superscript[f, 
-         {G3$1_, G4$1_, g2$1_}] | Superscript[f, {G4$1_, g2$1_, G3$1_}]) -> 
-      Superscript[f, {G1$1, G3$1, G4$1}], 
-     (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
-        Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
-       (Superscript[\[CapitalDelta], {g2$1_, G2$1_}] | 
-        Superscript[\[CapitalDelta], {G2$1_, g2$1_}]) -> 
-      Superscript[\[CapitalDelta], {G1$1, G2$1}], 
-     (Superscript[f, {g1$1_, G2$1_, g2$1_}] | Superscript[f, 
-         {G2$1_, g2$1_, g1$1_}] | Superscript[f, {g2$1_, g1$1_, G2$1_}])*
-       (Superscript[f, {g2$1_, G3$1_, g3$1_}] | Superscript[f, 
-         {G3$1_, g3$1_, g2$1_}] | Superscript[f, {g3$1_, g2$1_, G3$1_}])*
-       (Superscript[f, {g3$1_, G1$1_, g1$1_}] | Superscript[f, 
-         {G1$1_, g1$1_, g3$1_}] | Superscript[f, {g1$1_, g3$1_, G1$1_}]) -> 
-      -(Nc*TR*Superscript[f, {G1$1, G2$1, G3$1}]), 
-     (Superscript[f, {g1$1_, G2$1_, g2$1_}] | Superscript[f, 
-         {G2$1_, g2$1_, g1$1_}] | Superscript[f, {g2$1_, g1$1_, G2$1_}])*
-       (Superscript[f, {g2$1_, G3$1_, g3$1_}] | Superscript[f, 
-         {G3$1_, g3$1_, g2$1_}] | Superscript[f, {g3$1_, g2$1_, G3$1_}])*
-       (Superscript[f, {g3$1_, g1$1_, G1$1_}] | Superscript[f, 
-         {g1$1_, G1$1_, g3$1_}] | Superscript[f, {G1$1_, g3$1_, g1$1_}]) -> 
-      Nc*TR*Superscript[f, {G1$1, G2$1, G3$1}], 
-     (Superscript[f, {g1$1_, G2$1_, g2$1_}] | Superscript[f, 
-         {G2$1_, g2$1_, g1$1_}] | Superscript[f, {g2$1_, g1$1_, G2$1_}])*
-       (Superscript[f, {g2$1_, G3$1_, g3$1_}] | Superscript[f, 
-         {G3$1_, g3$1_, g2$1_}] | Superscript[f, {g3$1_, g2$1_, G3$1_}])*
+     (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+        Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
+       (Superscript[CMf, {g2$1_, G3$1_, G4$1_}] | Superscript[CMf,
+         {G3$1_, G4$1_, g2$1_}] | Superscript[CMf, {G4$1_, g2$1_, G3$1_}]) ->
+      Superscript[CMf, {G1$1, G3$1, G4$1}],
+     (Superscript[CM\[CapitalDelta], {G1$1_, g2$1_}] | 
+        Superscript[CM\[CapitalDelta], {g2$1_, G1$1_}])*
+       (Superscript[CM\[CapitalDelta], {g2$1_, G2$1_}] | 
+        Superscript[CM\[CapitalDelta], {G2$1_, g2$1_}]) -> 
+      Superscript[CM\[CapitalDelta], {G1$1, G2$1}], 
+     (Superscript[CMf, {g1$1_, G2$1_, g2$1_}] | Superscript[CMf,
+         {G2$1_, g2$1_, g1$1_}] | Superscript[CMf, {g2$1_, g1$1_, G2$1_}])*
+       (Superscript[CMf, {g2$1_, G3$1_, g3$1_}] | Superscript[CMf,
+         {G3$1_, g3$1_, g2$1_}] | Superscript[CMf, {g3$1_, g2$1_, G3$1_}])*
+       (Superscript[CMf, {g3$1_, G1$1_, g1$1_}] | Superscript[CMf,
+         {G1$1_, g1$1_, g3$1_}] | Superscript[CMf, {g1$1_, g3$1_, G1$1_}]) ->
+      -(Nc*TR*Superscript[CMf, {G1$1, G2$1, G3$1}]),
+     (Superscript[CMf, {g1$1_, G2$1_, g2$1_}] | Superscript[CMf,
+         {G2$1_, g2$1_, g1$1_}] | Superscript[CMf, {g2$1_, g1$1_, G2$1_}])*
+       (Superscript[CMf, {g2$1_, G3$1_, g3$1_}] | Superscript[CMf,
+         {G3$1_, g3$1_, g2$1_}] | Superscript[CMf, {g3$1_, g2$1_, G3$1_}])*
+       (Superscript[CMf, {g3$1_, g1$1_, G1$1_}] | Superscript[CMf,
+         {g1$1_, G1$1_, g3$1_}] | Superscript[CMf, {G1$1_, g3$1_, g1$1_}]) ->
+      Nc*TR*Superscript[CMf, {G1$1, G2$1, G3$1}],
+     (Superscript[CMf, {g1$1_, G2$1_, g2$1_}] | Superscript[CMf,
+         {G2$1_, g2$1_, g1$1_}] | Superscript[CMf, {g2$1_, g1$1_, G2$1_}])*
+       (Superscript[CMf, {g2$1_, G3$1_, g3$1_}] | Superscript[CMf,
+         {G3$1_, g3$1_, g2$1_}] | Superscript[CMf, {g3$1_, g2$1_, G3$1_}])*
        (Superscript[d, {g3$1_, G1$1_, g1$1_}] | Superscript[d, 
          {G1$1_, g1$1_, g3$1_}] | Superscript[d, {g1$1_, g3$1_, G1$1_}] | 
         Superscript[d, {g3$1_, g1$1_, G1$1_}] | Superscript[d, 
          {G1$1_, g3$1_, g1$1_}] | Superscript[d, {g1$1_, G1$1_, g3$1_}]) -> 
       -(Nc*TR*Superscript[d, {G1$1, G2$1, G3$1}]), 
-     (Superscript[f, {g1$1_, g2$1_, G2$1_}] | Superscript[f, 
-         {g2$1_, G2$1_, g1$1_}] | Superscript[f, {G2$1_, g1$1_, g2$1_}])*
-       (Superscript[f, {g2$1_, G3$1_, g3$1_}] | Superscript[f, 
-         {G3$1_, g3$1_, g2$1_}] | Superscript[f, {g3$1_, g2$1_, G3$1_}])*
+     (Superscript[CMf, {g1$1_, g2$1_, G2$1_}] | Superscript[CMf,
+         {g2$1_, G2$1_, g1$1_}] | Superscript[CMf, {G2$1_, g1$1_, g2$1_}])*
+       (Superscript[CMf, {g2$1_, G3$1_, g3$1_}] | Superscript[CMf,
+         {G3$1_, g3$1_, g2$1_}] | Superscript[CMf, {g3$1_, g2$1_, G3$1_}])*
        (Superscript[d, {g3$1_, G1$1_, g1$1_}] | Superscript[d, 
          {G1$1_, g1$1_, g3$1_}] | Superscript[d, {g1$1_, g3$1_, G1$1_}] | 
         Superscript[d, {g3$1_, g1$1_, G1$1_}] | Superscript[d, 
          {G1$1_, g3$1_, g1$1_}] | Superscript[d, {g1$1_, G1$1_, g3$1_}]) -> 
       Nc*TR*Superscript[d, {G1$1, G2$1, G3$1}], 
-     (Superscript[f, {g1$1_, G2$1_, g2$1_}] | Superscript[f, 
-         {G2$1_, g2$1_, g1$1_}] | Superscript[f, {g2$1_, g1$1_, G2$1_}])*
-       (Superscript[f, {g2$1_, g3$1_, G3$1_}] | Superscript[f, 
-         {g3$1_, G3$1_, g2$1_}] | Superscript[f, {G3$1_, g2$1_, g3$1_}])*
+     (Superscript[CMf, {g1$1_, G2$1_, g2$1_}] | Superscript[CMf,
+         {G2$1_, g2$1_, g1$1_}] | Superscript[CMf, {g2$1_, g1$1_, G2$1_}])*
+       (Superscript[CMf, {g2$1_, g3$1_, G3$1_}] | Superscript[CMf,
+         {g3$1_, G3$1_, g2$1_}] | Superscript[CMf, {G3$1_, g2$1_, g3$1_}])*
        (Superscript[d, {g3$1_, G1$1_, g1$1_}] | Superscript[d, 
          {G1$1_, g1$1_, g3$1_}] | Superscript[d, {g1$1_, g3$1_, G1$1_}] | 
         Superscript[d, {g3$1_, g1$1_, G1$1_}] | Superscript[d, 
          {G1$1_, g3$1_, g1$1_}] | Superscript[d, {g1$1_, G1$1_, g3$1_}]) -> 
       Nc*TR*Superscript[d, {G1$1, G2$1, G3$1}], 
-     (Superscript[f, {g2$1_, G3$1_, g3$1_}] | Superscript[f, 
-         {G3$1_, g3$1_, g2$1_}] | Superscript[f, {g3$1_, g2$1_, G3$1_}])*
+     (Superscript[CMf, {g2$1_, G3$1_, g3$1_}] | Superscript[CMf,
+         {G3$1_, g3$1_, g2$1_}] | Superscript[CMf, {g3$1_, g2$1_, G3$1_}])*
        (Superscript[d, {g1$1_, G2$1_, g2$1_}] | Superscript[d, 
          {G2$1_, g2$1_, g1$1_}] | Superscript[d, {g2$1_, g1$1_, G2$1_}] | 
         Superscript[d, {g1$1_, g2$1_, G2$1_}] | Superscript[d, 
@@ -712,9 +724,9 @@ FDRules = {Superscript[d, {g1$1_, g2$1_, g3$1_}]^2 ->
          {G1$1_, g1$1_, g3$1_}] | Superscript[d, {g1$1_, g3$1_, G1$1_}] | 
         Superscript[d, {g3$1_, g1$1_, G1$1_}] | Superscript[d, 
          {G1$1_, g3$1_, g1$1_}] | Superscript[d, {g1$1_, G1$1_, g3$1_}]) -> 
-      ((-4 + Nc^2)*TR*Superscript[f, {G1$1, G2$1, G3$1}])/Nc, 
-     (Superscript[f, {g2$1_, g3$1_, G3$1_}] | Superscript[f, 
-         {g3$1_, G3$1_, g2$1_}] | Superscript[f, {G3$1_, g2$1_, g3$1_}])*
+      ((-4 + Nc^2)*TR*Superscript[CMf, {G1$1, G2$1, G3$1}])/Nc,
+     (Superscript[CMf, {g2$1_, g3$1_, G3$1_}] | Superscript[CMf,
+         {g3$1_, G3$1_, g2$1_}] | Superscript[CMf, {G3$1_, g2$1_, g3$1_}])*
        (Superscript[d, {g1$1_, G2$1_, g2$1_}] | Superscript[d, 
          {G2$1_, g2$1_, g1$1_}] | Superscript[d, {g2$1_, g1$1_, G2$1_}] | 
         Superscript[d, {g1$1_, g2$1_, G2$1_}] | Superscript[d, 
@@ -723,7 +735,7 @@ FDRules = {Superscript[d, {g1$1_, g2$1_, g3$1_}]^2 ->
          {G1$1_, g1$1_, g3$1_}] | Superscript[d, {g1$1_, g3$1_, G1$1_}] | 
         Superscript[d, {g3$1_, g1$1_, G1$1_}] | Superscript[d, 
          {G1$1_, g3$1_, g1$1_}] | Superscript[d, {g1$1_, G1$1_, g3$1_}]) -> 
-      -(((-4 + Nc^2)*TR*Superscript[f, {G1$1, G2$1, G3$1}])/Nc), 
+      -(((-4 + Nc^2)*TR*Superscript[CMf, {G1$1, G2$1, G3$1}])/Nc),
      (Superscript[d, {g1$1_, G2$1_, g2$1_}] | Superscript[d, 
          {G2$1_, g2$1_, g1$1_}] | Superscript[d, {g2$1_, g1$1_, G2$1_}] | 
         Superscript[d, {g1$1_, g2$1_, G2$1_}] | Superscript[d, 
@@ -747,7 +759,7 @@ is expressed in terms of structure constants and gluon deltas, \
 \!\(\*TemplateBox[{\"\[CapitalDelta]\",RowBox[{\"{\", RowBox[{\"G1\", \",\", \
 \"G2\"}], \"}\"}]},\n\"Superscript\"]\)."
  
-FDToORules = {Superscript[f, {G1$1_, G2$1_, G3$1_}] :> 
+FDToORules = {Superscript[CMf, {G1$1_, G2$1_, G3$1_}] :>
       (1/(TR*I))*(Superscript[o, {G1$1, G2$1, G3$1}] - 
         Superscript[o, {G1$1, G3$1, G2$1}]), 
      Superscript[d, {G1$1_, G2$1_, G3$1_}] :> 
@@ -791,19 +803,19 @@ the expression. This can be achieved by setting the option RemoveFD -> \
 False."
  
 CExpand[CMExpr$_] := Collect[Expand[CMExpr$], 
-     {Superscript[\[CapitalDelta], G1$1s_]*Superscript[\[CapitalDelta], 
-        G2$1s_]*Superscript[\[CapitalDelta], G3$1s_], 
-      Superscript[\[CapitalDelta], G1$1s_]*Superscript[\[CapitalDelta], 
-        G2$1s_], Superscript[o, G1$1s_]*Superscript[\[CapitalDelta], G2$1s_], 
+     {Superscript[CM\[CapitalDelta], G1$1s_]*Superscript[CM\[CapitalDelta], 
+        G2$1s_]*Superscript[CM\[CapitalDelta], G3$1s_], 
+      Superscript[CM\[CapitalDelta], G1$1s_]*Superscript[CM\[CapitalDelta], 
+        G2$1s_], Superscript[o, G1$1s_]*Superscript[CM\[CapitalDelta], G2$1s_], 
       Superscript[o, G1$1s_]*Superscript[o, G2$1s_], Superscript[o, G1$1s_]}, 
      Simplify]
  
 SortIndices[CMExpr$_] := Module[{}, CMExpr$ /. 
       {Superscript[d, {G1$1_, G2$1_, G3$1_}] :> Superscript[d, 
-         Sort[{G1$1, G2$1, G3$1}]], Superscript[f, {G1$1_, G2$1_, G3$1_}] :> 
-        Signature[{G1$1, G2$1, G3$1}]*Superscript[f, 
-          Sort[{G1$1, G2$1, G3$1}]], Superscript[\[CapitalDelta], 
-         {G1$1_, G2$1_}] :> Superscript[\[CapitalDelta], Sort[{G1$1, G2$1}]], 
+         Sort[{G1$1, G2$1, G3$1}]], Superscript[CMf, {G1$1_, G2$1_, G3$1_}] :>
+        Signature[{G1$1, G2$1, G3$1}]*Superscript[CMf,
+          Sort[{G1$1, G2$1, G3$1}]], Superscript[CM\[CapitalDelta], 
+         {G1$1_, G2$1_}] :> Superscript[CM\[CapitalDelta], Sort[{G1$1, G2$1}]], 
        Superscript[o, Gs$_] :> Module[{FirstInd$, FirstPlace$, GsNew$}, 
          FirstInd$ = Sort[Gs$][[1]]; Table[If[Gs$[[GsI$]] == FirstInd$, 
             FirstPlace$ = GsI$], {GsI$, 1, Length[Gs$]}]; 
@@ -1106,7 +1118,7 @@ to be UpperQuark, LowerQuark or Gluon, got `1`."; Message[CVertex::check,
           type$]; }]; CMres$ = Switch[type$, UpperQuark, 
         Subscript[Superscript[Superscript[CMt, {G3$1}], I1$], I2$], LowerQuark,
         Subscript[Superscript[Superscript[CMt, {G3$1}], I2$], I1$], Gluon,
-        I*Superscript[f, {I1$, I2$, G3$1}]]; CMres$]
+        I*Superscript[CMf, {I1$, I2$, G3$1}]]; CMres$]
  
 CVertex /: CVertex::usage = "CVertex[type, I1, I2, G3] returns a vertex with \
 indices I1, I2, G3. Depending on the type of particle to which a gluon G3 is \
@@ -1211,14 +1223,14 @@ SquareIndices[Term$_] := Module[{SqInd$},
      If[Head[Term$] == Plus, {SquareIndices::argx = "SquareIndices should be \
 used on a single term, not on a sum of terms, the agument was `1`."; 
          Message[SquareIndices::argx, Term$]; }]; SqInd$ = {}; 
-      If[ !FreeQ[Term$, Superscript[\[CapitalDelta], Gs$_]^2], 
-       Term$ /. Superscript[\[CapitalDelta], Gs$_]^2 :> 
+      If[ !FreeQ[Term$, Superscript[CM\[CapitalDelta], Gs$_]^2], 
+       Term$ /. Superscript[CM\[CapitalDelta], Gs$_]^2 :> 
           Module[{}, {Gs$; SqInd$ = Append[SqInd$, Gs$]; }]; ]; 
       If[ !FreeQ[Term$, Superscript[o, Gs$_]^2], 
        Term$ /. Superscript[o, Gs$_]^2 :> Module[{}, 
            {Gs$; SqInd$ = Append[SqInd$, Gs$]; }]; ]; 
-      If[ !FreeQ[Term$, Superscript[f, Gs$_]^2], 
-       Term$ /. Superscript[f, Gs$_]^2 :> Module[{}, 
+      If[ !FreeQ[Term$, Superscript[CMf, Gs$_]^2],
+       Term$ /. Superscript[CMf, Gs$_]^2 :> Module[{},
            {Gs$; SqInd$ = Append[SqInd$, Gs$]; }]; ]; 
       If[ !FreeQ[Term$, Superscript[d, Gs$_]^2], 
        Term$ /. Superscript[d, Gs$_]^2 :> Module[{}, 
@@ -1269,9 +1281,9 @@ CyclicPermutations[Superscript[Tfd$_, {G1$1_, G2$1_, G3$1_}]] :=
     Superscript[Tfd$, {G1$1, G2$1, G3$1}] | Superscript[Tfd$, 
       {G2$1, G3$1, G1$1}] | Superscript[Tfd$, {G3$1, G1$1, G2$1}]
  
-delta[Q1$_, Q2$_] := Subscript[Superscript[\[Delta], Q1$], Q2$]
+CMdelta[Q1$_, Q2$_] := Subscript[Superscript[CM\[Delta], Q1$], Q2$]
  
-Delta[G1$_, G2$_] := Superscript[\[CapitalDelta], {G1$, G2$}]
+CMDelta[G1$_, G2$_] := Superscript[CM\[CapitalDelta], {G1$, G2$}]
  
 DummyIndices[CMExpr$_] := Module[{Expr2$, DInd$, ListExpr$, IndexList$}, 
      Expr2$ = Expand[CMExpr$]; DInd$ = {}; If[Head[Expr2$] != Plus, 
@@ -1285,7 +1297,7 @@ DummyIndices /: DummyIndices::usage = "DummyIndices[Expr] finds the dummy \
 indices in an expression Expr, by first expanding it and then finding all \
 dummy indices in all terms."
  
-FDToTRules := {Superscript[f, {G1$1_, G2$1_, G3$1_}] :> 
+FDToTRules := {Superscript[CMf, {G1$1_, G2$1_, G3$1_}] :>
       (1/(I*TR))*Module[{q1$1, q2$1, q3$1}, 
         Subscript[Superscript[Superscript[CMt, {G1$1}], q1$1], q2$1]*
           Subscript[Superscript[Superscript[CMt, {G2$1}], q2$1], q3$1]*
@@ -1328,19 +1340,19 @@ using FDToORules."; Message[GluonContract::fdcheck];
            theg$]; CMres$ = ODeltaGluonContract[CMres$, theg$]; 
          CMres$ = O2GluonContract[CMres$, theg$]; 
          CMres$ = CMres$ /. AllPermutations[Superscript[o, {theg$, 
-                G1$1_}]]->TR Superscript[\[CapitalDelta], {theg$, G1$1}]; 
-         CMres$ = CMres$ /. AllPermutations[Superscript[\[CapitalDelta], {theg$, 
-                G1$1_}]]*AllPermutations[Superscript[\[CapitalDelta], {theg$, 
-                G2$1_}]] -> Superscript[\[CapitalDelta], {G1$1, G2$1}]; 
-         CMres$ = CMres$ /. Superscript[\[CapitalDelta], {theg$, theg$}] -> 
+                G1$1_}]]->TR Superscript[CM\[CapitalDelta], {theg$, G1$1}]; 
+         CMres$ = CMres$ /. AllPermutations[Superscript[CM\[CapitalDelta], {theg$, 
+                G1$1_}]]*AllPermutations[Superscript[CM\[CapitalDelta], {theg$, 
+                G2$1_}]] -> Superscript[CM\[CapitalDelta], {G1$1, G2$1}]; 
+         CMres$ = CMres$ /. Superscript[CM\[CapitalDelta], {theg$, theg$}] -> 
             -1 + Nc^2; CMres$ = CMres$ /. AllPermutations[Superscript[
-                \[CapitalDelta], {G1$1, theg$}]]*Superscript[o, G3$1s_] /; 
+                CM\[CapitalDelta], {G1$1, theg$}]]*Superscript[o, G3$1s_] /; 
              Count[G3$1s, theg$] == 1 :> Superscript[o, 
              G3$1s /. theg$ -> G1$1]; CMres$ = CMres$ //. 
-           Superscript[\[CapitalDelta], {theg$, G1$1_}]^2 -> 
-            Superscript[\[CapitalDelta], {G1$1, G1$1}]; 
-         CMres$ = CMres$ //. Superscript[\[CapitalDelta], {G1$1_, theg$}]^2 -> 
-            Superscript[\[CapitalDelta], {G1$1, G1$1}]; 
+           Superscript[CM\[CapitalDelta], {theg$, G1$1_}]^2 -> 
+            Superscript[CM\[CapitalDelta], {G1$1, G1$1}]; 
+         CMres$ = CMres$ //. Superscript[CM\[CapitalDelta], {G1$1_, theg$}]^2 -> 
+            Superscript[CM\[CapitalDelta], {G1$1, G1$1}]; 
          CMres$ = Expand[CMres$]}]; CMres$]
  
 GluonContract /: GluonContract::usage = "GluonContract[Expr, Gs] contracts a \
@@ -1505,7 +1517,7 @@ RowBox[{\"Ga\", \",\", \"...\", \",\", \"theg\", \",\", \"...\", \",\", \
 \"GNg\"}], \"}\"}]},\n\"Superscript\"]\)."
  
 ODeltaGluonContract[CMExpr$_, theg$_] := 
-    CMExpr$ /. AllPermutations[Superscript[\[CapitalDelta], {G1$1_, theg$}]]*
+    CMExpr$ /. AllPermutations[Superscript[CM\[CapitalDelta], {G1$1_, theg$}]]*
         Superscript[o, G2$1s_] /; Count[G2$1s, theg$] == 1 :> 
       Superscript[o, G2$1s /. theg$ -> G1$1]
  
@@ -1563,75 +1575,75 @@ WhatIsWrongTerm[Term$_] := Module[{Gs$, G1$1, G2$1, Q1$1, Q2$1, AllInd$,
 WhatIsWrongTerm expects a single term and got a sum of terms."; 
         Message[WhatIsWrongTerm::indices]]; WhatIsWrongTerm::indices = 
        "The indices in `1` should sit upstairs in Superscript."; 
-      If[ !FreeQ[Term$, Subscript[\[CapitalDelta], Gs$_]], 
-       Term$ /. Subscript[\[CapitalDelta], Gs$_] :> Module[{}, 
-           Message[WhatIsWrongTerm::indices, Subscript[\[CapitalDelta], 
-              Gs$]]; Term$]; ]; If[ !FreeQ[Term$, Subscript[f, Gs$_]], 
-       Term$ /. Subscript[f, Gs$_] :> Module[{}, 
-           Message[WhatIsWrongTerm::indices, Subscript[f, Gs$]]; Term$]; ]; 
+      If[ !FreeQ[Term$, Subscript[CM\[CapitalDelta], Gs$_]], 
+       Term$ /. Subscript[CM\[CapitalDelta], Gs$_] :> Module[{}, 
+           Message[WhatIsWrongTerm::indices, Subscript[CM\[CapitalDelta], 
+              Gs$]]; Term$]; ]; If[ !FreeQ[Term$, Subscript[CMf, Gs$_]],
+       Term$ /. Subscript[CMf, Gs$_] :> Module[{},
+           Message[WhatIsWrongTerm::indices, Subscript[CMf, Gs$]]; Term$]; ];
       If[ !FreeQ[Term$, Subscript[d, Gs$_]], 
        Term$ /. Subscript[d, Gs$_] :> Module[{}, 
            Message[WhatIsWrongTerm::indices, Subscript[d, Gs$]]; Term$]; ]; 
       WhatIsWrongTerm::indices = "The form of `1` should be `2`."; 
-      If[ !FreeQ[Term$, Superscript[Subscript[\[Delta], Q1$1_], Q2$1_]], 
-       {Term$ /. Superscript[Subscript[\[Delta], Q1$1_], Q2$1_] :> 
+      If[ !FreeQ[Term$, Superscript[Subscript[CM\[Delta], Q1$1_], Q2$1_]], 
+       {Term$ /. Superscript[Subscript[CM\[Delta], Q1$1_], Q2$1_] :> 
            Module[{}, Message[WhatIsWrongTerm::indices, Superscript[Subscript[
-                \[Delta], Q1$1], Q2$1], Subscript[Superscript[\[Delta], 
+                CM\[Delta], Q1$1], Q2$1], Subscript[Superscript[CM\[Delta], 
                 Q1$1], Q2$1]]; Term$]; }]; 
-      If[ !FreeQ[Term$, Subscript[\[Delta], Q1$1_, Q2$1_]], 
-       {Term$ /. Subscript[\[Delta], Q1$1_, Q2$1_] :> Module[{}, 
-            Message[WhatIsWrongTerm::indices, Subscript[\[Delta], Q1$1, 
-               Q2$1], Subscript[Superscript[\[Delta], Q1$1], Q2$1]]; 
-             Term$]; }]; If[ !FreeQ[Term$, Subscript[\[Delta], 
-          {Q1$1_, Q2$1_}]], {Term$ /. Subscript[\[Delta], {Q1$1_, Q2$1_}] :> 
-           Module[{}, Message[WhatIsWrongTerm::indices, Subscript[\[Delta], {
-                Q1$1, Q2$1}], Subscript[Superscript[\[Delta], Q1$1], Q2$1]]; 
+      If[ !FreeQ[Term$, Subscript[CM\[Delta], Q1$1_, Q2$1_]], 
+       {Term$ /. Subscript[CM\[Delta], Q1$1_, Q2$1_] :> Module[{}, 
+            Message[WhatIsWrongTerm::indices, Subscript[CM\[Delta], Q1$1, 
+               Q2$1], Subscript[Superscript[CM\[Delta], Q1$1], Q2$1]]; 
+             Term$]; }]; If[ !FreeQ[Term$, Subscript[CM\[Delta], 
+          {Q1$1_, Q2$1_}]], {Term$ /. Subscript[CM\[Delta], {Q1$1_, Q2$1_}] :> 
+           Module[{}, Message[WhatIsWrongTerm::indices, Subscript[CM\[Delta], {
+                Q1$1, Q2$1}], Subscript[Superscript[CM\[Delta], Q1$1], Q2$1]]; 
              Term$]; }]; If[ !FreeQ[Term$, Superscript[
           Subscript[Superscript[CMt, Gs$_], Q1$1_], Q2$1_]],
        {Term$ /. Superscript[Subscript[Superscript[CMt, Gs$_], Q1$1_],
             Q2$1_] :> Module[{}, Message[WhatIsWrongTerm::indices, 
               Superscript[Subscript[Superscript[CMt, Gs$], Q1$1], Q2$1],
               Subscript[Superscript[Superscript[CMt, Gs$], Q1$1], Q2$1]];
-             Term$]; }]; If[ !FreeQ[Term$, Subscript[\[CapitalDelta], G1$1_, 
-          G2$1_]], {Term$ /. Subscript[\[CapitalDelta], G1$1_, G2$1_] :> 
+             Term$]; }]; If[ !FreeQ[Term$, Subscript[CM\[CapitalDelta], G1$1_, 
+          G2$1_]], {Term$ /. Subscript[CM\[CapitalDelta], G1$1_, G2$1_] :> 
            Module[{}, Message[WhatIsWrongTerm::indices, Subscript[
-               \[CapitalDelta], G1$1, G2$1], Superscript[\[CapitalDelta], {
+               CM\[CapitalDelta], G1$1, G2$1], Superscript[CM\[CapitalDelta], {
                 G1$1, G2$1}]]; Term$]; }]; 
       If[ !FreeQ[Term$, Subscript[o, Gs$_]], 
        {Term$ /. Subscript[o, Gs$_] :> Module[{}, 
             Message[WhatIsWrongTerm::indices, Subscript[o, Gs$], 
               Superscript[o, Gs$]]; Term$]; }]; WhatIsWrongTerm::indices2 = 
        "The form of `1` should be `2` or `3`."; 
-      If[ !FreeQ[Term$, Superscript[\[Delta], {G1$1_, G2$1_}]], 
-       {Term$ /. Superscript[\[Delta], {G1$1_, G2$1_}] :> 
+      If[ !FreeQ[Term$, Superscript[CM\[Delta], {G1$1_, G2$1_}]], 
+       {Term$ /. Superscript[CM\[Delta], {G1$1_, G2$1_}] :> 
            Module[{}, Message[WhatIsWrongTerm::indices2, Superscript[
-               \[Delta], {G1$1, G2$1}], Subscript[Superscript[\[Delta], 
-                G1$1], G2$1], Superscript[\[CapitalDelta], {G1$1, G2$1}]]; 
+               CM\[Delta], {G1$1, G2$1}], Subscript[Superscript[CM\[Delta], 
+                G1$1], G2$1], Superscript[CM\[CapitalDelta], {G1$1, G2$1}]]; 
              Term$]; }]; WhatIsWrongTerm::indices = 
        "The index `1` in `2` should sit inside Superscript, not Power."; 
-      If[ !FreeQ[Term$, Subscript[\[Delta]^(Q1$1_), Q2$1_]], 
-       {Term$ /. Subscript[\[Delta]^(Q1$1_), Q2$1_] :> 
+      If[ !FreeQ[Term$, Subscript[CM\[Delta]^(Q1$1_), Q2$1_]], 
+       {Term$ /. Subscript[CM\[Delta]^(Q1$1_), Q2$1_] :> 
            Module[{}, Message[WhatIsWrongTerm::indices, Q1$1, 
-              Subscript[Superscript[\[Delta], Q1$1], Q2$1]]; Term$]; }]; 
+              Subscript[Superscript[CM\[Delta], Q1$1], Q2$1]]; Term$]; }]; 
       WhatIsWrongTerm::indices = 
        "The number of indices in `1` should be `2`."; 
-      If[ !FreeQ[Term$, Superscript[\[CapitalDelta], Gs$_]], 
-       Term$ /. Superscript[\[CapitalDelta], Gs$_] :> 
+      If[ !FreeQ[Term$, Superscript[CM\[CapitalDelta], Gs$_]], 
+       Term$ /. Superscript[CM\[CapitalDelta], Gs$_] :> 
           Module[{}, If[Length[Gs$] != 2, {Message[WhatIsWrongTerm::indices, 
-                Superscript[\[CapitalDelta], Gs$], 2]; }]; Term$]; ]; 
+                Superscript[CM\[CapitalDelta], Gs$], 2]; }]; Term$]; ]; 
       If[ !FreeQ[Term$, Superscript[d, Gs$_]], 
        Term$ /. Superscript[d, Gs$_] :> Module[{}, 
            If[Length[Gs$] != 3, {Message[WhatIsWrongTerm::indices, 
                 Superscript[d, Gs$], 3]; }]; Term$]; ]; 
-      If[ !FreeQ[Term$, Superscript[f, Gs$_]], 
-       Term$ /. Superscript[f, Gs$_] :> Module[{}, 
+      If[ !FreeQ[Term$, Superscript[CMf, Gs$_]],
+       Term$ /. Superscript[CMf, Gs$_] :> Module[{},
            If[Length[Gs$] != 3, {Message[WhatIsWrongTerm::indices, 
-                Superscript[f, Gs$], 3]; }]; Term$]; ]; 
+                Superscript[CMf, Gs$], 3]; }]; Term$]; ];
       If[ !FreeQ[Term$, Superscript[If, Gs$_]], 
        WhatIsWrongTerm::term = "Encountered `1`, did you mean `2`?"; 
         Term$ /. Superscript[If, Gs$_] :> Module[{}, 
            Message[WhatIsWrongTerm::term, Superscript["(If)", Gs$], 
-             Superscript["I*"*f, Gs$]]; Term$]; ]; 
+             Superscript["I*"*CMf, Gs$]]; Term$]; ];
       If[ !FreeQ[Term$, Superscript[Id, Gs$_]], 
        WhatIsWrongTerm::term = "Encountered `1`, did you mean `2`?"; 
         Term$ /. Superscript[Id, Gs$_] :> Module[{}, 
@@ -1653,8 +1665,8 @@ WhatIsWrongTerm expects a single term and got a sum of terms.";
            {WhatIsWrongTerm::term = "Encountered `1`, did you mean `2`?"; 
              Message[WhatIsWrongTerm::term, Superscript[
                "(const*\[CapitalDelta])", Gs$], Superscript["const*"*
-                \[CapitalDelta], Gs$]]; }]; ]; If[Head[Term$] == List, 
-       If[ !FreeQ[Term$, f^(Gs$_)], WhatIsWrongTerm::term = "The structure \
+                CM\[CapitalDelta], Gs$]]; }]; ]; If[Head[Term$] == List, 
+       If[ !FreeQ[Term$, CMf^(Gs$_)], WhatIsWrongTerm::term = "The structure \
 constant f should be defined using Superscript, not Power."; 
           Message[WhatIsWrongTerm::term]; ]; If[ !FreeQ[Term$, d^(Gs$_)], 
          WhatIsWrongTerm::term = "The structure constant d should be defined \
@@ -1662,7 +1674,7 @@ using Superscript, not Power."; Message[WhatIsWrongTerm::term]; ];
         If[ !FreeQ[Term$, o^(Gs$_)], WhatIsWrongTerm::term = "The closed \
 quark-line o should be defined using Superscript, not Power."; 
           Message[WhatIsWrongTerm::term]; ]; 
-        If[ !FreeQ[Term$, \[CapitalDelta]^(Gs$_)], 
+        If[ !FreeQ[Term$, CM\[CapitalDelta]^(Gs$_)], 
          WhatIsWrongTerm::term = "The gluon delta function \[CapitalDelta] \
 should be defined using Superscript, not Power."; 
           Message[WhatIsWrongTerm::term]; ]; ]; AllSymbols$ = 
@@ -1677,8 +1689,9 @@ WhatIsWrongTerm /: WhatIsWrongTerm::usage = "WhatIsWrongTerm[Term] checks if \
 anything is obviously wrong with one Term, as opposed to a sum of terms, for \
 example if Power is used instead of Superscript."
 
-Protect[CMt,o,f,d,\[Delta],\[CapitalDelta],delta,Delta]
+Protect[CMt,o,CMf,d,CM\[Delta],CM\[CapitalDelta],CMdelta,CMDelta]
 Protect[AllPermutations, CyclicPermutations,SimpleRules,FDRules,Remove0To2ORules,Remove0To1ORules,Remove0ORules,OTSimpleRules,AllSimpleRules,OTGluonRules,TTGluonContract,OTGluonContract,TGluonContract,OGluonContract,OOGluonContract,O2GluonContract,ODeltaGluonContract,GluonContract,FDToTRules,OTToTRules,OTToTRules,FDToORules,GluonIndices,UpperQuarkIndices,LowerQuarkIndices,SortIndices,FindSymbols,AllPairs,AllIndices,DummyIndicesTerm,DummyIndices,SquareIndices,ReplaceDummyIndices,NTensorIndices,IdentifyParton,WhatIsWrong,WhatIsWrongTerm,SplitConstAndColor,SplitConstAndColorTerm,ContainsFD,ContainsT,ContainsO,ContainsQuarkDelta,ContainsGluonDelta,ContainsColor,OTThenAllSimpleRules,ExpandThenRules,CSimplify,CDot,CNorm,CDotMatrix,CVertex,CGamma,CGammaSymmetryTest,SPMAndSPMInvOfBasisType,GeneralBasis,OrthonormalBasis,OrthogonalBasis,TraceBasis,RemoveFD,NcMin,Verbose,MakeChecks,NMaxGluonCheck,CalledByOther];
+End[]
 EndPackage[]
 (* Private note *)
 (* This document was created Nov 7 2012 using NewColorMathRules90.nb. *)
