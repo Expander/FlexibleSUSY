@@ -1,13 +1,13 @@
 (* ::Package:: *)
 
-BeginPackage["ColorMath`"]
+BeginPackage["ColorMath`"];
 
 CM$VersionNumber = "1.0";
 CM$VersionDate = "February 12 2013";
 Print["Version: ", CM$VersionNumber, " (" CM$VersionDate, "), for Mathematica 7, 8 and 9."];
 Print["Author: Malin Sjodahl"];
 Print["For suggestions and bug reports contact malin.sjodahl@thep.lu.se."];
-Print["If you use this package for research, please cite the ColorMath paper, arXiv:1211.2099."]
+Print["If you use this package for research, please cite the ColorMath paper, arXiv:1211.2099."];
 
 CSimplify::usage = "";
 Nc::usage = "";
@@ -15,12 +15,12 @@ TR::usage = "";
 CMf::usage = "";
 CMt::usage = "";
 CM\[Delta]::usage = "";
-CM\[delta]::usage = "";
+CM\[Delta]::usage = "";
 CMdelta::usage = "";
 CMDelta::usage = "";
 
 
-Begin["Private`"]
+Begin["Private`"];
 Unprotect[Conjugate];
 Conjugate[Nc]=Nc;
 Conjugate[TR]=TR;

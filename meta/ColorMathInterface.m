@@ -253,8 +253,8 @@ ConnectColorLines[field1_, field2_] :=
       Assert[r1 === r2];
       Switch[r1,
          S, 1,
-         T, ColorMath`delta @@ (GetFieldColorIndex /@ {field1, field2}),
-         O, ColorMath`Delta @@ (GetFieldColorIndex /@ {field1, field2}),
+         T, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {field1, field2}),
+         O, ColorMath`CMDelta @@ (GetFieldColorIndex /@ {field1, field2}),
          (* for now we only deal with color scalars, triplets and octets *)
          _, Abort[]
       ]
@@ -265,14 +265,14 @@ ConnectColorLines[field1_, field2_] :=
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         Print["A ", c, "B ", ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})];
+         Print["A ", c, "B ", ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})];
          Return[
-            Coefficient[c, ColorMath`delta @@ (GetFieldColorIndex /@ {outP, inP})]
+            Coefficient[c, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})]
          ]
       ];
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
          Return[
-            Coefficient[c, ColorMath`t[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
+            Coefficient[c, ColorMath`CMt[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
          ]
       ];
       c
