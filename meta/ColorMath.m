@@ -18,7 +18,7 @@ Conjugate[Sqrt[Nc] ]=Sqrt[Nc];
 Conjugate[Sqrt[TR] ]=Sqrt[TR];
 Conjugate[Superscript[f,{G1$1_,G2$1_,G3$1_}]]:=Superscript[f,{G1$1,G2$1,G3$1}]
 Conjugate[Superscript[d,{G1$1_,G2$1_,G3$1_}]]:=Superscript[d,{G1$1,G2$1,G3$1}]
-Conjugate[Subscript[(Superscript[(Superscript[t,G1$1s_]),Q2$1_]), Q1$1_]]:=Subscript[(Superscript[(Superscript[t,Reverse[G1$1s]]),Q1$1]), Q2$1];
+Conjugate[Subscript[(Superscript[(Superscript[CMt,G1$1s_]),Q2$1_]), Q1$1_]]:=Subscript[(Superscript[(Superscript[CMt,Reverse[G1$1s]]),Q1$1]), Q2$1];
 Conjugate[Superscript[o,G1$1s_]]:=Superscript[o,Reverse[G1$1s]];
 Conjugate[Superscript[\[CapitalDelta],{G1$1_,G2$1_}]]:=Superscript[\[CapitalDelta],{G1$1,G2$1}]
 Conjugate[Subscript[(Superscript[\[Delta],Q1$1_]), Q2$1_]]:=Subscript[(Superscript[\[Delta],Q2$1]), Q1$1]
@@ -42,8 +42,8 @@ AllIndices /: AllIndices::usage = "AllIndices[Expr] returns a list of all \
  
 LowerQuarkIndices[CMExpr$_] := Module[{AllInd$, NewInd$}, 
      AllInd$ = {}; NewInd$ = Reap[CMExpr$ /. 
-         Subscript[Superscript[Superscript[t, Gs$_], Q1$1_], Q2$1_] :> 
-          Module[{}, Sow[Q2$1]; Subscript[Superscript[Superscript[t, {Gs$}], 
+         Subscript[Superscript[Superscript[CMt, Gs$_], Q1$1_], Q2$1_] :>
+          Module[{}, Sow[Q2$1]; Subscript[Superscript[Superscript[CMt, {Gs$}],
               Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[\[Delta], Q1$1_], 
@@ -64,14 +64,14 @@ Attributes[Subscript] = {NHoldRest}
  
 Attributes[Superscript] = {NHoldRest, ReadProtected}
  
-t[Gs$_, Q1$_, Q2$_] := Subscript[Superscript[Superscript[t, Gs$], Q1$], Q2$]
+CMt[Gs$_, Q1$_, Q2$_] := Subscript[Superscript[Superscript[CMt, Gs$], Q1$], Q2$]
  
 \[Delta][Q1$_, Q2$_] := Subscript[Superscript[\[Delta], Q1$], Q2$]
  
 UpperQuarkIndices[CMExpr$_] := Module[{AllInd$, NewInd$}, 
      AllInd$ = {}; NewInd$ = Reap[CMExpr$ /. 
-         Subscript[Superscript[Superscript[t, Gs$_], Q1$1_], Q2$1_] :> 
-          Module[{}, Sow[Q1$1]; Subscript[Superscript[Superscript[t, {Gs$}], 
+         Subscript[Superscript[Superscript[CMt, Gs$_], Q1$1_], Q2$1_] :>
+          Module[{}, Sow[Q1$1]; Subscript[Superscript[Superscript[CMt, {Gs$}],
               Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[\[Delta], Q1$1_], 
@@ -106,9 +106,9 @@ GluonIndices[CMExpr$_] := Module[{AllInd$, NewInd$},
           Module[{}, Table[Sow[Gs$[[GsI$]]], {GsI$, 1, Length[Gs$]}]; 
             Superscript[o, Gs$]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
-      NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[Superscript[t, Gs$_], 
+      NewInd$ = Reap[CMExpr$ /. Subscript[Superscript[Superscript[CMt, Gs$_],
             Q1$1_], Q2$1_] :> Module[{}, Table[Sow[Gs$[[gInd$]]], 
-             {gInd$, 1, Length[Gs$]}]; Subscript[Superscript[Superscript[t, {
+             {gInd$, 1, Length[Gs$]}]; Subscript[Superscript[Superscript[CMt, {
                 Gs$}], Q1$1], Q2$1]; ]]; If[Length[NewInd$[[2]]] != 0, 
        AllInd$ = DeleteDuplicates[Join[AllInd$, NewInd$[[2]][[1]]]]; ]; 
       AllInd$]
@@ -164,28 +164,28 @@ the number of terms, i.e. the union of SimpleRules, Remove0To2ORules and \
 OTSimpleRules."
  
 SimpleRules = {Subscript[Superscript[\[Delta], Q1$1_], q2$1_]*
-       Subscript[Superscript[Superscript[t, G1$1s_], q2$1_], Q3$1_] -> 
-      Subscript[Superscript[Superscript[t, G1$1s], Q1$1], Q3$1], 
+       Subscript[Superscript[Superscript[CMt, G1$1s_], q2$1_], Q3$1_] ->
+      Subscript[Superscript[Superscript[CMt, G1$1s], Q1$1], Q3$1],
      Subscript[Superscript[\[Delta], Q1$1_], Q2$1_]*
-       Subscript[Superscript[Superscript[t, G1$1s_], Q3$1_], Q1$1_] -> 
-      Subscript[Superscript[Superscript[t, G1$1s], Q3$1], Q2$1], 
+       Subscript[Superscript[Superscript[CMt, G1$1s_], Q3$1_], Q1$1_] ->
+      Subscript[Superscript[Superscript[CMt, G1$1s], Q3$1], Q2$1],
      Subscript[Superscript[\[Delta], Q1$1_], q2$1_]*
        Subscript[Superscript[\[Delta], q2$1_], Q3$1_] -> 
       Subscript[Superscript[\[Delta], Q1$1], Q3$1], 
      Subscript[Superscript[\[Delta], q1$1_], q1$1_] -> Nc, 
-     Subscript[Superscript[Superscript[t, {G1$1_}], q1$1_], q2$1_]*
-       Subscript[Superscript[Superscript[t, {G2$1_}], q2$1_], q1$1_] -> 
+     Subscript[Superscript[Superscript[CMt, {G1$1_}], q1$1_], q2$1_]*
+       Subscript[Superscript[Superscript[CMt, {G2$1_}], q2$1_], q1$1_] ->
       TR*Superscript[\[CapitalDelta], {G1$1, G2$1}], 
-     Subscript[Superscript[Superscript[t, {G1$1_}], q1$1_], q1$1_] -> 0, 
-     Subscript[Superscript[Superscript[t, G1$1s_], q1$1_], q2$1_]*
-       Subscript[Superscript[Superscript[t, G2$1s_], q2$1_], q1$1_] -> 
+     Subscript[Superscript[Superscript[CMt, {G1$1_}], q1$1_], q1$1_] -> 0,
+     Subscript[Superscript[Superscript[CMt, G1$1s_], q1$1_], q2$1_]*
+       Subscript[Superscript[Superscript[CMt, G2$1s_], q2$1_], q1$1_] ->
       Superscript[o, Join[G1$1s, G2$1s]], 
-     Subscript[Superscript[Superscript[t, G1$1s_], q1$1_], q1$1_] -> 
+     Subscript[Superscript[Superscript[CMt, G1$1s_], q1$1_], q1$1_] ->
       Superscript[o, G1$1s], 
-     Subscript[Superscript[Superscript[t, G1$1s_], Q1$1_], q1$1_]*
-       Subscript[Superscript[Superscript[t, G2$1s_], q1$1_], Q2$1_] -> 
-      Subscript[Superscript[Superscript[t, Join[G1$1s, G2$1s]], Q1$1], Q2$1], 
-     Subscript[Superscript[Superscript[t, {}], Q1$1_], Q2$1_] -> 
+     Subscript[Superscript[Superscript[CMt, G1$1s_], Q1$1_], q1$1_]*
+       Subscript[Superscript[Superscript[CMt, G2$1s_], q1$1_], Q2$1_] ->
+      Subscript[Superscript[Superscript[CMt, Join[G1$1s, G2$1s]], Q1$1], Q2$1],
+     Subscript[Superscript[Superscript[CMt, {}], Q1$1_], Q2$1_] ->
       Subscript[Superscript[\[Delta], Q1$1], Q2$1], 
      Superscript[o, {G1$1_, G2$1_}] -> TR*Superscript[\[CapitalDelta], 
         {G1$1, G2$1}], (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
@@ -208,9 +208,9 @@ SimpleRules = {Subscript[Superscript[\[Delta], Q1$1_], q2$1_]*
      Superscript[\[CapitalDelta], {G1$1_, G1$1_}] -> -1 + Nc^2, 
      (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
          Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
-        Subscript[Superscript[Superscript[t, G3$1s_], Q1$1_], Q2$1_] /; 
+        Subscript[Superscript[Superscript[CMt, G3$1s_], Q1$1_], Q2$1_] /;
        Count[G3$1s, g2$1] == 1 :> Subscript[Superscript[
-        Superscript[t, G3$1s /. g2$1 -> G1$1], Q1$1], Q2$1], 
+        Superscript[CMt, G3$1s /. g2$1 -> G1$1], Q1$1], Q2$1],
      (Superscript[\[CapitalDelta], {G1$1_, g2$1_}] | 
          Superscript[\[CapitalDelta], {g2$1_, G1$1_}])*
         Superscript[o, G3$1s_] /; Count[G3$1s, g2$1] == 1 :> 
@@ -246,21 +246,21 @@ OTSimpleRules = {Superscript[o, Gs$_ /; NMaxGluonCheck[Gs$] == 2] :>
                 Print["New ", Superscript[o, Newgs1$]]; }]; 
              CMres$ = (-(TR/Nc))*Superscript[o, Newgs1$] /. 
                Remove0To2ORules; }, {CMres$ = Superscript[o, Gs$]; }]; ]; 
-        CMres$], Subscript[Superscript[Superscript[t, 
+        CMres$], Subscript[Superscript[Superscript[CMt,
          Gs$_ /; NMaxGluonCheck[Gs$] == 2], Q1$1_], Q2$1_] :> 
       Module[{place$, Newgs1$, CMres$, Multiplicities$, NNei$, NNNei$}, 
        Multiplicities$ = Transpose[Tally[Gs$]][[2]]; 
-        CMres$ = Subscript[Superscript[Superscript[t, Gs$], Q1$1], Q2$1]; 
+        CMres$ = Subscript[Superscript[Superscript[CMt, Gs$], Q1$1], Q2$1];
         Newgs1$ = Gs$; NNei$ = 0; For[place$ = 1, place$ < Length[Newgs1$], 
          place$++, If[Newgs1$[[place$]] == Newgs1$[[place$ + 1]], 
            {Newgs1$ = Drop[Newgs1$, {place$, place$ + 1}]; NNei$++; 
-             CMres$ = Subscript[Superscript[Superscript[t, Newgs1$], Q1$1], 
+             CMres$ = Subscript[Superscript[Superscript[CMt, Newgs1$], Q1$1],
                 Q2$1] /. Remove0ORules; place$ = place$ - 1; }]; ]; 
         CMres$ = CMres$*((TR/Nc)*(Nc^2 - 1))^NNei$; NNNei$ = 0; 
         For[place$ = 1, place$ < Length[Newgs1$] - 1, place$++, 
          If[Newgs1$[[place$]] == Newgs1$[[place$ + 2]], 
            {NNNei$++; Newgs1$ = Newgs1$ = Drop[Drop[Newgs1$, {place$}], 
-                {place$ + 1}]; CMres$ = Subscript[Superscript[Superscript[t, 
+                {place$ + 1}]; CMres$ = Subscript[Superscript[Superscript[CMt,
                    Newgs1$], Q1$1], Q2$1]*((TR/Nc)*(Nc^2 - 1))^NNei$ /. 
                Remove0ORules; place$ = place$ - 1; }]; ]; 
         CMres$ = CMres$*(-(TR/Nc))^NNNei$; CMres$ /. Remove0ORules], 
@@ -294,7 +294,7 @@ quark-lines with 0 to 2 gluons, \!\(\*TemplateBox[{\"o\",RowBox[{\"{\", \
 \!\(\*TemplateBox[{\"\[CapitalDelta]\",RowBox[{\"{\", RowBox[{\"G1\", \",\", \
 \"G2\"}], \"}\"}]},\n\"Superscript\"]\)"
  
-Remove0ORules = {Subscript[Superscript[Superscript[t, 
+Remove0ORules = {Subscript[Superscript[Superscript[CMt,
          LIndV$_ /; Length[LIndV$] == 0], Q1$1_], Q2$1_] -> 
       Subscript[Superscript[\[Delta], Q1$1], Q2$1]}
  
@@ -315,13 +315,13 @@ RowBox[{\"...\", \"gNg\"}]}], \"}\"}]},\n\"Superscript\"]\)^2."
 OTToTRules = {Superscript[o, Gs_] :> Module[{qVecInd$, nInd$, qInd$}, 
        nInd$ = Length[Gs]; qVecInd$ = Table[Unique[qInd$], 
           {uind$, nInd$ + 1}]; Product[Subscript[Superscript[
-            Superscript[t, {Gs[[gInd$]]}], qVecInd$[[gInd$]]], 
+            Superscript[CMt, {Gs[[gInd$]]}], qVecInd$[[gInd$]]],
            qVecInd$[[gInd$ + 1]]], {gInd$, Length[Gs]}] /. 
          qVecInd$[[nInd$ + 1]] -> qVecInd$[[1]]], 
-     Subscript[Superscript[Superscript[t, Gs_], Q1$1_], Q2$1_] :> 
+     Subscript[Superscript[Superscript[CMt, Gs_], Q1$1_], Q2$1_] :>
       Module[{qVecInd$, nInd$, qInd$}, nInd$ = Length[Gs]; 
         qVecInd$ = Table[Unique[qInd$], {uind$, nInd$ + 1}]; 
-        Product[Subscript[Superscript[Superscript[t, {Gs[[gInd$]]}], 
+        Product[Subscript[Superscript[Superscript[CMt, {Gs[[gInd$]]}],
             qVecInd$[[gInd$]]], qVecInd$[[gInd$ + 1]]], 
           {gInd$, Length[Gs]}] /. {qVecInd$[[1]] -> Q1$1, 
           qVecInd$[[nInd$ + 1]] -> Q2$1}]}
@@ -354,7 +354,7 @@ OTGluonRules = {Superscript[o, g1$1s_]*Superscript[o, g2$1s_] /;
         NewL2$ = Drop[g2$1s, {Position[g2$1s, theg$][[1,1]]}]; 
         Supterm$ = (1/Nc)*Superscript[o, NewL1$]*Superscript[o, NewL2$]; 
         TR*(Superscript[o, NewL$] - Supterm$) /. Remove0To2ORules], 
-     Subscript[Superscript[Superscript[t, g1$1s_], Q1$1_], Q2$1_]*
+     Subscript[Superscript[Superscript[CMt, g1$1s_], Q1$1_], Q2$1_]*
         Superscript[o, g2$1s_] /; Intersection[g1$1s, g2$1s] != 
         {}*TextCell[""]*TextCell[""]*TextCell[""] :> 
       Module[{theg$, Place1$, Place2$, g1$1s1, g1$1s2, g2$1s1, g2$1s2, NewL$, 
@@ -368,12 +368,12 @@ OTGluonRules = {Superscript[o, g1$1s_]*Superscript[o, g2$1s_] /;
         NewL$ = Join[g1$1s1, g2$1s2, g2$1s1, g1$1s2]; 
         NewL1$ = Drop[g1$1s, {Position[g1$1s, theg$][[1,1]]}]; 
         NewL2$ = Drop[g2$1s, {Position[g2$1s, theg$][[1,1]]}]; 
-        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[t, NewL1$], 
+        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[CMt, NewL1$],
             Q1$1], Q2$1]*Superscript[o, NewL2$]; 
-        TR*(Subscript[Superscript[Superscript[t, NewL$], Q1$1], Q2$1] - 
+        TR*(Subscript[Superscript[Superscript[CMt, NewL$], Q1$1], Q2$1] -
            Supterm$) /. Union[Remove0To2ORules, Remove0ORules]], 
-     Subscript[Superscript[Superscript[t, g1$1s_], Q1$1_], Q2$1_]*
-        Subscript[Superscript[Superscript[t, g2$1s_], Q3$1_], Q4$1_] /; 
+     Subscript[Superscript[Superscript[CMt, g1$1s_], Q1$1_], Q2$1_]*
+        Subscript[Superscript[Superscript[CMt, g2$1s_], Q3$1_], Q4$1_] /;
        Intersection[g1$1s, g2$1s] != {}*TextCell[""]*TextCell[""]*
          TextCell[""] :> Module[{theg$, Place1$, Place2$, g1$1s1, g1$1s2, 
         g2$1s1, g2$1s2, NewLa$, NewLb$, NewL1$, NewL2$, SecondL$, FirstL$, 
@@ -388,12 +388,12 @@ OTGluonRules = {Superscript[o, g1$1s_]*Superscript[o, g2$1s_] /;
         NewLb$ = Join[g2$1s1, g1$1s2]; NewL1$ = Drop[g1$1s, 
           {Position[g1$1s, theg$][[1,1]]}]; NewL2$ = 
          Drop[g2$1s, {Position[g2$1s, theg$][[1,1]]}]; 
-        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[t, NewL1$], 
-            Q1$1], Q2$1]*Subscript[Superscript[Superscript[t, NewL2$], Q3$1], 
-           Q4$1]; TR*(Subscript[Superscript[Superscript[t, NewLa$], Q1$1], 
-             Q4$1]*Subscript[Superscript[Superscript[t, NewLb$], Q3$1], 
+        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[CMt, NewL1$],
+            Q1$1], Q2$1]*Subscript[Superscript[Superscript[CMt, NewL2$], Q3$1],
+           Q4$1]; TR*(Subscript[Superscript[Superscript[CMt, NewLa$], Q1$1],
+             Q4$1]*Subscript[Superscript[Superscript[CMt, NewLb$], Q3$1],
              Q2$1] - Supterm$) /. Union[Remove0To2ORules, Remove0ORules]], 
-     Subscript[Superscript[Superscript[t, Gs$_ /; 
+     Subscript[Superscript[Superscript[CMt, Gs$_ /;
           Max[Transpose[Tally[Gs$]][[2]]] == 2], Q1$1_], Q2$1_] :> 
       Module[{muli$, theg$, Place1$, Place2$, Newgs1$, Newgs2$, CMres$, rem$, 
         Multiplicities$}, Multiplicities$ = Transpose[Tally[Gs$]][[2]]; 
@@ -402,23 +402,23 @@ OTGluonRules = {Superscript[o, g1$1s_]*Superscript[o, g2$1s_] /;
         Place1$ = Position[Gs$, theg$][[1]][[1]]; 
         Place2$ = Position[Gs$, theg$][[2]][[1]]; If[Place2$ - Place1$ == 1, 
          {Newgs1$ = Drop[Gs$, {Place1$, Place2$}]; 
-           CMres$ = (TR/Nc)*(Nc^2 - 1)*Subscript[Superscript[Superscript[t, 
+           CMres$ = (TR/Nc)*(Nc^2 - 1)*Subscript[Superscript[Superscript[CMt,
                  Newgs1$], Q1$1], Q2$1] /. Remove0ORules; }, 
          If[Place2$ - Place1$ == 2, {Newgs1$ = Drop[Drop[Gs$, {Place2$}], 
               {Place1$}]; If[ !Length[Union[Gs$]] - Length[Union[Newgs1$]] == 
                1, {OTGluonRules::check = 
                 "The old quark-line was `1` and the new is `2`."; Message[
-                OTGluonRules::check, Subscript[Superscript[Superscript[t, 
-                   Gs$], Q1$1], Q2$1], Subscript[Superscript[Superscript[t, 
+                OTGluonRules::check, Subscript[Superscript[Superscript[CMt,
+                   Gs$], Q1$1], Q2$1], Subscript[Superscript[Superscript[CMt,
                    Newgs1$], Q1$1], Q2$1]]; }]; CMres$ = 
-             (-(TR/Nc))*Subscript[Superscript[Superscript[t, Newgs1$], Q1$1], 
+             (-(TR/Nc))*Subscript[Superscript[Superscript[CMt, Newgs1$], Q1$1],
                 Q2$1] /. Remove0ORules; }, 
           {Newgs1$ = Drop[Drop[Gs$, {Place2$}], {Place1$}]; 
             Newgs2$ = Drop[Gs$, {Place1$, Place2$}]; 
             rem$ = Take[Gs$, {Place1$ + 1, Place2$ - 1}]; 
-            CMres$ = TR*(Subscript[Superscript[Superscript[t, Newgs2$], Q1$1], 
+            CMres$ = TR*(Subscript[Superscript[Superscript[CMt, Newgs2$], Q1$1],
                   Q2$1]*Superscript[o, rem$] - (1/Nc)*Subscript[Superscript[
-                   Superscript[t, Newgs1$], Q1$1], Q2$1]) /. 
+                   Superscript[CMt, Newgs1$], Q1$1], Q2$1]) /.
               Remove0ORules; }]]; CMres$], 
      Superscript[o, Gs$_ /; Max[Transpose[Tally[Gs$]][[2]]] == 2] :> 
       Module[{muli$, theg$, Place1$, Place2$, Newgs1$, Newgs2$, CMres$, rem$, 
@@ -444,8 +444,8 @@ OTGluonRules = {Superscript[o, g1$1s_]*Superscript[o, g2$1s_] /;
             rem$ = Take[Gs$, {Place1$ + 1, Place2$ - 1}]; 
             CMres$ = TR*(Superscript[o, Newgs2$]*Superscript[o, rem$] - 
                 (1/Nc)*Superscript[o, Newgs1$]) /. Remove0To2ORules; }]]; 
-        CMres$], Subscript[Superscript[Superscript[t, {g1$1_}], Q1$1_], Q2$1_]*
-       Subscript[Superscript[Superscript[t, {g1$1_}], Q3$1_], Q4$1_] -> 
+        CMres$], Subscript[Superscript[Superscript[CMt, {g1$1_}], Q1$1_], Q2$1_]*
+       Subscript[Superscript[Superscript[CMt, {g1$1_}], Q3$1_], Q4$1_] ->
       TR*(Subscript[Superscript[\[Delta], Q1$1], Q4$1]*
          Subscript[Superscript[\[Delta], Q3$1], Q2$1] - 
         (Subscript[Superscript[\[Delta], Q1$1], Q2$1]*
@@ -585,7 +585,7 @@ expression Expr contains closed quark-lines \
 \",\", \"Gk\"}], \"}\"}]},\n\"Superscript\"]\), and False otherwise."
  
 ContainsT[CMExpr$_] := Module[{TrueOrFalse$}, TrueOrFalse$ = False; 
-      If[ !FreeQ[CMExpr$, Subscript[Superscript[Superscript[t, Gs$_], Q1$1_], 
+      If[ !FreeQ[CMExpr$, Subscript[Superscript[Superscript[CMt, Gs$_], Q1$1_],
           Q2$1_]], TrueOrFalse$ = True]; TrueOrFalse$]
  
 ContainsT /: ContainsT::usage = "ContainsT[Expr] returns True if the \
@@ -1104,8 +1104,8 @@ CVertex[type$_, I1$_, I2$_, G3$1_] := Module[{CMres$},
        {CVertex::check = "CVertex[type,I1,I2,G3] expects its first argument \
 to be UpperQuark, LowerQuark or Gluon, got `1`."; Message[CVertex::check, 
           type$]; }]; CMres$ = Switch[type$, UpperQuark, 
-        Subscript[Superscript[Superscript[t, {G3$1}], I1$], I2$], LowerQuark, 
-        Subscript[Superscript[Superscript[t, {G3$1}], I2$], I1$], Gluon, 
+        Subscript[Superscript[Superscript[CMt, {G3$1}], I1$], I2$], LowerQuark,
+        Subscript[Superscript[Superscript[CMt, {G3$1}], I2$], I1$], Gluon,
         I*Superscript[f, {I1$, I2$, G3$1}]]; CMres$]
  
 CVertex /: CVertex::usage = "CVertex[type, I1, I2, G3] returns a vertex with \
@@ -1287,20 +1287,20 @@ dummy indices in all terms."
  
 FDToTRules := {Superscript[f, {G1$1_, G2$1_, G3$1_}] :> 
       (1/(I*TR))*Module[{q1$1, q2$1, q3$1}, 
-        Subscript[Superscript[Superscript[t, {G1$1}], q1$1], q2$1]*
-          Subscript[Superscript[Superscript[t, {G2$1}], q2$1], q3$1]*
-          Subscript[Superscript[Superscript[t, {G3$1}], q3$1], q1$1] - 
-         Subscript[Superscript[Superscript[t, {G2$1}], q1$1], q2$1]*
-          Subscript[Superscript[Superscript[t, {G1$1}], q2$1], q3$1]*
-          Subscript[Superscript[Superscript[t, {G3$1}], q3$1], q1$1]], 
+        Subscript[Superscript[Superscript[CMt, {G1$1}], q1$1], q2$1]*
+          Subscript[Superscript[Superscript[CMt, {G2$1}], q2$1], q3$1]*
+          Subscript[Superscript[Superscript[CMt, {G3$1}], q3$1], q1$1] -
+         Subscript[Superscript[Superscript[CMt, {G2$1}], q1$1], q2$1]*
+          Subscript[Superscript[Superscript[CMt, {G1$1}], q2$1], q3$1]*
+          Subscript[Superscript[Superscript[CMt, {G3$1}], q3$1], q1$1]],
      Superscript[d, {G1$1_, G2$1_, G3$1_}] :> 
       (1/TR)*Module[{q1$1, q2$1, q3$1}, 
-        Subscript[Superscript[Superscript[t, {G1$1}], q1$1], q2$1]*
-          Subscript[Superscript[Superscript[t, {G2$1}], q2$1], q3$1]*
-          Subscript[Superscript[Superscript[t, {G3$1}], q3$1], q1$1] + 
-         Subscript[Superscript[Superscript[t, {G2$1}], q1$1], q2$1]*
-          Subscript[Superscript[Superscript[t, {G1$1}], q2$1], q3$1]*
-          Subscript[Superscript[Superscript[t, {G3$1}], q3$1], q1$1]]}
+        Subscript[Superscript[Superscript[CMt, {G1$1}], q1$1], q2$1]*
+          Subscript[Superscript[Superscript[CMt, {G2$1}], q2$1], q3$1]*
+          Subscript[Superscript[Superscript[CMt, {G3$1}], q3$1], q1$1] +
+         Subscript[Superscript[Superscript[CMt, {G2$1}], q1$1], q2$1]*
+          Subscript[Superscript[Superscript[CMt, {G1$1}], q2$1], q3$1]*
+          Subscript[Superscript[Superscript[CMt, {G3$1}], q3$1], q1$1]]}
  
 FDToTRules /: FDToTRules::usage = "Replaces structure constants, \
 \!\(\*TemplateBox[{\"f\",RowBox[{\"{\", RowBox[{\"G1\", \",\", \"G2\", \",\", \
@@ -1415,29 +1415,29 @@ RowBox[{\"{\", RowBox[{\"G1\", \",\", \"...\", \",\", \"theg\", \",\", \
 once in another closed quark-line."
  
 TGluonContract[CMExpr$_, theg$_] := 
-    CMExpr$ /. Subscript[Superscript[Superscript[t, 
+    CMExpr$ /. Subscript[Superscript[Superscript[CMt,
          Gs$_ /; Count[Gs$, theg$] == 2], Q1$1_], Q2$1_] :> 
       Module[{Place1$, Place2$, Newgs1$, Newgs2$, CMres$, rem$, 
         Multiplicities$}, Multiplicities$ = Transpose[Tally[Gs$]][[2]]; 
         Place1$ = Position[Gs$, theg$][[1]][[1]]; 
         Place2$ = Position[Gs$, theg$][[2]][[1]]; If[Place2$ - Place1$ == 1, 
          {Newgs1$ = Drop[Gs$, {Place1$, Place2$}]; 
-           CMres$ = (TR/Nc)*(Nc^2 - 1)*Subscript[Superscript[Superscript[t, 
+           CMres$ = (TR/Nc)*(Nc^2 - 1)*Subscript[Superscript[Superscript[CMt,
                  Newgs1$], Q1$1], Q2$1] /. Remove0ORules; }, 
          If[Place2$ - Place1$ == 2, {Newgs1$ = Drop[Drop[Gs$, {Place2$}], 
               {Place1$}]; If[ !Length[Union[Gs$]] - Length[Union[Newgs1$]] == 
                1, {Print["TGluonContract: Warning "]; Print[
-                "TGluonContract: Old ", Subscript[Superscript[Superscript[t, 
+                "TGluonContract: Old ", Subscript[Superscript[Superscript[CMt,
                    Gs$], Q1$1], Q2$1]]; Print["TGluonContract: New ", 
-                Subscript[Superscript[Superscript[t, Newgs1$], Q1$1], 
+                Subscript[Superscript[Superscript[CMt, Newgs1$], Q1$1],
                  Q2$1]]; }]; CMres$ = (-(TR/Nc))*Subscript[Superscript[
-                 Superscript[t, Newgs1$], Q1$1], Q2$1] /. Remove0ORules; }, 
+                 Superscript[CMt, Newgs1$], Q1$1], Q2$1] /. Remove0ORules; },
           {Newgs1$ = Drop[Drop[Gs$, {Place2$}], {Place1$}]; 
             Newgs2$ = Drop[Gs$, {Place1$, Place2$}]; 
             rem$ = Take[Gs$, {Place1$ + 1, Place2$ - 1}]; 
-            CMres$ = TR*(Subscript[Superscript[Superscript[t, Newgs2$], Q1$1], 
+            CMres$ = TR*(Subscript[Superscript[Superscript[CMt, Newgs2$], Q1$1],
                   Q2$1]*Superscript[o, rem$] - (1/Nc)*Subscript[Superscript[
-                   Superscript[t, Newgs1$], Q1$1], Q2$1]) /. 
+                   Superscript[CMt, Newgs1$], Q1$1], Q2$1]) /.
               Remove0ORules; }]]; CMres$]
  
 TGluonContract /: TGluonContract::usage = "TGluonContract[Expr,theg] \
@@ -1448,8 +1448,8 @@ RowBox[{\"{\", RowBox[{\"G1\", \",\", \"...\", \",\", \"theg\", \",\", \
 \"Superscript\"],\"Q1\"},\n\"Superscript\"], \"Q2\"]\)."
  
 TTGluonContract[CMExpr$_, theg$_] := 
-    CMExpr$ /. Subscript[Superscript[Superscript[t, g1$1s_], Q1$1_], Q2$1_]*
-        Subscript[Superscript[Superscript[t, g2$1s_], Q3$1_], Q4$1_] /; 
+    CMExpr$ /. Subscript[Superscript[Superscript[CMt, g1$1s_], Q1$1_], Q2$1_]*
+        Subscript[Superscript[Superscript[CMt, g2$1s_], Q3$1_], Q4$1_] /;
        Count[g1$1s, theg$] == 1 && Count[g2$1s, theg$] == 1 :> 
       Module[{Place1$, Place2$, g1$1s1, g1$1s2, g2$1s1, g2$1s2, NewLa$, 
         NewLb$, NewL1$, NewL2$, SecondL$, FirstL$, Supterm$}, 
@@ -1462,10 +1462,10 @@ TTGluonContract[CMExpr$_, theg$_] :=
         NewLb$ = Join[g2$1s1, g1$1s2]; NewL1$ = Drop[g1$1s, 
           {Position[g1$1s, theg$][[1,1]]}]; NewL2$ = 
          Drop[g2$1s, {Position[g2$1s, theg$][[1,1]]}]; 
-        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[t, NewL1$], 
-            Q1$1], Q2$1]*Subscript[Superscript[Superscript[t, NewL2$], Q3$1], 
-           Q4$1]; TR*(Subscript[Superscript[Superscript[t, NewLa$], Q1$1], 
-             Q4$1]*Subscript[Superscript[Superscript[t, NewLb$], Q3$1], 
+        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[CMt, NewL1$],
+            Q1$1], Q2$1]*Subscript[Superscript[Superscript[CMt, NewL2$], Q3$1],
+           Q4$1]; TR*(Subscript[Superscript[Superscript[CMt, NewLa$], Q1$1],
+             Q4$1]*Subscript[Superscript[Superscript[CMt, NewLb$], Q3$1],
              Q2$1] - Supterm$) /. Union[Remove0To1ORules, Remove0ORules]]
  
 TTGluonContract /: TTGluonContract::usage = "TTGluonContract[Expr,theg] \
@@ -1477,7 +1477,7 @@ RowBox[{\"{\", RowBox[{\"G1\", \",\", \"...\", \",\", \"theg\", \",\", \
 open quark-line."
  
 OTGluonContract[CMExpr$_, theg$_] := 
-    CMExpr$ /. Subscript[Superscript[Superscript[t, g1$1s_], Q1$1_], Q2$1_]*
+    CMExpr$ /. Subscript[Superscript[Superscript[CMt, g1$1s_], Q1$1_], Q2$1_]*
         Superscript[o, g2$1s_] /; Count[g1$1s, theg$] == 1 && 
         Count[g2$1s, theg$] == 1 :> Module[{Place1$, Place2$, g1$1s1, g1$1s2, 
         g2$1s1, g2$1s2, NewL$, NewL1$, NewL2$, SecondL$, FirstL$, Supterm$}, 
@@ -1490,9 +1490,9 @@ OTGluonContract[CMExpr$_, theg$_] :=
         NewL$ = Join[g1$1s1, g2$1s2, g2$1s1, g1$1s2]; 
         NewL1$ = Drop[g1$1s, {Position[g1$1s, theg$][[1,1]]}]; 
         NewL2$ = Drop[g2$1s, {Position[g2$1s, theg$][[1,1]]}]; 
-        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[t, NewL1$], 
+        Supterm$ = (1/Nc)*Subscript[Superscript[Superscript[CMt, NewL1$],
             Q1$1], Q2$1]*Superscript[o, NewL2$]; 
-        TR*(Subscript[Superscript[Superscript[t, NewL$], Q1$1], Q2$1] - 
+        TR*(Subscript[Superscript[Superscript[CMt, NewL$], Q1$1], Q2$1] -
            Supterm$) /. Union[Remove0To1ORules, Remove0ORules]]
  
 OTGluonContract /: OTGluonContract::usage = "OTGluonContract[Expr,theg] \
@@ -1587,11 +1587,11 @@ WhatIsWrongTerm expects a single term and got a sum of terms.";
            Module[{}, Message[WhatIsWrongTerm::indices, Subscript[\[Delta], {
                 Q1$1, Q2$1}], Subscript[Superscript[\[Delta], Q1$1], Q2$1]]; 
              Term$]; }]; If[ !FreeQ[Term$, Superscript[
-          Subscript[Superscript[t, Gs$_], Q1$1_], Q2$1_]], 
-       {Term$ /. Superscript[Subscript[Superscript[t, Gs$_], Q1$1_], 
+          Subscript[Superscript[CMt, Gs$_], Q1$1_], Q2$1_]],
+       {Term$ /. Superscript[Subscript[Superscript[CMt, Gs$_], Q1$1_],
             Q2$1_] :> Module[{}, Message[WhatIsWrongTerm::indices, 
-              Superscript[Subscript[Superscript[t, Gs$], Q1$1], Q2$1], 
-              Subscript[Superscript[Superscript[t, Gs$], Q1$1], Q2$1]]; 
+              Superscript[Subscript[Superscript[CMt, Gs$], Q1$1], Q2$1],
+              Subscript[Superscript[Superscript[CMt, Gs$], Q1$1], Q2$1]];
              Term$]; }]; If[ !FreeQ[Term$, Subscript[\[CapitalDelta], G1$1_, 
           G2$1_]], {Term$ /. Subscript[\[CapitalDelta], G1$1_, G2$1_] :> 
            Module[{}, Message[WhatIsWrongTerm::indices, Subscript[
@@ -1677,7 +1677,7 @@ WhatIsWrongTerm /: WhatIsWrongTerm::usage = "WhatIsWrongTerm[Term] checks if \
 anything is obviously wrong with one Term, as opposed to a sum of terms, for \
 example if Power is used instead of Superscript."
 
-Protect[t,o,f,d,\[Delta],\[CapitalDelta],delta,Delta]
+Protect[CMt,o,f,d,\[Delta],\[CapitalDelta],delta,Delta]
 Protect[AllPermutations, CyclicPermutations,SimpleRules,FDRules,Remove0To2ORules,Remove0To1ORules,Remove0ORules,OTSimpleRules,AllSimpleRules,OTGluonRules,TTGluonContract,OTGluonContract,TGluonContract,OGluonContract,OOGluonContract,O2GluonContract,ODeltaGluonContract,GluonContract,FDToTRules,OTToTRules,OTToTRules,FDToORules,GluonIndices,UpperQuarkIndices,LowerQuarkIndices,SortIndices,FindSymbols,AllPairs,AllIndices,DummyIndicesTerm,DummyIndices,SquareIndices,ReplaceDummyIndices,NTensorIndices,IdentifyParton,WhatIsWrong,WhatIsWrongTerm,SplitConstAndColor,SplitConstAndColorTerm,ContainsFD,ContainsT,ContainsO,ContainsQuarkDelta,ContainsGluonDelta,ContainsColor,OTThenAllSimpleRules,ExpandThenRules,CSimplify,CDot,CNorm,CDotMatrix,CVertex,CGamma,CGammaSymmetryTest,SPMAndSPMInvOfBasisType,GeneralBasis,OrthonormalBasis,OrthogonalBasis,TraceBasis,RemoveFD,NcMin,Verbose,MakeChecks,NMaxGluonCheck,CalledByOther];
 EndPackage[]
 (* Private note *)
