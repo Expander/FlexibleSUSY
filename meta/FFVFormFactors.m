@@ -129,7 +129,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
 
 CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
    "val += std::complex<double> " <> (ToString @ N[MyReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
-                     StringRiffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, F, S}, ","]  <>
+                     StringJoin @ Riffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, F, S}, ","]  <>
                      ">::value(indices1, indices2, context);\n";
 
 f[inFermion_, outFermion_, spectator_] :=

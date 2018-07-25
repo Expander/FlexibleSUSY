@@ -105,7 +105,7 @@ FFMassiveVFormFactorsCreateInterface[inFermion_, outFermion_, spectator_, loopPa
 
                StringJoin[
                   ("val += std::complex<double> " <> (ToString @ N[MyReIm@ColorN[#[[2,1]]], 16]) <> " * FFMassiveVVertexCorrectionFS<" <>
-                   StringRiffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
+                   StringJoin @ Riffle[CXXDiagrams`CXXNameOfField /@ {inFermion, outFermion, spectator, #[[1,1]], #[[1,2]]}, ","]  <>
                    ">::value(indices1, indices2, context);\n") & /@ loopParticles
                ] <> "\n" <>
 
