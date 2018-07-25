@@ -31,6 +31,11 @@ f::usage = "";
 
 Begin["Private`"];
 
+MyReIm[z_] := If[$VersionNumber >= 10.1,
+   ReIm[z],
+   {Re[z], Im[z]}
+];
+
 FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon.";
 
 FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
@@ -123,7 +128,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
   ];
 
 CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
-   "val += std::complex<double> " <> (ToString @ N[ReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
+   "val += std::complex<double> " <> (ToString @ N[MyReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
                      StringRiffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, F, S}, ","]  <>
                      ">::value(indices1, indices2, context);\n";
 
