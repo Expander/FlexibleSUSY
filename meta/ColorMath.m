@@ -15,7 +15,7 @@ TR::usage = "";
 CMf::usage = "";
 CMt::usage = "";
 CM\[Delta]::usage = "";
-CM\[Delta]::usage = "";
+CM\[CapitalDelta]::usage = "";
 CMdelta::usage = "";
 CMDelta::usage = "";
 

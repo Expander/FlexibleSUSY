@@ -152,7 +152,7 @@ f[inFermion_, outFermion_, spectator_] :=
 (* if a diagram exists, return a color factor and a list of particles in vertices,
    otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
-   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p},
+   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p, sortColorFacRep},
 
       On[Assert];
       (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
@@ -174,25 +174,41 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
                #[{Unique["ct"]}],
                #[{Unique["gt"], Unique["ct"]}]
             ], #
-         ]& /@ {outFermion, F, S, F, S, inFermion, spectator};
+         ]& /@ {outFermion, S, F, F, S, inFermion, spectator};
 
       p = colorIndexAssociation;
-      p = {p[[6]], p[[1]], p[[7]], p[[4]], p[[2]], p[[5]], p[[3]]};
+      p = {p[[6]], p[[1]], p[[7]], p[[4]], p[[3]], p[[5]], p[[2]]};
+      Print["insertions", p];
 
+      (* ColorMath package distinquishes between first and second index in the delta function *)
+      ClearAttributes[SARAH`Delta, Orderless];
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
-      FBarFjSBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]], CXXDiagrams`LorentzConjugate[p[[6]]]}];
+      FBarFjSBar = SARAHToColorMathSymbols @ SARAH`Vertex[
+         {CXXDiagrams`LorentzConjugate[p[[6]]], CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]]}
+      ];
+
       v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
-      FiBarFS = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[2]]], p[[5]], p[[7]]}];
+      FiBarFS = SARAHToColorMathSymbols @ SARAH`Vertex[
+         {p[[7]], CXXDiagrams`LorentzConjugate[p[[2]]], p[[5]]}
+      ];
+
       v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
-      SBarSVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[7]]], p[[6]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
+      SBarSVBar = SARAHToColorMathSymbols @ SARAH`Vertex[
+         {CXXDiagrams`LorentzConjugate[p[[6]]], p[[7]], CXXDiagrams`LorentzConjugate[p[[3]]]}
+      ];
+
       v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
-      FBarFVBar = SARAHToColorMathSymbols@SARAH`Vertex[{CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}];
+      FBarFVBar = SARAHToColorMathSymbols @ SARAH`Vertex[
+         {CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}
+      ];
+      sortColorFacRep = SortColorDeltas @@ p;
+      Print["sort rules ", sortColorFacRep];
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]]//.sortColorFacRep,
                   0
                }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
             ]
@@ -201,23 +217,22 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   0,
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[7]], p[[6]]]]//.sortColorFacRep },
                (*{v1,v2, v4}*){v1, v2, v3, v4}
                }
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["kurwa1 ", p];
-            Print["kurwa2 ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}]]];
-            Print["kurwa3 ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]]];
+            Print["sorted scalar emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]], "connector: ", ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep];
+            Print["fermion emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]], "connector: ", ConnectColorLines[p[[6]], p[[7]]]];
             Print["kurwa4 ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-               {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]}];
+               {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[6]], p[[7]]]//.sortColorFacRep]}];
             Return[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}] ConnectColorLines[p[[5]], p[[4]]]],
-                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}] ConnectColorLines[p[[7]], p[[6]]]]},
+                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
+                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] (ConnectColorLines[p[[6]], p[[7]]]//.sortColorFacRep)]},
                   {v1, v2, v3, v4}}
             ]
          ],

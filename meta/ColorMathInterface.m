@@ -33,6 +33,7 @@ GetFieldColorIndex::usage = "";
 ColorN::usage = "Evaluate numerically the analytic form of the color factor.";
 ConnectColorLines::usage = "";
 StripSU3Generators::usage = "";
+SortColorDeltas::usage = "Sort ";
 
 Begin["`Private`"];
 
@@ -171,7 +172,6 @@ NumberOfVertices[l_List] :=
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res = GetFieldIndices[field];
-    Print[IsColorIndex /@ res];
     res = Select[res, IsColorIndex];
     Assert[Length[res]==1];
     res[[1]]
@@ -277,6 +277,32 @@ StripSU3Generators[inP_, outP_, spec_, c_] :=
       ];
       c
    ];
+
+SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
+    Module[{
+       inPCCharge = getColorRep[inP],
+       outPCCharge = getColorRep[outP],
+       VCCharge = getColorRep[V],
+       FCCharge = getColorRep[Fout],
+       SCCharge = getColorRep[Sout],
+       rule
+    },
+       rule = Switch[{inPCCharge, SCCharge, FCCharge},
+          {T, T, S}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
+          ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout})},
+          {T, S, T}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
+          ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
+          (* closed color loop *)
+          {S, T, T}, {(ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Fin})) -> (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, SIn})),
+             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Sout})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, Fout})),
+             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout})),
+             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, Fout})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Fin}))
+       },
+          _, {}
+       ];
+       Print[rule];
+       rule
+    ]
 (* input
     {Fe,bar[Fe],VP,{bar[Fe],Ah,Fe},{Fe,Ah,bar[Fe]},{VP,bar[Fe],Fe}}
     *)
