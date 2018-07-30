@@ -24,12 +24,17 @@
 #include "wrappers.hpp"
 #include "logger.hpp"
 #include "ew_input.hpp"
+#include "error.hpp"
 #include "gsl_utils.hpp"
 #include "minimizer.hpp"
 #include "raii.hpp"
 #include "root_finder.hpp"
 #include "threshold_loop_functions.hpp"
 #include "numerics2.hpp"
+
+#ifdef ENABLE_HIMALAYA
+#include "HierarchyCalculator.hpp"
+#endif
 
 #include <cmath>
 #include <cerrno>
@@ -54,6 +59,49 @@ namespace flexiblesusy {
 #define THRESHOLD static_cast<int>(model->get_thresholds())
 #define MODEL model
 #define MODELCLASSNAME @ModelName@<Two_scale>
+
+#if defined(ENABLE_HIMALAYA) && Himalaya_VERSION_MAJOR >= 2
+#define FSHimalayaMh23L [&] () {                                        \
+      MODEL->calculate_DRbar_masses();                                  \
+                                                                        \
+      himalaya::Parameters pars;                                        \
+@fillHimalayaInput@
+                                                                        \
+      double lambda_3L = 0.;                                            \
+                                                                        \
+      try {                                                             \
+         const bool verbose = false;                                    \
+         himalaya::HierarchyCalculator hc(pars, verbose);               \
+                                                                        \
+         const auto ho = hc.calculateDMh3L(false);                      \
+                                                                        \
+         lambda_3L =                                                    \
+            lambda_3L_eft * (                                           \
+               ho.getDLambda(3)                                         \
+               + msbar_scheme*ho.getDLambdaDRbarPrimeToMSbarShift(3)    \
+               + lambda_3L_uncertainty*ho.getDLambdaUncertainty(3)      \
+            );                                                          \
+                                                                        \
+         VERBOSE_MSG("Himalaya top (hierarchy, Dlambda_3L) = ("         \
+                     << ho.getSuitableHierarchy() << ", "               \
+                     << lambda_3L <<")");                               \
+      } catch (const std::exception& e) {                               \
+         model->get_problems().flag_bad_mass(@ModelName@_info::@HiggsBoson@); \
+         WARNING(e.what());                                             \
+         VERBOSE_MSG(pars);                                             \
+      }                                                                 \
+                                                                        \
+      return lambda_3L;                                                 \
+   }()
+#else
+#define FSHimalayaMh23L [] () {                                         \
+      throw HimalayaError("The 3-loop corrections to lambda "           \
+                          "require Himalaya 2.0.0 (or higher), but "    \
+                          "FlexibleSUSY has not been configured with "  \
+                          "this Himalaya version!");                    \
+      return 0.;                                                        \
+   }()
+#endif
 
 @ModelName@_high_scale_constraint<Two_scale>::@ModelName@_high_scale_constraint(
    @ModelName@<Two_scale>* model_)

@@ -24,12 +24,7 @@ EXTPAR = {
     {103, TwoLoopAtAb},
     {104, TwoLoopAtauAtau},
     {105, TwoLoopAtAt},
-    {200, DeltaEFT},
-    {201, DeltaYt},
-    {202, DeltaOS},
-    {203, Qmatch},
-    {204, DeltaLambda3L},
-    {205, ThreeLoopAtAsAs}
+    {200, DeltaEFT}
 };
 
 FSAuxiliaryParameterInfo = {
@@ -57,39 +52,17 @@ FSAuxiliaryParameterInfo = {
 
 EWSBOutputParameters = { mu2 };
 
-Qmat = With[
-    { mt = Yu[3,3] v Sin[ArcTan[TanBeta]] / Sqrt[2],
-      mQ2 = msq2[3,3],
-      mU2 = msu2[3,3],
-      Xt = AtInput - MuInput/TanBeta
-    },
-    Simplify @
-    Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
-];
-
-QmatGuess = With[
-    { mt = 160,
-      mQ2 = msq2[3,3],
-      mU2 = msu2[3,3],
-      Xt = AtInput - MuInput/TanBeta
-    },
-    Simplify @
-    Sqrt[Sqrt[Times @@ Eigenvalues[{{mt^2 + mQ2, mt Xt}, {mt Xt, mt^2 + mU2}}]]]
-];
-
-EvalIf[expr_] := Block[{If}, expr];
-
 (* The high scale where we match to the MSSM *)
-HighScale = EvalIf @ If[MSUSY != 0, MSUSY, Qmat];
+HighScale = MSUSY;
 
-HighScaleFirstGuess = EvalIf @ If[MSUSY != 0, MSUSY, QmatGuess];
+HighScaleFirstGuess = MSUSY;
 
 HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[LambdaLoopOrder-1] (
-                    + lambda1LReg + lambda1LPhi
-                    + lambda1LChi1 + lambda1LChi2
-                    + lambda1Lbottom + lambda1Ltau)
+                    + 0 lambda1LReg + lambda1LPhiGaugeless
+                    + 0 lambda1LChi1 + 0 lambda1LChi2
+                    + 0 lambda1Lbottom + 0 lambda1Ltau)
                 + UnitStep[LambdaLoopOrder-2] (
                     If[TwoLoopAtAs >= 1, (
                         Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
@@ -110,7 +83,7 @@ HighScaleInput = {
                               lambda2LPhiHSSAlphaTAlphaSFull
                              ]
                       ), 0]
-                    + If[TwoLoopAtAt >= 1, (
+                    + 0 If[TwoLoopAtAt >= 1, (
                         Which[IsCloseRel[msu2[3,3],msq2[3,3],0.01] &&
                               IsCloseRel[mAInput^2,msu2[3,3],0.01],
                               lambda2LHSSAlphaT2,
@@ -118,7 +91,7 @@ HighScaleInput = {
                               lambda2LHSSAlphaT2Generic
                              ]
                       ), 0]
-                    + If[TwoLoopAbAs >= 1, (
+                    + 0 If[TwoLoopAbAs >= 1, (
                         Which[IsCloseRel[msu2[3,3],msq2[3,3],0.01] &&
                               IsCloseRel[Sqrt[msu2[3,3]],M3Input,0.01],
                               lambda2LPhiHSSAlphaBAlphaSDegenerate,
@@ -128,7 +101,7 @@ HighScaleInput = {
                               lambda2LPhiHSSAlphaBAlphaSFull
                              ]
                       ), 0]
-                    + If[TwoLoopAtAb >= 1, (
+                    + 0 If[TwoLoopAtAb >= 1, (
                         Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
                               IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
                               IsCloseRel[SCALE^2,msd2[3,3],0.01] &&
@@ -139,40 +112,9 @@ HighScaleInput = {
                               lambda2LHSSAlphaTAlphaBGeneric
                              ]
                       ), 0]
-                    + If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
-                    + If[DeltaOS >= 1,
-                         If[TwoLoopAtAs >= 1, lambda2LDRtoOSAtAs, 0] +
-                         If[TwoLoopAtAt >= 1, lambda2LDRtoOSAtAt, 0],
-                         0]
+                    + 0 If[TwoLoopAtauAtau >= 1, lambda2LHSSTau, 0]
+                    + If[LambdaLoopOrder >= 3, lambda3LATASASDegenerate, 0]
                 )
-                + UnitStep[LambdaLoopOrder-3] (
-                    + If[LambdaLoopOrder >= 3,
-                         FSHimalayaMh23L,
-                         0]
-                )
-                (* contributions for uncertainty estimation *)
-                + If[Abs[Qmatch] > 1,
-                     Which[LambdaLoopOrder < 1, deltaLambdaQmatch1L,
-                           LambdaLoopOrder < 2, deltaLambdaQmatch2L,
-                           LambdaLoopOrder < 3, deltaLambdaQmatch3L,
-                           True, 0
-                          ],
-                     0
-                    ]
-                + If[LambdaLoopOrder < 2 && DeltaYt >= 1,
-                     (* 2L counter term when expressing lambda^{1L}(yt^MSSM) *)
-                     lambda2LAtAsYtShift + lambda2LAtAtYtShift,
-                     0]
-                + If[LambdaLoopOrder < 3 && DeltaYt >= 1,
-                     (* 3L counter term when expressing lambda^{1L+2L}(yt^MSSM, g3^MSSM) *)
-                     Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
-                           IsCloseRel[SCALE^2,msu2[3,3],0.01] &&
-                           IsCloseRel[SCALE,Abs[M3Input],0.01],
-                           lambda3LAtAsAsYtShiftDeg,
-                           True,
-                           lambda3LAtAsAsYtShift
-                          ],
-                     0]
     }
 };
 
@@ -202,17 +144,15 @@ InitialGuessAtLowScale = {
    {Ye, Automatic}
 };
 
-DefaultPoleMassPrecision = HighPrecision;
-HighPoleMassPrecision    = {hh};
+DefaultPoleMassPrecision = MediumPrecision;
+HighPoleMassPrecision    = {};
 MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 
 OnlyLowEnergyFlexibleSUSY = False;
 UseHiggs2LoopSM = True;
 UseHiggs3LoopSM = True;
-UseHiggs4LoopSM = True;
 UseSM3LoopRGEs = True;
-UseSM4LoopRGEs = True;
 UseYukawa3LoopQCD = True;
 UseSMAlphaS3Loop = True;
 
@@ -228,31 +168,34 @@ SARAH`ParameterDefinitions = Append[
 ];
 
 Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_corrections.m"}]];
-Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_scale_variation.m"}]];
 
-FSHimalayaInput = {
-    RenormalizationScheme -> MSbar,
-    Lambda3L -> ThreeLoopAtAsAs,
-    Lambda3LUncertainty -> DeltaLambda3L,
-    \[Mu] -> MuInput,
-    g1 -> g1,
-    g2 -> g2,
-    g3 -> g3,
-    vu -> v Sin[ArcTan[TanBeta]],
-    vd -> v Cos[ArcTan[TanBeta]],
-    MSQ2 -> msq2,
-    MSD2 -> msd2,
-    MSU2 -> msu2,
-    MSL2 -> msl2,
-    MSE2 -> mse2,
-    Au -> AtInput,
-    Ad -> AbInput,
-    Ae -> AtauInput,
-    Yu -> Yu,
-    Yd -> Yd,
-    Ye -> Ye,
-    M1 -> M1Input,
-    M2 -> M2Input,
-    M3 -> M3Input,
-    mA -> mAInput
+lambda1LPhiGaugeless = lambda1LPhi /. { g1 -> 0, g2 -> 0 };
+
+(* enable only O(at*(1 + as + as^2)) *)
+
+FSBetaFunctionRules = {
+    {g1 -> 0, g2 -> 0, \[Lambda] -> 0, Ye[__] -> 0, Yd[__] -> 0, Ye -> 0, Yd -> 0}, (* 1L *)
+    {g1 -> 0, g2 -> 0, \[Lambda] -> 0, Ye[__] -> 0, Yd[__] -> 0, Yu[__] -> 0, Ye -> 0, Yd -> 0, Yu -> 0}, (* 2L *)
+    {g1 -> 0, g2 -> 0, \[Lambda] -> 0, Ye[__] -> 0, Yd[__] -> 0, Yu[__] -> 0, Ye -> 0, Yd -> 0, Yu -> 0}  (* 3L *)
+};
+
+FSSelfEnergyRules = {
+    (* 1L *)
+    {
+        p -> 0,
+        (Mass|Mass2)[VZ|gZ|SARAH`VectorV] -> 0,
+        (Mass|Mass2)[VWp|gWp|gWpC|SARAH`VectorW] -> 0,
+        (Mass|Mass2)[VG|gG|SARAH`VectorG] -> 0,
+        (Mass|Mass2)[VP|gP|SARAH`VectorP] -> 0,
+        (Mass|Mass2)[hh|Ah|Hp] -> 0,
+        (Mass|Mass2)[(Fd|Fe)[_]] -> 0
+    }
+};
+
+FSVertexRules = {
+    g1 -> 0,
+    g2 -> 0,
+    \[Lambda] -> 0,
+    Ye[__] -> 0,
+    Yd[__] -> 0
 };

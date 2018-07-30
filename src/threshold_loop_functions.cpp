@@ -31,30 +31,30 @@ namespace threshold_loop_functions {
 namespace {
    const double Pi = 3.1415926535897932384626433832795;
 
-   template <typename T> T sqr(T x) { return x*x; }
-   template <typename T> T cube(T x) { return x*x*x; }
-   template <typename T> T quad(T x) { return x*x*x*x; }
-   template <typename T> T pow5(T x) { return x*x*x*x*x; }
-   template <typename T> T pow6(T x) { return x*x*x*x*x*x; }
-   template <typename T> T pow7(T x) { return x*x*x*x*x*x*x; }
-   template <typename T> T pow8(T x) { return x*x*x*x*x*x*x*x; }
-   template <typename T> T pow9(T x) { return x*x*x*x*x*x*x*x*x; }
-   template <typename T> T power10(T x) { return x*x*x*x*x*x*x*x*x*x; }
+   template <typename T> T sqr(T x) noexcept { return x*x; }
+   template <typename T> T cube(T x) noexcept { return x*x*x; }
+   template <typename T> T quad(T x) noexcept { return x*x*x*x; }
+   template <typename T> T pow5(T x) noexcept { return x*x*x*x*x; }
+   template <typename T> T pow6(T x) noexcept { return x*x*x*x*x*x; }
+   template <typename T> T pow7(T x) noexcept { return x*x*x*x*x*x*x; }
+   template <typename T> T pow8(T x) noexcept { return x*x*x*x*x*x*x*x; }
+   template <typename T> T pow9(T x) noexcept { return x*x*x*x*x*x*x*x*x; }
+   template <typename T> T power10(T x) noexcept { return x*x*x*x*x*x*x*x*x*x; }
 
    template <typename T>
-   bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon())
+   bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon()) noexcept
    {
       return std::fabs(a) < prec;
    }
 
    template <typename T>
-   bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+   bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
    {
       return is_zero(a - b, prec);
    }
 
    template <typename T>
-   bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon())
+   bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
    {
       if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
          return true;
@@ -67,7 +67,7 @@ namespace {
 
 } // anonymous namespace
 
-double F1(double x)
+double F1(double x) noexcept
 {
    const double x2 = sqr(x);
 
@@ -80,7 +80,7 @@ double F1(double x)
    return x*std::log(x2)/(x2-1);
 }
 
-double F2(double x)
+double F2(double x) noexcept
 {
    const double x2 = sqr(x);
 
@@ -93,7 +93,7 @@ double F2(double x)
    return 6*x2*(2-2*x2+(1+x2)*std::log(x2))/cube(x2-1);
 }
 
-double F3(double x)
+double F3(double x) noexcept
 {
    const double x2 = sqr(x);
 
@@ -106,7 +106,7 @@ double F3(double x)
    return 2*x*(5*(1-x2)+(1+4*x2)*std::log(x2))/(3*sqr(x2-1));
 }
 
-double F4(double x)
+double F4(double x) noexcept
 {
    const double x2 = sqr(x);
 
@@ -119,7 +119,7 @@ double F4(double x)
    return 2*x*(x2-1-std::log(x2))/sqr(x2-1);
 }
 
-double F5(double x)
+double F5(double x) noexcept
 {
    const double x2 = sqr(x);
    const double x4 = quad(x);
@@ -136,7 +136,7 @@ double F5(double x)
    return 3*x*(1-x4+2*x2*std::log(x2))/cube(1-x2);
 }
 
-double F6(double x)
+double F6(double x) noexcept
 {
    const double x2 = sqr(x);
 
@@ -152,7 +152,7 @@ double F6(double x)
    return (x2-3)/(4*(1-x2)) + x2*(x2-2)/(2*sqr(1.-x2))*std::log(x2);
 }
 
-double F7(double x)
+double F7(double x) noexcept
 {
    const double x2 = sqr(x);
    const double x4 = quad(x);
@@ -175,14 +175,14 @@ double F7(double x)
 }
 
 /// F8(x1,x2) in the limit x1 -> 1 and x2 -> 1
-static double F8_1_1(double x1, double x2)
+static double F8_1_1(double x1, double x2) noexcept
 {
    return 1. + 1.333333333333333*(-1 + x1) +
       (1.333333333333333 - 0.6666666666666661*(-1 + x1))*(-1 + x2);
 }
 
 /// F8(x1,x2) in the limit x1 -> 1
-static double F8_1_x2(double x1, double x2)
+static double F8_1_x2(double x1, double x2) noexcept
 {
    const double lx22 = std::log(sqr(x2));
 
@@ -210,7 +210,7 @@ static double F8_1_x2(double x1, double x2)
 }
 
 /// F8(x1,x2) in the limit x1 -> 0
-static double F8_0_x2(double x1, double x2)
+static double F8_0_x2(double x1, double x2) noexcept
 {
    const double lx22 = std::log(sqr(x2));
 
@@ -219,7 +219,7 @@ static double F8_0_x2(double x1, double x2)
 }
 
 // F8(x1,x2) in the limit x1 -> x2
-static double F8_x1_x2(double x1, double x2)
+static double F8_x1_x2(double x1, double x2) noexcept
 {
    const double lx22 = std::log(sqr(x2));
 
@@ -241,33 +241,33 @@ static double F8_x1_x2(double x1, double x2)
     (x2*pow5(-1. + sqr(x2)));
 }
 
-double F8(double x1, double x2)
+double F8(double x1, double x2) noexcept
 {
    if (is_equal(x1, 0.) && is_equal(x2, 0.))
       return -2.;
 
-   if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
-      return F8_1_1(x1, x2);
+   if (is_equal(std::fabs(x1), 1., 0.01) && is_equal(std::fabs(x2), 1., 0.01))
+      return F8_1_1(std::fabs(x1), std::fabs(x2));
 
-   if (is_equal(x1, 1., 0.01)) {
+   if (is_equal(std::fabs(x1), 1., 0.01)) {
       if (is_equal(x2, 0., 0.01)) {
          return -2.333333333333332 + 5.66666666666667*sqr(x2) +
-            x1*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
+            std::fabs(x1)*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
             sqr(x1)*(-0.33333333333333215 + 1.6666666666666696*sqr(x2));
       }
 
-      return F8_1_x2(x1, x2);
+      return F8_1_x2(std::fabs(x1), x2);
    }
 
-   if (is_equal(x2, 1., 0.01)) {
+   if (is_equal(std::fabs(x2), 1., 0.01)) {
       if (is_equal(x1, 0., 0.01)) {
-         return -2.3333333333333335 + 2.6666666666666665*x2 -
+         return -2.3333333333333335 + 2.6666666666666665*std::fabs(x2) -
             0.3333333333333333*sqr(x2) +
-            sqr(x1)*(5.666666666666667 - 5.333333333333334*x2 +
+            sqr(x1)*(5.666666666666667 - 5.333333333333334*std::fabs(x2) +
                      1.6666666666666667*sqr(x2));
       }
 
-      return F8_1_x2(x2, x1);
+      return F8_1_x2(std::fabs(x2), x1);
    }
 
    if (is_equal(x1, 0., 0.0001))
@@ -276,8 +276,8 @@ double F8(double x1, double x2)
    if (is_equal(x2, 0., 0.0001))
       return F8_0_x2(x2, x1);
 
-   if (is_equal(x1, x2, 0.00001))
-      return F8_x1_x2(x1, x2);
+   if (is_equal(std::fabs(x1), std::fabs(x2), 0.00001))
+      return F8_x1_x2(std::fabs(x1), std::fabs(x2));
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -288,7 +288,7 @@ double F8(double x1, double x2)
 }
 
 /// F9(x1,x2) in the limit x1 -> 1 and x2 -> 1
-static double F9_1_1(double x1, double x2)
+static double F9_1_1(double x1, double x2) noexcept
 {
    return 8.223809523809523 - 12.863492063492064*x2
       + 10.580952380952382*sqr(x2) - 4.609523809523809*cube(x2)
@@ -311,7 +311,7 @@ static double F9_1_1(double x1, double x2)
 }
 
 /// F9(x1,x2) in the limit x1 -> 1
-static double F9_1_x2(double x1, double x2)
+static double F9_1_x2(double x1, double x2) noexcept
 {
    const double lx22 = std::log(sqr(x2));
 
@@ -335,13 +335,13 @@ static double F9_1_x2(double x1, double x2)
 }
 
 /// F9(x1,x2) in the limit x1 -> 0
-static double F9_0_x2(double, double x2)
+static double F9_0_x2(double, double x2) noexcept
 {
    return (2.*std::log(sqr(x2)))/(-1. + sqr(x2));
 }
 
 /// F9(x1,x2) in the limit x1 -> x2
-static double F9_x1_x2(double x1, double x2)
+static double F9_x1_x2(double x1, double x2) noexcept
 {
    const double lx22 = std::log(sqr(x2));
 
@@ -363,26 +363,23 @@ static double F9_x1_x2(double x1, double x2)
       (sqr(x2)*quad(-1. + sqr(x2)));
 }
 
-double F9(double x1, double x2)
+double F9(double x1, double x2) noexcept
 {
-   if (is_equal(x1, 1., 0.01) && is_equal(x2, 1., 0.01))
-      return F9_1_1(x1, x2);
+   if (is_equal(std::fabs(x1), 1., 0.01) && is_equal(std::fabs(x2), 1., 0.01))
+      return F9_1_1(std::fabs(x1), std::fabs(x2));
 
-   if (is_equal(x1, -1., 0.01) && is_equal(x2, -1., 0.01))
-     return F9_1_1(-x1, -x2);
-
-   if (is_equal(x1, 1., 0.01)) {
+   if (is_equal(std::fabs(x1), 1., 0.01)) {
       if (is_equal(x2, 0., 0.01))
-         return 2. - 2.*(-1 + x1) + 5./3.*sqr(-1 + x1);
+         return 2. - 2.*(-1 + std::fabs(x1)) + 5./3.*sqr(-1 + std::fabs(x1));
 
-      return F9_1_x2(x1, x2);
+      return F9_1_x2(std::fabs(x1), x2);
    }
 
-   if (is_equal(x2, 1., 0.01)) {
+   if (is_equal(std::fabs(x2), 1., 0.01)) {
       if (is_equal(x1, 0., 0.01))
-         return 2. - 2.*(-1 + x2) + 5./3.*sqr(-1 + x2);
+         return 2. - 2.*(-1 + std::fabs(x2)) + 5./3.*sqr(-1 + std::fabs(x2));
 
-      return F9_1_x2(x2, x1);
+      return F9_1_x2(std::fabs(x2), x1);
    }
 
    if (is_equal(x1, 0., 0.0001))
@@ -391,8 +388,8 @@ double F9(double x1, double x2)
    if (is_equal(x2, 0., 0.0001))
       return F9_0_x2(x2, x1);
 
-   if (is_equal(x1, x2, 0.00001))
-      return F9_x1_x2(x1, x2);
+   if (is_equal(std::fabs(x1), std::fabs(x2), 0.00001))
+      return F9_x1_x2(std::fabs(x1), std::fabs(x2));
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -400,17 +397,17 @@ double F9(double x1, double x2)
    return 2./(x12-x22)*(x12/(x12-1.)*std::log(x12)-x22/(x22-1.)*std::log(x22));
 }
 
-double f(double r)
+double f(double r) noexcept
 {
    return F5(r);
 }
 
-double g(double r)
+double g(double r) noexcept
 {
    return F7(r);
 }
 
-double f1(double r)
+double f1(double r) noexcept
 {
    if (is_equal(r, 0., 0.01))
       return 18./7.*sqr(r);
@@ -431,7 +428,7 @@ double f1(double r)
       + (6*(r2-5)*quad(r)*std::log(r2))/(7*cube(r2-1));
 }
 
-double f2(double r)
+double f2(double r) noexcept
 {
    if (is_equal(r, 0., 0.01))
       return 22./9.*sqr(r);
@@ -452,7 +449,7 @@ double f2(double r)
       + (2*(5*r2-17)*quad(r)*std::log(r2))/(9*cube(r2-1));
 }
 
-double f3(double r)
+double f3(double r) noexcept
 {
    if (is_equal(r, 0., 0.001))
       return 4./3.;
@@ -472,7 +469,7 @@ double f3(double r)
       + (2*(r4-7*r2-6)*r2*std::log(r2))/(3*cube(r2-1));
 }
 
-double f4(double r)
+double f4(double r) noexcept
 {
    if (is_equal(r, 0., 0.001))
       return 12./7.;
@@ -491,7 +488,7 @@ double f4(double r)
 }
 
 /// f5(r1,r2) in the limit r1 -> 1 and r2 -> 1
-static double f5_1_1(double r1, double r2)
+static double f5_1_1(double r1, double r2) noexcept
 {
    return 0.772943722943723
       - 0.5524891774891774*r2
@@ -520,7 +517,7 @@ static double f5_1_1(double r1, double r2)
 }
 
 /// f5(r1,r2) in the limit r1 -> 1
-static double f5_1_r2(double r1, double r2)
+static double f5_1_r2(double r1, double r2) noexcept
 {
    const double lr22 = std::log(sqr(r2));
 
@@ -560,7 +557,7 @@ static double f5_1_r2(double r1, double r2)
 }
 
 /// f5(r1,r2) in the limit r1 -> 0
-static double f5_0_r2(double r1, double r2)
+static double f5_0_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -572,13 +569,13 @@ static double f5_0_r2(double r1, double r2)
 }
 
 /// f5(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f5_0_1(double, double r2)
+static double f5_0_1(double, double r2) noexcept
 {
    return 0.75*(1 + (-1 + r2)/3. + sqr(-1 + r2)/6.);
 }
 
 /// f5(r1,r2) in the limit r1 -> r2
-static double f5_r1_r2(double r1, double r2)
+static double f5_r1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -605,7 +602,7 @@ static double f5_r1_r2(double r1, double r2)
     (6.*r2*pow6(-1 + r22));
 }
 
-double f5(double r1, double r2)
+double f5(double r1, double r2) noexcept
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
       return 0.75;
@@ -651,7 +648,7 @@ double f5(double r1, double r2)
 }
 
 /// f6(r1,r2) in the limit r1 -> 1 and r2 -> 1
-static double f6_1_1(double r1, double r2)
+static double f6_1_1(double r1, double r2) noexcept
 {
    return 1 + (4*(-1 + r1))/7. - (2*sqr(-1 + r1))/35.
       - cube(-1 + r1)/70. + (9*quad(-1 + r1))/490.
@@ -670,7 +667,7 @@ static double f6_1_1(double r1, double r2)
 }
 
 /// f6(r1,r2) in the limit r1 -> 1
-static double f6_1_r2(double r1, double r2)
+static double f6_1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
 
@@ -699,7 +696,7 @@ static double f6_1_r2(double r1, double r2)
 }
 
 /// f6(r1,r2) in the limit r1 -> 0
-static double f6_0_r2(double r1, double r2)
+static double f6_0_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -710,7 +707,7 @@ static double f6_0_r2(double r1, double r2)
 }
 
 // f6(r1,r2) in the limit r1 -> r2
-static double f6_r1_r2(double r1, double r2)
+static double f6_r1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -736,13 +733,13 @@ static double f6_r1_r2(double r1, double r2)
 }
 
 /// f6(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f6_0_1(double, double r2)
+static double f6_0_1(double, double r2) noexcept
 {
    return 6./7.*(0.5 + (2*(-1 + r2))/3. - cube(-1 + r2)/15.
                  + quad(-1 + r2)/20.);
 }
 
-double f6(double r1, double r2)
+double f6(double r1, double r2) noexcept
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
       return 0.;
@@ -788,7 +785,7 @@ double f6(double r1, double r2)
 }
 
 /// f7(r1,r2) in the limit r1 -> 1 and r2 -> 1
-static double f7_1_1(double r1, double r2)
+static double f7_1_1(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
 
@@ -806,7 +803,7 @@ static double f7_1_1(double r1, double r2)
 }
 
 /// f7(r1,r2) in the limit r1 -> 1
-static double f7_1_r2(double r1, double r2)
+static double f7_1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -832,7 +829,7 @@ static double f7_1_r2(double r1, double r2)
 }
 
 /// f7(r1,r2) in the limit r1 -> 0
-static double f7_0_r2(double r1, double r2)
+static double f7_0_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -843,14 +840,14 @@ static double f7_0_r2(double r1, double r2)
 }
 
 /// f7(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f7_0_1(double, double r2)
+static double f7_0_1(double, double r2) noexcept
 {
    return 6.*(0.5 + (1 - r2)/3. + sqr(-1 + r2)/6. - cube(-1 + r2)/15.
               + quad(-1 + r2)/60.);
 }
 
 /// f7(r1,r2) in the limit r1 -> r2
-static double f7_r1_r2(double r1, double r2)
+static double f7_r1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -876,7 +873,7 @@ static double f7_r1_r2(double r1, double r2)
     (6.*r2*pow6(-1 + r22));
 }
 
-double f7(double r1, double r2)
+double f7(double r1, double r2) noexcept
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
       return 6.;
@@ -922,7 +919,7 @@ double f7(double r1, double r2)
 }
 
 /// f8(r1,r2) in the limit r1 -> 1 and r2 -> 1
-static double f8_1_1(double r1, double r2)
+static double f8_1_1(double r1, double r2) noexcept
 {
    return 1 - sqr(-1 + r1)/10. + (3*cube(-1 + r1))/40.
       - (3*quad(-1 + r1))/70.
@@ -941,7 +938,7 @@ static double f8_1_1(double r1, double r2)
 }
 
 /// f8(r1,r2) in the limit r1 -> 1
-static double f8_1_r2(double r1, double r2)
+static double f8_1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -969,7 +966,7 @@ static double f8_1_r2(double r1, double r2)
 }
 
 /// f8(r1,r2) in the limit r1 -> 0
-static double f8_0_r2(double r1, double r2)
+static double f8_0_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -980,14 +977,14 @@ static double f8_0_r2(double r1, double r2)
 }
 
 /// f8(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f8_0_1(double, double r2)
+static double f8_0_1(double, double r2) noexcept
 {
    return 1.5*(0.5 + (-1 + r2)/6. - sqr(-1 + r2)/6. + cube(-1 + r2)/10.
                - quad(-1 + r2)/20.);
 }
 
 /// f8(r1,r2) in the limit r1 -> r2
-static double f8_r1_r2(double r1, double r2)
+static double f8_r1_r2(double r1, double r2) noexcept
 {
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
@@ -1010,7 +1007,7 @@ static double f8_r1_r2(double r1, double r2)
     (6.*pow6(-1 + r22));
 }
 
-double f8(double r1, double r2)
+double f8(double r1, double r2) noexcept
 {
    if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
       return 0.;
@@ -1055,8 +1052,69 @@ double f8(double r1, double r2)
    return 1.5 * result;
 }
 
+double fth1(double y) noexcept
+{
+   using std::log;
+
+   if (is_zero(y))
+      return 0.;
+
+   if (is_equal(std::abs(y), 1.))
+      return -1.;
+
+   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+      const double y2 = sqr(y);
+
+      return y2*log(y2) / (1. - y2);
+   }
+
+   return 0.;
+}
+
+double fth2(double y) noexcept
+{
+   using std::log;
+
+   if (is_zero(y))
+      return 0.;
+
+   if (is_equal(std::abs(y), 1.))
+      return 0.5;
+
+   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+      const double y2 = sqr(y);
+
+      return (1. + y2*log(y2) / (1. - y2)) / (1 - y2);
+   }
+
+   return 0.;
+}
+
+double fth3(double y) noexcept
+{
+   using std::log;
+   const double z2 = sqr(Pi) / 6.;
+
+   if (is_zero(y))
+      return z2;
+
+   if (is_equal(std::abs(y), 1.))
+      return -9./4.;
+
+   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+      const double y2 = sqr(y);
+      const double y4 = sqr(y2);
+
+      return (-1. + 2*y2 + 2*y4)
+         *(-z2 - y2*log(y2) + log(y2)*log(1. - y2) + gm2calc::dilog(y2))
+         / sqr(1 - y2);
+   }
+
+   return 0.;
+}
+
 /// First derivative of F1
-double D1F1(double x)
+double D1F1(double x) noexcept
 {
    using std::log;
 
@@ -1067,7 +1125,7 @@ double D1F1(double x)
 }
 
 /// First derivative of F2
-double D1F2(double x)
+double D1F2(double x) noexcept
 {
    using std::log;
 
@@ -1079,7 +1137,7 @@ double D1F2(double x)
 }
 
 /// First derivative of F3
-double D1F3(double x)
+double D1F3(double x) noexcept
 {
    using std::log;
 
@@ -1091,7 +1149,7 @@ double D1F3(double x)
 }
 
 /// First derivative of F4
-double D1F4(double x)
+double D1F4(double x) noexcept
 {
    using std::log;
 
@@ -1104,7 +1162,7 @@ double D1F4(double x)
 }
 
 /// First derivative of F5
-double D1F5(double x)
+double D1F5(double x) noexcept
 {
    using std::log;
 
@@ -1116,7 +1174,7 @@ double D1F5(double x)
 }
 
 /// First derivative of F6
-double D1F6(double x)
+double D1F6(double x) noexcept
 {
    using std::log;
 
@@ -1127,7 +1185,7 @@ double D1F6(double x)
 }
 
 /// First derivative of F7
-double D1F7(double x)
+double D1F7(double x) noexcept
 {
    using std::log;
 
@@ -1139,7 +1197,7 @@ double D1F7(double x)
 }
 
 /// First derivative of f
-double D1f(double x)
+double D1f(double x) noexcept
 {
    using std::log;
 
@@ -1151,7 +1209,7 @@ double D1f(double x)
 }
 
 /// First derivative of g
-double D1g(double x)
+double D1g(double x) noexcept
 {
    using std::log;
 
@@ -1163,7 +1221,7 @@ double D1g(double x)
 }
 
 /// First derivative of f1
-double D1f1(double x)
+double D1f1(double x) noexcept
 {
    using std::log;
 
@@ -1175,7 +1233,7 @@ double D1f1(double x)
 }
 
 /// First derivative of f2
-double D1f2(double x)
+double D1f2(double x) noexcept
 {
    using std::log;
 
@@ -1187,7 +1245,7 @@ double D1f2(double x)
 }
 
 /// First derivative of f3
-double D1f3(double x)
+double D1f3(double x) noexcept
 {
    using std::log;
 
@@ -1199,7 +1257,7 @@ double D1f3(double x)
 }
 
 /// First derivative of f4
-double D1f4(double x)
+double D1f4(double x) noexcept
 {
    using std::log;
 
@@ -1211,7 +1269,7 @@ double D1f4(double x)
 }
 
 /// First derivative of f5 w.r.t. 1st argument
-double D10f5(double x, double y)
+double D10f5(double x, double y) noexcept
 {
    using std::log;
 
@@ -1253,7 +1311,7 @@ double D10f5(double x, double y)
 }
 
 /// First derivative of f5 w.r.t. 2nd argument
-double D01f5(double x, double y)
+double D01f5(double x, double y) noexcept
 {
    using std::log;
 
@@ -1295,7 +1353,7 @@ double D01f5(double x, double y)
 }
 
 /// First derivative of f6 w.r.t. 1st argument
-double D10f6(double x, double y)
+double D10f6(double x, double y) noexcept
 {
    using std::log;
 
@@ -1335,7 +1393,7 @@ double D10f6(double x, double y)
 }
 
 /// First derivative of f6 w.r.t. 2nd argument
-double D01f6(double x, double y)
+double D01f6(double x, double y) noexcept
 {
    using std::log;
 
@@ -1374,7 +1432,7 @@ double D01f6(double x, double y)
 }
 
 /// First derivative of f7 w.r.t. 1st argument
-double D10f7(double x, double y)
+double D10f7(double x, double y) noexcept
 {
    using std::log;
 
@@ -1413,7 +1471,7 @@ double D10f7(double x, double y)
 }
 
 /// First derivative of f7 w.r.t. 2nd argument
-double D01f7(double x, double y)
+double D01f7(double x, double y) noexcept
 {
    using std::log;
 
@@ -1452,7 +1510,7 @@ double D01f7(double x, double y)
 }
 
 /// First derivative of f8 w.r.t. 1st argument
-double D10f8(double x, double y)
+double D10f8(double x, double y) noexcept
 {
    using std::log;
 
@@ -1491,7 +1549,7 @@ double D10f8(double x, double y)
 }
 
 /// First derivative of f8 w.r.t. 2nd argument
-double D01f8(double x, double y)
+double D01f8(double x, double y) noexcept
 {
    using std::log;
 
@@ -1530,7 +1588,7 @@ double D01f8(double x, double y)
 }
 
 /// Second derivative of F1
-double D2F1(double x)
+double D2F1(double x) noexcept
 {
    using std::log;
 
@@ -1543,7 +1601,7 @@ double D2F1(double x)
 }
 
 /// Second derivative of F2
-double D2F2(double x)
+double D2F2(double x) noexcept
 {
    using std::log;
 
@@ -1555,7 +1613,7 @@ double D2F2(double x)
 }
 
 /// Second derivative of F3
-double D2F3(double x)
+double D2F3(double x) noexcept
 {
    using std::log;
 
@@ -1568,7 +1626,7 @@ double D2F3(double x)
 }
 
 /// Second derivative of F4
-double D2F4(double x)
+double D2F4(double x) noexcept
 {
    using std::log;
 
@@ -1580,7 +1638,7 @@ double D2F4(double x)
 }
 
 /// Second derivative of F5
-double D2F5(double x)
+double D2F5(double x) noexcept
 {
    using std::log;
 
@@ -1592,7 +1650,7 @@ double D2F5(double x)
 }
 
 /// Second derivative of F6
-double D2F6(double x)
+double D2F6(double x) noexcept
 {
    using std::log;
 
@@ -1604,7 +1662,7 @@ double D2F6(double x)
 }
 
 /// Second derivative of F7
-double D2F7(double x)
+double D2F7(double x) noexcept
 {
    using std::log;
 
@@ -1616,14 +1674,14 @@ double D2F7(double x)
 }
 
 /// Iabc(a,a,a)
-static double Iaaa(double a, double b, double c)
+static double Iaaa(double a, double b, double c) noexcept
 {
    return (151.*quad(a) + 13.*sqr(b)*sqr(c) - 128.*cube(a)*(b + c) - 40.*a*b*c*(b + c)
            + sqr(a)*(37.*sqr(b) + 128.*b*c + 37.*sqr(c))) / (60.*pow6(a));
 }
 
 /// Iabc(a,a,c)
-static double Iaac(double a, double b, double c)
+static double Iaac(double a, double b, double c) noexcept
 {
    return ((sqr(a) - sqr(c))
            * (17.*pow6(a) - 16.*pow5(a)*b - 40.*cube(a)*b*sqr(c)
@@ -1635,7 +1693,7 @@ static double Iaac(double a, double b, double c)
 }
 
 /// Iabc(a,a,0)
-double Iaa0(double a, double b)
+double Iaa0(double a, double b) noexcept
 {
    return (17.*sqr(a) - 16.*a*b + 5.*sqr(b)) / (6.*quad(a));
 }
@@ -1646,7 +1704,7 @@ double I0bc(double b, double c)
    return log(sqr(b/c))/(sqr(b) - sqr(c));
 }
 
-double Iabc(double a, double b, double c) {
+double Iabc(double a, double b, double c) noexcept {
    if ((is_zero(a) && is_zero(b) && is_zero(c)) ||
        (is_zero(a) && is_zero(b)) ||
        (is_zero(a) && is_zero(c)) ||
@@ -1690,20 +1748,20 @@ double Iabc(double a, double b, double c) {
 }
 
 /// Delta function from hep-ph/0907.47682v1
-double delta_xyz(double x, double y, double z)
+double delta_xyz(double x, double y, double z) noexcept
 {
    return sqr(x)+sqr(y)+sqr(z)-2*(x*y+x*z+y*z);
 }
 
 namespace {
    /// lambda^2(u,v)
-   double lambda_2(double u, double v)
+   double lambda_2(double u, double v) noexcept
    {
       return sqr(1 - u - v) - 4*u*v;
    }
 
    /// u < 1 && v < 1, lambda^2(u,v) > 0
-   double phi_pos(double u, double v)
+   double phi_pos(double u, double v) noexcept
    {
       using std::log;
       using gm2calc::dilog;
@@ -1717,7 +1775,7 @@ namespace {
    }
 
    /// lambda^2(u,v) < 0
-   double phi_neg(double u, double v)
+   double phi_neg(double u, double v) noexcept
    {
       using std::acos;
       using std::sqrt;
@@ -1735,7 +1793,7 @@ namespace {
     * The following identities hold:
     * Phi(u,v) = Phi(v,u) = Phi(1/u,v/u)/u = Phi(1/v,u/v)/v
     */
-   double phi_uv(double u, double v)
+   double phi_uv(double u, double v) noexcept
    {
       const auto lambda = lambda_2(u,v);
 
@@ -1764,7 +1822,7 @@ namespace {
  *
  * @return \f$\Phi(x,y,z)\f$
  */
-double phi_xyz(double x, double y, double z)
+double phi_xyz(double x, double y, double z) noexcept
 {
    const auto u = x/z, v = y/z;
    return phi_uv(u,v);
@@ -1779,7 +1837,7 @@ double phi_xyz(double x, double y, double z)
  *
  * @return \f$B_0(p=0,m_1,m_2,Q)\f$
  */
-double B0(double m1, double m2, double scale)
+double B0(double m1, double m2, double scale) noexcept
 {
    return passarino_veltman::ReB0(0, m1*m1, m2*m2, scale*scale);
 }
@@ -1792,7 +1850,7 @@ double B0(double m1, double m2, double scale)
  *
  * @return \f$B_0'(p=0,m_1,m_2)\f$
  */
-double DB0(double m1, double m2)
+double DB0(double m1, double m2) noexcept
 {
    const double m12 = sqr(m1);
    const double m14 = sqr(m12);
@@ -1820,12 +1878,12 @@ double DB0(double m1, double m2)
  *
  * @return \f$C_0(p=0,m_1,m_2,m_3)\f$
  */
-double C0(double m1, double m2, double m3)
+double C0(double m1, double m2, double m3) noexcept
 {
    return softsusy::c0(m1, m2, m3);
 }
 
-double D0(double m1, double m2, double m3, double m4)
+double D0(double m1, double m2, double m3, double m4) noexcept
 {
    return softsusy::d0(m1,m2,m3,m4);
 }
@@ -1840,7 +1898,7 @@ double D0(double m1, double m2, double m3, double m4)
  *
  * @return \f$\tilde{D}_2(m_1,m_2,m_3,m_4)\f$
  */
-double D2t(double m1, double m2, double m3, double m4)
+double D2t(double m1, double m2, double m3, double m4) noexcept
 {
    return C0(m2, m3, m4) + m1*m1 * D0(m1, m2, m3, m4);
 }
@@ -1856,7 +1914,7 @@ double D2t(double m1, double m2, double m3, double m4)
  *
  * @return \f$\tilde{D}_4(m_1,m_2,m_3,m_4,Q)\f$
  */
-double D4t(double m1, double m2, double m3, double m4, double scale)
+double D4t(double m1, double m2, double m3, double m4, double scale) noexcept
 {
    return B0(m3, m4, scale) + (m1*m1 + m2*m2) * C0(m2, m3, m4)
       + quad(m1) * D0(m1, m2, m3, m4);
@@ -1871,7 +1929,7 @@ double D4t(double m1, double m2, double m3, double m4, double scale)
  *
  * @return \f$W(m_1,m_2,Q)\f$
  */
-double W(double m1, double m2, double scale)
+double W(double m1, double m2, double scale) noexcept
 {
    const double m12 = sqr(m1);
    const double m14 = sqr(m12);

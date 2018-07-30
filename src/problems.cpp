@@ -264,6 +264,11 @@ void Problems::flag_non_perturbative_parameter(
    if (parameter < -1 || parameter >= n_parameters)
       ERROR("Parameter index " << parameter << " out of range [" << -1 << ", "
             << (n_parameters - 1) << "]");
+
+   VERBOSE_MSG("Problem: " << get_parameter_name(parameter) << "(Q = "
+               << scale << ") = " << value
+               << " is non-perturbative (threshold = " << threshold << ").");
+
    non_pert_pars[parameter] = NonPerturbativeValue(value, scale, threshold);
 }
 

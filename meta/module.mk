@@ -81,6 +81,7 @@ META_SRC     := \
 		$(DIR)/FlexibleTower.m \
 		$(DIR)/Format.m \
 		$(DIR)/FSMathLink.m \
+		$(DIR)/Himalaya.m \
 		$(DIR)/LatticeUtils.m \
 		$(DIR)/LoopFunctions.m \
 		$(DIR)/LoopMasses.m \

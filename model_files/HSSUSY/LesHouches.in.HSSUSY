@@ -63,7 +63,7 @@ Block EXTPAR                 # Input parameters
     6   173.34               # MEWSB
     7   200                  # At(MSUSY)
    25   10                   # TanBeta(MSUSY)
-  100   2                    # LambdaLoopOrder
+  100   3                    # LambdaLoopOrder
   101   1                    # TwoLoopAtAs
   102   1                    # TwoLoopAbAs
   103   1                    # TwoLoopAtAb
@@ -73,6 +73,8 @@ Block EXTPAR                 # Input parameters
   201   0                    # DeltaYt
   202   0                    # DeltaOS (0 = DR, 1 = OS)
   203   0                    # Qmatch
+  204   0                    # DeltaLambda3L
+  205   1                    # ThreeLoopAtAsAs
 Block MSQ2IN
   1  1     4.00000000E+06   # mq2(1,1)
   2  2     4.00000000E+06   # mq2(2,2)

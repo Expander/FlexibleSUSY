@@ -314,6 +314,36 @@ deltaLambda5Phi1L = 0;
 deltaLambda6Phi1L = 0; (* wrong in arxiv:hep-ph/9307201, Eq. (6.17) *)
 deltaLambda7Phi1L = 0; (* wrong in arxiv:hep-ph/9307201, Eq. (6.17) *)
 
+(* Partial O(alpha_t^2) correction (only sinb^6 part) from Eq.(25) of [1312.5743].
+   Intended to be added to lambda[2]. *)
+Deltaht6LambdaMSSM = With[{
+    kappa = 1/(4 Pi)^2,
+    htMS = Yu[3,3],
+    sinb = Sin[ArcTan[TanBeta]],
+    cosb = Cos[ArcTan[TanBeta]],
+    muMS = MuInput / MSUSY,
+    AtMS = At / MSUSY,
+    k = -0.1953256
+    },
+    (
+    3 kappa^2 htMS^6 sinb^4 (1/2 + 6 muMS^2 -
+    2 (4 + muMS^2) TCfth[1][muMS] +
+    3 muMS^2 TCfth[2][muMS] + 4 TCfth[3][muMS]
+    + (-(17/2) - 6 muMS^2 - (4 + 3 muMS^2) TCfth[2][muMS] +
+        (4 - 6 muMS^2) TCfth[1][muMS]) XtMS^2 +
+       (23 + 4 sinb^2 + 4 muMS^2 + 2 TCfth[2][muMS] -
+       2 (1 - 2 muMS^2) TCfth[1][muMS]) XtMS^4/4 -
+    13/24 sinb^2 XtMS^6 +
+    cosb^2 (-9/2 + 60 k + (27/2 - 24 k) XtMS^2 -
+       6 XtMS^4 - (3 + 16 k) (4 XtMS + YtMS) YtMS +
+       4 (1 + 4 k) XtMS^3 YtMS + (14/3 + 24 k) XtMS^2 YtMS^2 - (19/
+          12 + 8 k) XtMS^4 YtMS^2))
+    ) /. {
+        XtMS -> AtMS - muMS/TanBeta,
+        YtMS -> AtMS + muMS TanBeta
+    }
+];
+
 (* arxiv:1508.00576, Eq. (59) *)
 deltaLambda1th2L = With[{
     kappa = 1/(4 Pi)^2,

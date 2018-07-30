@@ -58,7 +58,9 @@ BeginPackage["FlexibleSUSY`",
               "FlexibleEFTHiggsMatching`",
               "FSMathLink`",
               "FlexibleTower`",
-              "WeinbergAngle`"}];
+              "WeinbergAngle`",
+              "Himalaya`"
+}];
 
 $flexiblesusyMetaDir     = DirectoryName[FindFile[$Input]];
 $flexiblesusyConfigDir   = FileNameJoin[{ParentDirectory[$flexiblesusyMetaDir], "config"}];
@@ -308,6 +310,34 @@ NoScale::usage="placeholder indicating an SLHA block should not
 have a scale associated with it.";
 CurrentScale::usage="placeholder indicating the current renormalization
 scale of the model.";
+
+(* input parameters for Himalaya *)
+FSHimalayaInput = {
+    RenormalizationScheme -> DRbar,
+    Lambda3L -> 1,
+    Lambda3LUncertainty -> 0,
+    \[Mu] -> \[Mu],
+    SARAH`g1 -> SARAH`hyperchargeCoupling,
+    Susyno`LieGroups`g2 -> SARAH`leftCoupling,
+    g3 -> SARAH`strongCoupling,
+    vu -> SARAH`VEVSM2,
+    vd -> SARAH`VEVSM1,
+    MSQ2 -> SARAH`UpMatrixL,
+    MSD2 -> SARAH`DownMatrixR,
+    MSU2 -> SARAH`UpMatrixR,
+    MSL2 -> SARAH`ElectronMatrixL,
+    MSE2 -> SARAH`ElectronMatrixR,
+    Au -> SARAH`TrilinearUp,
+    Ad -> SARAH`TrilinearDown,
+    Ae -> SARAH`TrilinearLepton,
+    Yu -> SARAH`UpYukawa,
+    Yd -> SARAH`DownYukawa,
+    Ye -> SARAH`ElectronYukawa,
+    M1 -> 0,
+    M2 -> 0,
+    M3 -> FlexibleSUSY`M[SARAH`Gluino],
+    mA -> FlexibleSUSY`M[SARAH`PseudoScalar]
+};
 
 FSDebugOutput = False;
 
@@ -749,6 +779,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
            calculateDeltaAlphaEm, calculateDeltaAlphaS,
            calculateGaugeCouplings,
            calculateThetaW,
+           fillHimalayaInput,
            checkPerturbativityForDimensionlessParameters = "",
            twoLoopThresholdHeaders = "" },
           Constraint`SetBetaFunctions[GetBetaFunctions[]];
@@ -799,6 +830,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                ];
             ];
           calculateThetaW   = ThresholdCorrections`CalculateThetaW[FlexibleSUSY`FSWeakMixingAngleInput];
+          fillHimalayaInput = Himalaya`FillHimalayaInput[FSHimalayaInput];
           twoLoopThresholdHeaders = ThresholdCorrections`GetTwoLoopThresholdHeaders[];
           WriteOut`ReplaceInFiles[files,
                  { "@applyConstraint@"      -> IndentText[WrapLines[applyConstraint]],
@@ -825,6 +857,7 @@ WriteConstraintClass[condition_, settings_List, scaleFirstGuess_,
                    "@setDRbarUpQuarkYukawaCouplings@"   -> IndentText[WrapLines[setDRbarYukawaCouplings[[1]]]],
                    "@setDRbarDownQuarkYukawaCouplings@" -> IndentText[WrapLines[setDRbarYukawaCouplings[[2]]]],
                    "@setDRbarElectronYukawaCouplings@"  -> IndentText[WrapLines[setDRbarYukawaCouplings[[3]]]],
+                   "@fillHimalayaInput@"                -> IndentText[IndentText[fillHimalayaInput]],
                    "@checkPerturbativityForDimensionlessParameters@" -> IndentText[checkPerturbativityForDimensionlessParameters],
                    "@twoLoopThresholdHeaders@" -> twoLoopThresholdHeaders,
                    Sequence @@ GeneralReplacementRules[]
