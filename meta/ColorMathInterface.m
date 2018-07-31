@@ -282,6 +282,18 @@ StripSU3Generators[inP_, outP_, spec_, c_] :=
       c
    ];
 
+FlipDeltaIdxRule[field1_, field2_] :=
+    Module[{colIdx1 = GetFieldColorIndex[field1], colIdx2 = GetFieldColorIndex[field2]
+            colRep1 = getColorRep[field1], colRep2 = getColorRep[field2]},
+
+       Assert[colRep1 === colRep2];
+       Switch[colRep1,
+          T, ColorMath`CMdelta[colIdx1, colIdx2] -> ColorMath`CMdelta[colIdx2, colIdx1],
+          O, ColorMath`CMDelta[colIdx1, colIdx2] -> ColorMath`CMDelta[colIdx2, colIdx1],
+          _, Abort[]
+       ];
+    ];
+
 SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
     Module[{
        inPCCharge = getColorRep[inP],
@@ -293,22 +305,29 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
     },
        rule = Switch[{inPCCharge, VCCharge, SCCharge, FCCharge},
           {T, S, T, S}, {
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout}),
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})
+             FlipDeltaIdxRule[inP, SIn],
+             FlipDeltaIdxRule[Sout, outP],
+             FlipDeltaIdxRule[SIn, Sout]
           },
-          {T, S, S, T}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
-          ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) :> ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
+          {T, S, S, T}, {
+             FlipDeltaIdxRule[inP, Fin],
+             FlipDeltaIdxRule[Fout, outP]
+          },
           (* closed color loop *)
-          {S, S, T, T}, {(ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Fin})) :> (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, SIn})),
-             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Sout})) :>  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, Fout})),
-             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})) :>  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout})),
-             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, Fout})) :>  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Fin}))
-       },
-          {T, O, S, T},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) :> ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
-          {T, O, T, S},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) :> ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout}),
+          {S, S, T, T}, {
+             FlipDeltaIdxRule[SIn, Fin],
+             FlipDeltaIdxRule[Fout, Sout],
+             FlipDeltaIdxRule[Sout, SIn],
+             FlipDeltaIdxRule[Fin, Fout]
+          },
+          {T, O, S, T}, {
+             FlipDeltaIdxRule[inP, Fin],
+             FlipDeltaIdxRule[Fout, outP]
+          },
+          {T, O, T, S},  {
+             FlipDeltaIdxRule[inP, SIn],
+             FlipDeltaIdxRule[Sout, outP],
+             (* this is fishy *)
              ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Sout})] :>
                  ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, SIn})]
           },
