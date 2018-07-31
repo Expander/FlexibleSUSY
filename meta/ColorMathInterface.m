@@ -181,9 +181,10 @@ CalculateColorFactor[vertex_List] :=
    Module[{return},
       return =
          vertex // DropColorles;
-      If[ return === {}, Return[1]];
+      If[return === {}, Return[1]];
+      (*Print[return];*)
       return =
-         TakeOnlyColor@return;
+         TakeOnlyColor @ return;
       return = Times @@ return;
       (* CSimplify[1] doesn't evaluate *)
       If[return === 1,
@@ -211,12 +212,15 @@ TakeOnlyColor[vvvv__] :=
     Module[{result},
       (* the generic structure of the Vertex "object" is 
          {{ParticleList},{{Coefficient 1, Lorentz 1},{Coefficient 2, Lorentz 2},...} *)
-      (* drop ParticleList *) 
+      (* drop ParticleList *)
       result = Drop[#, 1]& /@ vvvv;
       result = (Transpose @ Drop[Transpose[#], -1])& /@ result;
       result = result //.
-         __?ColorStructureFreeQ el_ /; !ColorStructureFreeQ[el] :> el;
+         __?ColorStructureFreeQ el_ /; !ColorStructureFreeQ[el] :> el //.
+          (el_  /; !ColorStructureFreeQ[el]) __?ColorStructureFreeQ  :> el;
       result = DeleteCases[#, {0}]& /@ result;
+      (* There should be one, overal color factor for an entire vertex.
+         For example, both left and right handed parts should have it the same. *)
       Assert[CountDistinct[#] === 1]& /@ result;
       result = DeleteDuplicates[#]& /@ result;
       result = Flatten[result, 2];
@@ -265,7 +269,7 @@ ConnectColorLines[field1_, field2_] :=
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         Print["A ", c, "B ", ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})];
+         (*Print["A ", c, "B ", ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})];*)
          Return[
             Coefficient[c, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})]
          ]
@@ -287,20 +291,23 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
        SCCharge = getColorRep[Sout],
        rule
     },
-       rule = Switch[{inPCCharge, SCCharge, FCCharge},
-          {T, T, S}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
+       rule = Switch[{inPCCharge, VCCharge, SCCharge, FCCharge},
+          {T, S, T, S}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
           ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout})},
-          {T, S, T}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
+          {T, S, S, T}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
           ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
           (* closed color loop *)
-          {S, T, T}, {(ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Fin})) -> (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, SIn})),
+          {S, S, T, T}, {(ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Fin})) -> (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, SIn})),
              (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Sout})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, Fout})),
              (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout})),
              (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, Fout})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Fin}))
        },
+          {T, O, S, T},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
+          {T, O, T, S},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout})},
           _, {}
        ];
-       Print[rule];
        rule
     ]
 (* input

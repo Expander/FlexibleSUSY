@@ -182,7 +182,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       Print["insertions", p];
 
       (* ColorMath package distinquishes between first and second index in the delta function *)
-      ClearAttributes[SARAH`Delta, Orderless];
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
       FBarFjSBar = SARAHToColorMathSymbols @ SARAH`Vertex[
          {CXXDiagrams`LorentzConjugate[p[[6]]], CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]]}
@@ -203,7 +202,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
          {CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}
       ];
       sortColorFacRep = SortColorDeltas @@ p;
-      Print["sort rules ", sortColorFacRep];
+      (*Print["sort rules ", sortColorFacRep];*)
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
@@ -224,11 +223,11 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["sorted scalar emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]], "connector: ", ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep];
-            Print["fermion emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]], "connector: ", ConnectColorLines[p[[6]], p[[7]]]];
-            Print["kurwa4 ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-               {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[6]], p[[7]]]//.sortColorFacRep]}];
+            (*Print["sorted scalar emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]], "connector: ", ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep];*)
+            Print["fermion emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]], "connector: "(*, ConnectColorLines[p[[6]], p[[7]]]*)];
+            (*Print["kurwa4 ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@*)
+               (*{ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],*)
+                  (*ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[6]], p[[7]]]//.sortColorFacRep]}];*)
             Return[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
