@@ -153,7 +153,8 @@ f[inFermion_, outFermion_, spectator_] :=
 (* if a diagram exists, return a color factor and a list of particles in vertices,
    otherwise return an empty list *)
 singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
-   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p, sortColorFacRep},
+   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p, sortColorFacRep,
+   colorFacwithSEmit, colorFacWithFEmit},
 
       On[Assert];
       (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
@@ -206,6 +207,14 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
+            Print[
+
+ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]], " ",
+   {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
+                     ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]]//.sortColorFacRep,
+                     0
+                  }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
+            ];
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]]//.sortColorFacRep,

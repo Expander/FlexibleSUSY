@@ -292,20 +292,26 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
        rule
     },
        rule = Switch[{inPCCharge, VCCharge, SCCharge, FCCharge},
-          {T, S, T, S}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
-          ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout})},
-          {T, S, S, T}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
-          ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
+          {T, S, T, S}, {
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout}),
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})
+          },
+          {T, S, S, T}, {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
+          ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) :> ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
           (* closed color loop *)
-          {S, S, T, T}, {(ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Fin})) -> (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, SIn})),
-             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Sout})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, Fout})),
-             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout})),
-             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, Fout})) ->  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Fin}))
+          {S, S, T, T}, {(ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Fin})) :> (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, SIn})),
+             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Sout})) :>  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, Fout})),
+             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, SIn})) :>  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, Sout})),
+             (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, Fout})) :>  (ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, Fin}))
        },
-          {T, O, S, T},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
-          {T, O, T, S},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
-             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) ->   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout})},
+          {T, O, S, T},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, Fin}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fin, inP}),
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Fout, outP}) :> ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Fout})},
+          {T, O, T, S},  {ColorMath`CMdelta @@ (GetFieldColorIndex /@ {inP, SIn}) :>   ColorMath`CMdelta @@ (GetFieldColorIndex /@ {SIn, inP}),
+             ColorMath`CMdelta @@ (GetFieldColorIndex /@ {Sout, outP}) :> ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, Sout}),
+             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Sout})] :>
+                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, SIn})]
+          },
           _, {}
        ];
        rule
