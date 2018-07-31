@@ -46,27 +46,28 @@ FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
 
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
-            "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors" <>
-            " (\n" <>
+            "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors (\n" <>
+                IndentText[
             If[TreeMasses`GetDimension[Fj] =!= 1,
-               "   int generationIndex1, ",
+               "int generationIndex1, ",
                " "
             ] <>
             If[TreeMasses`GetDimension[Fi] =!= 1,
-               " int generationIndex2, ",
+               "int generationIndex2,\n",
                " "
             ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )";
+            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model)"
+            ];
                  
       definition =
-          prototype <> "{\n" <>
+          prototype <> " {\n\n" <>
             IndentText[
                FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-               "EvaluationContext context{ model_ };\n" <>
+               "EvaluationContext context {model_};\n" <>
                "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[Fj] =!= 1,
-                          " generationIndex1" <>
+                          "generationIndex1" <>
                           If[numberOfIndices1 =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices1-1}],
                              ""] <> " ",
@@ -77,7 +78,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
                    "std::array<int, " <> ToString @ numberOfIndices2 <>
                      "> indices2 = {" <>
                        If[TreeMasses`GetDimension[Fi] =!= 1,
-                          " generationIndex2" <>
+                          "generationIndex2" <>
                           If[numberOfIndices2 =!= 1,
                              StringJoin @ Table[", 0", {numberOfIndices2-1}],
                              ""] <> " ",
