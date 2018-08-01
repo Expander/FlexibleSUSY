@@ -28,9 +28,10 @@
 #ifndef @ModelName@_FFVFormFactors_H
 #define @ModelName@_FFVFormFactors_H
 
+#include <valarray>
+
 using namespace flexiblesusy;
 using namespace cxx_qft;
-
 
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
