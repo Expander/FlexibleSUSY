@@ -67,7 +67,6 @@ CalculateColorFactor[vertex_List] :=
       return =
          vertex // DropColorles;
       If[return === {}, Return[1]];
-      (*Print[return];*)
       return =
          TakeOnlyColor @ return;
       return = Times @@ return;
@@ -154,7 +153,6 @@ ConnectColorLines[field1_, field2_] :=
 StripSU3Generators[inP_, outP_, spec_, c_] :=
    Module[{},
       If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         (*Print["A ", c, "B ", ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})];*)
          Return[
             Coefficient[c, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})]
          ]
@@ -171,8 +169,6 @@ FlipDeltaIdxRule[field1_, field2_] :=
     Module[{colIdx1 = GetFieldColorIndex[field1], colIdx2 = GetFieldColorIndex[field2],
             colRep1 = getColorRep[field1], colRep2 = getColorRep[field2], repl},
 
-       Print[field1, " ", field2];
-       Print[colRep1, " ", colRep2];
        Assert[colRep1 === colRep2];
        repl = Switch[colRep1,
           T, ColorMath`CMdelta[colIdx1, colIdx2] -> ColorMath`CMdelta[colIdx2, colIdx1],
@@ -230,7 +226,6 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
           },
           _, {}
        ];
-       Print[rule];
        rule
     ];
 
@@ -242,9 +237,7 @@ RegenerateIndices[l_List, graph_]:=
             fieldsInVertex, fieldsInVertex1, fieldsInVertex2},
 
         extFields = TakeWhile[l, (Head[#]=!=List)&];
-        Print["Are external fields charged: ", extFields, " ", TreeMasses`ColorChargedQ /@ extFields];
         keys = GenerateUniqueColorAssociationsForExternalParticles[l];
-        Print["Generated color indices for external particles: ", keys];
         particlesInVertices = Drop[l, Length@extFields];
         (* change to vertices = SARAH`Vertex /@ particlesInVertices; *)
         vertices = SARAH`Vertex[#]& /@ particlesInVertices;
@@ -316,7 +309,6 @@ RegenerateIndices[l_List, graph_]:=
                 (** cycle if external particle *)
                 (*If[MemberQ[Values[keys], field1ColorIndexOld], Continue[]];*)
                 (*field1ColorIndexNew = Unique["c"];*)
-                (*Print["generate new index ", field1ColorIndexNew, " for ", field1];*)
                 (*vertices = MapAt[*)
                     (*(# //. field1ColorIndexOld -> field1ColorIndexNew)&,*)
                     (*vertices, vertIdx1*)
@@ -329,14 +321,12 @@ RegenerateIndices[l_List, graph_]:=
                     (*fieldsInVertex2 = vertex2[[1]];*)
                     (*For[v2i=1, v2i<=Length[fieldsInVertex2], v2i++,*)
                         (*field2 = fieldsInVertex2[[v2i]];*)
-                        (*Print["Second field ", field2];*)
                         (*If[!TreeMasses`ColorChargedQ[field2], Continue[]];*)
                         (*field2ColorIndex = GetFieldColorIndex[field2];*)
                         (*If[MemberQ[Values[keys], field2ColorIndex], Continue[]];*)
                         (*If[MemberQ[symbol, field2ColorIndex], Print["Ania......."];Continue[]];*)
                         (** we want to make a propagator < field bar[field]> *)
                         (*If[(field1 /. f_[_List] -> f) =!= (AntiField[field2] /. f_[_List] -> f), Continue[]];*)
-                        (*Print["Overriding ", field2ColorIndex,  " ", field1ColorIndexNew];*)
                         (*If[vertIdx1 === 4 && v1i === 2 && vertIdx2 =!= 5, Continue[]];*)
                         (*vertices = MapAt[*)
                             (*(# //. field2ColorIndex -> field1ColorIndexNew)&,*)
