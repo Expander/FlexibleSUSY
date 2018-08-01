@@ -180,7 +180,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 
       p = colorIndexAssociation;
       p = {p[[6]], p[[1]], p[[7]], p[[4]], p[[3]], p[[5]], p[[2]]};
-      Print["insertions", p];
 
       (* ColorMath package distinquishes between first and second index in the delta function *)
       v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
@@ -203,7 +202,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
          {CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}
       ];
       sortColorFacRep = SortColorDeltas @@ p;
-      (*Print["sort rules ", sortColorFacRep];*)
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
@@ -224,10 +222,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["Ze co? ",
-               CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep], "\n",
-               (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)
-            ];
             Return[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
