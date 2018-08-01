@@ -207,14 +207,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Print[
-
-ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]], " ",
-   {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                     ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]]//.sortColorFacRep,
-                     0
-                  }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
-            ];
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]]//.sortColorFacRep,
@@ -232,16 +224,15 @@ ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sort
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            (*Print["sorted scalar emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]], "connector: ", ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep];*)
-            Print["fermion emitter ", ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}]], "connector: "(*, ConnectColorLines[p[[6]], p[[7]]]*)];
-            (*Print["kurwa4 ", StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@*)
-               (*{ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],*)
-                  (*ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[6]], p[[7]]]//.sortColorFacRep]}];*)
+            Print["Ze co? ",
+               CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep], "\n",
+               (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)
+            ];
             Return[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
                      {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
-                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] (ConnectColorLines[p[[6]], p[[7]]]//.sortColorFacRep)]},
+                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] (ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep)]},
                   {v1, v2, v3, v4}}
             ]
          ],
