@@ -195,7 +195,6 @@ ff[inFermion_, outFermion_, spectator_] :=
       Map[
          (temp = singleMassiveDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
          If[temp =!= {},
-            Print[temp];
             AppendTo[internalParticles, {#, temp}]
          ])&,
          Tuples[{fermions, scalars}]

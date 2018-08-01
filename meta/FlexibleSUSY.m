@@ -1974,10 +1974,10 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
             ];
 
          {interfacePrototypes, interfaceDefinitions} =
-            StringJoin /@ Transpose[
+            StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
                FFVFormFactors`FFVFormFactorsCreateInterfaceFunction @@@
                   insertionsAndVertices
-            ];
+            ]);
          vertices = Flatten[
             Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
          ];
