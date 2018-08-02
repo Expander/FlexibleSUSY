@@ -160,7 +160,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
       Assert[IsMassless[spectator]];
 
-      (* if the electric charge of an incomind particle doesn't equal to the sum of charges of outgoing ones,
+      (* if the electric charge of an incoming particle doesn't equal to the sum of charges of outgoing ones,
          return an {} *)
       If[TreeMasses`GetElectricCharge[inFermion] =!= Plus @@ (TreeMasses`GetElectricCharge /@ {S,F}),
          Return[{}]
