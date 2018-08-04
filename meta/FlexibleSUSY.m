@@ -4141,9 +4141,15 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating FToFMasslessV class ..."];
            (* collect all the {fermion,fermion, massles vector} triplets needed for the requested observables *)
            fieldsForFToFMasslessVDecay =
-               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                 FlexibleSUSYObservable`MuEGamma[pIn_[_Integer], pOut_[_Integer], spectator_] :> {pIn, pOut, spectator}
+               DeleteDuplicates @ Join[
+                  Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                     FlexibleSUSYObservable`MuEGamma[pIn_[_Integer], pOut_[_Integer], spectator_] :> {pIn, pOut, spectator}
+                  ],
+                  Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+                     FlexibleSUSYObservable`MuEGamma[pIn_?AtomQ, pOut_?AtomQ, spectator_] :> {pIn, pOut, spectator}
+                  ]
                ];
+
 
            mu2egammaVertices =
              WriteMuEGammaClass[fieldsForFToFMasslessVDecay,

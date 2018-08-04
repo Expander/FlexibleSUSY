@@ -87,7 +87,8 @@ GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPhotonPho
 GetObservableName[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "eff_cp_pseudoscalar_gluon_gluon";
 GetObservableName[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableName[FlexibleSUSYObservable`EDM[p]] <> "_" <> ToString[idx];
 GetObservableName[FlexibleSUSYObservable`EDM[p_]]       := "edm_" <> CConversion`ToValidCSymbolString[p];
-GetObservableName[FlexibleSUSYObservable`MuEGamma[pIn_[idxIn_], pOut_[idxOut_], spectator_]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_" <> CConversion`ToValidCSymbolString[spectator];
+GetObservableName[FlexibleSUSYObservable`MuEGamma[pIn_[_], pOut_[_], spectator_]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_" <> CConversion`ToValidCSymbolString[spectator];
+GetObservableName[FlexibleSUSYObservable`MuEGamma[pIn_, pOut_, spectator_]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_" <> CConversion`ToValidCSymbolString[spectator];
 GetObservableName[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_], pOut_[idxOut_], _]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_in_nucleus";
 
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
@@ -100,7 +101,7 @@ GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPh
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "effective A-Gluon-Gluon coupling";
 GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> "(" <> ToString[idx] <> ") [1/GeV]";
 GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> " [1/GeV]";
-GetObservableDescription[FlexibleSUSYObservable`MuEGamma[pIn_[idxIn_], pOut_[idxOut_], _]] := "";
+GetObservableDescription[FlexibleSUSYObservable`MuEGamma[pIn_, pOut_, _]] := "";
 GetObservableDescription[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_], pOut_[idxOut_], _]] := "";
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuon] := CConversion`ScalarType[CConversion`realScalarCType];
@@ -108,7 +109,7 @@ GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := CC
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2Calc] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonGM2CalcUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[FlexibleSUSYObservable`EDM[p_]] := CConversion`ScalarType[CConversion`realScalarCType];
-GetObservableType[FlexibleSUSYObservable`MuEGamma[pIn_[idxIn_],pOut_[idxOut_],_]] := CConversion`ScalarType[CConversion`realScalarCType];
+GetObservableType[FlexibleSUSYObservable`MuEGamma[pIn_,pOut_,_]] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_],pOut_[idxOut_], _]] := CConversion`ScalarType[CConversion`realScalarCType];
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`CpHiggsPhotonPhoton] :=
@@ -395,8 +396,8 @@ CalculateObservable[FlexibleSUSYObservable`EDM[p_[idx_]], structName_String] :=
 CalculateObservable[FlexibleSUSYObservable`MuEGamma[pIn_, pOut_, spectator_], structName_String] :=
     Module[{pInStr = CConversion`ToValidCSymbolString[pIn], pOutStr = CConversion`ToValidCSymbolString[pOut], 
     spec = CConversion`ToValidCSymbolString[spectator]},
-           structName <> ".MuEGamma0(" <> pInStr <> ") = " <>
-           FlexibleSUSY`FSModelName <> "_mu_to_egamma::calculate_" <> pInStr <> "_to_" <> pOutStr <> "_" <> spec <> "(MODEL);"
+           structName <> ".MuEGamma0(" <> pInStr <> ", " <> pOutStr <> ", " <> spec <> ") = " <>
+           FlexibleSUSY`FSModelName <> "_mu_to_egamma::calculate_" <> pInStr <> "_to_" <> pOutStr <> "_" <> spec <> "(MODEL, qedqcd, physical_input);"
           ];
 
 CalculateObservable[FlexibleSUSYObservable`MuEGamma[pIn_[idxIn_], pOut_[idxOut_],spectator_], structName_String] :=
