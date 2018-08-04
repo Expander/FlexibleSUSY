@@ -202,12 +202,13 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
          {CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}
       ];
       sortColorFacRep = SortColorDeltas @@ p;
+      Print[p];
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]]//.sortColorFacRep,
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep],
                   0
                }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
             ]
@@ -216,12 +217,19 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             Return[
                {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
                   0,
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[7]], p[[6]]]]//.sortColorFacRep },
+                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep ]},
                (*{v1,v2, v4}*){v1, v2, v3, v4}
                }
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
+            Print[
+               {
+                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
+                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
+                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] (ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep)]},
+                  {v1, v2, v3, v4}}
+            ];
             Return[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
@@ -230,9 +238,11 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
                   {v1, v2, v3, v4}}
             ]
          ],
+         Print["LR couplings zero"];
          Return[{}]
       ];
 
+      Print["All couplings zero"];
       Return[{}];
    ];
 (* TODO: add other topologies? *)

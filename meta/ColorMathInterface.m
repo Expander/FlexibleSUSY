@@ -70,6 +70,7 @@ CalculateColorFactor[vertex_List] :=
       return =
          TakeOnlyColor @ return;
       return = Times @@ return;
+      Print[return];
       (* CSimplify[1] doesn't evaluate *)
       If[return === 1,
          1,
@@ -79,8 +80,10 @@ CalculateColorFactor[vertex_List] :=
 
 ColorStructureFreeQ[el_] :=
    FreeQ[el,
-      Subscript[Superscript[Superscript[ColorMath`CMt,List[__]],_],_] |
-         Superscript[ColorMath`CMf,List[__]] |
+      Subscript[Superscript[Superscript[ColorMath`CMt, List[__]],_],_] |
+         Superscript[ColorMath`CMf, List[__]] |
+         Superscript[ColorMath`CMd, List[__]] |
+         Superscript[ColorMath`CMo, List[__]] |
          Subscript[Superscript[ColorMath`CM\[Delta], _], _] |
          Superscript[ColorMath`CM\[CapitalDelta],List[_, _]]
    ];
@@ -151,18 +154,51 @@ ConnectColorLines[field1_, field2_] :=
 
 (* coefficient of the generator *)
 StripSU3Generators[inP_, outP_, spec_, c_] :=
-   Module[{},
-      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && !TreeMasses`ColorChargedQ[spec],
-         Return[
-            Coefficient[c, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})]
-         ]
+   Module[{temp},
+      Print[inP, " ", outP, " ", spec];
+      (* SSS *)
+      If[getColorRep[inP] === S && getColorRep[outP] === S && getColorRep[spec] === S,
+         Return[c]
       ];
-      If[TreeMasses`ColorChargedQ[inP] && TreeMasses`ColorChargedQ[outP] && TreeMasses`ColorChargedQ[spec],
-         Return[
-            Coefficient[c, ColorMath`CMt[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]]
-         ]
+
+      (* TTS *)
+      If[getColorRep[inP] === T && getColorRep[outP] === T && getColorRep[spec] === S,
+         temp =  Coefficient[c, ColorMath`CMdelta @@ (GetFieldColorIndex /@ {outP, inP})];
+         If[temp === 0, Abort[]];
+         Return[temp];
       ];
-      c
+
+      (* TTO *)
+      If[getColorRep[inP] === T && getColorRep[outP] === T && getColorRep[spec] === O,
+         temp = 
+            Coefficient[c, ColorMath`CMt[{GetFieldColorIndex[spec]}, GetFieldColorIndex[outP], GetFieldColorIndex[inP]]];
+         If[temp === 0, Abort[]];
+         Return[temp];
+      ];
+
+      (* OOO *)
+      If[getColorRep[inP] === O && getColorRep[outP] === O && getColorRep[spec] === O,
+         (* expect f^{out in V} *)
+         temp = 
+            Coefficient[
+            FullSimplify[c] /. a__ Superscript[ColorMath`CMo, {c1_,c2_,c3_}] + b__ Superscript[ColorMath`CMo, {c1_,c3_,c2_}] /; a === -b :> 
+                  a ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}]/.
+               Superscript[ColorMath`CMo, {c1_,c2_,c3_}] - Superscript[ColorMath`CMo, {c1_,c3_,c2_}] :> 
+                  ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}],
+                  Superscript[ColorMath`CMf, GetFieldColorIndex /@ {outP, inP, spec}]
+            ];
+         Print["kurwa", temp];
+               Print[
+               FullSimplify[c] /. a__ Superscript[ColorMath`CMo, {c1_,c2_,c3_}] + b__ Superscript[ColorMath`CMo, {c1_,c3_,c2_}] /; a === -b :> 
+                  a ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}]/.
+               Superscript[ColorMath`CMo, {c1_,c2_,c3_}] - Superscript[ColorMath`CMo, {c1_,c3_,c2_}] :> 
+                  ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}]            ];
+            If[temp === 0, Abort[]];
+            Return[temp];
+      ];
+
+      Print["Unhandled color combination of external particles in form factor"];
+      Abort[];
    ];
 
 FlipDeltaIdxRule[field1_, field2_] :=
@@ -224,6 +260,15 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
                  ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, SIn})],
              ColorMath`CMf[GetFieldColorIndex /@ {Fin, Fout, V}] -> ColorMath`CMf[GetFieldColorIndex /@ {Fout, Fin, V}]
           },
+         {O, O, T, T}, {
+             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Fin})] ->
+                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Fin, SIn})],
+             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Fout, Sout})] ->
+                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, Fout})],
+             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Sout})] ->
+                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, SIn})],
+             ColorMath`CMf[GetFieldColorIndex /@ {Fin, Fout, V}] -> ColorMath`CMf[GetFieldColorIndex /@ {Fout, Fin, V}]
+         },
           _, {}
        ];
        rule
@@ -324,7 +369,7 @@ RegenerateIndices[l_List, graph_]:=
                         (*If[!TreeMasses`ColorChargedQ[field2], Continue[]];*)
                         (*field2ColorIndex = GetFieldColorIndex[field2];*)
                         (*If[MemberQ[Values[keys], field2ColorIndex], Continue[]];*)
-                        (*If[MemberQ[symbol, field2ColorIndex], Print["Ania......."];Continue[]];*)
+                        (*If[MemberQ[symbol, field2ColorIndex], Continue[]];*)
                         (** we want to make a propagator < field bar[field]> *)
                         (*If[(field1 /. f_[_List] -> f) =!= (AntiField[field2] /. f_[_List] -> f), Continue[]];*)
                         (*If[vertIdx1 === 4 && v1i === 2 && vertIdx2 =!= 5, Continue[]];*)

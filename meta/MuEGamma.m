@@ -189,7 +189,9 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                   "c8NP[0] = -1/(2*g3) * std::complex<double>(form_factors[3]);\n" <>
                   "c8NP[1] = -1/(2*g3) * std::complex<double>(form_factors[2]);\n" <>
                   "return std::real(c8NP[0]);\n"
-               ]
+               ],
+            _, ""
+
             ] <> "}";
 
         {prototype, definition}
