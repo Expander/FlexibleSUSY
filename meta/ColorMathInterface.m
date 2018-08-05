@@ -37,7 +37,6 @@ SortColorDeltas::usage = "Sort ";
 
 Begin["`Private`"];
 
-
 (*  given a field will return it's indices,
     e.g. Fd[{a,b}] or bar[Fd[{a,b}] or conj[Sd[{a,b}]] will return {a,b} *)
 GetFieldIndices[field_] :=
@@ -58,7 +57,7 @@ GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res = GetFieldIndices[field];
     res = Select[res, IsColorIndex];
-    Assert[Length[res]==1];
+    Assert[Length[res] === 1];
     res[[1]]
   ];
   
@@ -70,7 +69,6 @@ CalculateColorFactor[vertex_List] :=
       return =
          TakeOnlyColor @ return;
       return = Times @@ return;
-      Print[return];
       (* CSimplify[1] doesn't evaluate *)
       If[return === 1,
          1,
@@ -80,7 +78,7 @@ CalculateColorFactor[vertex_List] :=
 
 ColorStructureFreeQ[el_] :=
    FreeQ[el,
-      Subscript[Superscript[Superscript[ColorMath`CMt, List[__]],_],_] |
+      Subscript[Superscript[Superscript[ColorMath`CMt, List[__]], _], _] |
          Superscript[ColorMath`CMf, List[__]] |
          Superscript[ColorMath`CMd, List[__]] |
          Superscript[ColorMath`CMo, List[__]] |
@@ -109,7 +107,7 @@ TakeOnlyColor[vvvv__] :=
       (* There should be one, overal color factor for an entire vertex.
          For example, both left and right handed parts should have it the same. *)
       Assert[CountDistinct[#] === 1]& /@ result;
-      result = DeleteDuplicates[#]& /@ result;
+      result = DeleteDuplicates /@ result;
       result = Flatten[result, 2];
       result
     ];
@@ -154,8 +152,7 @@ ConnectColorLines[field1_, field2_] :=
 
 (* coefficient of the generator *)
 StripSU3Generators[inP_, outP_, spec_, c_] :=
-   Module[{temp},
-      Print[inP, " ", outP, " ", spec];
+   Module[{temp, temp2, temp3},
       (* SSS *)
       If[getColorRep[inP] === S && getColorRep[outP] === S && getColorRep[spec] === S,
          Return[c]
@@ -177,22 +174,35 @@ StripSU3Generators[inP_, outP_, spec_, c_] :=
       ];
 
       (* OOO *)
+      (* closed color triplet line gives
+         o^abc = Tr(Ta Tb Tc) = 1/2 TR (dabc + I fabc) *)
       If[getColorRep[inP] === O && getColorRep[outP] === O && getColorRep[spec] === O,
          (* expect f^{out in V} *)
-         temp = 
+         temp =
             Coefficient[
-            FullSimplify[c] /. a__ Superscript[ColorMath`CMo, {c1_,c2_,c3_}] + b__ Superscript[ColorMath`CMo, {c1_,c3_,c2_}] /; a === -b :> 
-                  a ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}]/.
-               Superscript[ColorMath`CMo, {c1_,c2_,c3_}] - Superscript[ColorMath`CMo, {c1_,c3_,c2_}] :> 
-                  ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}],
+               Expand[c] /.  a_ Superscript[ColorMath`CMo, {c1_,c2_,c3_}] +
+                  b_ Superscript[ColorMath`CMo, {c1_,c3_,c2_}] /; a===-b :>
+a TR Superscript[ColorMath`CMf, {c1,c2,c3}]
+            (*/. Superscript[ColorMath`CMo, l_List /; Length[l]===3] :> 1/2 ColorMath`TR (
+                  Superscript[ColorMath`CMd, l] + I Superscript[ColorMath`CMf, l])*),
                   Superscript[ColorMath`CMf, GetFieldColorIndex /@ {outP, inP, spec}]
             ];
-         Print["kurwa", temp];
-               Print[
-               FullSimplify[c] /. a__ Superscript[ColorMath`CMo, {c1_,c2_,c3_}] + b__ Superscript[ColorMath`CMo, {c1_,c3_,c2_}] /; a === -b :> 
-                  a ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}]/.
-               Superscript[ColorMath`CMo, {c1_,c2_,c3_}] - Superscript[ColorMath`CMo, {c1_,c3_,c2_}] :> 
-                  ColorMath`TR I Superscript[ColorMath`CMf, {c1,c2,c3}]            ];
+         If[temp === 0,
+
+            temp = Coefficient[
+               c,
+               Superscript[ColorMath`CMo, GetFieldColorIndex /@ {outP, spec, inP}]
+            ];
+
+         ];
+         If[temp === 0,
+
+            temp = Coefficient[
+               c,
+               Superscript[ColorMath`CMo, GetFieldColorIndex /@ {outP, inP, spec}]
+            ];
+
+         ];
             If[temp === 0, Abort[]];
             Return[temp];
       ];
@@ -261,13 +271,16 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
              ColorMath`CMf[GetFieldColorIndex /@ {Fin, Fout, V}] -> ColorMath`CMf[GetFieldColorIndex /@ {Fout, Fin, V}]
           },
          {O, O, T, T}, {
-             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Fin})] ->
-                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Fin, SIn})],
-             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Fout, Sout})] ->
-                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, Fout})],
-             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Sout})] ->
-                 ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, SIn})],
-             ColorMath`CMf[GetFieldColorIndex /@ {Fin, Fout, V}] -> ColorMath`CMf[GetFieldColorIndex /@ {Fout, Fin, V}]
+             FlipDeltaIdxRule[Sout, SIn],
+             FlipDeltaIdxRule[Fin, Fout],
+             ColorMath`CMt[{GetFieldColorIndex[inP]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Fin})] ->
+                 ColorMath`CMt[{GetFieldColorIndex[inP]}, Sequence @@ (GetFieldColorIndex /@ {Fin, SIn})],
+             ColorMath`CMt[{GetFieldColorIndex[outP]}, Sequence @@ (GetFieldColorIndex /@ {Fout, Sout})] ->
+                 ColorMath`CMt[{GetFieldColorIndex[outP]}, Sequence @@ (GetFieldColorIndex /@ {Sout, Fout})],
+             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Sout, SIn})] ->
+                ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {SIn, Sout})],
+             ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Fin, Fout})] ->
+                ColorMath`CMt[{GetFieldColorIndex[V]}, Sequence @@ (GetFieldColorIndex /@ {Fout, Fin})]
          },
           _, {}
        ];

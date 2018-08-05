@@ -157,7 +157,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
    colorFacwithSEmit, colorFacWithFEmit},
 
       On[Assert];
-      (* calculation of color coefficients  for massive vector bosons is correct only if they are color singlets *)
       Assert[IsMassless[spectator]];
 
       (* if the electric charge of an incoming particle doesn't equal to the sum of charges of outgoing ones,
@@ -165,7 +164,7 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       If[TreeMasses`GetElectricCharge[inFermion] =!= Plus @@ (TreeMasses`GetElectricCharge /@ {S,F}),
          Return[{}]
       ];
-      (* if an incoming fermion is color charged, at least on of the particles in the loop has to be charged *)
+      (* if an incoming fermion is color charged, at least on of the particles in the loop has to be colored *)
       If[TreeMasses`ColorChargedQ[inFermion] && !(TreeMasses`ColorChargedQ[F] || TreeMasses`ColorChargedQ[S]),
          Return[{}]
       ];
@@ -206,23 +205,36 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep],
-                  0
-               }, (*{v1, v2, v3}*){v1, v2, v3, v4}}
+            Print["Non zero SSV and zero FFV"];
+            Return[{
+               {StripSU3Generators[p[[1]], p[[2]], p[[3]],
+                  ColorMath`CSimplify[
+                     CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]
+                     ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep
+                  ]
+                  ],
+                  0},
+               (*{v1, v2, v3}*){v1, v2, v3, v4}}
             ]
          ];
          If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
-            Return[
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                  0,
-                  ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep ]},
-               (*{v1,v2, v4}*){v1, v2, v3, v4}
+            Print["Non zero FFV and non zero SSV"];
+            Return[{
+                  {0,
+                     StripSU3Generators[p[[1]], p[[2]], p[[3]],
+                        ColorMath`CSimplify[
+                           CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep]
+                           ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep
+                        ]
+                     ]
+                  },
+                  (*{v1,v2, v4}*){v1, v2, v3, v4}
                }
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
+            Print["Non zero FFV and non zero SSV"];
+            Print[sortColorFacRep];
             Print[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
@@ -232,17 +244,23 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             ];
             Return[
                {
-                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
-                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] (ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep)]},
-                  {v1, v2, v3, v4}}
+                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
+                     ColorMath`CSimplify[
+                        CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]
+                        ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep
+                     ],
+                     ColorMath`CSimplify[
+                        CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep]
+                        ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep
+                     ]
+                  },
+                  {v1, v2, v3, v4}
+               }
             ]
          ],
-         Print["LR couplings zero"];
          Return[{}]
       ];
 
-      Print["All couplings zero"];
       Return[{}];
    ];
 (* TODO: add other topologies? *)
