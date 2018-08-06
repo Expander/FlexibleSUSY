@@ -47,11 +47,6 @@ GetFieldIndices[field_] :=
 DropFieldIndices[field_] :=
     field /. f_[_List] -> f;
 
-NumberOfExternalParticles[l_List] :=
-    Count[l, Except[_List], 1];
-
-NumberOfVertices[l_List] :=
-    Length[l] - NumberOfExternalParticles[l];
 
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
@@ -287,6 +282,11 @@ SortColorDeltas[inP_, outP_, V_, Fin_, Fout_, SIn_, Sout_] :=
        rule
     ];
 
+(*NumberOfExternalParticles[l_List] :=*)
+   (*Count[l, Except[_List], 1];*)
+
+(*NumberOfVertices[l_List] :=*)
+   (*Length[l] - NumberOfExternalParticles[l];*)
 (*
 RegenerateIndices[l_List, graph_]:=
     Module[{keys, extFields, particlesInVertices,
