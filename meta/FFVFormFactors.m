@@ -47,20 +47,20 @@ FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
             "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors (\n" <>
-                IndentText[
-            If[TreeMasses`GetDimension[Fj] =!= 1,
-               "int generationIndex1, ",
-               " "
-            ] <>
-            If[TreeMasses`GetDimension[Fi] =!= 1,
-               "int generationIndex2,\n",
-               " "
-            ] <>
-            "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model)"
+            IndentText[
+               If[TreeMasses`GetDimension[Fj] =!= 1,
+                  "int generationIndex1, ",
+                  " "
+               ] <>
+               If[TreeMasses`GetDimension[Fi] =!= 1,
+                  "int generationIndex2,\n",
+                  " "
+               ] <>
+               "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model)"
             ];
                  
       definition =
-          prototype <> " {\n\n" <>
+         prototype <> " {\n\n" <>
             IndentText[
                FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
                "EvaluationContext context {model_};\n" <>
@@ -119,14 +119,14 @@ FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
                   )& /@ gTaggedDiagrams
                   ],
                   (* we assume that there are no unbroken gauge groups other than U(1)_em and SU(3)_C *)
-                  _, Message[FFVFormFactorsCreateInterfaceFunction::field, V]; Abort[]
+                  _, Message[FFVFormFactorsCreateInterfaceFunction::field, V]; Abort[];
                ] <>
 
                "return val;"
             ] <> "\n}\n\n";
 
-    {prototype <> ";", definition}
-  ];
+      {prototype <> ";", definition}
+   ];
 
 CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
    "val += std::complex<double> " <> (ToString @ N[MyReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
