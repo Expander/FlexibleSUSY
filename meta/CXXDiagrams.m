@@ -332,7 +332,7 @@ ParseVertex[fields_List, vertexRules_List, OptionsPattern[{sortCouplings -> True
                                        exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
                                        exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
                                        declareIndices <>
-                                       Parameters`CreateLocalConstRefs[exprL + exprR] <> "\n" <>
+                                       Parameters`CreateLocalConstRefs[{exprL, exprR}] <> "\n" <>
                                        "const " <> GetComplexScalarCType[] <> " left = " <>
                                        Parameters`ExpressionToString[exprL] <> ";\n\n" <>
                                        "const " <> GetComplexScalarCType[] <> " right = " <>
