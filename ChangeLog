@@ -8,7 +8,13 @@ FlexibleSUSY 2.1.1 [not released yet]
  * Feature: 3-loop corrections of O(alpha_t^2 alpha_s^2) from
    [1807.03509] to the quartic Higgs coupling of the SM can be used in
    HSSUSY.  To use the corrections, FlexibleSUSY must be configured
-   with Himalaya 2.0.0 [https://github.com/Himalaya-Library/Himalaya].
+   with Himalaya 2.0.0 [https://github.com/Himalaya-Library/Himalaya]:
+
+   $ HIMALAYA_DIR=/path/to/Himalaya-2.0.0
+
+   $ ./configure --with-models=[...] --enable-himalaya \
+     --with-himalaya-incdir=$HIMALAYA_DIR/source/include \
+     --with-himalaya-libdir=$HIMALAYA_DIR/build
 
  * Change: If unspecified, the pole mass and EWSB loop order is set to
    4 and the threshold correction loop order is set to 3.  In this way
