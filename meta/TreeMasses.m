@@ -2128,7 +2128,14 @@ CreateMixingArraySetter[masses_List, array_String] :=
 GetPhoton[] := SARAH`Photon;
 GetGluon[] := SARAH`Gluon;
 GetZBoson[] := SARAH`Zboson;
-GetWBoson[] := SARAH`Wboson;
+GetWBoson[] :=
+   Module[{temp},
+      temp = Select[Unevaluated[{SARAH`Wboson, SARAH`VectorW}], ValueQ];
+      If[Length @ DeleteDuplicates[temp] === 1,
+         temp[[1]],
+         Print["Could not identify the name given to the W-boson"]; Quit[1]
+      ]
+   ];
 GetHiggsBoson[] := SARAH`HiggsBoson;
 
 End[];
