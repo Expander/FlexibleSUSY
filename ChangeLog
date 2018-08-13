@@ -39,6 +39,9 @@ FlexibleSUSY 2.1.1 [not released yet]
  * Bugfix (commit a2de8a30d): Stripping leading/trailing whitespace
    from system directory paths used in the configure script.
 
+ * Bugfix (commit 7da3f384d): Don't extract local const references
+   from a sum of expressions because the sum may accidentally be zero.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
