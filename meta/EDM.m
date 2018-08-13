@@ -46,12 +46,10 @@ contributingGraphs = {vertexCorrectionGraph};
 
 EDMContributingGraphs[] := contributingGraphs
 
-GetPhoton[] := SARAH`Photon
-
 EDMContributingDiagramsForFieldAndGraph[field_,graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> field, 2 -> SARAH`AntiField[field], 3 -> GetPhoton[]}];
+         {1 -> field, 2 -> SARAH`AntiField[field], 3 -> TreeMasses`GetPhoton[]}];
 
     Select[diagrams,IsDiagramSupported[field,graph,#] &]
  ]
@@ -61,7 +59,7 @@ IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
+    If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
        Return[False]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[True]];
@@ -119,7 +117,7 @@ CXXEvaluatorForFieldAndDiagramFromGraph[field_,diagram_,vertexCorrectionGraph] :
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
+    If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
        Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[CXXEvaluatorFS[field,photonEmitter,exchangeParticle]]];

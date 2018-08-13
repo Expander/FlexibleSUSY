@@ -206,6 +206,10 @@ GetSMTauLepton::usage      = "returns SM tau, Fe[3] or Ftau";
 GetSMNeutrino1::usage      = "returns SM neutrino 1, Fv[1] or FveL";
 GetSMNeutrino2::usage      = "returns SM neutrino 2, Fv[2] or FvmL";
 GetSMNeutrino3::usage      = "returns SM neutrino 3, Fv[3] or FvmL";
+GetPhoton::usage           = "returns the photon";
+GetGluon::usage            = "returns the gluon";
+GetZBoson::usage           = "returns the Z boson";
+GetWBoson::usage           = "returns the W boson";
 
 GetSMTopQuarkMultiplet::usage    = "Returns multiplet containing the top quark, Fu or Ft";
 GetSMBottomQuarkMultiplet::usage = "Returns multiplet containing the bottom quark, Fd or Fb";
@@ -2116,6 +2120,16 @@ CreateMixingArraySetter[masses_List, array_String] :=
            paramCount += nAssignments;
            Return[set];
           ];
+
+(* Once Dominik wanted to have functions identifying SM particles.
+   This might be non-trivial in some models.
+   For now, we just have wrappers that return SM particles using SARAH symbols *)
+
+GetPhoton[] := SARAH`Photon;
+GetGluon[] := SARAH`Gluon;
+GetZBoson[] := SARAH`Zboson;
+GetWBoson[] := SARAH`Wboson;
+GetHiggsBoson[] := SARAH`HiggsBoson;
 
 End[];
 

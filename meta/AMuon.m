@@ -49,7 +49,6 @@ contributingGraphs = {vertexCorrectionGraph};
 
 AMuonContributingGraphs[] := contributingGraphs
 
-GetPhoton[] := SARAH`Photon
 AMuonGetMuon[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
                 TreeMasses`GetSMMuonLeptonMultiplet[],
                 Cases[SARAH`ParticleDefinitions[FlexibleSUSY`FSEigenstates],
@@ -62,7 +61,7 @@ GetCXXMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultip
 AMuonContributingDiagramsForGraph[graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> AMuonGetMuon[], 2 -> SARAH`AntiField[AMuonGetMuon[]], 3 -> GetPhoton[]}];
+         {1 -> AMuonGetMuon[], 2 -> SARAH`AntiField[AMuonGetMuon[]], 3 -> TreeMasses`GetPhoton[]}];
          
     Select[diagrams,IsDiagramSupported[graph,#] &]
  ]
@@ -72,7 +71,7 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
+    If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
        Return[False]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[True]];
@@ -119,7 +118,7 @@ CXXEvaluatorForDiagramFromGraph[diagram_,vertexCorrectionGraph] :=
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
-    If[diagram[[6]] =!= {GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
+    If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},
        Return["(unknown diagram)"]];
     If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
        Return[CXXEvaluatorFS[photonEmitter,exchangeParticle]]];
