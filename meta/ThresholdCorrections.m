@@ -111,7 +111,7 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
            prefactor = Global`alphaEm / (2 Pi);
            deltaSM = -16/9 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateElectromagneticCoupling[renormalizationScheme];
-           result = Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+           result = Parameters`CreateLocalConstRefs[{deltaSusy, deltaSM}] <> "\n" <>
                     "const double delta_alpha_em_SM = " <>
                     CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
                     "const double delta_alpha_em = " <>
@@ -213,7 +213,7 @@ CalculateDeltaAlphaS[renormalizationScheme_] :=
            prefactor = Global`alphaS / (2 Pi);
            deltaSM = - 2/3 Global`FiniteLog[Abs[topQuark/Global`currentScale]];
            deltaSusy = CalculateColorCoupling[renormalizationScheme];
-           Parameters`CreateLocalConstRefs[deltaSusy + deltaSM] <> "\n" <>
+           Parameters`CreateLocalConstRefs[{deltaSusy, deltaSM}] <> "\n" <>
            "const double delta_alpha_s_SM = " <>
            CConversion`RValueToCFormString[prefactor * deltaSM] <> ";\n\n" <>
            "const double delta_alpha_s = " <>

@@ -455,6 +455,87 @@ LoadVerticesIfNecessary[] :=
         SARAH`MakeCouplingLists;
    ]
 
+(* ParsedVertex structure:
+ ParsedVertex[
+              {numP1Indices, numP2Indices, ...},
+              {{minIndex1, minIndex2, ...}, {maxIndex1+1, maxIndex2+1, ...}},
+              VertexClassName,
+              VertexFunctionBody
+              ]
+
+ Getters are available! Given below ParseVertex[]
+ *)
+ 
+(* The heart of the algorithm! From the field content, determine all
+ necessary information. *)
+ParseVertex[fields_List, vertexRules_List, OptionsPattern[{sortCouplings -> True}]] :=
+    Module[{indexedFields, numberOfIndices, declareIndices,
+        parsedVertex, vertexClassName, vertexFunctionBody,
+        fieldInfo, trIndexBounds, indexBounds,
+        expr, exprL, exprR, sortCommand},
+           indexedFields = IndexFields[fields];
+           
+           numberOfIndices = ((Length @ Vertices`FieldIndexList[#] &) /@ indexedFields);
+           declareIndices = DeclareIndices[indexedFields, "indices"];
+
+           vertexClassName = SymbolName[VertexTypeForFields[fields]];
+
+           sortCommand = If[OptionValue[sortCouplings],Vertices`SortCp,Identity];
+           vertexFunctionBody = Switch[vertexClassName,
+                                       "SingleComponentedVertex",
+                                       expr = sortCommand[SARAH`Cp @@ indexedFields] /. vertexRules;
+                                       expr = TreeMasses`ReplaceDependenciesReverse[expr];
+                                       declareIndices <>
+                                       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " result = " <>
+                                       Parameters`ExpressionToString[expr] <> ";\n\n" <>
+                                       "return vertex_type(result);",
+                                       
+                                       "LeftAndRightComponentedVertex",
+                                       exprL = sortCommand @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PL] /. vertexRules;
+                                       exprR = sortCommand @ SARAH`Cp[Sequence @@ indexedFields][SARAH`PR] /. vertexRules;
+                                       exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
+                                       exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
+                                       declareIndices <>
+                                       Parameters`CreateLocalConstRefs[{exprL, exprR}] <> "\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " left = " <>
+                                       Parameters`ExpressionToString[exprL] <> ";\n\n" <>
+                                       "const " <> GetComplexScalarCType[] <> " right = " <>
+                                       Parameters`ExpressionToString[exprR] <> ";\n\n" <>
+                                       "return vertex_type(left, right);"];
+
+           fieldInfo = FieldInfo /@ fields;
+
+           trIndexBounds = Cases[Flatten[(With[{fieldIndex = #},
+                                             (If[#[[1]] === SARAH`generation,
+                                                 {fieldInfo[[fieldIndex, 2]]-1, fieldInfo[[fieldIndex, 3]]},
+                                                 {0, #[[2]]}]
+                                              &) /@ fieldInfo[[fieldIndex, 5]]]
+                                        &) /@ Table[i, {i, Length[fields]}],
+                                       1],
+                                 Except[{}]];
+           
+           If[trIndexBounds === {},
+              indexBounds = {{},{}},
+              indexBounds = Transpose @ trIndexBounds];
+
+           parsedVertex = ParsedVertex[numberOfIndices,
+                                       indexBounds,
+                                       vertexClassName,
+                                       vertexFunctionBody];
+
+           parsedVertex
+           ];
+
+IndexFields[fields_List] :=
+    MapIndexed[
+	Module[{field = #1,
+		index = #2[[1]]},
+	       StripLorentzIndices[
+		   SARAH`getFull[field] /. SARAH`subGC[index] /.
+		   SARAH`subIndFinal[index,index]]
+               ] &, fields];
+
 (* Creates local declarations of field indices, whose values are taken
    from the elements of `arrayName'.
  *)
