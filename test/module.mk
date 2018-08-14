@@ -160,6 +160,7 @@ endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
+		$(DIR)/test_NMSSM_benchmark.cpp \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \
 		$(DIR)/test_NMSSM_high_scale_constraint.cpp \
@@ -167,15 +168,10 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
 		$(DIR)/test_NMSSM_self_energies.cpp \
+		$(DIR)/test_NMSSM_slha_output.cpp \
 		$(DIR)/test_NMSSM_spectrum.cpp \
 		$(DIR)/test_NMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
-endif
-
-ifeq ($(WITH_SOFTSUSY) $(WITH_NMSSM),yes yes)
-TEST_SRC += \
-		$(DIR)/test_NMSSM_benchmark.cpp \
-		$(DIR)/test_NMSSM_slha_output.cpp
 endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_SMSSM),yes yes)
