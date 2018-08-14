@@ -210,6 +210,7 @@ GetPhoton::usage           = "returns the photon";
 GetGluon::usage            = "returns the gluon";
 GetZBoson::usage           = "returns the Z boson";
 GetWBoson::usage           = "returns the W boson";
+GetHiggsBoson::usage       = "return Higgs boson(s)";
 
 GetSMTopQuarkMultiplet::usage    = "Returns multiplet containing the top quark, Fu or Ft";
 GetSMBottomQuarkMultiplet::usage = "Returns multiplet containing the bottom quark, Fd or Fb";
