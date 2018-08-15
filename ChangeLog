@@ -53,6 +53,11 @@ FlexibleSUSY 2.1.1 [not released yet]
 
    Thanks to Sebastian Pögel.
 
+ * Bugfix (commit a9047718d): Disable multi-threading when LoopTools
+   is used to avoid race conditions.  Note that LoopTools is
+   thread-unsafe, because it accepts the renormalization scale via a
+   global variable.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
