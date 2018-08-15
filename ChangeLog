@@ -58,6 +58,20 @@ FlexibleSUSY 2.1.1 [not released yet]
    thread-unsafe, because it accepts the renormalization scale via a
    global variable.
 
+ * Bugfix (commit e31280702): Correcting 2-loop O(at*as) threshold
+   corrections in the THDM-like EFTs of the MSSM (THDMIIMSSMBC*,
+   HTHDMIIMSSMBC, HGTHDMIIMSSMBC*).
+
+   Note: The distribution of the sum
+
+      lambda_{345} = lambda_3 + lambda_4 + lambda_5
+
+   (see Eq.(61) of [1508.00576]) onto the individual lambda_{3,4,5} is
+   not unique.  In FlexibleSUSY's THDM-like models we now chose the
+   same distribution as in MhEFT 1.0 and 1.1.
+
+   Thanks to Jobst Ziebell.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
