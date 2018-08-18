@@ -182,7 +182,7 @@ public:
     using namespace boost::mpl;
     using fields = vector<Fields...>;
 
-    using result_type = typename field_indices<
+    using result_type = typename cxx_qft::field_indices<
       typename boost::mpl::at_c<fields, FieldIndex>::type
     >::type;
 
