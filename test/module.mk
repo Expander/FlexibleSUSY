@@ -160,6 +160,7 @@ endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_NMSSM),yes yes)
 TEST_SRC += \
+		$(DIR)/test_NMSSM_benchmark.cpp \
 		$(DIR)/test_NMSSM_beta_functions.cpp \
 		$(DIR)/test_NMSSM_ewsb.cpp \
 		$(DIR)/test_NMSSM_high_scale_constraint.cpp \
@@ -167,15 +168,10 @@ TEST_SRC += \
 		$(DIR)/test_NMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_one_loop_spectrum.cpp \
 		$(DIR)/test_NMSSM_self_energies.cpp \
+		$(DIR)/test_NMSSM_slha_output.cpp \
 		$(DIR)/test_NMSSM_spectrum.cpp \
 		$(DIR)/test_NMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_NMSSM_tree_level_spectrum.cpp
-endif
-
-ifeq ($(WITH_SOFTSUSY) $(WITH_NMSSM),yes yes)
-TEST_SRC += \
-		$(DIR)/test_NMSSM_benchmark.cpp \
-		$(DIR)/test_NMSSM_slha_output.cpp
 endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_SMSSM),yes yes)
@@ -729,6 +725,8 @@ $$(for f in $^ ; do echo "\t<test filename=\"$$(basename $$f)\"/>"; done)\n\
 </tests>" > $@
 
 $(DIR)/test_lowMSSM.sh.xml: $(RUN_CMSSM_EXE) $(RUN_lowMSSM_EXE)
+
+$(DIR)/test_run_all_spectrum_generators.sh.xml: allexec
 
 $(DIR)/test_CMSSM_NMSSM_linking.x: $(LIBCMSSM) $(LIBNMSSM)
 
