@@ -24,6 +24,10 @@ FlexibleSUSY 2.1.1 [not released yet]
    the parameter list of `FSFindRoot[]` and `FSMinimize[]`, when the
    parameter `p` has indices.
 
+ * Bugfix (commit 85f145a72): Speed-up the generation of the C++ code
+   in models with complicated boundary conditions, like HSSUSY for
+   example.
+
  * Bugfix (commit 00b6798a7): Speed-up the generation of the C++ code
    with Mathematica 11.3.
 
