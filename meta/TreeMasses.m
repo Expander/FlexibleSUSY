@@ -387,7 +387,19 @@ IsRealScalar[sym_List] :=
     And[IsScalar[sym], And @@ (Parameters`IsRealParameter /@ sym)];
 
 IsMassless[Susyno`LieGroups`conj[sym_], states_:FlexibleSUSY`FSEigenstates] := IsMassless[sym, states];
+
 IsMassless[SARAH`bar[sym_], states_:FlexibleSUSY`FSEigenstates] := IsMassless[sym, states];
+
+(* Massless ghosts are not stored in SARAH`Massless[FSEigenstates],
+   so use mass of the corresponding vector boson. *)
+IsMassless[sym_?IsGhost] :=
+    Module[{v = Symbol["V" <> StringDrop[ToString[sym],1]]},
+           Switch[RXi[v],
+                  0, True,
+                  _, IsMassless[v]
+                 ]
+         ];
+
 IsMassless[sym_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[SARAH`Massless[states], sym];
 
