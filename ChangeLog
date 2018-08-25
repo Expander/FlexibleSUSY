@@ -78,6 +78,11 @@ FlexibleSUSY 2.1.1 [not released yet]
 
    Thanks to Jobst Ziebell.
 
+ * Bugfix (commit 8eba91256): Correcting IsMassless[] function for
+   ghost fields.
+
+   Thanks to Wojciech Kotlarski.
+
 FlexibleSUSY 2.1.0 [March, 05 2018]
 
  * Feature: Allow user to perform replacements on beta functions,
