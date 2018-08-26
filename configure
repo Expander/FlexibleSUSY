@@ -1972,7 +1972,7 @@ check_himalaya_libs() {
             # assume that the linker will look in the default paths
             HIMALAYALIBS="$HIMALAYALIBS_"
         else
-            HIMALAYALIBS="-L$himalaya_lib_dir $HIMALAYALIBS_"
+            HIMALAYALIBS="-L$himalaya_lib_dir -Wl,-rpath,$himalaya_lib_dir $HIMALAYALIBS_"
         fi
     fi
     return 0
