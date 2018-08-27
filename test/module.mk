@@ -434,6 +434,8 @@ endif
 ifeq ($(WITH_SMSU3),yes)
 TEST_SRC += \
 		$(DIR)/test_SMSU3_low_scale_constraint.cpp
+TEST_META += \
+		$(DIR)/test_SMSU3_TreeMasses.m
 endif
 
 ifeq ($(WITH_NSM),yes)
