@@ -1090,7 +1090,19 @@ FindVEV[gauge_] :=
               Print["Error: could not find VEV for gauge eigenstate ", gauge];
               Quit[1];
              ];
-           vev[[1]]
+           First[vev]
+          ];
+
+(* returns VEV normalization w.r.t. the corresponding gauge eigenstate *)
+FindVEVNormalization[gauge_] :=
+    Module[{result, vev},
+           vev = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                       {_,{v_,n_},{gauge,m_},{p_,_},___} | {_,{v_,n_},{s_,_},{gauge,m_},___} :> Abs[n/m]];
+           If[vev === {},
+              Print["Error: could not find VEV for gauge eigenstate ", gauge];
+              Quit[1];
+             ];
+           First[vev]
           ];
 
 GetDimOfVEV[vev_] :=
@@ -1204,22 +1216,28 @@ WriteModelSLHAClass[massMatrices_List, files_List] :=
                           } ];
           ];
 
-(* Returns a list of three-component lists where the information is
-   stored which VEV corresponds to which Tadpole eq.
+(* Returns a list of four-component lists where the information is
+   stored which VEV corresponds to which Tadpole eq. and the
+   normalization w.r.t. the corresponding scalar field (last element).
 
    Example: MRSSM
-   It[] := CreateVEVToTadpoleAssociation[]
-   Out[] = {{hh, 1, vd}, {hh, 2, vu}, {hh, 4, vS}, {hh, 3, vT}}
+   In[] := CreateVEVToTadpoleAssociation[]
+   Out[] = {{hh, 1, vd, 1}, {hh, 2, vu, 1}, {hh, 4, vS, 1}, {hh, 3, vT, 1}}
  *)
 CreateVEVToTadpoleAssociation[] :=
-    Module[{association, vev},
-           vevs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
-                        {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+    Module[{association, vs, vevs, norms, i},
+           vs = Cases[SARAH`DEFINITION[FlexibleSUSY`FSEigenstates][SARAH`VEVs],
+                      {_,{v_,_},{s_,_},{p_,_},___} :> {v,s,p}];
+           (* find VEVs associtated to the scalar/pseudoscalar gauge eigenstates *)
            vevs = Flatten @
-                  Join[ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[3]],
-                       ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vevs][[2]]];
+                  Join[ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vs][[3]],
+                       ExpandVEVIndices[FindVEV[#]]& /@ Transpose[vs][[2]]];
+           (* find corresponding norms *)
+           norms = Flatten @
+                  Join[Table[FindVEVNormalization[#], {i,GetDimOfVEV[FindVEV[#]]}]& /@ Transpose[vs][[3]],
+                       Table[FindVEVNormalization[#], {i,GetDimOfVEV[FindVEV[#]]}]& /@ Transpose[vs][[2]]];
            association = CreateHiggsToEWSBEqAssociation[];
-           {#[[1]], #[[2]], vevs[[#[[2]]]]}& /@ association
+           {#[[1]], #[[2]], vevs[[#[[2]]]], norms[[#[[2]]]]}& /@ association
           ];
 
 GetRenormalizationScheme[] :=
