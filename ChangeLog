@@ -1,3 +1,8 @@
+FlexibleSUSY 2.2.1 [not released yet]
+
+ * Bugfix (commit e5473865): Take non-standard normalization of VEVs
+   into account in FlexibleEFTHiggs models.
+
 FlexibleSUSY 2.2.0 [August, 26 2018]
 
  * Feature: The symbols `upQuarksDRbar`, `downQuarksDRbar`,
