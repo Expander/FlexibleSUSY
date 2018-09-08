@@ -12,6 +12,7 @@ PointerAlignment: Left
 AlwaysBreakTemplateDeclarations: true
 AlignTrailingComments: true
 AllowShortIfStatementsOnASingleLine: false
+# AllowShortFunctionsOnASingleLine: SFS_Inline
 BreakStringLiterals: true
 # BreakConstructorInitializers: BeforeComma
 ObjCSpaceAfterProperty: false
