@@ -551,6 +551,11 @@ TEST_SH += \
 		$(DIR)/test_SMEFTHiggs.sh
 endif
 
+ifeq ($(WITH_SplitMSSMEFTHiggs),yes)
+TEST_SH += \
+		$(DIR)/test_SplitMSSMEFTHiggs.sh
+endif
+
 ifeq ($(WITH_SM) $(WITH_SMEFTHiggs),yes yes)
 TEST_META += \
 		$(DIR)/test_multiple_librarylinks.m
