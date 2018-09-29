@@ -127,10 +127,13 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
 		$(DIR)/test_CMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_model.cpp \
+		$(DIR)/test_CMSSM_slha_output.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp \
 		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMMassWInput),yes yes)
@@ -141,12 +144,6 @@ endif
 ifeq ($(WITH_CMSSMLowPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMLowPrecision.cpp
-endif
-ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSM),yes yes)
-TEST_SRC += \
-		$(DIR)/test_CMSSM_slha_output.cpp
-TEST_SH += \
-		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMCKM),yes yes)
