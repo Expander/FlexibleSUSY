@@ -11,6 +11,8 @@ using std::fabs;
 using std::sqrt;
 using std::exp;
 using std::log;
+using std::cout;
+using std::endl;
 
 extern double sw2, gnuL, guL, gdL, geL, guR, gdR, geR, yuL, yuR, ydL,
   ydR, yeL, yeR, ynuL;
@@ -51,7 +53,7 @@ template<class SoftPars>
 int Softsusy<SoftPars>::rewsbMu(int sgnMu, double & mu) const {
   int flag = 0;
    if (abs(sgnMu) != 1) {
-    ostringstream ii;     
+    std::ostringstream ii;     
     ii << "Error: sign mu = " << sgnMu << "\n";
     throw ii.str();
   }
@@ -694,7 +696,7 @@ inline double ftCalc(double x) {
     tempSoft1->setYukawaElement(YU, 3, 3, x); if (PRINTOUT > 1) cout << "ht= ";
   }
   else {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "MssmSoftsusy:ftCalc called with incorrect functionality=" <<
       ftFunctionality << endl;
     throw ii.str();
@@ -763,7 +765,7 @@ inline double Softsusy<SoftParsMssm>::it1par(int numPar, const DoubleVector & bc
     x = displayYukawaElement(YU, 3, 3); h = x * 0.0005; 
   }
   else {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "it1par called with functionality " << ftFunctionality << 
       " out of range.\n";
     throw ii.str();
@@ -908,7 +910,7 @@ void Softsusy<SoftPars>::iterateMu(double & muold, int sgnMu,
     numTries = 0;
     throw a;
   }
-  catch(const string &a) {
+  catch(const std::string &a) {
     numTries = 0;
     throw a;
   }
@@ -1117,14 +1119,14 @@ inline void printShortInitialise() {
     "   mstau1   " << "   msbott   " << "  mstop1    " <<
     " mSquark   " << "   mSlep   " << "  msnu1     " <<
     "    mhl0    " << "   mchi10   " << " mchargino1 " <<
-    "  mGluino  " << flush;
+    "  mGluino  " << std::flush;
   }
 
 /// Prints mu, B and important spectral information
 template<class SoftPars>
-string Softsusy<SoftPars>::printShort() const {
+std::string Softsusy<SoftPars>::printShort() const {
   
-  ostringstream a;
+  std::ostringstream a;
   const double problemFlag = -1.0;
 
   double mu, m3sq;
@@ -1156,12 +1158,12 @@ string Softsusy<SoftPars>::printShort() const {
 	   << s.mGluino << " ";
     }
   
-  a << flush;
+  a << std::flush;
   return a.str();
 }
 
 template<class SoftPars>
-string Softsusy<SoftPars>::printLong() {
+std::string Softsusy<SoftPars>::printLong() {
   /// output:
   ///  1  2     3      4   5   6   7    8  9  10 11   12    13    
   /// mu  m3sq mH1sq mH2sq g1 g2 mt(mt) mh mA mH mH+ alphaH msnu3
@@ -1173,7 +1175,7 @@ string Softsusy<SoftPars>::printLong() {
   /// mgl mch1 mch2 thetaL thetaR mneut1 mneut2 mneut3 mneut4
   ///   39    40     41 
   /// sinthW t1ov1 t2ov2 
-  ostringstream a;
+  std::ostringstream a;
   double mu = displaySusyMu();
   if (displayProblem().muSqWrongSign || displayProblem().m3sq ||
       displayProblem().higgsUfb) 
@@ -1222,7 +1224,7 @@ string Softsusy<SoftPars>::printLong() {
     displayTadpole2Ms() << " ";
 
   if (displayProblem().test()) a << "%" << displayProblem();
-  a << flush;
+  a << std::flush;
   return a.str();
 }
 
@@ -2372,8 +2374,8 @@ void Softsusy<SoftPars>::neutralinos(int accuracy, double /* piwwtMS */,
       mNeut2.diagonaliseSym(dummyMix, mneut2) > acceptableTol ||
       mNeut3.diagonaliseSym(dummyMix, mneut3) > acceptableTol ||
       mNeut4.diagonaliseSym(dummyMix, mneut4) > acceptableTol) { 
-    ostringstream ii;
-    ii << "accuracy bad in neutralino diagonalisation"<< flush;
+    std::ostringstream ii;
+    ii << "accuracy bad in neutralino diagonalisation"<< std::flush;
     ii << "diagonalising " << physpars.mneut << " with "   
        << physpars.mixNeut;
     throw ii.str(); 
@@ -2919,7 +2921,7 @@ template<class SoftPars>
 double Softsusy<SoftPars>::calcRunningMb() const {
 
   if (displayMu() != displayMz()) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "Softsusy<SoftPars>::calcRunningMb called with mu=" <<
       displayMu() << endl; 
     throw ii.str();
@@ -6676,7 +6678,7 @@ inline double minimufb3(double lnH2) {
   /// iterate
   double qhat = getQhat(minTol,eR, h2, Lisq, mx, temp);
   if (qhat < 0.0) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "Error: qhat returned negative in ufb3min" << endl;
     throw ii.str();
   }
@@ -6996,7 +6998,7 @@ void Softsusy<SoftPars>::fixedPointIteration
     if (mxGuess > 0.0) 
       mxBC = mxGuess; 
     else {
-      string ii("Trying to use negative mx in Softsusy<SoftPars>::fixedPointIteration.\n");
+      std::string ii("Trying to use negative mx in Softsusy<SoftPars>::fixedPointIteration.\n");
       ii = ii + "Now illegal! Use positive mx for first guess of mx.\n";
       throw ii;
     }
@@ -7064,21 +7066,21 @@ void Softsusy<SoftPars>::fixedPointIteration
     if (PRINTOUT > 1) cout << " end of iteration" << endl;
   }
     catch(const char *a) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "SOFTSUSY problem: " << a << " pars=" << pars << " tanb=" << tanb 
        << " oneset=" << oneset << endl;
     flagProblemThrown(true);
     throw(ii.str());
   }
-  catch(const string & a) {
-    ostringstream ii;
+  catch(const std::string & a) {
+    std::ostringstream ii;
     ii << "SOFTSUSY problem: " << a << " pars=" << pars << " tanb=" << tanb 
 	 << " oneset=" << oneset << endl;
     flagProblemThrown(true);
     throw ii.str();
   }
   catch(...) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "SOFTSUSY problem: " << endl;
     ii << "pars=" << pars << " tanb=" << tanb
        << " oneset=" << oneset << endl;
@@ -7147,7 +7149,7 @@ double Softsusy<SoftPars>::getVev() {
 template<class SoftPars>
 void Softsusy<SoftPars>::sparticleThresholdCorrections(double tb) {
   double mz = displayMz();  if (displayMu() != mz) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "Called Softsusy<SoftPars>::sparticleThresholdCorrections "
        << "with scale" << displayMu() << endl;
     throw ii.str();
@@ -7265,8 +7267,8 @@ void Softsusy<SoftPars>::calcDrBarGauginos(double beta, double mw, double mz, do
   treeNeutralinos(mNeut, beta, mz, mw, sinth);
   if (mNeut.diagonaliseSym(eg.mixNeut, eg.mneut) > TOLERANCE *
       1.0e-3) { 
-    ostringstream ii;
-    ii << "accuracy bad in neutralino diagonalisation"<< flush;
+    std::ostringstream ii;
+    ii << "accuracy bad in neutralino diagonalisation"<< std::flush;
     ii << mNeut;
     throw ii.str(); 
     }
@@ -7609,7 +7611,7 @@ void Softsusy<SoftPars>::itLowsoft
 
     setMsusy(calcMs());
     if (ewsbBCscale) mxBC = displayMsusy();
-    if (PRINTOUT > 0) cout << " mgut=" << mxBC << flush;
+    if (PRINTOUT > 0) cout << " mgut=" << mxBC << std::flush;
     
     mtrun = forLoops.mt; ///< This will be at MSUSY
     //    double tbIn; double predictedMzSq = 0.;
@@ -7629,7 +7631,7 @@ void Softsusy<SoftPars>::itLowsoft
     
     if (numTries !=0 && fracDiff < tol) {///< Accuracy achieved: bail out
       numTries = 0; ///< Reset the number of iterations for the next time
-      if (PRINTOUT > 1) cout << " sT=" << fracDiff << " " << flush; 
+      if (PRINTOUT > 1) cout << " sT=" << fracDiff << " " << std::flush; 
       if (displayProblem().test() && PRINTOUT > 0) 
 	cout << " ***problem point***: " << displayProblem() << ".";
 
@@ -7655,7 +7657,7 @@ void Softsusy<SoftPars>::itLowsoft
       cout << "\n" << numTries << ". sT=" << fracDiff << " mu=" 
 	   << displaySusyMu() <<  " m3sq=" <<
 	displayM3Squared() << " MWp=" << displayMw() << " Mzp=" 
-	   << sqrt(displayPredMzSq()) << flush;
+	   << sqrt(displayPredMzSq()) << std::flush;
     }
 
     if (problem.noMuConvergence) {
@@ -7682,7 +7684,7 @@ void Softsusy<SoftPars>::itLowsoft
     numTries = 0;
     throw a;
   }
-  catch(const string &a) {
+  catch(const std::string &a) {
     numTries = 0;
     throw a;
   }
@@ -10031,7 +10033,7 @@ void Softsusy<SoftPars>::rhohat(double & outrho, double & outsin, double alphaDR
 
   double mz = displayMz();
   if (displayMu() != mz) {
-    ostringstream ii;   
+    std::ostringstream ii;   
     ii << "Called Softsusy<SoftPars>::rhohat "
        << "with scale" << displayMu() << endl;
     throw ii.str();
@@ -10045,7 +10047,7 @@ void Softsusy<SoftPars>::rhohat(double & outrho, double & outsin, double alphaDR
     numTries = 0;
     outrho = 0.23; outsin = 0.8; 
     flagNoRhoConvergence(true);
-    if (PRINTOUT) cout << flush << "rhohat reached maxtries\n"; 
+    if (PRINTOUT) cout << std::flush << "rhohat reached maxtries\n"; 
     return;
   }
   
@@ -10095,7 +10097,7 @@ void Softsusy<SoftPars>::rhohat(double & outrho, double & outsin, double alphaDR
 
 template<class SoftPars>
 void Softsusy<SoftPars>::methodBoundaryCondition(const DoubleVector & /* pars */) {
-  ostringstream ii;
+  std::ostringstream ii;
   ii << "Should only use Softsusy<SoftPars>::methodBoundaryCondition in derived"
      << " objects.\n";
   throw ii.str();
@@ -10103,7 +10105,7 @@ void Softsusy<SoftPars>::methodBoundaryCondition(const DoubleVector & /* pars */
 
 template<class SoftPars>
 void Softsusy<SoftPars>::rpvSet(const DoubleVector & /* parameters */) {
-  ostringstream ii;
+  std::ostringstream ii;
   ii << "Should only use Softsusy<SoftPars>::rpvSet in derived"
      << " objects.\n";
   throw ii.str();
@@ -10338,7 +10340,7 @@ template<class SoftPars>
 void Softsusy<SoftPars>::ssrunInterface764(const char fname [80], 
 					   const char softfname [80]) 
   const {
-  fstream softOutput(softfname, ios::out);
+  std::fstream softOutput(softfname, std::ios::out);
 
   ssrunInterface764Inside(fname, softOutput);
 
@@ -10347,7 +10349,7 @@ void Softsusy<SoftPars>::ssrunInterface764(const char fname [80],
 
 template<class SoftPars>
 void Softsusy<SoftPars>::ssrunInterface764Inside(const char fname [80], 
-					   fstream & softOutput) 
+					   std::fstream & softOutput) 
   const { 
 
   double mtopPole, mGPole, smu, mA, tanb, mq1l, mdr, mur, 
@@ -10390,7 +10392,7 @@ void Softsusy<SoftPars>::isawigInterface764(const char herwigInputFile [80],
 				      const char softOutputFile [80])  
   const {
 
-  fstream softOutput(softOutputFile, ios::out);
+  std::fstream softOutput(softOutputFile, std::ios::out);
 
   ssrunInterface764Inside(isajetOutputFile, softOutput);
 
@@ -10405,7 +10407,7 @@ void Softsusy<SoftPars>::isawigInterface764(const char herwigInputFile [80],
 template<class SoftPars>
 void Softsusy<SoftPars>::isajetInterface764(const char fname[80]) const {
 
-  fstream softOutput(fname, ios::out);
+  std::fstream softOutput(fname, std::ios::out);
 
   double mtopPole, mGPole, smu, mA, tanb, mq1l, mdr, mur, 
     meL, meR, mql3, mdr3, mur3,  mtauL, mtauR, at, ab, atau, 
@@ -10445,9 +10447,9 @@ void Softsusy<SoftPars>::isajetInterface764(const char fname[80]) const {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::headerSLHA(ostream & out) {
+void Softsusy<SoftPars>::headerSLHA(std::ostream & out) {
 
-  out.setf(ios::scientific, ios::floatfield);
+  out.setf(std::ios::scientific, std::ios::floatfield);
   out.precision(8);
 
   out << "# SOFTSUSY" << SOFTSUSY_VERSION << " SLHA compliant output" << endl;
@@ -10456,7 +10458,7 @@ void Softsusy<SoftPars>::headerSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::spinfoSLHA(ostream & out) {
+void Softsusy<SoftPars>::spinfoSLHA(std::ostream & out) {
   out << "Block SPINFO          # Program information\n"
       << "     1    SOFTSUSY    # spectrum calculator\n";
   out << "     2    " << SOFTSUSY_VERSION << "       # version number\n";
@@ -10477,13 +10479,13 @@ void Softsusy<SoftPars>::spinfoSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::softsusySLHA(ostream & out) {
+void Softsusy<SoftPars>::softsusySLHA(std::ostream & out) {
   out << "# SOFTSUSY-specific non SLHA information:\n";
   out << "# MIXING=" << MIXING << " Desired accuracy=" << TOLERANCE << " Achieved accuracy=" << displayFracDiff() << endl;
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::higgsMSLHA(ostream & out) {
+void Softsusy<SoftPars>::higgsMSLHA(std::ostream & out) {
   out << "        25    "; printRow(out, displayPhys().mh0(1)); out << "   # h0\n";
   out << "        35    "; printRow(out, displayPhys().mh0(2)); out << "   # H0\n";
   out << "        36    "; printRow(out, displayPhys().mA0(1)); out << "   # A0\n";
@@ -10491,7 +10493,7 @@ void Softsusy<SoftPars>::higgsMSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::neutralinoCharginoMSLHA(ostream & out) {
+void Softsusy<SoftPars>::neutralinoCharginoMSLHA(std::ostream & out) {
   sPhysical s(displayPhys());
 
   out << "   1000022    "; printRow(out, s.mneut(1)); 
@@ -10507,7 +10509,7 @@ void Softsusy<SoftPars>::neutralinoCharginoMSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::massSLHA(ostream & out) {
+void Softsusy<SoftPars>::massSLHA(std::ostream & out) {
   sPhysical s(displayPhys());
 
   out << "Block MASS                      # Mass spectrum\n";
@@ -10526,7 +10528,7 @@ void Softsusy<SoftPars>::massSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::sfermionsSLHA(ostream & out) {
+void Softsusy<SoftPars>::sfermionsSLHA(std::ostream & out) {
   sPhysical s(displayPhys());
 
   out << "   1000001    "; printRow(out, s.md(1, 1)); out << "   # ~d_L\n";
@@ -10559,7 +10561,7 @@ void Softsusy<SoftPars>::sfermionsSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::alphaSLHA(ostream & out) {
+void Softsusy<SoftPars>::alphaSLHA(std::ostream & out) {
   out << "Block alpha                   " << 
     "  # Effective Higgs mixing parameter\n";
   out << "          "; printRow(out, displayPhys().thetaH);        
@@ -10567,7 +10569,7 @@ void Softsusy<SoftPars>::alphaSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::neutralinoMixingSLHA(ostream & out) {
+void Softsusy<SoftPars>::neutralinoMixingSLHA(std::ostream & out) {
   const sPhysical s(displayPhys());
 
   out << "Block nmix                  # neutralino mixing matrix\n";
@@ -10582,7 +10584,7 @@ void Softsusy<SoftPars>::neutralinoMixingSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::inomixingSLHA(ostream & out) {
+void Softsusy<SoftPars>::inomixingSLHA(std::ostream & out) {
   sPhysical s(displayPhys());
   int i, j;
 
@@ -10616,7 +10618,7 @@ void Softsusy<SoftPars>::inomixingSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::modselSLHA(ostream & out, const char model[]) {
+void Softsusy<SoftPars>::modselSLHA(std::ostream & out, const char model[]) {
   out << "Block MODSEL  # Select model\n";
   int modsel = 0;
   if (!strcmp(model, "sugra")) modsel = 1;
@@ -10628,7 +10630,7 @@ void Softsusy<SoftPars>::modselSLHA(ostream & out, const char model[]) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::sfermionmixSLHA(ostream & out) {
+void Softsusy<SoftPars>::sfermionmixSLHA(std::ostream & out) {
     sPhysical s(displayPhys());
     DoubleMatrix m(2, 2);
     out << "Block stopmix               # stop mixing matrix\n";
@@ -10661,7 +10663,7 @@ void Softsusy<SoftPars>::sfermionmixSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::gaugeSLHA(ostream & out) {
+void Softsusy<SoftPars>::gaugeSLHA(std::ostream & out) {
   double gp = displayGaugeCoupling(1) * sqrt(0.6);
   out << "Block gauge Q= " << displayMu() << "  # SM gauge couplings\n";
   out << "     1     " << gp << "   # g'(Q)MSSM DRbar"
@@ -10673,7 +10675,7 @@ void Softsusy<SoftPars>::gaugeSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::yukawasSLHA(ostream & out) {
+void Softsusy<SoftPars>::yukawasSLHA(std::ostream & out) {
       out << "Block yu Q= " << displayMu() << "  \n"
 	  << "  3  3     " << displayYukawaElement(YU, 3, 3) 
 	  << "   # Yt(Q)MSSM DRbar" << endl;
@@ -10686,7 +10688,7 @@ void Softsusy<SoftPars>::yukawasSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::hmixSLHA(ostream & out) {
+void Softsusy<SoftPars>::hmixSLHA(std::ostream & out) {
   out << "Block hmix Q= " << displayMu() << 
     " # Higgs mixing parameters\n";
   out << "     1    "; printRow(out, displaySusyMu()); 
@@ -10702,7 +10704,7 @@ void Softsusy<SoftPars>::hmixSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::msoftSLHA(ostream & out) {
+void Softsusy<SoftPars>::msoftSLHA(std::ostream & out) {
       out << "Block msoft Q= " << displayMu() 
 	  << "  # MSSM DRbar SUSY breaking parameters\n"; 
       int i;
@@ -10772,7 +10774,7 @@ void Softsusy<SoftPars>::msoftSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::drbarSLHA(ostream & out, int numPoints, double qMax, int n) {
+void Softsusy<SoftPars>::drbarSLHA(std::ostream & out, int numPoints, double qMax, int n) {
   /// Starting non-essential information. The following decides what scale to
   /// output the running parameters at. It depends upon what qMax is and how
   /// many points the user has requested.
@@ -10807,7 +10809,7 @@ void Softsusy<SoftPars>::drbarSLHA(ostream & out, int numPoints, double qMax, in
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::sminputsSLHA(ostream & out) {
+void Softsusy<SoftPars>::sminputsSLHA(std::ostream & out) {
   QedQcd_legacy d(displayDataSet());
   out << "Block SMINPUTS             # Standard Model inputs\n";
   out << "     1   "; printRow(out, 1.0 / d.displayAlpha(ALPHA)); 
@@ -10824,7 +10826,7 @@ void Softsusy<SoftPars>::sminputsSLHA(ostream & out) {
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::extparSLHA(ostream & out, 
+void Softsusy<SoftPars>::extparSLHA(std::ostream & out, 
                                     const DoubleVector & pars,
                                     bool ewsbBCscale) {
   out << "Block EXTPAR               # non-universal SUSY breaking parameters\n";
@@ -10894,7 +10896,7 @@ void Softsusy<SoftPars>::extparSLHA(ostream & out,
 }
 
 template<class SoftPars>
-void Softsusy<SoftPars>::minparSLHA(ostream & out, const char model [], 
+void Softsusy<SoftPars>::minparSLHA(std::ostream & out, const char model [], 
 			      const DoubleVector & pars, double tanb, 
 			      int sgnMu, 
 			      bool ewsbBCscale) {
@@ -10944,7 +10946,7 @@ void Softsusy<SoftPars>::minparSLHA(ostream & out, const char model [],
     if (!strcmp(model, "nonUniversal")) 
       extparSLHA(out, pars, ewsbBCscale);
   else {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "Attempting to use SUSY Les Houches Accord for model " 
        << model << " - cannot do at present\n";
     throw ii.str();
@@ -10956,7 +10958,7 @@ void Softsusy<SoftPars>::minparSLHA(ostream & out, const char model [],
 }
  
 template<class SoftPars>
-void Softsusy<SoftPars>::slha1(ostream & out, const char model[], 
+void Softsusy<SoftPars>::slha1(std::ostream & out, const char model[], 
 			 const DoubleVector & pars, 
 			 int sgnMu, double tanb, 
 			 double qMax, 
@@ -10968,7 +10970,7 @@ void Softsusy<SoftPars>::slha1(ostream & out, const char model[],
 
 /// SUSY Les Houches accord for interfacing to Monte-Carlos, decay programs etc.
 template<class SoftPars>
-void Softsusy<SoftPars>::lesHouchesAccordOutput(ostream & out, const char model[], 
+void Softsusy<SoftPars>::lesHouchesAccordOutput(std::ostream & out, const char model[], 
 					  const DoubleVector & pars, 
 					  int sgnMu, double tanb, 
 					  double qMax, 

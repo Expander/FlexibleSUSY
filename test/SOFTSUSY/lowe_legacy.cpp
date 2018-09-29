@@ -182,36 +182,36 @@ int QedQcd_legacy::flavours(double mu) const {
   return k;
 }
 
-ostream & operator <<(ostream &left, const QedQcd_legacy &m) {
+std::ostream & operator <<(std::ostream &left, const QedQcd_legacy &m) {
   left << "mU: " << m.displayMass(mUp)
        << "  mC: " << m.displayMass(mCharm)
        << "  mt: " << m.displayMass(mTop)
        << "  mt^pole: " << m.displayPoleMt()
-       << endl;
+       << std::endl;
   left << "mD: " << m.displayMass(mDown)
        << "  mS: " << m.displayMass(mStrange)
        << "  mB: " << m.displayMass(mBottom)
        << "  mb(mb):  " << m.displayMbMb()
-       << endl;
+       << std::endl;
   left << "mE: " << m.displayMass(mElectron)
        << "  mM: " << m.displayMass(mMuon)
        <<  "  mT: " << m.displayMass(mTau)
        << "  mb^pole: " << m.displayPoleMb()
-       << endl;
+       << std::endl;;
   left << "aE: " << 1.0 / m.displayAlpha(ALPHA)
        << "  aS: " << m.displayAlpha(ALPHAS)
        << "   Q: " << m.displayMu()
        << "  mT^pole: " << m.displayPoleMtau()
-       << endl;
+       << std::endl;;
   left << "loops: " << m.displayLoops()
-       << "        thresholds: " << m.displayThresholds() << endl;
+       << "        thresholds: " << m.displayThresholds() << std::endl;;
 
   return left;
 }
 
-istream & operator >>(istream &left, QedQcd_legacy &m) {
+std::istream & operator >>(std::istream &left, QedQcd_legacy &m) {
 
-  string c, cmbmb, cmbpole;
+  std::string c, cmbmb, cmbpole;
   double mu, mc, mtpole, md, ms, me, mmu, mtau, invalph,
     alphas, scale;
   int t, l;
@@ -364,7 +364,7 @@ double QedQcd_legacy::extractRunningMb(double alphasMb) {
   double mbPole = displayPoleMb();
 
   if (displayMu() != mbPole) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "QedQcd_legacy::extractRunningMb called at scale "
          << displayMu() << " instead of mbpole\n";
     throw flexiblesusy::SetupError(ii.str());
@@ -390,7 +390,7 @@ double QedQcd_legacy::extractRunningMb(double alphasMb) {
 double QedQcd_legacy::extractPoleMb(double alphasMb) {
 
   if (displayMu() != displayMass(mBottom)) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "QedQcd_legacy::extractPoleMb called at scale " << displayMu() <<
       " instead of mb(mb)\n";
     throw flexiblesusy::SetupError(ii.str());
@@ -660,12 +660,13 @@ void readIn(QedQcd_legacy &mset, const char fname[80]) {
 
   // Read in data if it's not been set
   if (accessedReadIn_legacy == 0) {
-    string c;
-    if (!strcmp(fname,"")) cin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE
-                               >> c >> PRINTOUT; // from standard input
+    std::string c;
+    if (!strcmp(fname,""))
+       std::cin >> prevReadIn >> c >> MIXING >> c >> TOLERANCE
+                >> c >> PRINTOUT; // from standard input
     else {
       // read from filename fname
-          fstream fin(fname, ios::in);
+          std::fstream fin(fname, std::ios::in);
           if(!fin) {
             mset = QedQcd_legacy();
             return;
@@ -674,7 +675,7 @@ void readIn(QedQcd_legacy &mset, const char fname[80]) {
           fin.close();
     }
 
-    if (PRINTOUT) cout << prevReadIn;
+    if (PRINTOUT) std::cout << prevReadIn;
     accessedReadIn_legacy = 1; // Flag the fact we've read in the data once
   }
 

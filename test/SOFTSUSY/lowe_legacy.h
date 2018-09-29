@@ -197,9 +197,9 @@ public:
 };
 
 /// Input numbers into the object: by file stream
-ostream & operator <<(ostream &, const QedQcd_legacy &);
+std::ostream & operator <<(std::ostream &, const QedQcd_legacy &);
 /// Formatted output from QedQcd_legacy object
-istream & operator >>(istream &left, QedQcd_legacy &m);
+std::istream & operator >>(std::istream &left, QedQcd_legacy &m);
 
 /// Reads in a QedQed-type object and returns it in oneset.
 /// Call with fname "" if you want it to come from standard input

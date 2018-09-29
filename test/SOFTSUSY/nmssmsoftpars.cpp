@@ -23,7 +23,7 @@ const SoftParsNmssm & SoftParsNmssm::operator=(const SoftParsNmssm & s) {
 
 double SoftParsNmssm::displaySoftAlambda() const {
   if (fabs(displayLambda()) < 1.0e-100) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "WARNING: asking for SoftParsNmssm::displaySoftAlambda() where Yukawa coupling is " <<
        fabs(displayLambda()) << endl;
     throw ii.str();
@@ -34,7 +34,7 @@ double SoftParsNmssm::displaySoftAlambda() const {
 
 double SoftParsNmssm::displaySoftAkappa() const {
   if (fabs(displayKappa()) < 1.0e-100) {
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "WARNING: asking for SoftParsNmssm::displaySoftAkappa() where Yukawa coupling is " <<
        fabs(displayKappa()) << endl;
     throw ii.str();
@@ -746,7 +746,7 @@ void SoftParsNmssm::standardsemiSugra(double m0, double m12, double a0, double A
   }
 }
 
-ostream & operator <<(ostream &left, const SoftParsNmssm &s) {
+std::ostream & operator <<(std::ostream &left, const SoftParsNmssm &s) {
   left << "SUSY breaking NMSSM parameters at Q: " << s.displayMu() << endl;
   left << " UA" << s.displayTrilinear(UA)
        << " UD" << s.displayTrilinear(DA)

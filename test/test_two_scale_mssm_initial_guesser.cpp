@@ -60,7 +60,7 @@ double softsusy_initial_guess(MssmSoftsusy& mssm, const SoftsusyMSSM_parameter_p
    if (mxGuess > 0.0)
       mx = mxGuess;
    else {
-      string ii("Trying to use negative mx in MssmSoftsusy::lowOrg.\n");
+      std::string ii("Trying to use negative mx in MssmSoftsusy::lowOrg.\n");
       ii = ii + "Now illegal! Use positive mx for first guess of mx.\n";
       throw ii;
    }

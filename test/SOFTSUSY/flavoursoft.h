@@ -63,7 +63,7 @@ struct flavourPhysical {
 };
 
 /// Formatted printout
-ostream & operator <<(ostream &, const flavourPhysical &); 
+std::ostream & operator <<(std::ostream &, const flavourPhysical &); 
 
 inline flavourPhysical::flavourPhysical()
   : dSqMix(6, 6), uSqMix(6, 6), msD(6), msU(6), 
@@ -148,37 +148,37 @@ public:
   const DoubleMatrix displayMns() const;
 
   /// SLHA2 output format
-  virtual void lesHouchesAccordOutput(ostream & out, const char model[], 
+  virtual void lesHouchesAccordOutput(std::ostream & out, const char model[], 
 				      const DoubleVector & pars, 
 				      int sgnMu, double tanb, double qMax, 
 				      int numPoints, bool ewsbBCscale);
   /// MODSEL block of SLHA2
-  void modselSLHA(ostream & out, const char model[]);
+  void modselSLHA(std::ostream & out, const char model[]);
   /// SM inputs block of SLHA2
-  void sminputsSLHA(ostream & out);
+  void sminputsSLHA(std::ostream & out);
   /// VCKMIN inputs block of SLHA2
-  void vckminSLHA(ostream & out);
+  void vckminSLHA(std::ostream & out);
   /// Input SUSY parameters part of SLHA2
-  void minparSLHA(ostream & out, const char model [], 
+  void minparSLHA(std::ostream & out, const char model [], 
 		  const DoubleVector & pars, double tanb, int sgnMu, 
 		  bool ewsbBCscale);
   /// EXTPAR block of SLHA
-  virtual void extparSLHA(ostream & out, const DoubleVector & pars, 
+  virtual void extparSLHA(std::ostream & out, const DoubleVector & pars, 
 			  bool ewsbBCscale);
   /// sfermion part of mass block output of SLHA2
-  virtual void sfermionsSLHA(ostream & out);
+  virtual void sfermionsSLHA(std::ostream & out);
   /// slepton part of mass block output of SLHA2
-  virtual void sleptonsSLHA(ostream & out);
+  virtual void sleptonsSLHA(std::ostream & out);
   /// sfermion mixing output part of SLHA2
-  virtual void sfermionmixSLHA(ostream & out);
+  virtual void sfermionmixSLHA(std::ostream & out);
   /// charged slepton mixing part
-  virtual void selmixSLHA(ostream & out);
+  virtual void selmixSLHA(std::ostream & out);
   /// uncharged slepton mixing part
-  virtual void snumixSLHA(ostream & out);
+  virtual void snumixSLHA(std::ostream & out);
   /// sfermionic part of mixing blocks
-  virtual void yukawasSLHA(ostream & out);
+  virtual void yukawasSLHA(std::ostream & out);
   /// MSOFT block of SLHA
-  virtual void msoftSLHA(ostream & out);
+  virtual void msoftSLHA(std::ostream & out);
 
 
   /// flavour violating squark mass/mixing calculation
@@ -250,7 +250,7 @@ inline FlavourMssmSoftsusy::FlavourMssmSoftsusy(const FlavourMssmSoftsusy & s)
 }
 
 /// Formatted output
-ostream & operator <<(ostream &, const FlavourMssmSoftsusy &); 
+std::ostream & operator <<(std::ostream &, const FlavourMssmSoftsusy &); 
 
 void flavourBcs(MssmSoftsusy & m, const DoubleVector & inputParameters);
 

@@ -34,10 +34,10 @@ int main() {
  /// Sets format of output: 6 decimal places
   outputCharacteristics(6);
 
-  cerr << "SOFTSUSY" << SOFTSUSY_VERSION 
+  std::cerr << "SOFTSUSY" << SOFTSUSY_VERSION 
        << " test program, Ben Allanach 2002\n";
-  cerr << "If you use SOFTSUSY, please refer to B.C. Allanach,\n";
-  cerr << "Comput. Phys. Commun. 143 (2002) 305, hep-ph/0104145\n";
+  std::cerr << "If you use SOFTSUSY, please refer to B.C. Allanach,\n";
+  std::cerr << "Comput. Phys. Commun. 143 (2002) 305, hep-ph/0104145\n";
 
   /// Parameters used: CMSSM parameters
   double m12 = 500., a0 = 0., mGutGuess = 2.0e16, tanb = 10.0, m0 = 125.;

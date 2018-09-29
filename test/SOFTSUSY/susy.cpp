@@ -92,7 +92,7 @@ void MssmSusy::setYukawaElement(yukawa k, int i, int j, double f) {
   case YD: d(i, j) = f; break;
   case YE: e(i, j) = f; break;
   default: 
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "MssmSusy::set called with illegal " << int(k) << "\n";
     throw ii.str(); break;
   }
@@ -104,7 +104,7 @@ void MssmSusy::setYukawaMatrix(yukawa k, const DoubleMatrix & m) {
   case YD: d = m; break;
   case YE: e = m; break;
   default: 
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "MssmSusy::set called with illegal " << int(k) << "\n";
     throw ii.str(); break;
   }
@@ -116,7 +116,7 @@ double MssmSusy::displayYukawaElement(yukawa k, int i, int j) const {
   case YD: return d.display(i, j); break;
   case YE: return e.display(i, j); break;
   default: 
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "MssmSusy::display called with illegal " << int(k) << "\n";
     throw ii.str(); break;
   }
@@ -129,7 +129,7 @@ const DoubleMatrix & MssmSusy::displayYukawaMatrix(yukawa k) const {
   case YD: return d; break;
   case YE: return e; break;
   default: 
-    ostringstream ii;    
+    std::ostringstream ii;    
     ii << "MssmSusy::display called with illegal " << int(k) << "\n";
     throw ii.str(); break;
   }
@@ -177,8 +177,8 @@ void MssmSusy::set(const DoubleVector & y) {
 
 double MssmSusy::displayTanb() const { return tanb; }
 
-ostream & operator <<(ostream &left, const MssmSusy &s) {
-  left << "Supersymmetric parameters at Q: " << s.displayMu() << endl;
+std::ostream & operator <<(std::ostream &left, const MssmSusy &s) {
+  left << "Supersymmetric parameters at Q: " << s.displayMu() << std::endl;
   left << " Y^U" << s.displayYukawaMatrix(YU) << " Y^D" <<
     s.displayYukawaMatrix(YD) << " Y^E" << s.displayYukawaMatrix(YE);
   left << "higgs VEV: " << s.displayHvev() 
@@ -186,7 +186,7 @@ ostream & operator <<(ostream &left, const MssmSusy &s) {
     "\n";
   left << "g1: " << s.displayGaugeCoupling(1) << " g2: " <<
     s.displayGaugeCoupling(2) << " g3: " << 
-    s.displayGaugeCoupling(3) << endl; 
+    s.displayGaugeCoupling(3) << std::endl; 
   left << "thresholds: " << s.displayThresholds() 
        << " #loops: " << s.displayLoops() << '\n';
   return left;
@@ -581,7 +581,7 @@ void MssmSusy::quarkMixing(const DoubleMatrix & CKM, int mix) {
       break;
      
     default:
-    ostringstream ii;
+    std::ostringstream ii;
     ii << "Error. MssmSusy::quarkMixing called with mix=" << mix;
     throw ii.str();
   }
