@@ -938,7 +938,6 @@ namespace {
 /// \f$phi_{xyz}(x,y,z)\f$ function (Author: Emanuele Bagnaschi)
 double phixyz(double x, double y, double z)
 {
-   using gm2calc::dilog;
    const double u = x/z, v = y/z, m = x/y;
    double fac = 0., my_x = 0., my_y = 0., my_z = 0.;
    const double devu = std::fabs(u-1), devv = std::fabs(v-1), devm = std::fabs(m-1);

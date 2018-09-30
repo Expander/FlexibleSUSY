@@ -47,7 +47,6 @@ template <typename T> T logabs(T x) { return std::log(std::abs(x)); }
 double phi(double x, double y, double z)
 {
    using std::log;
-   using gm2calc::dilog;
 
    const double u = x/z, v = y/z;
    const double lambda = sqrtabs(sqr(1 - u - v) - 4*u*v);
@@ -65,7 +64,6 @@ double dphi_010(double t, double T, double g)
    using std::sqrt;
    using std::log;
    using std::pow;
-   using gm2calc::dilog;
 
    constexpr double Pi2 = M_PI * M_PI;
    const double g2 = sqr(g);
@@ -162,7 +160,6 @@ Eigen::Matrix<double, 2, 1> tadpole_higgs_2loop_at_as_mssm_st_0_mst1_eq_mst2(
    using std::log;
    using std::sin;
    using std::cos;
-   using gm2calc::dilog;
 
    constexpr double Pi2 = M_PI * M_PI;
    constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;
@@ -317,7 +314,6 @@ Eigen::Matrix<double, 2, 2> self_energy_higgs_2loop_at_as_mssm_with_tadpoles_st_
    using std::log;
    using std::sin;
    using std::pow;
-   using gm2calc::dilog;
 
    constexpr double Pi2 = M_PI * M_PI;
    constexpr double Pi4 = M_PI * M_PI * M_PI * M_PI;

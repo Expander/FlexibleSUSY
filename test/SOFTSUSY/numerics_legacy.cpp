@@ -109,11 +109,11 @@ double findMinimum(double ax, double bx, double cx, double (*f)(double),
 }
 
 double dilog(double x) {
-  return gm2calc::dilog(x);
+  return flexiblesusy::dilog(x);
 }
 
 Complex dilog(const Complex& x) {
-  return gm2calc::dilog(x);
+  return flexiblesusy::dilog(x);
 }
 
 double fps(double z) {

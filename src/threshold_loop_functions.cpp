@@ -1106,7 +1106,7 @@ double fth3(double y) noexcept
       const double y4 = sqr(y2);
 
       return (-1. + 2*y2 + 2*y4)
-         *(-z2 - y2*log(y2) + log(y2)*log(1. - y2) + gm2calc::dilog(y2))
+         *(-z2 - y2*log(y2) + log(y2)*log(1. - y2) + dilog(y2))
          / sqr(1 - y2);
    }
 
@@ -1764,7 +1764,6 @@ namespace {
    double phi_pos(double u, double v) noexcept
    {
       using std::log;
-      using gm2calc::dilog;
       const auto lambda = std::sqrt(lambda_2(u,v));
 
       return (-(log(u)*log(v))
@@ -1779,7 +1778,6 @@ namespace {
    {
       using std::acos;
       using std::sqrt;
-      using gm2calc::clausen_2;
       const auto lambda = std::sqrt(-lambda_2(u,v));
 
       return 2*(+ clausen_2(2*acos((1 + u - v)/(2.*sqrt(u))))
