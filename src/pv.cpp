@@ -19,6 +19,7 @@
 #include <limits>
 #include <cmath>
 #include <cstdlib>
+#include "derivative.hpp"
 #include "logger.hpp"
 #include "pv.hpp"
 
@@ -48,6 +49,8 @@ struct Initialize_looptools {
 	ltexi();
     }
 } initialize_looptools;
+
+const double deriv_eps = 1e-5; ///< epsilon for derivatives
 
 } // anonymous namespace
 
@@ -102,11 +105,30 @@ complex<double> B00
     return ::B00C(p2, m2a, m2b);
 }
 
+complex<double> D1B0(double p2, double m2a, double m2b) noexcept
+{
+    const auto f = [m2a,m2b](double p2) { return B0(p2, m2a, m2b, 1.0); };
+    return derivative_central<0>(f, p2, deriv_eps);
+}
+
+complex<double> D1B0
+(complex<double> p2, complex<double> m2a, complex<double> m2b) noexcept
+{
+    const auto re_f = [p2,m2a,m2b](double re_p2) { return B0({re_p2, p2.imag()}, m2a, m2b, 1.0).real(); };
+    const auto im_f = [p2,m2a,m2b](double re_p2) { return B0({re_p2, p2.imag()}, m2a, m2b, 1.0).imag(); };
+
+    const auto dudx = derivative_central<0>(re_f, p2.real(), deriv_eps);
+    const auto dvdx = derivative_central<0>(im_f, p2.real(), deriv_eps);
+
+    return {dudx, dvdx};
+}
+
 #elif defined(ENABLE_FFLITE)
 
 namespace {
 
 const double nan = numeric_limits<double>::quiet_NaN();
+const double deriv_eps = 1e-5; ///< epsilon for derivatives
 
 // see src/include/ff.h in LoopTools
 const double acc = 1e-13;
@@ -211,6 +233,24 @@ complex<double> B00
     ljffcot2_(piDpj, p2, m2a, m2b, m2a-p2, m2b-p2, m2a-m2b, ier);
     ljffcb2p_(cb2i, cb1, cb0, ca0i, p2, m2a, m2b, piDpj, ier);
     return cb2i[1];
+}
+
+complex<double> D1B0(double p2, double m2a, double m2b) noexcept
+{
+    const auto f = [m2a,m2b](double p2) { return B0(p2, m2a, m2b, 1.0); };
+    return derivative_central<0>(f, p2, deriv_eps);
+}
+
+complex<double> D1B0
+(complex<double> p2, complex<double> m2a, complex<double> m2b) noexcept
+{
+    const auto re_f = [p2,m2a,m2b](double re_p2) { return B0({re_p2, p2.imag()}, m2a, m2b, 1.0).real(); };
+    const auto im_f = [p2,m2a,m2b](double re_p2) { return B0({re_p2, p2.imag()}, m2a, m2b, 1.0).imag(); };
+
+    const auto dudx = derivative_central<0>(re_f, p2.real(), deriv_eps);
+    const auto dvdx = derivative_central<0>(im_f, p2.real(), deriv_eps);
+
+    return {dudx, dvdx};
 }
 
 } // namespace FF
@@ -435,6 +475,17 @@ complex<double> B00
     return FF::B00(p2, m2a, m2b, scl2);
 }
 
+complex<double> D1B0(double p2, double m2a, double m2b) noexcept
+{
+    return FF::D1B0(p2, m2a, m2b);
+}
+
+complex<double> D1B0
+(complex<double> p2, complex<double> m2a, complex<double> m2b) noexcept
+{
+    return FF::D1B0(p2, m2a, m2b);
+}
+
 #endif // defined(ENABLE_FFLITE)
 
 double ReA0(double m2, double scl2) noexcept
@@ -508,6 +559,35 @@ double ReG0(double p2, double m2a, double m2b, double scl2) noexcept
 #else
     return (p2 - m2a - m2b) * ReB0(p2, m2a, m2b, scl2)
 	   - ReA0(m2a, scl2) - ReA0(m2b, scl2);
+#endif
+}
+
+double ReD1B0(double p2, double m2a, double m2b) noexcept
+{
+#if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
+   return D1B0(p2, m2a, m2b).real();
+#else
+   return softsusy::d1_b0(p2, m2a, m2b);
+#endif
+}
+
+double ReD1F0(double p2, double m2a, double m2b, double scl2) noexcept
+{
+#if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
+    return D1F0(p2, m2a, m2b, scl2).real();
+#else
+    return - (2.0*p2 + 2.0*m2a - m2b) * ReD1B0(p2, m2a, m2b)
+       - 2.0 * ReB0(p2, m2a, m2b, scl2);
+#endif
+}
+
+double ReD1G0(double p2, double m2a, double m2b, double scl2) noexcept
+{
+#if defined(ENABLE_LOOPTOOLS) || defined(ENABLE_FFLITE)
+    return D1G0(p2, m2a, m2b, scl2).real();
+#else
+    return (p2 - m2a - m2b) * ReD1B0(p2, m2a, m2b)
+       + ReB0(p2, m2a, m2b, scl2);
 #endif
 }
 
