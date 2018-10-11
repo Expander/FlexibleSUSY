@@ -99,7 +99,7 @@ template<class Field> struct bar
   static constexpr int numberOfGenerations = Field::numberOfGenerations;
   using sm_flags = typename Field::sm_flags;
   static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
-  static constexpr double electric_charge = Field::electric_charge;
+  static constexpr double electric_charge = - Field::electric_charge;
   using lorentz_conjugate = Field;
 
   using type = bar<Field>;
@@ -111,7 +111,7 @@ template<class Field> struct conj
   static constexpr int numberOfGenerations = Field::numberOfGenerations;
   using sm_flags = typename Field::sm_flags;
   static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
-  static constexpr double electric_charge = Field::electric_charge;
+  static constexpr double electric_charge = - Field::electric_charge;
   using lorentz_conjugate = Field;
 
   using type = conj<Field>;
