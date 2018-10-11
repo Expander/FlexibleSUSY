@@ -44,6 +44,8 @@ ReplaceUnrotatedFields::usage;
 StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 StripFieldIndices::usage;
 
+SarahToFSVertexConventions::usage="";
+
 Begin["`Private`"]
 
 (* There is a sign ambiguity when SARAH`Vertex[] factors an SSV-type
@@ -309,6 +311,20 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
     -I factor TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
 ];
+
+SarahToFSVertexConventions[sortedFields_List, expr_] :=
+  Module[{contraction},
+    StripGroupStructure[expr, {}];
+    contraction = Block[{
+	    SARAH`sum
+	    (* corrupts a polynomial (monomial + monomial + ...) summand *)
+	},
+	ExpandSarahSum @ SimplifyContraction @ expr];
+    (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
+       for the following sign factor *)
+    -I TreeMasses`ReplaceDependencies[contraction] /.
+	Parameters`ApplyGUTNormalization[]
+  ]
 
 SARAHVertex[fieldsInRotatedCp_List] := Module[{
 	sarahVertex = SARAH`Vertex @ StripFieldIndices[fieldsInRotatedCp],

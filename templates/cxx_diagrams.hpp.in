@@ -30,16 +30,22 @@
 
 #include "numerics2.hpp"
 #include "wrappers.hpp"
+#include "multiindex.hpp"
+#include "concatenate.hpp"
 
 #include <array>
+
+#include <boost/array.hpp>
+#include <boost/version.hpp>
 #include <boost/range/join.hpp>
+
+#include <boost/mpl/erase.hpp>
 #include <boost/mpl/vector_c.hpp>
+#include <boost/mpl/joint_view.hpp>
+
 #include <boost/fusion/adapted/mpl.hpp>
 #include <boost/fusion/include/vector.hpp>
 #include <boost/fusion/adapted/boost_array.hpp>
-#include <boost/array.hpp>
-
-#include <boost/version.hpp>
 
 #if BOOST_VERSION >= 105800
 #include <boost/fusion/include/move.hpp>
@@ -54,258 +60,61 @@
 
 namespace flexiblesusy {
 namespace cxx_diagrams {
-namespace impl {
-/** \brief Helper template for make_array
- */
-template<class ForwardIterator, std::size_t N, class T>
-struct make_array_it {
-   using decayed_type = typename std::decay<
-                        typename std::iterator_traits<ForwardIterator>::value_type
-                        >::type;
-   static constexpr bool use_cast = !std::is_same<decayed_type, T>::value;
 
-   template<class... Args>
-   static auto iterate(ForwardIterator begin, Args &&...args)
-   -> typename std::enable_if<
-   !use_cast,
-   std::array<T, N + sizeof...(Args)>
-   >::type {
-      ForwardIterator copy(begin);
-      return make_array_it<ForwardIterator, N-1, T>::iterate(++begin,
-            std::forward<Args>(args)..., *copy);
-   }
-
-   template<class... Args>
-   static auto iterate(ForwardIterator begin, Args &&...args)
-   -> typename std::enable_if<
-   use_cast,
-   std::array<T, N + sizeof...(Args)>
-   >::type {
-      ForwardIterator copy(begin);
-      return make_array_it<ForwardIterator, N-1, T>::iterate(++begin,
-            std::forward<Args>(args)..., T(*copy));
-   }
+// Declare a type that can hold the field indices for any given field
+template<class Field> struct field_indices {
+   using type = std::array<int, Field::numberOfFieldIndices>;
 };
 
-/** \brief Specialized helper template for make_array */
-template<class ForwardIterator, class T>
-struct make_array_it<ForwardIterator, 0, T> {
-   template<class... Args>
-   static auto iterate(ForwardIterator /* begin */, Args &&...args)
-   -> std::array<T, sizeof...(Args)> {
-      return std::array<T, sizeof...(Args)>{ std::forward<Args>(args)... };
-   }
-};
-
-/** \class make_array
- * \brief Facility for easy construction of \a std::array
- *        objects.
- * \tparam N The size of the to be constructed array
- * \tparam T The type of the objects the array should hold
- *           or void (by default) if the type should be
- *           inferred.
- */
-template<std::size_t N, class T = void>
-struct make_array {
-   /** \brief Construct a \a std::array by copying values
-    *         from a range.
-    * \tparam ForwardIterator The iterator type (usually inferred)
-    * \param[in] begin The iterator marking the beginning of
-    *                  the range to be copied.
-    * \returns A \a std::array holding the desired objects.
-    * \warning \a begin must be incrementable sufficiently
-    *          often (\a N times) otherwise the behaviour
-    *          is undefined.
-    */
-   template<class ForwardIterator>
-   static auto iterate(ForwardIterator begin)
-   -> std::array<typename std::conditional<
-   std::is_void<T>::value,
-       typename std::iterator_traits<ForwardIterator>::value_type,
-       T
-   >::type, N> {
-      using value_type = typename std::conditional<
-      std::is_void<T>::value,
-      typename std::iterator_traits<ForwardIterator>::value_type,
-      T
-      >::type;
-
-      return make_array_it<ForwardIterator, N, value_type>::iterate(begin);
-   }
-};
-
-template<class Array1, class Array2>
-auto concatenate(const Array1& a1, const Array2& a2)
--> std::array<
-typename std::common_type<
-typename Array1::value_type,
-         typename Array1::value_type
-         >::type,
-         std::tuple_size<Array1>::value + std::tuple_size<Array2>::value>
-         {
-            using value_type = typename std::common_type<
-                               typename Array1::value_type,
-            typename Array1::value_type
-            >::type;
-            constexpr auto size = std::tuple_size<Array1>::value + std::tuple_size<Array2>::value;
-
-            auto range1 = boost::make_iterator_range(boost::begin(a1),
-                          boost::end(a1));
-            auto range2 = boost::make_iterator_range(boost::begin(a2),
-                          boost::end(a2));
-            auto joined = boost::join(range1, range2);
-
-            return make_array<size, value_type>::iterate(boost::begin(joined));
-         }
-
-         /**
-          * @class IndexBounds<N>
-          * @brief A class representing multiple (N) index ranges.
-          *
-          * N is a non-negative integer.
-          * The ranges are specified the c++ way; The range begins are inclusive
-          * and the range ends are exclusive. Misspecified ranges result in
-          * undefined behaviour!
-          * The intended use is to iterate over an IndexBounds<N> using the normal
-          * begin()/end() syntax, which will iterate over every possible combination
-          * of the indices within their respective ranges.
-          * The ranges are const! Once they are initialized they cannot be changed.
-          * Initialization is done like = {{ beg1, beg2, ... }, { end1, end2, ... }}
-          */
-         template<int N> struct IndexBounds;
-
-/**
- * @class IndexIterator<N>
- * @brief The iterator class used by IndexBounds<N>.
- *
- * It only fulfils the input iterator requirements!
- * The value_type is a const std::array<int, N>
- * containing the current indices.
- * Incrementing the iterator results in a new index combination.
- */
-template<int N> struct IndexIterator {
-   using difference_type = typename std::array<int, N>::difference_type;
-   using value_type = int;
-   using pointer = int*;
-   using reference = int&;
-   using iterator_category = std::input_iterator_tag;
-
-   friend class IndexBounds<N>;
-private:
-   const IndexBounds<N>& bounds;
-   std::array<int, N> indices;
-
-   IndexIterator(const IndexBounds<N>& b, std::array<int, N>&& i)
-      : bounds(b), indices(std::move(i)) {}
-public:
-   const std::array<int, N>& operator*() const
-   {
-      return indices;
-   }
-
-   const std::array<int, N>* operator->() const
-   {
-      return &indices;
-   }
-
-   IndexIterator& operator++()
-   {
-      for (int i = 0; i != N; i++) {
-         indices[i]++;
-         if (indices[i] == bounds.indexEnd[i]) {
-            indices[i] = bounds.indexBegin[i];
-            continue;
-         }
-
-         return *this;
-      }
-
-      indices = make_array<N>::iterate(bounds.indexEnd);
-      return *this;
-   }
-
-   IndexIterator operator++(int)
-   {
-      IndexIterator it(*this);
-      this->operator++();
-      return it;
-   }
-
-   template<int M>
-   friend bool operator==(const IndexIterator<M>& it1, const IndexIterator<M>& it2);
-};
-
-template<int N>
-bool operator==(const IndexIterator<N>& it1, const IndexIterator<N>& it2)
+namespace detail
 {
-   return it1.indices == it2.indices;
+  template<class Field>
+  struct number_of_field_indices
+  {
+    static constexpr int value =
+      std::tuple_size<typename field_indices<Field>::type>::value;
+    using type = boost::mpl::int_<value>;
+  };
+
+  template<class Sequence>
+  struct total_number_of_field_indices
+  {
+    using type = typename boost::mpl::fold<
+      Sequence,
+      boost::mpl::int_<0>,
+      boost::mpl::plus<
+        boost::mpl::_1,
+        number_of_field_indices<
+          boost::mpl::_2
+        >
+      >
+    >::type;
+    static constexpr int value = type::value;
+  };
 }
 
-template<int N>
-bool operator!=(const IndexIterator<N>& it1, const IndexIterator<N>& it2)
+template<class Field> struct bar
 {
-   return !(it1 == it2);
-}
+  using index_bounds = typename Field::index_bounds;
+  static constexpr int numberOfGenerations = Field::numberOfGenerations;
+  using sm_flags = typename Field::sm_flags;
+  static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
+  static constexpr double electric_charge = Field::electric_charge;
+  using lorentz_conjugate = Field;
 
-template<int N> struct IndexBounds {
-   typedef const std::array<int, N> indices_type;
-
-   int indexBegin[N];
-   int indexEnd[N];
-
-   typedef IndexIterator<N> const_iterator;
-
-   const_iterator begin() const
-   {
-      return const_iterator(*this, make_array<N>::iterate(indexBegin));
-   }
-
-   const_iterator end() const
-   {
-      return const_iterator(*this, make_array<N>::iterate(indexEnd));
-   }
+  using type = bar<Field>;
 };
 
-template<> struct IndexBounds<0> {
-   using indices_type = const std::array<int, 0>;
-   using const_iterator = indices_type*;
+template<class Field> struct conj
+{
+  using index_bounds = typename Field::index_bounds;
+  static constexpr int numberOfGenerations = Field::numberOfGenerations;
+  using sm_flags = typename Field::sm_flags;
+  static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
+  static constexpr double electric_charge = Field::electric_charge;
+  using lorentz_conjugate = Field;
 
-   const indices_type dummyIndex = {};
-
-   const_iterator begin() const
-   {
-      return &dummyIndex;
-   }
-   const_iterator end() const
-   {
-      return (begin()+1);
-   }
-};
-
-} // namespace impl
-
-// Lorentz conjugate fermions
-template<class Field> struct bar {
-   static constexpr int numberOfGenerations = Field::numberOfGenerations;
-   static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
-   using smFlags = typename Field::smFlags;
-
-   static constexpr double electric_charge = - Field::electric_charge;
-
-   using type = bar<Field>;
-   using lorentz_conjugate = Field;
-};
-
-// Lorentz conjugate bosons
-template<class Field> struct conj {
-   static constexpr int numberOfGenerations = Field::numberOfGenerations;
-   static constexpr int numberOfFieldIndices = Field::numberOfFieldIndices;
-   using smFlags = typename Field::smFlags;
-
-   static constexpr double electric_charge = - Field::electric_charge;
-
-   using type = conj<Field>;
-   using lorentz_conjugate = Field;
+  using type = conj<Field>;
 };
 
 // Double Lorentz conjugation
@@ -330,105 +139,163 @@ template<class Field> struct remove_lorentz_conjugation<conj<Field>> {
 };
 
 
-// Declare a type that can hold the field indices for any given field
-template<class Field> struct field_indices {
-   using type = std::array<int, Field::numberOfFieldIndices>;
-};
-
 template<class Field>
-typename std::enable_if<Field::numberOfGenerations != 1, bool>::type
+typename std::enable_if<
+  Field::numberOfGenerations != 1,
+  bool
+>::type
 isSMField(const typename field_indices<Field>::type& indices)
 {
-   boost::array<bool,Field::numberOfGenerations> smFlags;
+  boost::array<bool, Field::numberOfGenerations> sm_flags;
 
 #if BOOST_VERSION >= 105800
-   boost::fusion::move(typename Field::smFlags(), smFlags);
+  boost::fusion::move(typename Field::sm_flags(), sm_flags);
 #else
-   boost::fusion::copy(typename Field::smFlags(), smFlags);
+  boost::fusion::copy(typename Field::sm_flags(), sm_flags);
 #endif
 
-   return smFlags[indices[0]];
+  return sm_flags[indices.front()];
 }
 
 template<class Field>
-typename std::enable_if<Field::numberOfGenerations == 1, bool>::type
-isSMField(const typename field_indices<Field>::type& /* indices */)
+typename std::enable_if<
+  Field::numberOfGenerations == 1,
+  bool
+>::type
+isSMField(const typename field_indices<Field>::type &)
 {
-   return boost::mpl::at_c<typename Field::smFlags,0>::type::value;
+  return boost::mpl::at_c<
+    typename Field::sm_flags,
+    0
+  >::type::value;
+}
+
+namespace detail
+{
+template<class Begin, class End>
+decltype(
+  boost::make_iterator_range(
+    multiindex<Begin, End>::begin(),
+    multiindex<Begin, End>::end()
+  )
+)
+make_index_range( void )
+{
+  using index = multiindex<Begin, End>;
+
+  return boost::make_iterator_range(
+    index::begin(), index::end()
+  );
+}
+}
+
+template<class ObjectWithIndexBounds>
+struct index_bounds_of
+{
+  using type = typename ObjectWithIndexBounds::index_bounds;
+};
+
+template<class ObjectWithIndexBounds>
+decltype(detail::make_index_range<
+  typename index_bounds_of<ObjectWithIndexBounds>::type::first,
+  typename index_bounds_of<ObjectWithIndexBounds>::type::second
+>())
+index_range( void )
+{
+  return detail::make_index_range<
+    typename index_bounds_of<ObjectWithIndexBounds>::type::first,
+    typename index_bounds_of<ObjectWithIndexBounds>::type::second
+  >();
 }
 
 @CXXDiagrams_Fields@
 
-
-/**
-* @class SingleComponentedVertex
-* @brief A vertex whose value can be represented by a single complex number
-*/
-class SingleComponentedVertex {
+class ScalarVertex {
 private:
-   std::complex<double> val; ///< The value
+  std::complex<double> val;
 public:
-   SingleComponentedVertex(std::complex<double> v)
-      : val(v) {}
+  ScalarVertex(std::complex<double> v)
+  : val(v) {}
 
-   /**
-   * @fn value
-   * @brief Returns the value of the vertex.
-   */
-   std::complex<double> value() const
-   {
-      return val;
-   }
+  std::complex<double> value() const
+  {
+     return val;
+  }
 
-   /**
-   * @fn isZero
-   * @brief Tests whether the value is numerically significant
-   */
-   bool isZero() const
-   {
-      return (is_zero(val.real()) && is_zero(val.imag()));
-   }
+  bool isZero() const
+  {
+    return (is_zero(val.real()) && is_zero(val.imag()));
+  }
 };
 
-/**
-* @class LeftAndRightComponentedVertex
-* @brief A vertex whose value can be represented by two complex numbers
-*/
-class LeftAndRightComponentedVertex {
+class ChiralVertex {
 private:
-   std::pair<std::complex<double>, std::complex<double>> value;  ///< The values
+  std::pair<std::complex<double>, std::complex<double>> value;
 public:
-   LeftAndRightComponentedVertex(const std::complex<double>& left,
-                                 const std::complex<double>& right)
-      : value(left, right) {}
+  ChiralVertex(const std::complex<double>& left,
+               const std::complex<double>& right)
+  : value(left, right) {}
 
-   /**
-   * @fn left
-   * @brief Returns the left component of the vertex.
-   */
-   std::complex<double> left() const
-   {
-      return value.first;
-   }
+  std::complex<double> left() const
+  {
+     return value.first;
+  }
 
-   /**
-   * @fn right
-   * @brief Returns the left component of the vertex.
-   */
-   std::complex<double> right() const
-   {
-      return value.second;
-   }
+  std::complex<double> right() const
+  {
+     return value.second;
+  }
 
-   /**
-   * @fn isZero
-   * @brief Tests whether the values are numerically significant
-   */
-   bool isZero() const
-   {
-      return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
-              is_zero(value.second.real()) && is_zero(value.second.imag()));
-   }
+  bool isZero() const
+  {
+    return (is_zero(value.first.real()) && is_zero(value.first.imag()) &&
+            is_zero(value.second.real()) && is_zero(value.second.imag()));
+  }
+};
+
+class MomentumDifferenceVertex {
+private:
+  std::complex<double> val;
+  int minuendIndex;
+  int subtrahendIndex;
+public:
+  MomentumDifferenceVertex(std::complex<double> v, int mi, int si )
+  : val(v), minuendIndex(mi), subtrahendIndex(si) {}
+
+  std::complex<double> value(int mi, int si) const
+  {
+    if( mi == minuendIndex && si == subtrahendIndex )
+      return val;
+    if( mi == subtrahendIndex && si == minuendIndex )
+      return -val;
+
+    throw std::invalid_argument(
+       "MomentumDifferenceVertex: Wrong index combination" );
+    return 0.0;
+  }
+
+  bool isZero() const
+  {
+    return (is_zero(val.real()) && is_zero(val.imag()));
+  }
+};
+
+class InverseMetricVertex {
+private:
+  std::complex<double> val;
+public:
+  InverseMetricVertex(std::complex<double> v)
+  : val(v) {}
+
+  std::complex<double> value() const
+  {
+    return val;
+  }
+
+  bool isZero() const
+  {
+    return (is_zero(val.real()) && is_zero(val.imag()));
+  }
 };
 
 /**
@@ -439,50 +306,77 @@ template<class ...Fields> struct VertexData;
 
 struct EvaluationContext;
 
-/**
- * @class Vertex<F...>
- * @brief A template that represents a vertex with open field indices.
- *
- * All elements in F... have to be publicly derived from Field.
- * To obtain a conrete value, use the static member function evaluate()
- * along with the desired field indices.
- */
-template<class ...F> class Vertex {
-   using Data = VertexData<F...>;
-   using bounds_type = typename std::decay<decltype(Data::index_bounds)>::type;
+template<class ...Fields> class Vertex {
+  using Data = VertexData<Fields...>;
 public:
-   using vertex_type = typename Data::vertex_type;
-   using indices_type = typename decltype(Data::index_bounds)::indices_type;
+  using index_bounds = typename boost::mpl::fold<
+    boost::mpl::vector<Fields...>,
+    boost::mpl::pair<
+      boost::mpl::vector<>,
+      boost::mpl::vector<>
+    >,
+    boost::mpl::pair<
+      boost::mpl::joint_view<
+        boost::mpl::first<boost::mpl::_1>,
+        boost::mpl::first<
+          index_bounds_of<boost::mpl::_2>
+        >
+      >,
+      boost::mpl::joint_view<
+        boost::mpl::second<boost::mpl::_1>,
+        boost::mpl::second<
+          index_bounds_of<boost::mpl::_2>
+        >
+      >
+    >
+  >::type;
+  using indices_type = std::array<
+    int,
+    detail::total_number_of_field_indices<
+      boost::mpl::vector<Fields...>
+    >::value
+  >;
+  using vertex_type = typename Data::vertex_type;
 
-   static constexpr bounds_type index_bounds = Data::index_bounds;
+  template<int FieldIndex>
+  static typename field_indices<
+    typename boost::mpl::at_c<
+      boost::mpl::vector<Fields...>,
+      FieldIndex
+    >::type
+  >::type 
+  field_indices(const indices_type& indices)
+  {
+    using namespace boost::mpl;
+    using fields = vector<Fields...>;
 
-   /**
-    * @fn fieldIndices
-    * @brief Returns the subset of indices belonging to
-    *        a field at a given index.
-    * @param indices The complete set of indices for all fields
-    *
-    * The field indexing is in the same order as the template arguments
-    * and starts at 0.
-    */
-   template<int fieldIndex>
-   static
-   std::array<int, Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex]>
-   fieldIndices(const indices_type& indices)
-   {
-      constexpr auto length = Data::fieldIndexStart[fieldIndex+1] - Data::fieldIndexStart[fieldIndex];
-      constexpr auto offset = Data::fieldIndexStart[fieldIndex];
-      auto begin = indices.begin() + offset;
-      return impl::make_array<length>::iterate(begin);
-   }
+    using result_type = typename field_indices<
+      typename boost::mpl::at_c<fields, FieldIndex>::type
+    >::type;
 
-   /**
-    * @fn vertex
-    * @brief Calculates the vertex for a given set of field indices.
-    * @param indices The field indices
-    * @param context The evaluation context
-    */
-   static vertex_type evaluate(const indices_type& indices, const EvaluationContext& context);
+    using preceeding_fields = typename erase<
+      fields,
+      typename advance<
+        typename begin<fields>::type,
+        int_<FieldIndex>
+      >::type,
+      typename end<fields>::type
+    >::type;
+
+    constexpr int offset = detail::total_number_of_field_indices<
+      preceeding_fields
+    >::value;
+    constexpr int length = std::tuple_size<result_type>::value;
+
+    result_type result_indices;
+    std::copy( indices.begin() + offset,
+               indices.begin() + offset + length,
+               result_indices.begin() );
+    return result_indices;
+  }
+
+  static vertex_type evaluate(const indices_type& indices,
+    const EvaluationContext& context);
 };
 
 
@@ -524,7 +418,7 @@ namespace impl {
 
 static double unit_charge(const EvaluationContext& context)
 {
-   return impl::unit_charge(context).left().real() / Electron::electric_charge;
+   return -impl::unit_charge(context).left().real() / Electron::electric_charge;
 }
 
 } // namespace cxx_diagrams

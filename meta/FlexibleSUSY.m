@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -1927,17 +1929,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[vertices_List,massMatrices_,files_List] :=
-  Module[{fields, nPointFunctions, vertexRules, vertexData, cxxVertices, massFunctions, unitCharge},
-    vertexRules = CXXDiagrams`VertexRulesForVertices[vertices,massMatrices];
-
+WriteCXXDiagramClass[vertices_List,files_List] :=
+  Module[{fields, nPointFunctions, vertexData, cxxVertices, massFunctions, unitCharge},
     fields = CXXDiagrams`CreateFields[];
-    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData[#,vertexRules] &
+    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData
                                      /@ DeleteDuplicates[vertices],
                                      "\n\n"];
-    cxxVertices = CXXDiagrams`CreateVertices[vertices,vertexRules];
+    cxxVertices = CXXDiagrams`CreateVertices[vertices];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
-    unitCharge = CXXDiagrams`CreateUnitCharge[massMatrices];
+    unitCharge = CXXDiagrams`CreateUnitCharge[];
     
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"          -> fields,
@@ -4009,9 +4009,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_observables.cpp"}]}}];
                       
                       
-           Print["Setting up CXXDiagrams..."];
-           CXXDiagrams`CXXDiagramsInitialize[];
-           
            Print["Creating EDM class..."];
            edmFields = DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                                                 FlexibleSUSYObservable`EDM[p_[__]|p_] :> p];
@@ -4029,7 +4026,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
            
-           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],Lat$massMatrices,
+           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],
                                 {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
 
