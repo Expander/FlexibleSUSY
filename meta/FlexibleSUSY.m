@@ -3141,6 +3141,7 @@ Options[MakeFlexibleSUSY] :=
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             edmVertices, aMuonVertices, edmFields,
+            cxxQFTTemplateDir, cxxQFTOutputDir, cxxQFTFiles,
             susyBetaFunctions, susyBreakingBetaFunctions,
             numberOfSusyParameters, anomDim,
             inputParameters (* list of 3-component lists of the form {name, block, type} *),
@@ -4025,10 +4026,21 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
+
+           Print["Creating C++ QFT class..."];
+           cxxQFTTemplateDir = FileNameJoin[{$flexiblesusyTemplateDir, "cxx_qft"}];
+           cxxQFTOutputDir = FileNameJoin[{FSOutputDir, "cxx_qft"}];
+           cxxQFTFiles = {{FileNameJoin[{cxxQFTTemplateDir, "qft.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_qft.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "fields.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_fields.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "vertices.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.hpp"}]}};
+
+           If[DirectoryQ[cxxQFTOutputDir] === False,
+              CreateDirectory[cxxQFTOutputDir]];
            
-           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],
-                                {{FileNameJoin[{$flexiblesusyTemplateDir, "cxx_diagrams.hpp.in"}],
-                                 FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_cxx_diagrams.hpp"}]}}];
+           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],cxxQFTFiles];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];

@@ -60,9 +60,17 @@ VertexTypes[] := {
 (* Return a string corresponding to the c++ class name of the field.
  Note that "bar" and "conj" get turned into bar<...>::type and
  conj<...>::type respectively! *)
-CXXNameOfField[p_] := SymbolName[p];
-CXXNameOfField[SARAH`bar[p_]] := "bar<" <> SymbolName[p] <> ">::type";
-CXXNameOfField[Susyno`LieGroups`conj[p_]] := "conj<" <> SymbolName[p] <> ">::type";
+CXXNameOfField[p_, OptionsPattern[{prefixNamespace -> False}]] :=
+  If[StringQ[OptionValue[prefixNamespace]],
+     OptionValue[prefixNamespace] <> "::",
+     ""] <> SymbolName[p];
+CXXNameOfField[SARAH`bar[p_], OptionsPattern[{prefixNamespace -> False}]] :=
+  "typename bar<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
+  ">::type";
+CXXNameOfField[Susyno`LieGroups`conj[p_],
+               OptionsPattern[{prefixNamespace -> False}]] :=
+  "typename conj<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
+  ">::type";
 
 CXXBoolValue[True] = "true"
 CXXBoolValue[False] = "false"
@@ -181,7 +189,7 @@ VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
 CreateVertexData[fields_List] := 
   Module[{dataClassName},
     dataClassName = "VertexData<" <> StringJoin[Riffle[
-      CXXNameOfField /@ fields,
+      CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
     ", "]] <> ">";
     
     "template<> struct " <> dataClassName <> "\n" <>
@@ -203,7 +211,7 @@ CreateVertex[fields_List] :=
   Module[{functionClassName},
     LoadVerticesIfNecessary[];
     functionClassName = "Vertex<" <> StringJoin @ Riffle[
-    CXXNameOfField /@ fields, ", "] <> ">";
+    CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields, ", "] <> ">";
 
     "template<> inline\n" <> 
     functionClassName <> "::vertex_type\n" <>
@@ -349,17 +357,20 @@ CanonicalizeCoupling[
   ]
   
 CreateMassFunctions[] :=
-  Module[{massiveFields},
-    massiveFields = Select[TreeMasses`GetParticles[],!TreeMasses`IsGhost[#] &];
+  Module[{massiveFields,
+          ghostMappings = SelfEnergies`ReplaceGhosts[FlexibleSUSY`FSEigenstates]},
+    massiveFields = TreeMasses`GetParticles[];
+
     StringJoin @ Riffle[
       Module[{fieldInfo = FieldInfo[#], numberOfIndices},
              numberOfIndices = Length @ fieldInfo[[5]];
                                    
              "template<> inline\n" <>
-             "double EvaluationContext::mass_impl<" <> ToString[#] <>
+             "double EvaluationContext::mass_impl<" <>
+               CXXNameOfField[#, prefixNamespace -> "fields"] <>
              ">(const std::array<int, " <> ToString @ numberOfIndices <>
              ">& indices) const\n" <>
-             "{ return model.get_M" <> CXXNameOfField[#] <>
+             "{ return model.get_M" <> CXXNameOfField[# /. ghostMappings] <>
              If[TreeMasses`GetDimension[#] === 1, "()", "(indices[0])"] <> "; }"
             ] & /@ massiveFields, "\n\n"]
         ]

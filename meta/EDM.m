@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -99,6 +101,8 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                          ] <> "};\n\n" <>
                                  
                    "double val = 0.0;\n\n" <>
+                   
+                   "using namespace @ModelName@_cxx_diagrams::fields;\n\n" <>
                    
                    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
                      Flatten[CXXEvaluatorsForFieldAndDiagramsFromGraph[field,#[[2]],#[[1]]] & /@ gTaggedDiagrams],
