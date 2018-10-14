@@ -226,7 +226,7 @@ check_model_name() {
         if [ -n "$(echo "${_model}" | grep -E -o "[^0-9a-zA-Z_]")" ]; then
             printf "Disallowed character(s) in model name: $(echo "${_model}" | grep -E -o "[^0-9a-zA-Z_]"|sort|uniq|xargs)."
         fi
-        echo ""
+        printf "\n"
         exit 1
     fi
 }
