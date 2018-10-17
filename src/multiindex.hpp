@@ -18,6 +18,8 @@
 #include <boost/fusion/include/copy.hpp>
 #include <boost/fusion/adapted/boost_array.hpp>
 
+namespace flexiblesusy
+{
 namespace detail
 {
 template<class End, class Location>
@@ -209,20 +211,58 @@ public:
   static multiindex end()
   { return impl::end(); }
 };
+}
 
 namespace std
 {
   template<class Begin, class End>
-  struct iterator_traits<multiindex<Begin, End>>
+  struct iterator_traits<flexiblesusy::multiindex<Begin, End>>
   {
     using difference_type = std::ptrdiff_t;
     using value_type = typename std::decay<decltype(
-      *std::declval<multiindex<Begin, End>>() )
+      *std::declval<flexiblesusy::multiindex<Begin, End>>() )
     >::type;
     using pointer = const value_type *;
     using reference = const value_type &;
     using iterator_category = std::forward_iterator_tag;
   };
+}
+
+namespace flexiblesusy {
+namespace meta {
+template<class ObjectWithIndexBounds>
+struct index_bounds
+{
+  using type = typename ObjectWithIndexBounds::index_bounds;
+};
+}
+
+template<class ObjectWithIndexBounds>
+static decltype(
+  boost::make_iterator_range(
+    multiindex<
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::first,
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::second
+    >::begin(),
+    multiindex<
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::first,
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::second
+    >::end()
+  )
+)
+index_range( void )
+{
+  return boost::make_iterator_range(
+    multiindex<
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::first,
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::second
+    >::begin(),
+    multiindex<
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::first,
+      typename meta::index_bounds<ObjectWithIndexBounds>::type::second
+    >::end()
+  );
+}
 }
 
 #endif

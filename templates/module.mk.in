@@ -71,6 +71,7 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/cxx_qft/@CLASSNAME@_qft.hpp \
 		$(DIR)/cxx_qft/@CLASSNAME@_fields.hpp \
 		$(DIR)/cxx_qft/@CLASSNAME@_vertices.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_context_base.hpp \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_edm.hpp \

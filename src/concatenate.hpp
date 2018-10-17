@@ -3,6 +3,7 @@
 
 #include <type_traits>
 
+namespace flexiblesusy {
 namespace detail
 {
 template<class T> 
@@ -83,6 +84,7 @@ concatenate( Args &&...args )
     std::forward<Args>( args )... );
 
   return result;
+}
 }
 
 #endif

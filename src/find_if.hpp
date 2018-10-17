@@ -8,6 +8,7 @@
 #include <boost/mpl/deref.hpp>
 #include <boost/mpl/begin_end.hpp>
 
+namespace flexiblesusy {
 namespace meta {
 namespace detail
 {
@@ -61,7 +62,7 @@ template<
        typename boost::mpl::end<Sequence>::type
      >::type{} );
 }
-
+}
 }
 
 #endif

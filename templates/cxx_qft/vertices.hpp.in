@@ -154,7 +154,7 @@ public:
  */
 template<class ...Fields> struct VertexData;
 
-struct EvaluationContext;
+struct ContextBase;
 
 template<class ...Fields> class Vertex {
   using Data = VertexData<Fields...>;
@@ -169,13 +169,13 @@ public:
       boost::mpl::joint_view<
         boost::mpl::first<boost::mpl::_1>,
         boost::mpl::first<
-          detail::index_bounds<boost::mpl::_2>
+          meta::index_bounds<boost::mpl::_2>
         >
       >,
       boost::mpl::joint_view<
         boost::mpl::second<boost::mpl::_1>,
         boost::mpl::second<
-          detail::index_bounds<boost::mpl::_2>
+          meta::index_bounds<boost::mpl::_2>
         >
       >
     >
@@ -226,7 +226,7 @@ public:
   }
 
   static vertex_type evaluate(const indices_type& indices,
-    const EvaluationContext& context);
+    const ContextBase& context);
 };
 
 @CXXDiagrams_VertexData@
@@ -238,7 +238,7 @@ namespace detail {
 @CXXDiagrams_UnitCharge@
 }
 
-static double unit_charge(const EvaluationContext& context)
+static double unit_charge(const ContextBase& context)
 {
    return - (detail::unit_charge(context).left().real() /
      fields::Electron::electric_charge);

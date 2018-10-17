@@ -4035,7 +4035,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{cxxQFTTemplateDir, "fields.hpp.in"}],
                            FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_fields.hpp"}]},
                           {FileNameJoin[{cxxQFTTemplateDir, "vertices.hpp.in"}],
-                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.hpp"}]}};
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "context_base.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_context_base.hpp"}]}};
 
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
