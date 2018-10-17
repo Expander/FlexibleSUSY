@@ -154,7 +154,7 @@ public:
  */
 template<class ...Fields> struct VertexData;
 
-struct ContextBase;
+struct context_base;
 
 template<class ...Fields> class Vertex {
   using Data = VertexData<Fields...>;
@@ -226,7 +226,7 @@ public:
   }
 
   static vertex_type evaluate(const indices_type& indices,
-    const ContextBase& context);
+    const context_base& context);
 };
 
 @CXXDiagrams_VertexData@
@@ -238,7 +238,7 @@ namespace detail {
 @CXXDiagrams_UnitCharge@
 }
 
-static double unit_charge(const ContextBase& context)
+static double unit_charge(const context_base& context)
 {
    return - (detail::unit_charge(context).left().real() /
      fields::Electron::electric_charge);

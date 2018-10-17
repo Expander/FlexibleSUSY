@@ -215,7 +215,7 @@ CreateVertex[fields_List] :=
 
     "template<> inline\n" <> 
     functionClassName <> "::vertex_type\n" <>
-    functionClassName <> "::evaluate(const indices_type& indices, const ContextBase& context)\n" <>
+    functionClassName <> "::evaluate(const indices_type& indices, const context_base& context)\n" <>
     "{\n" <>
     TextFormatting`IndentText @ VertexFunctionBodyForFields[fields] <> "\n" <>
     "}"
@@ -382,7 +382,7 @@ CreateMassFunctions[] :=
              numberOfIndices = Length @ fieldInfo[[5]];
                                    
              "template<> inline\n" <>
-             "double ContextBase::mass_impl<" <>
+             "double context_base::mass_impl<" <>
                CXXNameOfField[#, prefixNamespace -> "fields"] <>
              ">(const std::array<int, " <> ToString @ numberOfIndices <>
              ">& indices) const\n" <>
@@ -401,7 +401,7 @@ CreateUnitCharge[] :=
          numberOfElectronIndices = NumberOfFieldIndices[electron];
          numberOfPhotonIndices = NumberOfFieldIndices[photon];
 
-         "static ChiralVertex unit_charge(const ContextBase& context)\n" <>
+         "static ChiralVertex unit_charge(const context_base& context)\n" <>
          "{\n" <>
          TextFormatting`IndentText["using vertex_type = ChiralVertex;"] <> "\n\n" <>
          TextFormatting`IndentText @ 

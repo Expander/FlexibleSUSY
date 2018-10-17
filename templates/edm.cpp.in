@@ -61,7 +61,7 @@ static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
 template<class EDMField, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionSF {
    static double value(const typename field_indices<EDMField>::type& indices,
-                       ContextBase& context);
+                       context_base& context);
 };
 
 /**
@@ -82,7 +82,7 @@ struct EDMVertexCorrectionSF {
 template<class EDMField, class PhotonEmitter, class ExchangeParticle>
 struct EDMVertexCorrectionFS {
    static double value(const typename field_indices<EDMField>::type& indices,
-                       ContextBase& context);
+                       context_base& context);
 };
 } // anonymous namespace
 
@@ -151,7 +151,7 @@ double OneLoopFunctionB(double r)
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionFS<
 EDMField, PhotonEmitter, ExchangeField
->::value(const typename field_indices<EDMField>::type& indices, ContextBase& context)
+>::value(const typename field_indices<EDMField>::type& indices, context_base& context)
 {
    double res = 0.0;
 
@@ -194,7 +194,7 @@ EDMField, PhotonEmitter, ExchangeField
 template<class EDMField, class PhotonEmitter, class ExchangeField>
 double EDMVertexCorrectionSF<
 EDMField, PhotonEmitter, ExchangeField
->::value(const typename field_indices<EDMField>::type& indices, ContextBase& context)
+>::value(const typename field_indices<EDMField>::type& indices, context_base& context)
 {
    double res = 0.0;
 

@@ -32,7 +32,7 @@
 
 namespace flexiblesusy {
 namespace @ModelName@_cxx_diagrams {
-struct ContextBase
+struct context_base
 {
   @ModelName@_mass_eigenstates& model; ///< The model object.
  
@@ -45,14 +45,14 @@ struct ContextBase
     return mass_impl<CleanField>(indices);
   }
 
-  ContextBase( @ModelName@_mass_eigenstates &m ) : model( m ) {}
-  ContextBase( const ContextBase & ) = default;
-  ContextBase( ContextBase && ) = default;
+  context_base( @ModelName@_mass_eigenstates &m ) : model( m ) {}
+  context_base( const context_base & ) = default;
+  context_base( context_base && ) = default;
   
-  ContextBase &operator=( const ContextBase & ) = default;
-  ContextBase &operator=( ContextBase && ) = default;
+  context_base &operator=( const context_base & ) = default;
+  context_base &operator=( context_base && ) = default;
   
-  virtual ~ContextBase( void ) = default;
+  virtual ~context_base( void ) = default;
 private:
   template<class Field>
   double mass_impl(const typename field_indices<Field>::type& indices) const;
