@@ -44,7 +44,9 @@ ReplaceUnrotatedFields::usage;
 StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 StripFieldIndices::usage;
 
+FindVertexWithLorentzStructure::usage="";
 SarahToFSVertexConventions::usage="";
+SortFieldsInCp::usage="";
 
 Begin["`Private`"]
 

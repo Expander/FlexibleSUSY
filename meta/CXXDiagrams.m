@@ -343,6 +343,22 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List] :=
     ]
   ]
 
+DeclareIndices[indexedFields_List, arrayName_String] :=
+    Module[{p, total = 0, fieldIndexList, decl = ""},
+           DeclareIndex[idx_, num_Integer, an_String] := (
+               "const int " <> CConversion`ToValidCSymbolString[idx] <>
+               " = " <> an <> "[" <> ToString[num] <> "];\n");
+           For[p = 1, p <= Length[indexedFields], p++,
+               fieldIndexList = Vertices`FieldIndexList[indexedFields[[p]]];
+               decl = decl <> StringJoin[DeclareIndex[#, total++, arrayName]& /@ fieldIndexList];
+              ];
+           Assert[total == Total[Length[Vertices`FieldIndexList[#]]& /@ indexedFields]];
+           decl
+          ]
+
+GetComplexScalarCType[] :=
+    CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]]
+
 (* Get a mathematical expression of the requested vertex
    in terms of its canonically ordered vertex. *)
 CanonicalizeCoupling[
