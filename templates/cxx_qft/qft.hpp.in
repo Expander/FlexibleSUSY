@@ -30,8 +30,8 @@
 
 #include "multiindex.hpp"
 
-#include "@ModelName@_fields.hpp"
 #include "@ModelName@_context_base.hpp"
+#include "@ModelName@_fields.hpp"
 #include "@ModelName@_vertices.hpp"
 
 #endif
