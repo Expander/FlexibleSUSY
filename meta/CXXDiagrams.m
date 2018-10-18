@@ -533,6 +533,3 @@ FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] :=
 
 End[];
 EndPackage[];
-
-
-

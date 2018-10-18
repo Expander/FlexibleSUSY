@@ -1572,6 +1572,3 @@ CreateThreeLoopSelfEnergiesSplit[particles_List] :=
 End[];
 
 EndPackage[];
-
-
-
