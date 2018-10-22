@@ -87,7 +87,7 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                  "{\n" <>
                  IndentText[
                    FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                   "ContextBase context{ model_ };\n" <>
+                   "context_base context{ model_ };\n" <>
                    "std::array<int, " <> ToString @ numberOfIndices <>
                      "> indices = {" <>
                        If[TreeMasses`GetDimension[field] =!= 1,
@@ -102,7 +102,7 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                                  
                    "double val = 0.0;\n\n" <>
                    
-                   "using namespace @ModelName@_cxx_diagrams::fields;\n\n" <>
+                   "using namespace " <> FlexibleSUSY`FSModelName <> "_cxx_diagrams::fields;\n\n" <>
                    
                    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
                      Flatten[CXXEvaluatorsForFieldAndDiagramsFromGraph[field,#[[2]],#[[1]]] & /@ gTaggedDiagrams],
