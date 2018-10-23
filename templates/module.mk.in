@@ -11,6 +11,8 @@ MOD@CLASSNAME@_SUBMOD  := $(DIR)/cxx_qft
 MOD@CLASSNAME@_SUBMOD_INC := $(patsubst %,-I%,$(MOD@CLASSNAME@_SUBMOD))
 
 @CLASSNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+@CLASSNAME@_INSTALL_CXXQFT_DIR := \
+		$(@CLASSNAME@_INSTALL_DIR)/cxx_qft
 
 @CLASSNAME@_MK     := \
 		$(DIR)/module.mk
@@ -71,10 +73,6 @@ LL@CLASSNAME@_MMA  := \
 		$(DIR)/run_@CLASSNAME@.m
 
 LIB@CLASSNAME@_HDR := \
-		$(DIR)/cxx_qft/@CLASSNAME@_qft.hpp \
-		$(DIR)/cxx_qft/@CLASSNAME@_fields.hpp \
-		$(DIR)/cxx_qft/@CLASSNAME@_vertices.hpp \
-		$(DIR)/cxx_qft/@CLASSNAME@_context_base.hpp \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_edm.hpp \
@@ -99,6 +97,12 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_utilities.hpp \
 		$(DIR)/@CLASSNAME@_weinberg_angle.hpp
+
+LIB@CLASSNAME@_CXXQFT_HDR := \
+		$(DIR)/cxx_qft/@CLASSNAME@_qft.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_fields.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_vertices.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_context_base.hpp
 
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 -include $(DIR)/two_scale.mk
@@ -188,8 +192,10 @@ all-$(MODNAME): $(LIB@CLASSNAME@) $(EXE@CLASSNAME@_EXE)
 ifneq ($(INSTALL_DIR),)
 install-src::
 		install -d $(@CLASSNAME@_INSTALL_DIR)
+		install -d $(@CLASSNAME@_INSTALL_CXXQFT_DIR)
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_CXXQFT_HDR) $(@CLASSNAME@_INSTALL_CXXQFT_DIR)
 		install -m u=rw,g=r,o=r $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_MMA) $(@CLASSNAME@_INSTALL_DIR)
@@ -220,6 +226,7 @@ clean-$(MODNAME)-obj:
 clean-$(MODNAME)-src:
 		-rm -f $(LIB@CLASSNAME@_SRC)
 		-rm -f $(LIB@CLASSNAME@_HDR)
+		-rm -f $(LIB@CLASSNAME@_CXXQFT_HDR)
 		-rm -f $(EXE@CLASSNAME@_SRC)
 		-rm -f $(LL@CLASSNAME@_SRC)
 		-rm -f $(LL@CLASSNAME@_MMA)
@@ -248,14 +255,14 @@ distclean::     distclean-$(MODNAME)
 
 pack-$(MODNAME)-src:
 		tar -czf $(@CLASSNAME@_TARBALL) \
-		$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) \
+		$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(LIB@CLASSNAME@_CXXQFT_HDR) \
 		$(EXE@CLASSNAME@_SRC) \
 		$(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 		$(@CLASSNAME@_MK) $(@CLASSNAME@_INCLUDE_MK) \
 		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_REFERENCES) \
 		$(@CLASSNAME@_GNUPLOT)
 
-$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
+$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(LIB@CLASSNAME@_CXXQFT_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 : run-metacode-$(MODNAME)
 		@true
 
