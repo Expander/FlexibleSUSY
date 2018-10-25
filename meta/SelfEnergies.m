@@ -1384,7 +1384,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
                               model_String /; model === "MSSM", 3] :=
     Module[{g3Str, mtStr, mbStr, meStr, mTop, mBot, mTau,
             vuStr, vdStr, muStr, m3Str, mA0Str,
-            AtStr, AbStr, AeStr, mWStr, mZStr, mq2Str, md2Str, mu2Str},
+            AtStr, AbStr, AeStr, mWStr, mZStr,
+            mq2Str, md2Str, mu2Str, ml2Str, me2Str},
            AssertFieldDimension[particle, 2, model];
            mTop    = TreeMasses`GetMass[TreeMasses`GetUpQuark[3,True]];
            mBot    = TreeMasses`GetMass[TreeMasses`GetDownQuark[3,True]];
@@ -1406,6 +1407,8 @@ GetNLoopSelfEnergyCorrections[particle_ /; particle === SARAH`HiggsBoson,
            mq2Str  = CConversion`RValueToCFormString[SARAH`SoftSquark];
            mu2Str  = CConversion`RValueToCFormString[SARAH`SoftUp];
            md2Str  = CConversion`RValueToCFormString[SARAH`SoftDown];
+           ml2Str  = CConversion`RValueToCFormString[SARAH`SoftLeftLepton];
+           me2Str  = CConversion`RValueToCFormString[SARAH`SoftRightLepton];
 CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> " self_energy_3l(" <> CConversion`CreateCType[TreeMasses`GetMassMatrixType[SARAH`HiggsBoson]] <> "::Zero());
 
 #ifdef ENABLE_HIMALAYA
@@ -1445,6 +1448,8 @@ pars.s2b = Sin(2*theta_b);
    pars.Au(2,2) = Re(" <> AtStr <> ");
    pars.Ad(2,2) = Re(" <> AbStr <> ");
    pars.Ae(2,2) = Re(" <> AeStr <> ");
+   pars.ml2 = Re(" <> ml2Str <> ");
+   pars.me2 = Re(" <> me2Str <> ");
    pars.Mtau = " <> meStr <> ";
 #endif
 
