@@ -3,6 +3,11 @@ FlexibleSUSY 2.2.1 [not released yet]
  * Bugfix (commit e5473865): Take non-standard normalization of VEVs
    into account in FlexibleEFTHiggs models.
 
+ * Bugfix (commit 79651844): Avoid linker-specific `--start-group` and
+   `--end-group` in order to make the tests build on MacOS.
+
+   Thanks to Wojciech Kotlarski.
+
 FlexibleSUSY 2.2.0 [August, 26 2018]
 
  * Feature: The symbols `upQuarksDRbar`, `downQuarksDRbar`,
