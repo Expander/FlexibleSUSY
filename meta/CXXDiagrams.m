@@ -36,6 +36,8 @@ VertexTypes::usage="";
 CXXNameOfField::usage="";
 LorentzConjugateOperation::usage="";
 LorentzConjugate::usage="";
+RemoveLorentzConjugation::usage="";
+AtomHead::usage="";
 CreateFields::usage="";
 FeynmanDiagramsOfType::usage="";
 VerticesForDiagram::usage="";
@@ -80,6 +82,10 @@ LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
                                         "bar",
                                         "conj"]
 LorentzConjugate[field_] := SARAH`AntiField[field]
+
+RemoveLorentzConjugation[p_] := p
+RemoveLorentzConjugation[SARAH`bar[p_]] := p
+RemoveLorentzConjugation[Susyno`LieGroups`conj[p_]] := p
 
 AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
 
