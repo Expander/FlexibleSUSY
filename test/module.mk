@@ -948,11 +948,12 @@ $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_semi_analytic_solutions.x: $(LIBTHDMIIEWS
 
 $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAtMZSemiAnalytic) $(LIBTHDMII)
 
+# adding libraries to the end of the list of dependencies
+$(TEST_EXE): $(LIBSOFTSUSY) $(MODtest_LIB) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
+
 # general test rule
-$(DIR)/test_%.x: $(DIR)/test_%.o \
-	$(LIBSOFTSUSY) \
-	$(MODtest_LIB) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ -Wl,--start-group $(call abspathx,$^) -Wl,--end-group \
+$(DIR)/test_%.x: $(DIR)/test_%.o
+		$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
 		$(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 
