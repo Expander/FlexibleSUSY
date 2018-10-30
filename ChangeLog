@@ -8,6 +8,9 @@ FlexibleSUSY 2.2.1 [not released yet]
 
    Thanks to Wojciech Kotlarski.
 
+ * Bugfix (commit 6a4a32324): Compatibility fix of the SM with SARAH
+   4.14.0.
+
 FlexibleSUSY 2.2.0 [August, 26 2018]
 
  * Feature: The symbols `upQuarksDRbar`, `downQuarksDRbar`,
