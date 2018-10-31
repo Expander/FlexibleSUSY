@@ -378,6 +378,65 @@ DebugPrint[msg___] :=
     If[FlexibleSUSY`FSDebugOutput,
        Print["Debug<FlexibleSUSY>: ", Sequence @@ InputFormOfNonStrings /@ {msg}]];
 
+ReplaceSymbolsInUserInput[rules_] :=
+    Module[{},
+           (* input/output blocks *)
+           SARAH`MINPAR                          = SARAH`MINPAR                          /. rules;
+           SARAH`EXTPAR                          = SARAH`EXTPAR                          /. rules;
+           IMMINPAR                              = IMMINPAR                              /. rules;
+           IMEXTPAR                              = IMEXTPAR                              /. rules;
+           FlexibleSUSY`ExtraSLHAOutputBlocks    = FlexibleSUSY`ExtraSLHAOutputBlocks    /. rules;
+           FlexibleSUSY`FSExtraInputParameters   = FlexibleSUSY`FSExtraInputParameters   /. rules;
+           FlexibleSUSY`FSAuxiliaryParameterInfo = FlexibleSUSY`FSAuxiliaryParameterInfo /. rules;
+           FlexibleSUSY`FSLesHouchesList         = FlexibleSUSY`FSLesHouchesList         /. rules;
+           FlexibleSUSY`FSHimalayaInput          = FlexibleSUSY`FSHimalayaInput          /. rules;
+           (* boundary conditions *)
+           FlexibleSUSY`InitialGuessAtLowScale   = FlexibleSUSY`InitialGuessAtLowScale   /. rules;
+           FlexibleSUSY`InitialGuessAtSUSYScale  = FlexibleSUSY`InitialGuessAtSUSYScale  /. rules;
+           FlexibleSUSY`InitialGuessAtHighScale  = FlexibleSUSY`InitialGuessAtHighScale  /. rules;
+           FlexibleSUSY`LowScale                 = FlexibleSUSY`LowScale                 /. rules;
+           FlexibleSUSY`LowScaleFirstGuess       = FlexibleSUSY`LowScaleFirstGuess       /. rules;
+           FlexibleSUSY`LowScaleInput            = FlexibleSUSY`LowScaleInput            /. rules;
+           FlexibleSUSY`LowScaleMinimum          = FlexibleSUSY`LowScaleMinimum          /. rules;
+           FlexibleSUSY`LowScaleMaximum          = FlexibleSUSY`LowScaleMaximum          /. rules;
+           FlexibleSUSY`SUSYScale                = FlexibleSUSY`SUSYScale                /. rules;
+           FlexibleSUSY`SUSYScaleFirstGuess      = FlexibleSUSY`SUSYScaleFirstGuess      /. rules;
+           FlexibleSUSY`SUSYScaleInput           = FlexibleSUSY`SUSYScaleInput           /. rules;
+           FlexibleSUSY`SUSYScaleMinimum         = FlexibleSUSY`SUSYScaleMinimum         /. rules;
+           FlexibleSUSY`SUSYScaleMaximum         = FlexibleSUSY`SUSYScaleMaximum         /. rules;
+           FlexibleSUSY`HighScale                = FlexibleSUSY`HighScale                /. rules;
+           FlexibleSUSY`HighScaleFirstGuess      = FlexibleSUSY`HighScaleFirstGuess      /. rules;
+           FlexibleSUSY`HighScaleInput           = FlexibleSUSY`HighScaleInput           /. rules;
+           FlexibleSUSY`HighScaleMinimum         = FlexibleSUSY`HighScaleMinimum         /. rules;
+           FlexibleSUSY`HighScaleMaximum         = FlexibleSUSY`HighScaleMaximum         /. rules;
+           FlexibleSUSY`SUSYScaleMatching        = FlexibleSUSY`SUSYScaleMatching        /. rules;
+           FlexibleSUSY`MatchingScaleInput       = FlexibleSUSY`MatchingScaleInput       /. rules;
+           (* EWSB *)
+           FlexibleSUSY`EWSBInitialGuess         = FlexibleSUSY`EWSBInitialGuess         /. rules;
+           FlexibleSUSY`EWSBOutputParameters     = FlexibleSUSY`EWSBOutputParameters     /. rules;
+           FlexibleSUSY`EWSBSubstitutions        = FlexibleSUSY`EWSBSubstitutions        /. rules;
+           FlexibleSUSY`TreeLevelEWSBSolution    = FlexibleSUSY`TreeLevelEWSBSolution    /. rules;
+           (* mass calculation *)
+           FlexibleSUSY`LowPrecision             = FlexibleSUSY`LowPrecision             /. rules;
+           FlexibleSUSY`MediumPrecision          = FlexibleSUSY`MediumPrecision          /. rules;
+           FlexibleSUSY`HighPrecision            = FlexibleSUSY`HighPrecision            /. rules;
+           FlexibleSUSY`DefaultPoleMassPrecision = FlexibleSUSY`DefaultPoleMassPrecision /. rules;
+           FlexibleSUSY`HighPoleMassPrecision    = FlexibleSUSY`HighPoleMassPrecision    /. rules;
+           FlexibleSUSY`MediumPoleMassPrecision  = FlexibleSUSY`MediumPoleMassPrecision  /. rules;
+           FlexibleSUSY`LowPoleMassPrecision     = FlexibleSUSY`LowPoleMassPrecision     /. rules;
+           (* RG running *)
+           FlexibleSUSY`FSPerturbativityThreshold = FlexibleSUSY`FSPerturbativityThreshold /. rules;
+           FlexibleSUSY`FSConvergenceCheck        = FlexibleSUSY`FSConvergenceCheck        /. rules;
+           FlexibleSUSY`SemiAnalyticSolverInnerConvergenceCheck = FlexibleSUSY`SemiAnalyticSolverInnerConvergenceCheck /. rules;
+           (* model-specific corrections *)
+           FlexibleSUSY`EffectiveMu             = FlexibleSUSY`EffectiveMu               /. rules;
+           FlexibleSUSY`EffectiveMASqr          = FlexibleSUSY`EffectiveMASqr            /. rules;
+           (* simplifications *)
+           FlexibleSUSY`FSSelfEnergyRules       = FlexibleSUSY`FSSelfEnergyRules         /. rules;
+           FlexibleSUSY`FSVertexRules           = FlexibleSUSY`FSVertexRules             /. rules;
+           FlexibleSUSY`FSBetaFunctionRules     = FlexibleSUSY`FSBetaFunctionRules       /. rules;
+          ];
+
 CheckSARAHVersion[] :=
     Module[{minimRequired, minimRequiredVersionFile, sarahVersion},
            Print["Checking SARAH version ..."];
@@ -551,6 +610,7 @@ CheckModelFileSettings[] :=
              ];
            CheckEWSBSolvers[FlexibleSUSY`FSEWSBSolvers];
            CheckBVPSolvers[FlexibleSUSY`FSBVPSolvers];
+           ReplaceSymbolsInUserInput[{Susyno`LieGroups`M -> FlexibleSUSY`M}];
           ];
 
 CheckExtraParametersUsage[parameters_List, boundaryConditions_List] :=
