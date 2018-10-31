@@ -8,8 +8,8 @@ FlexibleSUSY 2.2.1 [not released yet]
 
    Thanks to Wojciech Kotlarski.
 
- * Bugfix (commits 6a4a32324, 2cdd71861): Compatibility fixes for
-   SARAH 4.14.0.
+ * Bugfix (commits 6a4a32324, 2cdd71861, 90ca05d70): Compatibility
+   fixes for SARAH 4.14.0.
 
 FlexibleSUSY 2.2.0 [August, 26 2018]
 
