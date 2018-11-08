@@ -417,7 +417,7 @@ double c0(double m1, double m2, double m3) noexcept
  *
  * @return derivative of B0 w.r.t. p^2
  */
-double d1_b0(double p2, double m2a, double m2b) noexcept
+double d1_b0(double /* p2 */, double m2a, double m2b) noexcept
 {
    using std::abs;
 

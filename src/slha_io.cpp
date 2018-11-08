@@ -146,14 +146,14 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
    CKM_wolfenstein ckm_wolfenstein;
    PMNS_parameters pmns_parameters;
 
-   Tuple_processor sminputs_processor = [&qedqcd, this] (int key, double value) {
+   Tuple_processor sminputs_processor = [&qedqcd] (int key, double value) {
       return process_sminputs_tuple(qedqcd, key, value);
    };
 
    read_block("SMINPUTS", sminputs_processor);
 
    if (modsel.quark_flavour_violated) {
-      Tuple_processor vckmin_processor = [&ckm_wolfenstein, this] (int key, double value) {
+      Tuple_processor vckmin_processor = [&ckm_wolfenstein] (int key, double value) {
          return process_vckmin_tuple(ckm_wolfenstein, key, value);
       };
 
@@ -161,7 +161,7 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
    }
 
    if (modsel.lepton_flavour_violated) {
-      Tuple_processor upmnsin_processor = [&pmns_parameters, this] (int key, double value) {
+      Tuple_processor upmnsin_processor = [&pmns_parameters] (int key, double value) {
          return process_upmnsin_tuple(pmns_parameters, key, value);
       };
 
@@ -189,7 +189,7 @@ void SLHA_io::fill(softsusy::QedQcd& qedqcd) const
  */
 void SLHA_io::fill(Physical_input& input) const
 {
-   Tuple_processor processor = [&input, this] (int key, double value) {
+   Tuple_processor processor = [&input] (int key, double value) {
       return process_flexiblesusyinput_tuple(input, key, value);
    };
 
@@ -204,7 +204,7 @@ void SLHA_io::fill(Physical_input& input) const
  */
 void SLHA_io::fill(Spectrum_generator_settings& settings) const
 {
-   Tuple_processor flexiblesusy_processor = [&settings, this] (int key, double value) {
+   Tuple_processor flexiblesusy_processor = [&settings] (int key, double value) {
       return process_flexiblesusy_tuple(settings, key, value);
    };
 
@@ -236,8 +236,8 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
          }
 
          if (line.size() >= 2) {
-            const int key = convert_to<int>(line[0]);
-            const double value = convert_to<double>(line[1]);
+            const auto key = convert_to<int>(line[0]);
+            const auto value = convert_to<double>(line[1]);
             processor(key, value);
          }
       }
