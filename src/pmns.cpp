@@ -84,13 +84,13 @@ Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_pmns() cons
 
    Eigen::Matrix<std::complex<double>,3,3> pmns_matrix;
    pmns_matrix(0, 0) = c12 * c13 * eIAlpha1;
-   pmns_matrix(0, 1) = s12 * c13;
+   pmns_matrix(0, 1) = s12 * c13 * eIAlpha2;
    pmns_matrix(0, 2) = s13 / eID;
-   pmns_matrix(1, 0) = -s12 * c23 - c12 * s23 * s13 * eID;
+   pmns_matrix(1, 0) = (-s12 * c23 - c12 * s23 * s13 * eID) * eIAlpha1;
    pmns_matrix(1, 1) = (c12 * c23 - s12 * s23 * s13 * eID) * eIAlpha2;
    pmns_matrix(1, 2) = s23 * c13;
-   pmns_matrix(2, 0) = s12 * s23 - c12 * c23 * s13 * eID;
-   pmns_matrix(2, 1) = -c12 * s23 - s12 * c23 * s13 * eID;
+   pmns_matrix(2, 0) = (s12 * s23 - c12 * c23 * s13 * eID) * eIAlpha1;
+   pmns_matrix(2, 1) = (-c12 * s23 - s12 * c23 * s13 * eID) * eIAlpha2;
    pmns_matrix(2, 2) = c23 * c13;
 
    return pmns_matrix;
