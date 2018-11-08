@@ -84,12 +84,17 @@ HighScale = EvalIf @ If[MSUSY != 0, MSUSY, Qmat];
 
 HighScaleFirstGuess = EvalIf @ If[MSUSY != 0, MSUSY, QmatGuess];
 
+Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_corrections.m"}]];
+Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_scale_variation.m"}]];
+
+gaugelessLimit = { g1 -> 0, g2 -> 0 };
+
 HighScaleInput = {
     {\[Lambda], lambdaTree
-                + UnitStep[LambdaLoopOrder-1] ((
+                + UnitStep[LambdaLoopOrder-1] Evaluate[(
                     + lambda1LReg + lambda1LPhi
                     + lambda1LChi1 + lambda1LChi2
-                    + lambda1Lbottom + lambda1Ltau) /. { g1 -> 0, g2 -> 0 } )
+                    + lambda1Lbottom + lambda1Ltau) /. gaugelessLimit]
                 + UnitStep[LambdaLoopOrder-2] (
                     If[TwoLoopAtAs >= 1, (
                         Which[IsCloseRel[SCALE^2,msq2[3,3],0.01] &&
@@ -152,9 +157,9 @@ HighScaleInput = {
                 )
                 (* contributions for uncertainty estimation *)
                 + If[Abs[Qmatch] > 1,
-                     Which[LambdaLoopOrder < 1, deltaLambdaQmatch1L,
-                           LambdaLoopOrder < 2, deltaLambdaQmatch2L,
-                           LambdaLoopOrder < 3, deltaLambdaQmatch3L,
+                     Which[LambdaLoopOrder < 1, deltaLambdaQmatch1L /. gaugelessLimit,
+                           LambdaLoopOrder < 2, deltaLambdaQmatch2L /. gaugelessLimit,
+                           LambdaLoopOrder < 3, deltaLambdaQmatch3L /. gaugelessLimit,
                            True, 0
                           ],
                      0
@@ -226,9 +231,6 @@ SARAH`ParameterDefinitions = Append[
     Cases[SARAH`ParameterDefinitions, {p_ /; p =!= SARAH`\[Lambda], ___}],
     {SARAH`\[Lambda], { Description -> "SM Higgs Selfcouplings" } }
 ];
-
-Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_corrections.m"}]];
-Get[FileNameJoin[{Directory[], "meta", "SM", "HSSUSY_scale_variation.m"}]];
 
 FSHimalayaInput = {
     RenormalizationScheme -> MSbar,
