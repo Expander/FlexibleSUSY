@@ -96,4 +96,73 @@ Eigen::Matrix<std::complex<double>,3,3> PMNS_parameters::get_complex_pmns() cons
    return pmns_matrix;
 }
 
+void PMNS_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& Vv,
+                                        Eigen::Matrix<double,3,3>& Ve,
+                                        Eigen::Matrix<double,3,3>& Ue)
+{
+   Eigen::Matrix<double,3,3> pmns(Ve*Vv.adjoint());
+   to_pdg_convention(pmns, Vv, Ve, Ue);
+}
+
+void PMNS_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& pmns,
+                                        Eigen::Matrix<double,3,3>& Vv,
+                                        Eigen::Matrix<double,3,3>& Ve,
+                                        Eigen::Matrix<double,3,3>& Ue)
+{
+   Eigen::Matrix<double,3,3> signs_E(Eigen::Matrix<double,3,3>::Identity());
+   Eigen::Matrix<double,3,3> signs_V(Eigen::Matrix<double,3,3>::Identity());
+
+   // make 33 element positive
+   if (pmns(2, 2) < 0.) {
+      signs_E(2, 2) = -1.;
+      for (int j = 0; j < 3; ++j) {
+         pmns(2, j) *= -1.;
+      }
+   }
+
+   // make 23 element positive
+   if (pmns(1, 2) < 0.) {
+      signs_V(2, 2) = -1;
+      signs_E(2, 2) *= -1;
+      for (int j = 0; j < 3; ++j) {
+         pmns(2, j) *= -1;
+         pmns(j, 2) *= -1;
+      }
+   }
+
+   Ve = signs_E * Ve;
+   Ue = signs_E * Ue;
+   Vv = signs_V * Vv;
+}
+
+void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& Vv,
+                                        Eigen::Matrix<std::complex<double>,3,3>& Ve,
+                                        Eigen::Matrix<std::complex<double>,3,3>& Ue)
+{
+   Eigen::Matrix<std::complex<double>,3,3> pmns(Ve*Vv.adjoint());
+   to_pdg_convention(pmns, Vv, Ve, Ue);
+}
+
+namespace {
+
+/// restrict sin or cos to interval [-1,1]
+double sanitize_hypot(double sc)
+{
+   if (sc < -1.) sc = -1.;
+   if (sc > 1.) sc = 1.;
+   return sc;
+}
+
+} // anonymous namespace
+
+void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& pmns,
+                                        Eigen::Matrix<std::complex<double>,3,3>& Vv,
+                                        Eigen::Matrix<std::complex<double>,3,3>& Ve,
+                                        Eigen::Matrix<std::complex<double>,3,3>& Ue)
+{
+   const double s13 = sanitize_hypot(std::abs(pmns(0,2)));
+   const double c13 = std::sqrt(1 - Sqr(s13));
+
+}
+
 } // namespace flexiblesusy
