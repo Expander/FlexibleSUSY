@@ -18,6 +18,7 @@
 
 #include "pmns.hpp"
 #include "ew_input.hpp"
+#include "numerics2.hpp"
 #include "wrappers.hpp"
 
 namespace flexiblesusy {
@@ -145,6 +146,13 @@ void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>&
 
 namespace {
 
+template<typename T>
+std::complex<T> phase(const std::complex<T>& z)
+{
+   T r = std::abs(z);
+   return r == 0 ? 1 : z/r;
+}
+
 /// restrict sin or cos to interval [-1,1]
 double sanitize_hypot(double sc)
 {
@@ -160,9 +168,27 @@ void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>&
                                         Eigen::Matrix<std::complex<double>,3,3>& Ve,
                                         Eigen::Matrix<std::complex<double>,3,3>& Ue)
 {
+   std::complex<double> o;
+   Eigen::DiagonalMatrix<std::complex<double>,3> l(1,1,1);
+
    const double s13 = sanitize_hypot(std::abs(pmns(0,2)));
    const double c13 = std::sqrt(1 - Sqr(s13));
+   if (is_zero(c13)) {
+      o = std::conj(phase(pmns(0,2)));
+      const auto rel_phase = std::sqrt(phase(pmns(1,0) * pmns(2,1)));
+      const auto p = std::conj(rel_phase * rel_phase) * phase(pmns(1,0) * pmns(1,1));
+      l.diagonal()[1] = std::conj(o * rel_phase);
+      l.diagonal()[2] = std::conj(o * rel_phase) * p;
+   } else {
+      const double s12 = sanitize_hypot(std::abs(pmns(0,1)) / c13);
+      const double c12 = std::sqrt(1 - Sqr(s12));
+      const double s23 = sanitize_hypot(std::abs(pmns(1,2)) / c13);
+      const double c23 = std::sqrt(1 - Sqr(s23));
+   }
 
+   Ve.transpose() *= l * o;
+   Ue.transpose() *= (l * o).diagonal().conjugate().asDiagonal();
+   pmns = Ve * Vv.adjoint();
 }
 
 } // namespace flexiblesusy

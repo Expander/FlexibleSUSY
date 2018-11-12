@@ -5,9 +5,10 @@
 #include <boost/test/unit_test.hpp>
 
 #include "test.hpp"
-#include "pmns.hpp"
-#include "wrappers.hpp"
 #include "linalg2.hpp"
+#include "pmns.hpp"
+#include "random_matrix.hpp"
+#include "wrappers.hpp"
 
 using namespace flexiblesusy;
 
@@ -203,3 +204,75 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention )
    BOOST_CHECK_LT(std::abs(std::arg(pmns(1,2))), 1e-15);
    BOOST_CHECK_LT(std::abs(std::arg(pmns(2,2))), 1e-15);
 }
+
+#ifdef ENABLE_RANDOM
+
+std::complex<double> random_phase()
+{
+   return std::polar(1., 2. * M_PI * rand() / RAND_MAX);
+}
+
+BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_zero_c13 )
+{
+   Eigen::Matrix<std::complex<double>,2,2> pmnsBL;
+   Eigen::Matrix<std::complex<double>,3,3> vv;
+
+   std::mt19937 generator;
+   random_cue_matrix(pmnsBL, generator);
+   random_cue_matrix(vv, generator);
+
+   Eigen::Matrix<std::complex<double>,3,3> pmns(
+      Eigen::Matrix<std::complex<double>,3,3>::Zero());
+   pmns(0,2) = random_phase();
+   pmns.bottomLeftCorner<2,2>() = pmnsBL;
+
+   Eigen::Matrix<std::complex<double>,3,3> ve = pmns * vv;
+
+   BOOST_REQUIRE(is_unitary(pmns, 1.e-15));
+   BOOST_REQUIRE(is_unitary(vv, 1.e-15));
+   BOOST_REQUIRE(is_unitary(ve, 1.e-15));
+   BOOST_REQUIRE(is_equal(pmns, ve*vv.adjoint(), 1.e-15));
+
+   // remaining mixing matrices
+   Eigen::Matrix<std::complex<double>,3,3> ue;
+   random_cue_matrix(ue, generator);
+
+   BOOST_REQUIRE(is_unitary(ue, 1.e-15));
+
+   // mass eigenvalues
+   Eigen::Array<double,3,1> se(Eigen::Array<double,3,1>::Random().abs());
+   Eigen::Array<double,3,1> sv(Eigen::Array<double,3,1>::Random().abs());
+   std::sort(se.data(), se.data() + se.size());
+   std::sort(sv.data(), sv.data() + sv.size());
+
+   // mass matrices
+   const Eigen::Matrix<std::complex<double>,3,3> me(
+      ue.transpose() * se.matrix().asDiagonal() * ve);
+   const Eigen::Matrix<std::complex<double>,3,3> mv(
+      vv.transpose() * sv.matrix().asDiagonal() * vv);
+
+   BOOST_REQUIRE(is_symmetric(mv, 1.e-15));
+
+   const Eigen::Matrix<double,3,3> pmns_squared_invariants(pmns.cwiseAbs2());
+
+   PMNS_parameters::to_pdg_convention(pmns, vv, ve, ue);
+
+   const Eigen::Matrix<double,3,3> pmns_squared_invariants_pdg(pmns.cwiseAbs2());
+
+   BOOST_CHECK(is_unitary(pmns, 1.e-10));
+
+   BOOST_CHECK(is_equal(me, ue.transpose() * se.matrix().asDiagonal() * ve, 1.e-10));
+   BOOST_CHECK(is_equal(mv, vv.transpose() * sv.matrix().asDiagonal() * vv, 1.e-10));
+
+   // check CP-violating phase is eliminated
+   BOOST_CHECK_LT(std::abs(std::arg(pmns(0,2))), 1.e-15);
+
+   // check remaining Majorana phases are consistent (note: relative sign
+   // between (1,0) and (2,0) elements)
+   BOOST_CHECK(is_equal(std::arg(pmns(1,0)), std::arg(pmns(2,0)) + M_PI, 1.e-10));
+   BOOST_CHECK(is_equal(std::arg(pmns(1,1)), std::arg(pmns(2,1)), 1.e-10));
+
+   BOOST_CHECK(is_equal(pmns_squared_invariants, pmns_squared_invariants_pdg, 1.e-12));
+}
+
+#endif
