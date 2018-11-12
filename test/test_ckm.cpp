@@ -252,4 +252,43 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_zero_c13 )
    BOOST_CHECK(is_equal(ckm_squared_invariants, ckm_squared_invariants_pdg, 1.e-12));
 }
 
+// checks that converting a CKM matrix given in PDG convention leaves
+// it unchanged
+BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_consistent )
+{
+   CKM_parameters ckm_pars;
+
+   ckm_pars.theta_12 = 0.229206;
+   ckm_pars.theta_13 = 0.003960;
+   ckm_pars.theta_23 = 0.042223;
+   ckm_pars.delta    = 0.1;
+
+   const Eigen::Matrix<std::complex<double>,3,3> ckm_cmplx(ckm_pars.get_complex_ckm());
+   Eigen::Matrix<std::complex<double>,3,3> ckm(ckm_cmplx);
+
+   const Eigen::Matrix<std::complex<double>,3,3> md(Eigen::Matrix<std::complex<double>,3,3>::Random());
+   Eigen::Array<double,3,1> sd;
+   Eigen::Matrix<std::complex<double>,3,3> vd;
+   Eigen::Matrix<std::complex<double>,3,3> ud;
+
+   fs_svd(md, sd, ud, vd);
+
+   Eigen::Array<double,3,1> su(Eigen::Array<double,3,1>::Random().abs());
+   std::sort(su.data(), su.data() + su.size());
+
+   std::mt19937 generator;
+   Eigen::Matrix<std::complex<double>,3,3> vu(ckm*vd);
+   Eigen::Matrix<std::complex<double>,3,3> uu;
+   random_cue_matrix(uu, generator);
+
+   const Eigen::Matrix<std::complex<double>,3,3> mu(
+      uu.transpose() * su.matrix().asDiagonal() * vu);
+
+   BOOST_REQUIRE(is_equal(ckm, vu*vd.adjoint(), 1.e-10));
+
+   CKM_parameters::to_pdg_convention(ckm, vu, vd, uu, ud);
+
+   BOOST_CHECK(is_equal(ckm, ckm_cmplx, 1.e-10));
+}
+
 #endif
