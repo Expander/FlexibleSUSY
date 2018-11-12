@@ -163,8 +163,11 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention )
    BOOST_CHECK(is_equal(md, ud.transpose() * sd.matrix().asDiagonal() * vd, 1.e-10));
 
    Eigen::Matrix<std::complex<double>,3,3> ckm(vu*vd.adjoint());
+   const Eigen::Matrix<double,3,3> ckm_squared_invariants(ckm.cwiseAbs2());
 
    CKM_parameters::to_pdg_convention(ckm, vu, vd, uu, ud);
+
+   const Eigen::Matrix<double,3,3> ckm_squared_invariants_pdg(ckm.cwiseAbs2());
 
    BOOST_CHECK(is_unitary(ckm, 1.e-10));
 
@@ -178,6 +181,8 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention )
    BOOST_CHECK_LT(std::abs(std::arg(ckm(2,2))), 1e-15);
    BOOST_CHECK((ckm.bottomLeftCorner<2,2>().imag().array() <= 0).all() ||
 	       (ckm.bottomLeftCorner<2,2>().imag().array() >= 0).all());
+
+   BOOST_CHECK(is_equal(ckm_squared_invariants, ckm_squared_invariants_pdg, 1.e-12));
 }
 
 #ifdef ENABLE_RANDOM
@@ -230,7 +235,11 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_zero_c13 )
    const Eigen::Matrix<std::complex<double>,3,3> md(
       ud.transpose() * sd.matrix().asDiagonal() * vd);
 
+   const Eigen::Matrix<double,3,3> ckm_squared_invariants(ckm.cwiseAbs2());
+
    CKM_parameters::to_pdg_convention(ckm, vu, vd, uu, ud);
+
+   const Eigen::Matrix<double,3,3> ckm_squared_invariants_pdg(ckm.cwiseAbs2());
 
    BOOST_CHECK(is_unitary(ckm, 1.e-10));
 
@@ -244,6 +253,8 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_zero_c13 )
    BOOST_CHECK_LT(std::abs(std::arg(ckm(2,2))), 1e-14);
    BOOST_CHECK((ckm.bottomLeftCorner<2,2>().imag().array() <= 0).all() ||
 	       (ckm.bottomLeftCorner<2,2>().imag().array() >= 0).all());
+
+   BOOST_CHECK(is_equal(ckm_squared_invariants, ckm_squared_invariants_pdg, 1.e-12));
 }
 
 #endif
