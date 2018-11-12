@@ -246,13 +246,8 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_zero_c13 )
    BOOST_CHECK(is_equal(mu, uu.transpose() * su.matrix().asDiagonal() * vu, 1.e-10));
    BOOST_CHECK(is_equal(md, ud.transpose() * sd.matrix().asDiagonal() * vd, 1.e-10));
 
-   // check signs of sij & cij
-   BOOST_CHECK_LT(std::abs(std::arg(ckm(0,0))), 1e-14);
-   BOOST_CHECK_LT(std::abs(std::arg(ckm(0,1))), 1e-14);
-   BOOST_CHECK_LT(std::abs(std::arg(ckm(1,2))), 1e-14);
-   BOOST_CHECK_LT(std::abs(std::arg(ckm(2,2))), 1e-14);
-   BOOST_CHECK((ckm.bottomLeftCorner<2,2>().imag().array() <= 0).all() ||
-	       (ckm.bottomLeftCorner<2,2>().imag().array() >= 0).all());
+   // check all elements are real
+   BOOST_CHECK((ckm.imag().cwiseAbs().array() < 1.e-12).all());
 
    BOOST_CHECK(is_equal(ckm_squared_invariants, ckm_squared_invariants_pdg, 1.e-12));
 }
