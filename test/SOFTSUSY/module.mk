@@ -34,7 +34,6 @@ LIBSOFTSUSY_SRC  := \
 		$(DIR)/nmssmsoftpars.cpp \
 		$(DIR)/nmssmsoftsusy.cpp \
 		$(DIR)/nmssmsusy.cpp \
-		$(DIR)/nmssm1loop.f \
 		$(DIR)/numerics_legacy.cpp \
 		$(DIR)/physpars.cpp \
 		$(DIR)/rge.cpp \
