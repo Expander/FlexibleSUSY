@@ -362,9 +362,6 @@ c Temp change to input
 
       double precision g,gp,ll,kk,ht,hb,htau,v1,v2,xx,
      $     Ak,Al,At,Ab,Atau,p,Q,piPP(3,3)
-      
-c New variables for temp test
-      double precision  piPP11,piPP12,piPP13,piPP22,piPP23,piPP33
 
       double precision mstop(2),msbot(2),mstau(2),msup(2),msdown(2),
      $     msel(2),msnutau,msnue,Rt(2,2),Rb(2,2),Rtau(2,2),
@@ -1126,7 +1123,7 @@ c
       integer i,j,k,nrot
 
       common/FOREFFPOT/mt,T1,T2,st,ct,Q2
-      double precision mt,T1,T2,st,ct,Q2,DMS(3,3),DMP(3,3)
+      double precision mt,T1,T2,st,ct,Q2
 
       gb2 = (g**2+gp**2)/2d0
       As = Al+kk*xx
@@ -1350,6 +1347,11 @@ c
 
       double precision dL,dR,X,mf,MS(2,2),RT(2,2),mass2(2)
       integer nrot,i,j
+
+      dL = 0d0
+      dR = 0d0
+      mf = 0d0
+      X  = 0d0
 
       if(n.eq.1) then
          dL = ( g**2/2d0 - gp**2/6d0)*(v1**2-v2**2)/2d0
@@ -1763,13 +1765,21 @@ c
                lspp(i,j,k)=0d0
                lshh(i,j,k)=0d0
                lsaa(i,j,k)=0d0
-               lscc(i,j,k)=0d0               
                do l=1,3
                   lssss(i,j,k,l)=0d0
                   lsspp(i,j,k,l)=0d0
                   lsshh(i,j,k,l)=0d0
                   lssaa(i,j,k,l)=0d0
-                  lsscc(i,j,k,l)=0d0
+               enddo
+            enddo
+         enddo
+      enddo
+      do i=1,3                  ! initialize
+         do j=1,2
+            do k=1,2
+               lscc(i,j,k)=0d0
+               do l=1,2
+                  lsscc(l,i,j,k)=0d0
                enddo
             enddo
          enddo
@@ -2440,13 +2450,21 @@ c
             do k=1,3
                lspp(i,j,k)=0d0
                lpah(i,j,k)=0d0
-               lpcc(i,j,k)=0d0               
                do l=1,3
                   lpppp(i,j,k,l)=0d0
                   lsspp(i,j,k,l)=0d0
                   lpphh(i,j,k,l)=0d0
                   lppaa(i,j,k,l)=0d0
-                  lppcc(i,j,k,l)=0d0
+               enddo
+            enddo
+         enddo
+      enddo
+      do i=1,3                  ! initialize
+         do j=1,2
+            do k=1,2
+               lpcc(i,j,k)=0d0
+               do l=1,2
+                  lppcc(l,i,j,k)=0d0
                enddo
             enddo
          enddo
