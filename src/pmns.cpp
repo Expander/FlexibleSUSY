@@ -174,8 +174,8 @@ void PMNS_parameters::to_pdg_convention(
    Eigen::DiagonalMatrix<std::complex<double>,3> l(1,1,1);
 
    const double s13 = sanitize_hypot(std::abs(pmns(0,2)));
-   const double c13 = std::sqrt(1 - Sqr(s13));
-   if (is_zero(c13)) {
+   const double c13_sq = 1. - Sqr(s13);
+   if (is_zero(c13_sq)) {
       o = std::conj(phase(pmns(0,2)));
       const auto rel_phase = std::sqrt(phase(pmns(1,0) * pmns(2,1)));
       const auto p = std::conj(rel_phase * rel_phase)
