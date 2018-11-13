@@ -208,9 +208,9 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_zero_c13 )
 
    Eigen::Matrix<std::complex<double>,3,3> vu = ckm * vd;
 
-   BOOST_REQUIRE(is_unitary(ckm, 1.e-15));
-   BOOST_REQUIRE(is_unitary(vd, 1.e-15));
-   BOOST_REQUIRE(is_unitary(vu, 1.e-15));
+   BOOST_REQUIRE(is_unitary(ckm, 1.e-14));
+   BOOST_REQUIRE(is_unitary(vd, 1.e-14));
+   BOOST_REQUIRE(is_unitary(vu, 1.e-14));
    BOOST_REQUIRE(is_equal(ckm, vu*vd.adjoint(), 1.e-15));
 
    // remaining mixing matrices
@@ -220,8 +220,8 @@ BOOST_AUTO_TEST_CASE( test_complex_CKM_pdg_convention_zero_c13 )
    random_cue_matrix(uu, generator);
    random_cue_matrix(ud, generator);
 
-   BOOST_REQUIRE(is_unitary(uu, 1.e-15));
-   BOOST_REQUIRE(is_unitary(ud, 1.e-15));
+   BOOST_REQUIRE(is_unitary(uu, 1.e-14));
+   BOOST_REQUIRE(is_unitary(ud, 1.e-14));
 
    // mass eigenvalues
    Eigen::Array<double,3,1> su(Eigen::Array<double,3,1>::Random().abs());

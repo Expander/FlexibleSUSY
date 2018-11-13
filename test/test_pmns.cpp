@@ -217,6 +217,20 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention )
 
    BOOST_CHECK_LT(std::abs(std::arg(pmns(1,2))), 1e-15);
    BOOST_CHECK_LT(std::abs(std::arg(pmns(2,2))), 1e-15);
+
+   const auto a1 = std::polar(1., std::arg(pmns(0,0)));
+   const auto a2 = std::polar(1., std::arg(pmns(0,1)));
+   const auto d = std::polar(1., std::arg(pmns(0,2)));
+
+   const Eigen::Matrix<std::complex<double>,2,2> pmnsBL(
+      pmns.bottomLeftCorner<2,2>());
+   Eigen::Array<std::complex<double>,2,2> maj_phases_expected;
+   maj_phases_expected << a1, a2, a1, a2;
+   const Eigen::Array<std::complex<double>,2,2> no_maj_phases
+      = maj_phases_expected.conjugate() * pmnsBL.array();
+   const Eigen::Array<double,2,2> imagBL(no_maj_phases.imag());
+
+   BOOST_CHECK((imagBL <= 0).all() || (imagBL >= 0).all());
 }
 
 #ifdef ENABLE_RANDOM
@@ -286,8 +300,7 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_zero_c13 )
 
    // check remaining Majorana phases are consistent (note: relative sign
    // between (1,0) and (2,0) elements)
-   BOOST_CHECK(is_equal(std::arg(pmns(1,0)), std::arg(pmns(2,0)) + M_PI,
-                        1.e-10));
+   BOOST_CHECK(is_equal(std::arg(pmns(1,0)), std::arg(-pmns(2,0)), 1.e-10));
    BOOST_CHECK(is_equal(std::arg(pmns(1,1)), std::arg(pmns(2,1)), 1.e-10));
 
    BOOST_CHECK(is_equal(pmns_squared_invariants, pmns_squared_invariants_pdg,
@@ -339,6 +352,59 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_consistent_no_alpha )
    PMNS_parameters::to_pdg_convention(pmns, vv, ve, ue);
 
    BOOST_CHECK(is_equal(pmns, pmns_complex_no_alpha, 1.e-10));
+}
+
+BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_consistent_no_delta )
+{
+   PMNS_parameters pmns_pars;
+
+   pmns_pars.theta_12 = 0.5764;
+   pmns_pars.theta_13 = 0.1472;
+   pmns_pars.theta_23 = 0.7101;
+   pmns_pars.delta = 0.;
+
+   pmns_pars.alpha_1 = random_angle();
+   pmns_pars.alpha_2 = random_angle();
+
+   const Eigen::Matrix<std::complex<double>,3,3> pmns_complex_no_delta(
+      pmns_pars.get_complex_pmns());
+   Eigen::Matrix<std::complex<double>,3,3> pmns(pmns_complex_no_delta);
+
+   Eigen::Matrix<std::complex<double>,3,3> mv(
+      Eigen::Matrix<std::complex<double>,3,3>::Random());
+   Symmetrize(mv);
+
+   BOOST_REQUIRE(is_symmetric(mv, 1.e-15));
+
+   Eigen::Array<double,3,1> sv;
+   Eigen::Matrix<std::complex<double>,3,3> vv;
+
+   fs_diagonalize_symmetric(mv, sv, vv);
+
+   Eigen::Array<double,3,1> se(Eigen::Array<double,3,1>::Random().abs());
+   std::sort(se.data(), se.data() + se.size());
+
+   std::mt19937 generator;
+   Eigen::Matrix<std::complex<double>,3,3> ve(pmns*vv);
+   Eigen::Matrix<std::complex<double>,3,3> ue;
+   random_cue_matrix(ue, generator);
+
+   const Eigen::Matrix<std::complex<double>,3,3> me(
+      ue.transpose() * se.matrix().asDiagonal() * ve);
+
+   BOOST_REQUIRE(is_equal(pmns, ve*vv.adjoint(), 1.e-10));
+
+   PMNS_parameters::to_pdg_convention(pmns, vv, ve, ue);
+
+   BOOST_CHECK(is_equal(pmns, pmns_complex_no_delta, 1.e-10));
+
+   const auto a1 = std::polar(1., std::arg(pmns_complex_no_delta(0,0)));
+   const auto a2 = std::polar(1., std::arg(pmns_complex_no_delta(0,1)));
+
+   BOOST_CHECK_LT(std::abs(std::imag(std::conj(a1) * pmns(1,0))), 1.e-10);
+   BOOST_CHECK_LT(std::abs(std::imag(std::conj(a2) * pmns(1,1))), 1.e-10);
+   BOOST_CHECK_LT(std::abs(std::imag(std::conj(a1) * pmns(2,0))), 1.e-10);
+   BOOST_CHECK_LT(std::abs(std::imag(std::conj(a2) * pmns(2,1))), 1.e-10);
 }
 
 BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_consistent )
