@@ -220,7 +220,6 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention )
 
    const auto a1 = std::polar(1., std::arg(pmns(0,0)));
    const auto a2 = std::polar(1., std::arg(pmns(0,1)));
-   const auto d = std::polar(1., std::arg(pmns(0,2)));
 
    const Eigen::Matrix<std::complex<double>,2,2> pmnsBL(
       pmns.bottomLeftCorner<2,2>());
@@ -414,14 +413,14 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_consistent )
    pmns_pars.theta_12 = 0.5764;
    pmns_pars.theta_13 = 0.1472;
    pmns_pars.theta_23 = 0.7101;
-   pmns_pars.delta = 4.3354;
+   pmns_pars.delta = random_angle();
 
    pmns_pars.alpha_1 = random_angle();
    pmns_pars.alpha_2 = random_angle();
 
-   const Eigen::Matrix<std::complex<double>,3,3> pmns_complex_no_alpha(
+   const Eigen::Matrix<std::complex<double>,3,3> pmns_complex(
       pmns_pars.get_complex_pmns());
-   Eigen::Matrix<std::complex<double>,3,3> pmns(pmns_complex_no_alpha);
+   Eigen::Matrix<std::complex<double>,3,3> pmns(pmns_complex);
 
    Eigen::Matrix<std::complex<double>,3,3> mv(
       Eigen::Matrix<std::complex<double>,3,3>::Random());
@@ -449,7 +448,7 @@ BOOST_AUTO_TEST_CASE( test_complex_PMNS_pdg_convention_consistent )
 
    PMNS_parameters::to_pdg_convention(pmns, vv, ve, ue);
 
-   BOOST_CHECK(is_equal(pmns, pmns_complex_no_alpha, 1.e-10));
+   BOOST_CHECK(is_equal(pmns, pmns_complex, 1.e-10));
 }
 
 #endif
