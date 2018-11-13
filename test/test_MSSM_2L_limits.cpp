@@ -46,7 +46,7 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_as_PS(Point p)
    Eigen::Matrix<double, 2, 2> result;
    result << S11, S12, S12, S22;
 
-   return -result;
+   return result;
 }
 
 // Pietro Slavich implementation of CP-even Mh correction O(at*at)
@@ -61,7 +61,7 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_at_PS(Point p)
    Eigen::Matrix<double, 2, 2> result;
    result << S11, S12, S12, S22;
 
-   return -result;
+   return result;
 }
 
 // Pietro Slavich implementation of CP-odd MA correction O(at*as)
@@ -72,7 +72,7 @@ double calc_dMA_at_as_PS(Point p)
    dszodd_(&p.mt2, &p.mg, &p.mst12, &p.mst22, &p.st, &p.ct, &p.q2,
            &p.mu, &p.tb, &p.v2, &p.g3, &result);
 
-   return -result;
+   return result;
 }
 
 // Pietro Slavich implementation of CP-even tadpoles O(at*as)
@@ -87,7 +87,7 @@ Eigen::Matrix<double, 2, 1> calc_tad_at_as_PS(Point p)
    Eigen::Matrix<double, 2, 1> result;
    result << t1, t2;
 
-   return -result;
+   return result;
 }
 
 // Pietro Slavich implementation of CP-even tadpoles O(at*at)
@@ -102,20 +102,20 @@ Eigen::Matrix<double, 2, 1> calc_tad_at_at_PS(Point p)
    Eigen::Matrix<double, 2, 1> result;
    result << t1, t2;
 
-   return -result;
+   return result;
 }
 
 // FlexibleSUSY wrapper for CP-even tadpoles O(at*as)
 Eigen::Matrix<double, 2, 1> calc_tad_at_as_FS(Point p)
 {
-   return mssm_twoloophiggs::tadpole_higgs_2loop_at_as_mssm(
+   return -mssm_twoloophiggs::tadpole_higgs_2loop_at_as_mssm(
       p.mt2, p.mg, p.mst12, p.mst22, p.st, p.ct, p.q2, p.mu, p.tb, p.v2, p.g3);
 }
 
 // FlexibleSUSY wrapper for CP-even tadpoles O(at*at)
 Eigen::Matrix<double, 2, 1> calc_tad_at_at_FS(Point p)
 {
-   return mssm_twoloophiggs::tadpole_higgs_2loop_at_at_mssm(
+   return -mssm_twoloophiggs::tadpole_higgs_2loop_at_at_mssm(
       p.mt2, p.mb2, p.mA2, p.mst12, p.mst22, p.msb12, p.msb22, p.st, p.ct, p.sb, p.cb,
       p.q2, p.mu, p.tb, p.v2);
 }
@@ -123,7 +123,7 @@ Eigen::Matrix<double, 2, 1> calc_tad_at_at_FS(Point p)
 // FlexibleSUSY wrapper for CP-even Mh correction O(at*as)
 Eigen::Matrix<double, 2, 2> calc_dMh_at_as_FS(Point p)
 {
-   return mssm_twoloophiggs::self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
+   return -mssm_twoloophiggs::self_energy_higgs_2loop_at_as_mssm_with_tadpoles(
       p.mt2, p.mg, p.mst12, p.mst22, p.st, p.ct, p.q2, p.mu, p.tb,
       p.v2, p.g3, 0);
 }
@@ -131,7 +131,7 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_as_FS(Point p)
 // FlexibleSUSY wrapper for CP-even Mh correction O(at*at)
 Eigen::Matrix<double, 2, 2> calc_dMh_at_at_FS(Point p)
 {
-   return mssm_twoloophiggs::self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
+   return -mssm_twoloophiggs::self_energy_higgs_2loop_at_at_mssm_with_tadpoles(
       p.mt2, p.mb2, p.mA2, p.mst12, p.mst22, p.msb12, p.msb22,
       p.st, p.ct, p.sb, p.cb, p.q2, p.mu, p.tb, p.v2);
 }
@@ -139,7 +139,7 @@ Eigen::Matrix<double, 2, 2> calc_dMh_at_at_FS(Point p)
 // FlexibleSUSY wrapper for CP-odd MA correction O(at*as)
 double calc_dMA_at_as_FS(Point p)
 {
-   return mssm_twoloophiggs::self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
+   return -mssm_twoloophiggs::self_energy_pseudoscalar_2loop_at_as_mssm_with_tadpoles(
       p.mt2, p.mg, p.mst12, p.mst22, p.st, p.ct, p.q2, p.mu, p.tb,
       p.v2, p.g3);
 }

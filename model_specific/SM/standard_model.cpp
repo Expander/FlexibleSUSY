@@ -4258,7 +4258,6 @@ double Standard_model::self_energy_hh_4loop() const
    const double mt = MFu(2);
    const double yt = Yu(2,2);
    const double gs = g3;
-   const double mh = Mhh;
    const double scale = get_scale();
    double self_energy = 0.;
 
