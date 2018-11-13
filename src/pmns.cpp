@@ -136,9 +136,10 @@ void PMNS_parameters::to_pdg_convention(Eigen::Matrix<double,3,3>& pmns,
    Vv = signs_V * Vv;
 }
 
-void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& Vv,
-                                        Eigen::Matrix<std::complex<double>,3,3>& Ve,
-                                        Eigen::Matrix<std::complex<double>,3,3>& Ue)
+void PMNS_parameters::to_pdg_convention(
+   Eigen::Matrix<std::complex<double>,3,3>& Vv,
+   Eigen::Matrix<std::complex<double>,3,3>& Ve,
+   Eigen::Matrix<std::complex<double>,3,3>& Ue)
 {
    Eigen::Matrix<std::complex<double>,3,3> pmns(Ve*Vv.adjoint());
    to_pdg_convention(pmns, Vv, Ve, Ue);
@@ -163,10 +164,11 @@ double sanitize_hypot(double sc)
 
 } // anonymous namespace
 
-void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& pmns,
-                                        Eigen::Matrix<std::complex<double>,3,3>& Vv,
-                                        Eigen::Matrix<std::complex<double>,3,3>& Ve,
-                                        Eigen::Matrix<std::complex<double>,3,3>& Ue)
+void PMNS_parameters::to_pdg_convention(
+   Eigen::Matrix<std::complex<double>,3,3>& pmns,
+   Eigen::Matrix<std::complex<double>,3,3>& Vv,
+   Eigen::Matrix<std::complex<double>,3,3>& Ve,
+   Eigen::Matrix<std::complex<double>,3,3>& Ue)
 {
    std::complex<double> o;
    Eigen::DiagonalMatrix<std::complex<double>,3> l(1,1,1);
@@ -176,7 +178,8 @@ void PMNS_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>&
    if (is_zero(c13)) {
       o = std::conj(phase(pmns(0,2)));
       const auto rel_phase = std::sqrt(phase(pmns(1,0) * pmns(2,1)));
-      const auto p = std::conj(rel_phase * rel_phase) * phase(pmns(1,0) * pmns(1,1));
+      const auto p = std::conj(rel_phase * rel_phase)
+         * phase(pmns(1,0) * pmns(1,1));
       l.diagonal()[1] = std::conj(o * rel_phase);
       l.diagonal()[2] = std::conj(o * rel_phase) * p;
    } else {
