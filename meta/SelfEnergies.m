@@ -973,7 +973,6 @@ using namespace flexiblesusy::sm_fourloophiggs;
 const double mt = " <> mtStr <> ";
 const double yt = " <> ytStr <> ";
 const double gs = " <> g3Str <> ";
-const double mh = " <> mhStr <> ";
 const double scale = get_scale();
 double self_energy = 0.;
 
