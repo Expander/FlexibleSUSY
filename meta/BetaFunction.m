@@ -380,10 +380,7 @@ CountNumberOfParameters[CConversion`TensorType[CConversion`realScalarCType, dims
 CountNumberOfParameters[CConversion`TensorType[CConversion`complexScalarCType, dims__]] := 2 * Times[dims];
 
 CountNumberOfParameters[betaFunctions_List] :=
-    Module[{num = 0},
-           (num += CountNumberOfParameters[GetType[#]])& /@ betaFunctions;
-           Return[num];
-          ];
+    Total[CountNumberOfParameters[GetType[#]]& /@ betaFunctions];
 
 (* creating set function *)
 CreateSetFunction[betaFunctions_List, parameterNumberOffset_:0] :=
@@ -450,34 +447,26 @@ CreateElementSetter[name_String, type_] :=
     CConversion`CreateInlineElementSetter[name, type];
 
 CreateSetters[betaFunction_BetaFunction] :=
-    Module[{setter = "", name = "", type},
+    Module[{name, type},
            name = ToValidCSymbolString[GetName[betaFunction]];
            type = GetType[betaFunction];
-           setter = setter <> CConversion`CreateInlineSetter[name, type];
-           setter = setter <> CreateElementSetter[name, type];
-           Return[setter];
+           CConversion`CreateInlineSetter[name, type] <>
+           CreateElementSetter[name, type]
           ];
 
 CreateSetters[betaFunctions_List] :=
-    Module[{setter = ""},
-           (setter = setter <> CreateSetters[#])& /@ betaFunctions;
-           Return[setter];
-          ];
+    StringJoin[CreateSetters /@ betaFunctions];
 
 (* create getters *)
 CreateGetters[betaFunction_BetaFunction] :=
-    Module[{getter = "", name = "", type},
+    Module[{name, type},
            name = ToValidCSymbolString[GetName[betaFunction]];
            type = GetType[betaFunction];
-           getter = getter <> CConversion`CreateInlineGetters[name, name, type];
-           Return[getter];
+           CConversion`CreateInlineGetters[name, name, type]
           ];
 
 CreateGetters[betaFunctions_List] :=
-    Module[{getter = ""},
-           (getter = getter <> CreateGetters[#])& /@ betaFunctions;
-           Return[getter];
-          ];
+    StringJoin[CreateGetters /@ betaFunctions];
 
 (* create parameter definition in C++ class *)
 CreateParameterDefinitions[betaFunction_BetaFunction] :=
@@ -488,67 +477,39 @@ CreateParameterDefinitions[betaFunctions_List] :=
 
 (* create copy constructor initialization list *)
 CreateCCtorInitialization[betaFunction_BetaFunction] :=
-    Module[{def = "", name = "", dataType = ""},
+    Module[{name, dataType},
            dataType = CConversion`CreateCType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
-           def  = def <> ", " <> name <> "(" <> name <> "_)";
-           Return[def];
+           ", " <> name <> "(" <> name <> "_)"
           ];
 
 CreateCCtorInitialization[betaFunctions_List] :=
-    Module[{def = ""},
-           (def = def <> CreateCCtorInitialization[#])& /@ betaFunctions;
-           Return[def];
-          ];
+    StringJoin[CreateCCtorInitialization /@ betaFunctions];
 
 (* create copy constructor initialization list *)
 CreateCCtorParameterList[betaFunction_BetaFunction] :=
-    Module[{def = "", name = "", dataType = ""},
+    Module[{name, dataType},
            dataType = CreateGetterReturnType[GetType[betaFunction]];
            name = ToValidCSymbolString[GetName[betaFunction]];
-           def = def <> ", " <> dataType <> " " <> name <> "_";
-           Return[def];
+           ", " <> dataType <> " " <> name <> "_"
           ];
 
 CreateCCtorParameterList[betaFunctions_List] :=
-    Module[{def = "", i},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               def = def <> CreateCCtorParameterList[betaFunctions[[i]]];
-              ];
-           Return[def];
-          ];
+    StringJoin[CreateCCtorParameterList /@ betaFunctions];
 
 (* create parameter list *)
 CreateParameterList[betaFunction_BetaFunction, prefix_] :=
-    Module[{def = "", name = "", dataType = ""},
-           dataType = CConversion`CreateCType[GetType[betaFunction]];
-           name = ToValidCSymbolString[GetName[betaFunction]];
-           If[def != "", def = def <> ", "];
-           def = def <> prefix <> name;
-           Return[def];
-          ];
+    prefix <> ToValidCSymbolString[GetName[betaFunction]];
 
 CreateParameterList[betaFunctions_List, prefix_:""] :=
-    Module[{def = "", i},
-           For[i = 1, i <= Length[betaFunctions], i++,
-               If[def != "", def = def <> ", "];
-               def = def <> CreateParameterList[betaFunctions[[i]], prefix];
-              ];
-           Return[def];
-          ];
+    Utils`StringJoinWithSeparator[CreateParameterList[#, prefix]& /@ betaFunctions, ", "];
 
 ClearParameter[betaFunction_BetaFunction] :=
-    Module[{def, type},
-           def = CConversion`SetToDefault[ToValidCSymbolString[GetName[betaFunction]],
-                                          GetType[betaFunction]];
-           Return[def];
-          ];
+    CConversion`SetToDefault[ToValidCSymbolString[GetName[betaFunction]],
+                             GetType[betaFunction]];
 
 ClearParameters[betaFunctions_List] :=
-    Module[{def = ""},
-           (def = def <> ClearParameter[#])& /@ betaFunctions;
-           Return[def];
-          ];
+    StringJoin[ClearParameter /@ betaFunctions];
 
 End[];
 
