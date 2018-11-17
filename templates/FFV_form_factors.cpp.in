@@ -282,7 +282,7 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
          const auto x = pow(mF/mS, 2);
 
          // TODO: check the sign convention of this coupling
-         std::complex<double> vector_boson_coupling {vertexEmit.value(1,0)};
+         std::complex<double> vector_boson_coupling {-vertexEmit.value(1,0)};
 
          // eq. 15 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A1L =
