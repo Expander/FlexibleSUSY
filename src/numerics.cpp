@@ -156,11 +156,10 @@ double b0(double p, double m1, double m2, double q) noexcept
 
    /// p is not 0
    if (pTest > pTolerance) {
-      const std::complex<double> iEpsilon(0.0, EPSTOL * mMaxSq);
-      const std::complex<double> xPlus =
-         (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon))) / (2. * pSq);
-      const std::complex<double> xMinus = 2. * (mMaxSq - iEpsilon) /
-         (s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - iEpsilon)));
+      const std::complex<double> ieps(0.0, EPSTOL * mMaxSq);
+      const std::complex<double> x = s + sqrt(sqr(s) - 4. * pSq * (mMaxSq - ieps));
+      const std::complex<double> xPlus = x / (2. * pSq);
+      const std::complex<double> xMinus = 2. * (mMaxSq - ieps) / x;
 
       return -2.0 * log(p / q) - fB(xPlus) - fB(xMinus);
    }
