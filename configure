@@ -2049,6 +2049,14 @@ check_lapack_libs_using_options() {
 
 #_____________________________________________________________________
 check_looptools_libs() {
+    if test "x$enable_looptools" != "xyes"; then
+        if [ -n "$looptools_lib_dir" ] ; then
+            message "Warning: --with-looptools-libdir= has been set, but"
+            message "   LoopTools has not been enabled via --enable-looptools."
+        fi
+        return
+    fi
+
     check_library "libooptools" "$looptools_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
@@ -2070,6 +2078,14 @@ check_looptools_libs() {
 
 #_____________________________________________________________________
 check_looptools_incl() {
+    if test "x$enable_looptools" != "xyes"; then
+        if [ -n "$looptools_inc_dir" ] ; then
+            message "Warning: --with-looptools-incdir= has been set, but"
+            message "   LoopTools has not been enabled via --enable-looptools."
+        fi
+        return
+    fi
+
     check_header "clooptools.h" "$looptools_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
@@ -3111,10 +3127,8 @@ if test "x${enable_compile}" = "xyes"; then
         check_boost_thread_incl
         check_boost_thread_libs
     fi
-    if test "x$enable_looptools" = "xyes"; then
-        check_looptools_incl
-        check_looptools_libs
-    fi
+    check_looptools_incl
+    check_looptools_libs
     check_loop_functions
     check_odeint
     check_sqlite

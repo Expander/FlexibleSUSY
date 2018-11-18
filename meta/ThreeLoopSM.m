@@ -55,7 +55,8 @@ BetaSM[gc_] :=
           ] /. ThreeLoopSM`Private`ToSARAHNamingConvention[];
 
 (* Note:
-   g1, g2, g3, gb are global variables in SARAH
+   g1, g2, g3, gb are global variables in SARAH.
+   Since version 4.14.0 the symbol m2 is defined in Susyno`LieGroups`.
  *)
 ToSARAHNamingConvention[] := {
     g1 -> SARAH`hyperchargeCoupling G1GUTNormalization[],
@@ -65,7 +66,8 @@ ToSARAHNamingConvention[] := {
     gb -> SARAH`DownYukawa[3,3],
     Global`g\[Tau] -> SARAH`ElectronYukawa[3,3],
     \[Lambda] -> Parameters`GetParameterFromDescription["SM Higgs Selfcouplings"],
-    m2        -> Parameters`GetParameterFromDescription["SM Mu Parameter"]
+    m2        -> Parameters`GetParameterFromDescription["SM Mu Parameter"],
+    Susyno`LieGroups`m2 -> Parameters`GetParameterFromDescription["SM Mu Parameter"]
 };
 
 End[];
