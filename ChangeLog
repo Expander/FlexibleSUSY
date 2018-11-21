@@ -11,6 +11,11 @@ FlexibleSUSY 2.2.1 [not released yet]
  * Bugfix (commits 6a4a32324, 2cdd71861, 90ca05d70): Compatibility
    fixes for SARAH 4.14.0.
 
+ * Bugfix (commits 65aeb9dc, 89b4000b, e7c87c6d): Ensure phase factors
+   have unit modulus when converting a CKM matrix to PDG conventions in
+   the case that cos(theta13) vanishes, and add missing Majorana phases
+   in the definition of the PMNS matrix.
+
 FlexibleSUSY 2.2.0 [August, 26 2018]
 
  * Feature: The symbols `upQuarksDRbar`, `downQuarksDRbar`,
