@@ -256,8 +256,8 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& 
    const double c13_sq = 1. - Sqr(s13);
    if (is_zero(c13_sq)) {
       o = std::conj(phase(ckm(0,2)));
-      r.diagonal().block<2,1>(0,0) = (o * ckm.block<1,2>(1,0).unaryExpr(
-                                         std::ptr_fun(phase<double>))).adjoint();
+      r.diagonal().block<2,1>(0,0) = (o * ckm.block<1,2>(1,0)).unaryExpr(
+                                         std::ptr_fun(phase<double>)).adjoint();
       l.diagonal()[2] = std::conj(phase(o * r.diagonal()[1] * ckm(2,1)));
    } else {
       const double c13 = std::sqrt(c13_sq);
