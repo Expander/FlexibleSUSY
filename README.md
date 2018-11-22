@@ -388,8 +388,10 @@ Creating an addon
 A FlexibleSUSY addon is a program or library, which uses parts of the
 FlexibleSUSY libraries or the generated models or is integrated into
 FlexibleSUSY.  An example is
-[GM2Calc](https://arxiv.org/abs/1510.08071), which is included in
-FlexibleSUSY in form of an addon.  An addon can be created via
+[GM2Calc](https://arxiv.org/abs/1510.08071)
+[[https://gm2calc.hepforge.org](https://gm2calc.hepforge.org)], which
+is included in FlexibleSUSY in form of an addon.  An addon can be
+created via
 
     ./createaddon --name=<addon>
 
@@ -490,7 +492,9 @@ Package content
 In the following all sub-directories within the FlexibleSUSY package
 are listed:
 
- * `addons/` contains addons for FlexibleSUSY, such as GM2Calc
+ * `addons/` contains addons for FlexibleSUSY, such as
+   [GM2Calc](https://arxiv.org/abs/1510.08071)
+   [[https://gm2calc.hepforge.org](https://gm2calc.hepforge.org)]
 
  * `config/` contains helper scripts and makefile modules for the
    build system
