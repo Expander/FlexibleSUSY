@@ -63,7 +63,7 @@ namespace flexiblesusy {
 
 #define STRINGIFY(s) XSTRINGIFY(s)
 #define XSTRINGIFY(s) #s
-#define CLASSNAME SM_mass_eigenstates
+#define CLASSNAME @ModelName@_mass_eigenstates
 
 #define PHYSICAL(parameter) physical.parameter
 #define INPUT(parameter) model.get_input().parameter
