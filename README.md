@@ -16,6 +16,29 @@ extension and reuse.
   - CPC 230 (2018) 145-217 [[arXiv:1710.03760](https://arxiv.org/abs/1710.03760)]
 
 
+Table of contents
+=================
+
+- [Building FlexibleSUSY](#building-flexiblesusy)
+  * [Requirements](#requirements)
+  * [Installation of SARAH](#installation-of-sarah)
+  * [Building a FlexibleSUSY model](#building-a-flexiblesusy-model)
+- [Using FlexibleSUSY](#using-flexiblesusy)
+  * [Plotting the mass spectrum and renormalization group running](#plotting-the-mass-spectrum-and-renormalization-group-running)
+  * [Mathematica interface](#mathematica-interface)
+- [Advanced FlexibleSUSY build options](#advanced-flexiblesusy-build-options)
+  * [Generating source code files only (no compilation)](#generating-source-code-files-only--no-compilation-)
+  * [Compile only (don't generate source code)](#compile-only--don-t-generate-source-code-)
+  * [Exporting the generated source code](#exporting-the-generated-source-code)
+  * [Dynamic libraries](#dynamic-libraries)
+  * [Statically linked executables](#statically-linked-executables)
+  * [LoopTools support](#looptools-support)
+  * [Creating an addon](#creating-an-addon)
+  * [Creating the source code documentation](#creating-the-source-code-documentation)
+  * [Cleaning](#cleaning)
+- [Package content](#package-content)
+
+
 Building FlexibleSUSY
 =====================
 
@@ -61,8 +84,8 @@ script:
 See `./install-sarah --help` for more options.
 
 
-How to create a model
----------------------
+Building a FlexibleSUSY model
+-----------------------------
 
 0. Before you setup a FlexibleSUSY model, you have to provide a SARAH
    model file.  To make it available in FlexibleSUSY, you can put it
@@ -121,7 +144,89 @@ How to create a model
     ./models/HSSUSY/run_HSSUSY.x --slha-input-file=model_files/HSSUSY/LesHouches.in.HSSUSY
 
 
-Creating only the source code files (no compilation)
+Using FlexibleSUSY
+==================
+
+Plotting the mass spectrum and renormalization group running
+-----------------------------------------
+
+The pole mass spectrum and the RG flow can be written to data files
+for easy plotting.  In the MSSM for example these data files can be
+generated via
+
+    ./models/MSSM/run_MSSM.x \
+       --slha-input-file=model_files/MSSM/LesHouches.in.MSSM \
+       --rgflow-output-file=MSSM_rgflow.dat \
+       --spectrum-output-file=MSSM_spectrum.dat
+
+The generated files `MSSM_rgflow.dat` and `MSSM_spectrum.dat` can be
+plotted with the gnuplot scripts in the model directory:
+
+    gnuplot -persist -e "filename='MSSM_spectrum.dat'" \
+       models/MSSM/MSSM_plot_spectrum.gnuplot
+
+    gnuplot -persist -e "filename='MSSM_rgflow.dat'" \
+       models/MSSM/MSSM_plot_rgflow.gnuplot
+
+The gnuplot scripts are just for illustration and currently plot all
+DR-bar parameters, regardless of mass dimension, so the resulting plot
+is not particularly informative.  However, the user may adapt the
+scripts to plot any chosen subset of the parameters.
+
+
+Mathematica interface
+---------------------
+
+FlexibleSUSY can be called from within Mathematica using Wolfram's
+LibraryLink.  By default, FlexibleSUSY creates a LibraryLink library
+for each spectrum genreator.  The generated library can be found in
+`models/<model>/<model>_librarylink.so`, where `<model>` is the model
+name.
+
+### Example:
+
+```.m
+Get["models/CMSSM/CMSSM_librarylink.m"];
+
+(* Create a handle to a model given the input parameters.
+   See Options[FSCMSSMOpenHandle] for all default options. *)
+handle = FSCMSSMOpenHandle[
+  fsSettings -> { precisionGoal -> 1.*^-4 },
+  fsSMParameters -> { Mt -> 173.3 },
+  fsModelParameters -> {
+      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
+];
+
+(* calculate pole mass spectrum *)
+FSCMSSMCalculateSpectrum[handle]
+
+(* calculate observables *)
+FSCMSSMCalculateObservables[handle]
+
+(* close the model handle *)
+FSCMSSMCloseHandle[handle];
+```
+
+For each model, FlexibleSUSY creates an example Mathematica script
+which illustrates the use of the Mathematica interface.  The generated
+example can be found in `models/<model>/run_<model>.m` which can be
+run for example as
+
+    math -run "<< \"models/<model>/run_<model>.m\""
+
+Before running it, the model parameters in the script should be set to
+reasonable values.  More advanced examples can be found in the
+FlexibleSUSY documentation.
+
+Note: In order to compile the library, Mathematica must be installed.
+To disable the LibraryLink interface, configure with
+`--disable-librarylink`.
+
+
+Advanced FlexibleSUSY build options
+===================================
+
+Generating source code files only (no compilation)
 ----------------------------------------------------
 
 If you want to only create the C++ source files for your model, but do
@@ -377,85 +482,6 @@ remove model-specific files:
     make clean-<model>-obj # deletes .o files
 
     make clean-<model>-src # deletes generated files
-
-
-Using FlexibleSUSY
-==================
-
-Plotting the mass spectrum and renormalization group running
------------------------------------------
-
-The pole mass spectrum and the RG flow can be written to data files
-for easy plotting.  In the MSSM for example these data files can be
-generated via
-
-    ./models/MSSM/run_MSSM.x \
-       --slha-input-file=model_files/MSSM/LesHouches.in.MSSM \
-       --rgflow-output-file=MSSM_rgflow.dat \
-       --spectrum-output-file=MSSM_spectrum.dat
-
-The generated files `MSSM_rgflow.dat` and `MSSM_spectrum.dat` can be
-plotted with the gnuplot scripts in the model directory:
-
-    gnuplot -persist -e "filename='MSSM_spectrum.dat'" \
-       models/MSSM/MSSM_plot_spectrum.gnuplot
-
-    gnuplot -persist -e "filename='MSSM_rgflow.dat'" \
-       models/MSSM/MSSM_plot_rgflow.gnuplot
-
-The gnuplot scripts are just for illustration and currently plot all
-DR-bar parameters, regardless of mass dimension, so the resulting plot
-is not particularly informative.  However, the user may adapt the
-scripts to plot any chosen subset of the parameters.
-
-
-Mathematica interface
----------------------
-
-FlexibleSUSY can be called from within Mathematica using Wolfram's
-LibraryLink.  By default, FlexibleSUSY creates a LibraryLink library
-for each spectrum genreator.  The generated library can be found in
-`models/<model>/<model>_librarylink.so`, where `<model>` is the model
-name.
-
-### Example:
-
-```.m
-Get["models/CMSSM/CMSSM_librarylink.m"];
-
-(* Create a handle to a model given the input parameters.
-   See Options[FSCMSSMOpenHandle] for all default options. *)
-handle = FSCMSSMOpenHandle[
-  fsSettings -> { precisionGoal -> 1.*^-4 },
-  fsSMParameters -> { Mt -> 173.3 },
-  fsModelParameters -> {
-      m0 -> 125, m12 -> 500, TanBeta -> 10, SignMu -> 1, Azero -> 0 }
-];
-
-(* calculate pole mass spectrum *)
-FSCMSSMCalculateSpectrum[handle]
-
-(* calculate observables *)
-FSCMSSMCalculateObservables[handle]
-
-(* close the model handle *)
-FSCMSSMCloseHandle[handle];
-```
-
-For each model, FlexibleSUSY creates an example Mathematica script
-which illustrates the use of the Mathematica interface.  The generated
-example can be found in `models/<model>/run_<model>.m` which can be
-run for example as
-
-    math -run "<< \"models/<model>/run_<model>.m\""
-
-Before running it, the model parameters in the script should be set to
-reasonable values.  More advanced examples can be found in the
-FlexibleSUSY documentation.
-
-Note: In order to compile the library, Mathematica must be installed.
-To disable the LibraryLink interface, configure with
-`--disable-librarylink`.
 
 
 Package content
