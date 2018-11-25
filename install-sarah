@@ -182,8 +182,8 @@ fi
 
 sarah_tarball="SARAH-${sarah_version}.tar.gz"
 sarah_dir="SARAH-${sarah_version}"
-sarah_download_area="https://www.hepforge.org/downloads/sarah"
-sarah_download_url="https://www.hepforge.org/archive/sarah/${sarah_tarball}"
+sarah_download_area="https://sarah.hepforge.org/downloads/"
+sarah_download_url="https://sarah.hepforge.org/downloads/${sarah_tarball}"
 
 # check SARAH version string
 if echo "${sarah_version}" | grep -v '[0-9]\+.[0-9]\+.[0-9]\+' > /dev/null 2>&1 ; then
