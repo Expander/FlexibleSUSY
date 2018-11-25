@@ -73,12 +73,12 @@ Alternatively, the Mathematica interface of FlexibleSUSY may be used:
    Jae-hyeon Park, Dominik Stöckinger, Alexander Voigt, Jobst Ziebell:
    "FlexibleSUSY 2.0: Extensions to investigate the phenomenology of
    SUSY and non-SUSY models" [<a
-   href="https://arxiv.org/abs/1710.03760">arXiv:1710.03760</a>]
+   href="https://arxiv.org/abs/1710.03760">CPC 230 (2018) 145-217</a>]
 
 If you use **FlexibleSUSY** in your work please cite [<a
-href="http://inspirehep.net/record/1299998">CPC 190 (2015)
-139-172</a>, <a
-href="https://arxiv.org/abs/1710.03760">arXiv:1710.03760</a>].
+href="https://inspirehep.net/record/1299998">CPC 190 (2015)
+139-172</a>, <a href="https://inspirehep.net/record/1629978">CPC 230
+(2018) 145-217</a>].
 
 If you use the **FlexibleEFTHiggs** approach in your work please cite [<a
 href="https://inspirehep.net/record/1484857">JHEP 1701 (2017)
@@ -88,7 +88,8 @@ If you use **FlexibleSUSY+Himalaya** or <a
 href="https://github.com/jklappert/Himalaya">Himalaya</a> in your
 work, please cite [<a
 href="https://arxiv.org/abs/1708.05720">1708.05720</a>, <a
-href="https://arxiv.org/abs/1005.5709">1005.5709</a>]
+href="https://arxiv.org/abs/1005.5709">1005.5709</a>, <a
+href="https://arxiv.org/abs/1807.03509">1807.03509</a>]
 
 FlexibleSUSY depends on <a href="http://sarah.hepforge.org/">SARAH</a>
 and contains components from <a
@@ -112,6 +113,7 @@ FlexibleSUSY has been written by
 - Peter Athron
 - Markus Bach
 - Dylan Harries
+- Wojciech Kotlarski
 - Thomas Kwasnitza
 - Jae-hyeon Park
 - Dominik Stöckinger
