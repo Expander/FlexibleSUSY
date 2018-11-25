@@ -1,7 +1,9 @@
-If you think you may have found a bug in FlexibleSUSY, which is not
-listed below, please file a bug report at
+Reporting a bug
+===============
 
-   https://github.com/FlexibleSUSY/FlexibleSUSY/issues
+If you think you may have found a bug in FlexibleSUSY, which is not
+listed below, please file a
+[bug report](https://github.com/FlexibleSUSY/FlexibleSUSY/issues).
 
 
 Known problems
@@ -12,14 +14,14 @@ Exception due to multi-threading
 
 If FlexibleSUSY exits with an exception indicating that threads cannot
 be opened (which happens for example with g++ 4.8.x), one can try
-adding "-Wl,--no-as-needed" to the CXXFLAGS, i.e. for example
+adding `-Wl,--no-as-needed` to the `CXXFLAGS`, i.e. for example
 
-   ./configure --with-cxxflags="-Wl,--no-as-needed -std=c++11 -O2"
+    ./configure --with-cxxflags="-Wl,--no-as-needed -std=c++11 -O2"
 
 If this does not solve the problem, one can disable multi-threading
 via
 
-   ./configure --disable-threads
+    ./configure --disable-threads
 
 
 Tensor couplings
@@ -42,9 +44,9 @@ Yukawa couplings.  In such models, the Yukawa couplings have to be
 fixed by hand in one boundary condition.  FlexibleSUSY provides the
 symbols
 
- * upQuarksDRbar = (m_u, m_s, m_t)
- * downQuarksDRbar = (m_d, m_c,m_b)
- * downLeptonsDRbar = (m_e, m_\mu, m_\tau)
+ * `upQuarksDRbar` = (m<sub>u</sub>, m<sub>s</sub>, m<sub>t</sub>)
+ * `downQuarksDRbar` = (m<sub>d</sub>, m<sub>c</sub>,m<sub>b</sub>)
+ * `downLeptonsDRbar` = (m<sub>e</sub>, m<sub>µ</sub>, m<sub>τ</sub>)
 
 to access the running Standard Model fermion masses in such models.
 See the munuSSM model file for an example, where the charginos mix
@@ -66,9 +68,9 @@ by reformulating the boundary conditions in the model file.
 For example, in a model such as the MSSMCPV, a boundary condition of
 the form
 
-   {T[Ye], (ReAeInput + I ImAeInput) Ye},
-   {T[Yd], (ReAdInput + I ImAdInput) Yd},
-   {T[Yu], (ReAuInput + I ImAuInput) Yu}
+    {T[Ye], (ReAeInput + I ImAeInput) Ye},
+    {T[Yd], (ReAdInput + I ImAdInput) Yd},
+    {T[Yu], (ReAuInput + I ImAuInput) Yu}
 
 may trigger this compilation error when compiled against versions of
 Eigen below 3.3.0, due to the terms in brackets involving addition of
@@ -76,9 +78,9 @@ a real and complex matrix.  In cases such as this, the problem can be
 avoided by rewriting the boundary condition to avoid an operation
 involving mixed matrix types.  For example, in the equivalent form
 
-   {T[Ye], ReAeInput Ye + I ImAeInput Ye},
-   {T[Yd], ReAdInput Yd + I ImAdInput Yd},
-   {T[Yu], ReAuInput Yu + I ImAuInput Yu}
+    {T[Ye], ReAeInput Ye + I ImAeInput Ye},
+    {T[Yd], ReAdInput Yd + I ImAdInput Yd},
+    {T[Yu], ReAuInput Yu + I ImAuInput Yu}
 
 all additions involve only complex matrices.
 
@@ -98,13 +100,14 @@ The crash occurs only when Mathematica is closed, not during run-time.
 Depending on the Mathematica version and the used system, the crash
 could be caused by one of the following problems:
 
-  *** Error in `[...]/WolframKernel': corrupted size vs. prev_size
-  *** Error in `[...]/WolframKernel': corrupted double-linked list
-  *** Error in `[...]/WolframKernel': free(): invalid pointer
-  *** Error in `[...]/MathKernel': double free or corruption (!prev)
+    *** Error in `[...]/WolframKernel': corrupted size vs. prev_size
+    *** Error in `[...]/WolframKernel': corrupted double-linked list
+    *** Error in `[...]/WolframKernel': free(): invalid pointer
+    *** Error in `[...]/MathKernel': double free or corruption (!prev)
 
 In some cases the crash could be avoided by disabling multi-threading
-(see ./configure --help) or by using a different Mathematica version.
+(see `./configure --help`) or by using a different Mathematica
+version.
 
-When such a crash occurs during run-time, please file a bug report on
-FlexibleSUSY's github page.
+When such a crash occurs during run-time, please file a
+[bug report](https://github.com/FlexibleSUSY/FlexibleSUSY/issues).
