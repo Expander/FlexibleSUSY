@@ -550,16 +550,16 @@ void MssmSusy::setDiagYukawas(const QedQcd_legacy & r, double vev) {
   
   double invv2, invv1; 
   invv2 = 1.0 / v2; invv1 = 1.0 / v1;
-  u1(1, 1) = r.displayMass(mUp) * invv2;
-  u1(2, 2) = r.displayMass(mCharm) * invv2;
-  u1(3, 3) = r.displayMass(mTop) * invv2;
+  u1(1, 1) = r.displayMass(legacy::mUp) * invv2;
+  u1(2, 2) = r.displayMass(legacy::mCharm) * invv2;
+  u1(3, 3) = r.displayMass(legacy::mTop) * invv2;
   
-  d1(1, 1) = r.displayMass(mDown) * invv1;
-  d1(2, 2) = r.displayMass(mStrange) * invv1;
-  d1(3, 3) = r.displayMass(mBottom) * invv1;
-  e1(1, 1) = r.displayMass(mElectron) * invv1;
-  e1(2, 2) = r.displayMass(mMuon) * invv1;
-  e1(3, 3) = r.displayMass(mTau) * invv1;
+  d1(1, 1) = r.displayMass(legacy::mDown) * invv1;
+  d1(2, 2) = r.displayMass(legacy::mStrange) * invv1;
+  d1(3, 3) = r.displayMass(legacy::mBottom) * invv1;
+  e1(1, 1) = r.displayMass(legacy::mElectron) * invv1;
+  e1(2, 2) = r.displayMass(legacy::mMuon) * invv1;
+  e1(3, 3) = r.displayMass(legacy::mTau) * invv1;
   
   setYukawaMatrix(YU, u1); 
   setYukawaMatrix(YD, d1);
@@ -602,15 +602,15 @@ void MssmSusy::getMasses(QedQcd_legacy & r, double vev) const {
   
   DoubleMatrix u1(displayYukawaMatrix(YU)), d1(displayYukawaMatrix(YD)),
     e1(displayYukawaMatrix(YE));
-  r.setMass(mUp, v2 * u1(1, 1));
-  r.setMass(mCharm, v2 * u1(2, 2));
-  r.setMass(mTop, v2 * u1(3, 3));
-  r.setMass(mDown, v1 * d1(1, 1));
-  r.setMass(mStrange, v1 * d1(2, 2));
-  r.setMass(mBottom, v1 * d1(3, 3));
-  r.setMass(mElectron, v1 * e1(1, 1));
-  r.setMass(mMuon, v1 * e1(2, 2));
-  r.setMass(mTau, v1 * e1(3, 3));
+  r.setMass(legacy::mUp, v2 * u1(1, 1));
+  r.setMass(legacy::mCharm, v2 * u1(2, 2));
+  r.setMass(legacy::mTop, v2 * u1(3, 3));
+  r.setMass(legacy::mDown, v1 * d1(1, 1));
+  r.setMass(legacy::mStrange, v1 * d1(2, 2));
+  r.setMass(legacy::mBottom, v1 * d1(3, 3));
+  r.setMass(legacy::mElectron, v1 * e1(1, 1));
+  r.setMass(legacy::mMuon, v1 * e1(2, 2));
+  r.setMass(legacy::mTau, v1 * e1(3, 3));
 }
 
 // Rotates to quark mass basis, returning the mixing matrices defined as 

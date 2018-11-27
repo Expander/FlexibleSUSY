@@ -7880,7 +7880,7 @@ double NmssmSoftsusy::calcRunningMt() {
 }
 
 double NmssmSoftsusy::calcRunMbHiggs() const {
-   double mbMZ = displayDataSet().displayMass(mBottom);
+   double mbMZ = displayDataSet().displayMass(legacy::mBottom);
   double p = mbMZ;
   double q = displayMu();
   double hb = displayDrBarPars().hb;
@@ -7930,7 +7930,7 @@ double NmssmSoftsusy::calcRunMbHiggs() const {
 }
 
 double NmssmSoftsusy::calcRunMbNeutralinos() const {
-   double mbMZ = displayDataSet().displayMass(mBottom);
+   double mbMZ = displayDataSet().displayMass(legacy::mBottom);
   double p = mbMZ;
   double q = displayMu();
   double thetab  = displayDrBarPars().thetab;
@@ -8000,7 +8000,7 @@ double NmssmSoftsusy::calcRunningMb() const {
     throw ii.str();
   }
   
-  double mbMZ = displayDataSet().displayMass(mBottom);
+  double mbMZ = displayDataSet().displayMass(legacy::mBottom);
   /// First convert mbMZ into DRbar value from hep-ph/9703293,0207126,9701308
   /// (SM gauge boson contributions)
   mbMZ = mbMZ * Softsusy<SoftParsNmssm>::calcRunMbDrBarConv(); 
@@ -8132,7 +8132,7 @@ double NmssmSoftsusy::calcRunMtauNeutralinos(double mTauSMMZ) const {
 
 double NmssmSoftsusy::calcRunningMtau() const {
   /// MSbar value
-  double mTauSMMZ = displayDataSet().displayMass(mTau);
+  double mTauSMMZ = displayDataSet().displayMass(legacy::mTau);
   /// conversion to DRbar
   mTauSMMZ = mTauSMMZ * Softsusy<SoftParsNmssm>::calcRunMtauDrBarConv();
   /// Chargino contribution  

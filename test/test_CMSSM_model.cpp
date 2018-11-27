@@ -943,7 +943,7 @@ void compare_bot_self_energy(MssmSoftsusy s, CMSSM<Two_scale> m)
    m.set_scale(MZ);
    m.calculate_DRbar_masses();
 
-   const double mb_ms_bar = s.displayDataSet().displayMass(mBottom);
+   const double mb_ms_bar = s.displayDataSet().displayMass(legacy::mBottom);
    const double softsusy_mbot = s.calcRunningMb();
    const double sarah_mbot = m.calculate_MFd_DRbar(mb_ms_bar, 2);
 

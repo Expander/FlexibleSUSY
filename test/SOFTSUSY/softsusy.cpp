@@ -2409,17 +2409,17 @@ void Softsusy<SoftPars>::gluino(int accuracy) {
   
   /// Quark/squark correction
   delta = delta -
-    (b1(p, dataSet.displayMass(mUp), forLoops.mu(1, 1), Q) +
-     b1(p, dataSet.displayMass(mCharm), forLoops.mu(1, 2), Q) +
+    (b1(p, dataSet.displayMass(legacy::mUp), forLoops.mu(1, 1), Q) +
+     b1(p, dataSet.displayMass(legacy::mCharm), forLoops.mu(1, 2), Q) +
      b1(p, forLoops.mt, forLoops.mu(1, 3), Q) + 
-     b1(p, dataSet.displayMass(mUp), forLoops.mu(2, 1), Q) + 
-     b1(p, dataSet.displayMass(mCharm), forLoops.mu(2, 2), Q) + 
+     b1(p, dataSet.displayMass(legacy::mUp), forLoops.mu(2, 1), Q) + 
+     b1(p, dataSet.displayMass(legacy::mCharm), forLoops.mu(2, 2), Q) + 
      b1(p, forLoops.mt, forLoops.mu(2, 3), Q) + 
-     b1(p, dataSet.displayMass(mDown), forLoops.md(1, 1), Q) +
-     b1(p, dataSet.displayMass(mStrange), forLoops.md(1, 2), Q) +
+     b1(p, dataSet.displayMass(legacy::mDown), forLoops.md(1, 1), Q) +
+     b1(p, dataSet.displayMass(legacy::mStrange), forLoops.md(1, 2), Q) +
      b1(p, forLoops.mb, forLoops.md(1, 3), Q) +
-     b1(p, dataSet.displayMass(mDown), forLoops.md(2, 1), Q) +
-     b1(p, dataSet.displayMass(mStrange), forLoops.md(2, 2), Q) + 
+     b1(p, dataSet.displayMass(legacy::mDown), forLoops.md(2, 1), Q) +
+     b1(p, dataSet.displayMass(legacy::mStrange), forLoops.md(2, 2), Q) + 
      b1(p, forLoops.mb, forLoops.md(2, 3), Q) );
 
   /// Third family mixing contribution: NB changed sign of these 4/6/10
@@ -2736,7 +2736,7 @@ double Softsusy<SoftPars>::calcRunMbSquarkGluino() const {
   double    msbot2  = displayDrBarPars().md(2,3);
   double    mg      = displayDrBarPars().mGluino;
   double    thetab  = displayDrBarPars().thetab;
-  double mbMZ = dataSet.displayMass(mBottom),  
+  double mbMZ = dataSet.displayMass(legacy::mBottom),  
      alphasMZ = sqr(displayGaugeCoupling(3)) / (4.0 * PI);
   double p = mbMZ;
   double mbMSSM  = displayDrBarPars().mb;
@@ -2753,7 +2753,7 @@ double Softsusy<SoftPars>::calcRunMbSquarkGluino() const {
 
 template<class SoftPars>
 double Softsusy<SoftPars>::calcRunMbChargino() const {
-  double mbMZ = dataSet.displayMass(mBottom);
+  double mbMZ = dataSet.displayMass(legacy::mBottom);
   double p = mbMZ;
   double q = displayMu();
   double   mbMSSM  = displayDrBarPars().mb;
@@ -2814,7 +2814,7 @@ double Softsusy<SoftPars>::calcRunMbChargino() const {
 
 template<class SoftPars>
 double Softsusy<SoftPars>::calcRunMbHiggs() const {
-  double mbMZ = dataSet.displayMass(mBottom);
+  double mbMZ = dataSet.displayMass(legacy::mBottom);
   double p = mbMZ;
   double q = displayMu();
   double deltaHiggs = 0.;
@@ -2854,7 +2854,7 @@ double Softsusy<SoftPars>::calcRunMbHiggs() const {
 
 template<class SoftPars>
 double Softsusy<SoftPars>::calcRunMbNeutralinos() const {
-  double mbMZ = dataSet.displayMass(mBottom);
+  double mbMZ = dataSet.displayMass(legacy::mBottom);
   double p = mbMZ;
   double q = displayMu();
   double thetab  = displayDrBarPars().thetab;
@@ -2927,7 +2927,7 @@ double Softsusy<SoftPars>::calcRunningMb() const {
     throw ii.str();
   }
   
-  double mbMZ = dataSet.displayMass(mBottom);
+  double mbMZ = dataSet.displayMass(legacy::mBottom);
   /// First convert mbMZ into DRbar value from hep-ph/9703293,0207126,9701308
   /// (SM gauge boson contributions)
   mbMZ = mbMZ * calcRunMbDrBarConv(); 
@@ -3100,7 +3100,7 @@ double Softsusy<SoftPars>::calcRunMtauNeutralinos(double mTauSMMZ) const {
 template<class SoftPars>
 double Softsusy<SoftPars>::calcRunningMtau() const {
   /// MSbar value
-  double mTauSMMZ = displayDataSet().displayMass(mTau);
+  double mTauSMMZ = displayDataSet().displayMass(legacy::mTau);
   // double mTauPole = MTAU;
   /// conversion to DRbar
   mTauSMMZ = mTauSMMZ * calcRunMtauDrBarConv();
@@ -6915,28 +6915,28 @@ MssmSusy Softsusy<SoftPars>::guessAtSusyMt(double tanb, const QedQcd_legacy & on
   
   /// Yukawa couplings -- at roughly tree level
   double vev = 246.22;
-  double ht = (leAtMt.displayMass(mTop) - 30.0) * root2 
+  double ht = (leAtMt.displayMass(legacy::mTop) - 30.0) * root2 
     / (vev * sin(beta));
-  double hb =  ht * tanb * leAtMt.displayMass(mBottom) /
-    (leAtMt.displayMass(mTop) - 30.0);
-  double htau =  hb * leAtMt.displayMass(mTau) /
-    leAtMt.displayMass(mBottom); 
+  double hb =  ht * tanb * leAtMt.displayMass(legacy::mBottom) /
+    (leAtMt.displayMass(legacy::mTop) - 30.0);
+  double htau =  hb * leAtMt.displayMass(legacy::mTau) /
+    leAtMt.displayMass(legacy::mBottom); 
   t.setYukawaElement(YU, 3, 3, ht);
   t.setYukawaElement(YD, 3, 3, hb);
   t.setYukawaElement(YE, 3, 3, htau);
 
-  double hc = ht * leAtMt.displayMass(mCharm) / 
-    (leAtMt.displayMass(mTop) - 30.0);
-  double hs = hb * leAtMt.displayMass(mStrange) / 
-    leAtMt.displayMass(mBottom);
-  double hmu = htau * leAtMt.displayMass(mMuon) / 
-    leAtMt.displayMass(mTau);
-  double hu = ht * leAtMt.displayMass(mUp) / 
-    (leAtMt.displayMass(mTop) - 30.0);
-  double hd = hb * leAtMt.displayMass(mDown) / 
-    leAtMt.displayMass(mBottom);
-  double he = htau * leAtMt.displayMass(mElectron) / 
-    leAtMt.displayMass(mTau);
+  double hc = ht * leAtMt.displayMass(legacy::mCharm) / 
+    (leAtMt.displayMass(legacy::mTop) - 30.0);
+  double hs = hb * leAtMt.displayMass(legacy::mStrange) / 
+    leAtMt.displayMass(legacy::mBottom);
+  double hmu = htau * leAtMt.displayMass(legacy::mMuon) / 
+    leAtMt.displayMass(legacy::mTau);
+  double hu = ht * leAtMt.displayMass(legacy::mUp) / 
+    (leAtMt.displayMass(legacy::mTop) - 30.0);
+  double hd = hb * leAtMt.displayMass(legacy::mDown) / 
+    leAtMt.displayMass(legacy::mBottom);
+  double he = htau * leAtMt.displayMass(legacy::mElectron) / 
+    leAtMt.displayMass(legacy::mTau);
   t.setYukawaElement(YU, 2, 2, hc);
   t.setYukawaElement(YD, 2, 2, hs);
   t.setYukawaElement(YE, 2, 2, hmu);
@@ -7157,11 +7157,11 @@ void Softsusy<SoftPars>::sparticleThresholdCorrections(double tb) {
   
   if (!setTbAtMX) setTanb(tb);
   calcDrBarPars(); /// for the up-coming loops
-  double alphaMsbar = dataSet.displayAlpha(ALPHA);
+  double alphaMsbar = dataSet.displayAlpha(legacy::ALPHA);
   double alphaDrbar = qedSusythresh(alphaMsbar, displayMu());
 
   double alphasMZDRbar =
-    qcdSusythresh(displayDataSet().displayAlpha(ALPHAS), displayMu());
+    qcdSusythresh(displayDataSet().displayAlpha(legacy::ALPHAS), displayMu());
   
   /// Do gauge couplings
   double outrho = 1.0, outsin = 0.48, tol = TOLERANCE * 1.0e-8; 
@@ -7842,12 +7842,12 @@ double Softsusy<SoftPars>::piZZTfermions(double p, double q, bool usePoleMt) con
 
   double    mb   =  displayDrBarPars().mb;
   double    mtau =  displayDrBarPars().mtau;
-  double    ms   =  displayDataSet().displayMass(mStrange) ;
-  double    mc   =  displayDataSet().displayMass(mCharm) ;
-  double    mmu  =  displayDataSet().displayMass(mMuon) ;
-  double    mE  =   displayDataSet().displayMass(mElectron) ;
-  double    mD  =   displayDataSet().displayMass(mDown) ;
-  double    mU  =   displayDataSet().displayMass(mUp);
+  double    ms   =  displayDataSet().displayMass(legacy::mStrange) ;
+  double    mc   =  displayDataSet().displayMass(legacy::mCharm) ;
+  double    mmu  =  displayDataSet().displayMass(legacy::mMuon) ;
+  double    mE  =   displayDataSet().displayMass(legacy::mElectron) ;
+  double    mD  =   displayDataSet().displayMass(legacy::mDown) ;
+  double    mU  =   displayDataSet().displayMass(legacy::mUp);
 
   double quarks = 0.0;
 
@@ -8007,12 +8007,12 @@ double Softsusy<SoftPars>::piWWTfermions(double p, double q, bool usePoleMt) con
   double    mtau =  displayDrBarPars().mtau;
  
   /// fermions: these are valid at MZ
-  double    ms   =  displayDataSet().displayMass(mStrange) ;
-  double    mc   =  displayDataSet().displayMass(mCharm) ;
-  double    mmu  =  displayDataSet().displayMass(mMuon) ;
-  double    mE  =  displayDataSet().displayMass(mElectron) ;
-  double    mD  =  displayDataSet().displayMass(mDown) ;
-  double    mU  =  displayDataSet().displayMass(mUp);
+  double    ms   =  displayDataSet().displayMass(legacy::mStrange) ;
+  double    mc   =  displayDataSet().displayMass(legacy::mCharm) ;
+  double    mmu  =  displayDataSet().displayMass(legacy::mMuon) ;
+  double    mE  =  displayDataSet().displayMass(legacy::mElectron) ;
+  double    mD  =  displayDataSet().displayMass(legacy::mDown) ;
+  double    mU  =  displayDataSet().displayMass(legacy::mUp);
   
  double fermions =
     1.5 * (hfn(p, mU, mD, q) + hfn(p, mc, ms, q) + hfn(p, mtop, mb, q)) + 0.5
@@ -9307,8 +9307,8 @@ double Softsusy<SoftPars>::piAA(double p, double q) const {/// checked 30.07.03
   double    mt     =  tree.mt;
   double    mb    =  tree.mb;
   double    mtau =    tree.mtau;
-  double    mmu =  displayDataSet().displayMass(mMuon);
-  double    mE =  displayDataSet().displayMass(mElectron);
+  double    mmu =  displayDataSet().displayMass(legacy::mMuon);
+  double    mE =  displayDataSet().displayMass(legacy::mElectron);
   double    mz = displayMzRun();
   double    thetaWDRbar = asin(calcSinthdrbar());
   double    cw2DRbar    = sqr(cos(thetaWDRbar));
@@ -9617,7 +9617,7 @@ double Softsusy<SoftPars>::piAA(double p, double q) const {/// checked 30.07.03
 template<class SoftPars>
 double Softsusy<SoftPars>::piZGT(double p, double q) const { ///! checked 7/6/6
   drBarPars tree(displayDrBarPars());
-  double alphaMsbar = dataSet.displayAlpha(ALPHA);
+  double alphaMsbar = dataSet.displayAlpha(legacy::ALPHA);
   double alphaDrbar = qedSusythresh(alphaMsbar, displayMu());
 
   double    thetaWDRbar = asin(calcSinthdrbar());
@@ -9627,12 +9627,12 @@ double Softsusy<SoftPars>::piZGT(double p, double q) const { ///! checked 7/6/6
   double    mtop = displayDataSet().displayPoleMt();
   double    mb   =  tree.mb;
   double    mtau =  tree.mtau;
-  double    ms   =  displayDataSet().displayMass(mStrange) ;
-  double    mc   =  displayDataSet().displayMass(mCharm) ;
-  double    mmu  =  displayDataSet().displayMass(mMuon) ;
-  double    mE  =  displayDataSet().displayMass(mElectron) ;
-  double    mD  =  displayDataSet().displayMass(mDown) ;
-  double    mU  =  displayDataSet().displayMass(mUp);
+  double    ms   =  displayDataSet().displayMass(legacy::mStrange) ;
+  double    mc   =  displayDataSet().displayMass(legacy::mCharm) ;
+  double    mmu  =  displayDataSet().displayMass(legacy::mMuon) ;
+  double    mE  =  displayDataSet().displayMass(legacy::mElectron) ;
+  double    mD  =  displayDataSet().displayMass(legacy::mDown) ;
+  double    mU  =  displayDataSet().displayMass(legacy::mUp);
   double    thetat = tree.thetat ;
   double    thetab = tree.thetab;
   double    thetatau= tree.thetatau ;
@@ -9757,7 +9757,7 @@ double Softsusy<SoftPars>::sinSqThetaEff() {
  
   calcDrBarPars();
 
-  double alphaMsbar = dataSet.displayAlpha(ALPHA);
+  double alphaMsbar = dataSet.displayAlpha(legacy::ALPHA);
   double alphaDrbar = qedSusythresh(alphaMsbar, displayMu());
   double sinthDrbar = calcSinthdrbar();
   double costhDrbar = sqrt(1.0 - sqr(sinthDrbar));
@@ -10812,10 +10812,10 @@ template<class SoftPars>
 void Softsusy<SoftPars>::sminputsSLHA(std::ostream & out) {
   QedQcd_legacy d(displayDataSet());
   out << "Block SMINPUTS             # Standard Model inputs\n";
-  out << "     1   "; printRow(out, 1.0 / d.displayAlpha(ALPHA)); 
+  out << "     1   "; printRow(out, 1.0 / d.displayAlpha(legacy::ALPHA)); 
   out << "   # alpha_em^(-1)(MZ) SM MSbar\n";
   out << "     2   "; printRow(out, GMU); out << "   # G_Fermi\n";
-  out << "     3   "; printRow(out, d.displayAlpha(ALPHAS)); 
+  out << "     3   "; printRow(out, d.displayAlpha(legacy::ALPHAS)); 
   out << "   # alpha_s(MZ)MSbar\n";
   out << "     4   "; printRow(out, displayMz()); out << "   # MZ(pole)\n";
   out << "     5   "; printRow(out, d.displayMbMb()); out << "   # mb(mb)\n";
@@ -11180,7 +11180,7 @@ double Softsusy<SoftPars>::smPredictionMW() const {
   /// second from hep-ph/0104304
   double deltaAlpha = 0.0314977 + deltaAlphaHad;
   double dAlpha = deltaAlpha / 0.05907 - 1.;
-  double dAlphas = displayDataSet().displayAlpha(ALPHAS) / 0.119 - 1.;
+  double dAlphas = displayDataSet().displayAlpha(legacy::ALPHAS) / 0.119 - 1.;
 
   double mw0 = 80.38;
   double c1 = 0.05253, c2 = 0.010345, c3 = 0.001021, c4 = -0.000070, 
@@ -11197,11 +11197,11 @@ double Softsusy<SoftPars>::smPredictionMW() const {
 template<class SoftPars>
 double Softsusy<SoftPars>::twoLoopGm2(double amu1Loop) const {
 
-  double alpha = displayDataSet().displayAlpha(ALPHA);
-  double mMu   = displayDataSet().displayMass(mMuon);
+  double alpha = displayDataSet().displayAlpha(legacy::ALPHA);
+  double mMu   = displayDataSet().displayMass(legacy::mMuon);
   double mSusy = displayMsusy();
   double mu    = displaySusyMu();
-  double mtau  = displayDataSet().displayMass(mTau);
+  double mtau  = displayDataSet().displayMass(legacy::mTau);
   double cosb  = cos(atan(displayTanb()));
   double sinb  = sin(atan(displayTanb()));
   double sinA  = sin(displayDrBarPars().thetaH);
@@ -11215,8 +11215,8 @@ double Softsusy<SoftPars>::twoLoopGm2(double amu1Loop) const {
   double sinTop = sin(displayDrBarPars().thetat);
   double cosBot = cos(displayDrBarPars().thetab);
   double sinBot = sin(displayDrBarPars().thetab);
-  double mbot   = displayDataSet().displayMass(mBottom);
-  double mtop   = displayDataSet().displayMass(mTop);
+  double mbot   = displayDataSet().displayMass(legacy::mBottom);
+  double mtop   = displayDataSet().displayMass(legacy::mTop);
   double tanb   = displayTanb();
   double mA0    = displayDrBarPars().mA0(1);
   double mh0    = displayDrBarPars().mh0(1);

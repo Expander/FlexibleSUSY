@@ -14,7 +14,22 @@
 
 namespace softsusy {
 
+using namespace legacy;
+
 namespace {
+
+const std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> qedqcd_input_parmeter_names = {
+   "alpha_em_MSbar_at_MZ",
+   "alpha_s_MSbar_at_MZ",
+   "GFermi",
+   "MZ_pole", "MW_pole",
+   "Mv1_pole", "Mv2_pole", "Mv3_pole",
+   "Me_pole", "Mm_pole", "Mtau_pole",
+   "mu_2GeV", "ms_2GeV", "Mt_pole",
+   "md_2GeV", "mc_mc", "mb_mb",
+   "CKM_theta_12", "CKM_theta_13", "CKM_theta_23", "CKM_delta",
+   "PMNS_theta_12", "PMNS_theta_13", "PMNS_theta_23", "PMNS_delta", "PMNS_alpha_1", "PMNS_alpha_2"
+};
 
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
 // it's a very good approximation at these scales, better than 10^-3 accuracy
@@ -115,19 +130,19 @@ QedQcd_legacy::QedQcd_legacy()
   setThresholds(1);
 }
 
-QedQcd_legacy::QedQcd_legacy(const QedQcd& other)
-  : a(flexiblesusy::ToDoubleVector(other.displayAlphas()))
-  , mf(flexiblesusy::ToDoubleVector(other.displayMass()))
-  , input(other.displayInput())
-  , mbPole(other.displayPoleMb())
-  , ckm(other.displayCKM())
-  , pmns(other.displayPMNS())
-{
-   setPars(other.get_number_of_parameters());
-   setMu(other.get_scale());
-   setLoops(other.get_loops());
-   setThresholds(other.get_thresholds());
-}
+// QedQcd_legacy::QedQcd_legacy(const QedQcd& other)
+//   : a(flexiblesusy::ToDoubleVector(other.displayAlphas()))
+//   , mf(flexiblesusy::ToDoubleVector(other.displayMass()))
+//   , input(other.displayInput())
+//   , mbPole(other.displayPoleMb())
+//   , ckm(other.displayCKM())
+//   , pmns(other.displayPMNS())
+// {
+//    setPars(other.get_number_of_parameters());
+//    setMu(other.get_scale());
+//    setLoops(other.get_loops());
+//    setThresholds(other.get_thresholds());
+// }
 
 const QedQcd_legacy & QedQcd_legacy::operator=(const QedQcd_legacy & m) {
   if (this == &m) return *this;
@@ -684,20 +699,20 @@ void readIn(QedQcd_legacy &mset, const char fname[80]) {
 }
 
 // We must first define a down-quark mass matrix: 3 x 3. QedQcd should be at MZ
-void massFermions(const QedQcd & r, DoubleMatrix & mDon,
-                           DoubleMatrix & mUpq, DoubleMatrix & mEle) {
+// void massFermions(const QedQcd & r, DoubleMatrix & mDon,
+//                            DoubleMatrix & mUpq, DoubleMatrix & mEle) {
 
-  mDon(3, 3) = r.displayMass(mBottom);
-  mUpq(3, 3) = r.displayMass(mTop);
-  mEle(3, 3) = r.displayMass(mTau);
+//   mDon(3, 3) = r.displayMass(mBottom);
+//   mUpq(3, 3) = r.displayMass(mTop);
+//   mEle(3, 3) = r.displayMass(mTau);
 
-  mDon(1, 1) = r.displayMass(mDown);
-  mDon(2, 2) = r.displayMass(mStrange);
-  mUpq(1, 1) = r.displayMass(mUp);
-  mUpq(2, 2) = r.displayMass(mCharm);
-  mEle(1, 1) = r.displayMass(mElectron);
-  mEle(2, 2) = r.displayMass(mMuon);
-}
+//   mDon(1, 1) = r.displayMass(mDown);
+//   mDon(2, 2) = r.displayMass(mStrange);
+//   mUpq(1, 1) = r.displayMass(mUp);
+//   mUpq(2, 2) = r.displayMass(mCharm);
+//   mEle(1, 1) = r.displayMass(mElectron);
+//   mEle(2, 2) = r.displayMass(mMuon);
+// }
 
 // We must first define a down-quark mass matrix: 3 x 3. QedQcd_legacy should be at MZ
 void massFermions(const QedQcd_legacy & r, DoubleMatrix & mDon,
@@ -727,7 +742,7 @@ Eigen::ArrayXd QedQcd_legacy::display_input() const
 
 std::array<std::string, NUMBER_OF_LOW_ENERGY_INPUT_PARAMETERS> QedQcd_legacy::display_input_parameter_names()
 {
-   return QedQcd_input_parmeter_names;
+   return qedqcd_input_parmeter_names;
 }
 
 bool operator ==(const QedQcd_legacy& a, const QedQcd_legacy& b)

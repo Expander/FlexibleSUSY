@@ -134,9 +134,9 @@ public:
   void setFlavourPhys(const flavourPhysical & s) { fv = s; };
   /// Sets the initial data from a un-run QedQcd_legacy object
   inline void setInitialData(const QedQcd_legacy & r) {
-    md2GeV = r.displayMass(mDown);     mu2GeV = r.displayMass(mUp);
-    ms2GeV = r.displayMass(mStrange);  mcMc   = r.displayMass(mCharm);
-    mePole = r.displayMass(mElectron); mmuPole = r.displayMass(mMuon);
+    md2GeV = r.displayMass(legacy::mDown);     mu2GeV = r.displayMass(legacy::mUp);
+    ms2GeV = r.displayMass(legacy::mStrange);  mcMc   = r.displayMass(legacy::mCharm);
+    mePole = r.displayMass(legacy::mElectron); mmuPole = r.displayMass(legacy::mMuon);
   }
 
   /// constructs a CKM matrix out of the magnitude of angles stored within:

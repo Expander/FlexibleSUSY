@@ -19,8 +19,9 @@
 #include "diagonalization.hpp"
 #include "error.hpp"
 #include "wrappers.hpp"
-#include "config.h"
 #include <sstream>
+
+#define ENABLE_DEBUG
 
 namespace flexiblesusy {
 
