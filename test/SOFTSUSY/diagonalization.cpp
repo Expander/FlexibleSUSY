@@ -21,7 +21,9 @@
 #include "wrappers.hpp"
 #include <sstream>
 
+#ifndef ENABLE_DEBUG
 #define ENABLE_DEBUG
+#endif
 
 namespace flexiblesusy {
 
