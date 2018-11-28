@@ -106,6 +106,8 @@ IsIndex::usage="returns True if given symbol is an index";
 IsPhase::usage="returns True if given symbol is a phase";
 IsExtraParameter::usage="return True if parameter is an auxiliary parameter";
 IsGaugeCoupling::usage="returns True if parameter is a gauge coupling.";
+IsYukawaCoupling::usage="returns True if parameter is a Yukawa coupling.";
+IsVEV::usage="returns True if parameter is a VEV.";
 
 GetIndices::usage="returns list of indices from a given parameter";
 
@@ -1684,7 +1686,7 @@ StripSARAHIndicesRules[numberOfIndices_] :=
     StripIndicesRules[sarahIndices, numberOfIndices];
 
 ExtractParametersFromSARAHBetaLists[beta_List] :=
-    StripIndices[#[[1]]]& /@ beta;
+    StripIndices[First[#]]& /@ beta;
 
 ExtractParametersFromSARAHBetaLists[_] := {};
 
@@ -1728,7 +1730,16 @@ GetModelParameterMassDimension[par_] :=
           Quit[1];
          ];
 
-IsGaugeCoupling[par_] := MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaGauge], par];
+IsGaugeCoupling[par_] :=
+    MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaGauge], par];
+
+IsYukawaCoupling[par_] :=
+    MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaYijk], par];
+
+IsVEV[par_] := (
+    Print["   checking par = ", par];
+    MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaVEV], par]
+    );
 
 AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
     Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],

@@ -162,7 +162,6 @@ IsGhost::usage="";
 IsGoldstone::usage="";
 IsSMGoldstone::usage="";
 IsAuxiliary::usage="";
-IsVEV::usage="";
 IsMajoranaFermion::usage="";
 IsDiracFermion::usage="";
 IsComplexScalar::usage="";
@@ -351,8 +350,6 @@ ContainsGoldstone[sym_[__]] := MemberQ[GetGoldstoneBosons[] /. a_[{idx__}] :> a,
 IsAuxiliary[Susyno`LieGroups`conj[sym_]] := IsAuxiliary[sym];
 IsAuxiliary[SARAH`bar[sym_]] := IsAuxiliary[sym];
 IsAuxiliary[sym_Symbol] := IsOfType[sym, A];
-
-IsVEV[sym_Symbol] := IsOfType[sym, VEV];
 
 IsMajoranaFermion[Susyno`LieGroups`conj[sym_]] := IsMajoranaFermion[sym];
 IsMajoranaFermion[SARAH`bar[sym_]] := IsMajoranaFermion[sym];
