@@ -27,7 +27,6 @@
 #include <boost/format.hpp>
 #include <boost/function.hpp>
 #include "slhaea.h"
-#include "config.h"
 #include "logger.hpp"
 #include "error.hpp"
 #include "wrappers.hpp"
@@ -524,13 +523,6 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_slha(Eigen::Array<double, N, 
       if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
          z.row(i) *= std::complex<double>(0.0,1.0);
          m(i) *= -1;
-#ifdef ENABLE_DEBUG
-         if (!is_zero(z.row(i).imag().cwiseAbs().maxCoeff())) {
-            WARNING("Row " << i << " of the following fermion mixing matrix"
-                    " contains entries which have non-zero real and imaginary"
-                    " parts:\nZ = " << z);
-         }
-#endif
       }
    }
 }
