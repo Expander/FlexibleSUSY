@@ -651,10 +651,11 @@ BOOST_AUTO_TEST_CASE(test_MatrixProjector)
 
 BOOST_AUTO_TEST_CASE(test_Print_functions)
 {
+   PrintVERBOSE("A verbose message");
    PrintDEBUG("A debug message");
-   PrintERROR("An error message");
    PrintINFO("An info message");
    PrintWARNING("A warning message");
+   PrintERROR("An error message");
 
    BOOST_CHECK_THROW(PrintFATAL("A fatal message"), flexiblesusy::FatalError);
 }
