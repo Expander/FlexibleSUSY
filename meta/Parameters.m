@@ -1736,10 +1736,8 @@ IsGaugeCoupling[par_] :=
 IsYukawaCoupling[par_] :=
     MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaYijk], par];
 
-IsVEV[par_] := (
-    Print["   checking par = ", par];
-    MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaVEV], par]
-    );
+IsVEV[par_] :=
+    MemberQ[ExtractParametersFromSARAHBetaLists[SARAH`BetaVEV], par];
 
 AreLinearDependent[{eq1_, eq2_}, parameters_List] :=
     Module[{frac = Simplify[eq1/eq2 /. FlexibleSUSY`tadpole[_] -> 0],
