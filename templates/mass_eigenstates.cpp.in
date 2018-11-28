@@ -42,8 +42,11 @@
 #include "error.hpp"
 #include "pv.hpp"
 #include "raii.hpp"
-#include "thread_pool.hpp"
 #include "functors.hpp"
+
+#ifdef ENABLE_THREADS
+#include "thread_pool.hpp"
+#endif
 
 @ewsbSolverHeaders@
 @twoLoopHiggsHeaders@
