@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <vector>
 
 namespace flexiblesusy {
 namespace {
@@ -35,7 +36,7 @@ void vector_or(std::vector<T>& v1, const std::vector<T>& v2)
       return;
    }
 
-   for (int i = 0; i < v2.size(); i++)
+   for (typename std::vector<T>::size_type i = 0; i < v2.size(); i++)
       if (v2[i]) v1[i] = v2[i];
 }
 
