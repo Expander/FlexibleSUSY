@@ -32,7 +32,6 @@
 #include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
-#include "config.h"
 #include "physical_input.hpp"
 
 #include <array>
