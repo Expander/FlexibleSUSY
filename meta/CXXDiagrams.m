@@ -78,10 +78,17 @@ CXXBoolValue[True] = "true"
 CXXBoolValue[False] = "false"
 
 (* TODO: Better name than LorentzConjugate *)
-LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
-                                        "bar",
-                                        "conj"]
-LorentzConjugate[field_] := SARAH`AntiField[field]
+(* FIXME: We decide this on our own which is bad, but 
+	SARAH`AntiField[] only works after one has called some
+	SARAH routines like in LoadVerticesIfNecessary[].
+	But CXXDiagrams should be stateless, hence we avoid relying
+	SARAH here. *)
+LorentzConjugateOperation[field_] :=
+	If[TreeMasses`IsFermion[field] || TreeMasses`IsGhost[field],
+		"bar", "conj"]
+LorentzConjugate[field_] :=
+	If[TreeMasses`IsFermion[field] || TreeMasses`IsGhost[field],
+		SARAH`bar[field], Susyno`LieGroups`conj[field]]
 
 RemoveLorentzConjugation[p_] := p
 RemoveLorentzConjugation[SARAH`bar[p_]] := p
@@ -157,8 +164,8 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
           unresolvedFieldCouplings,resolvedFields,resolvedFieldCouplings,
           diagrams},
    internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
-   externalRules = Flatten @ ({{_,#,_} :> SARAH`AntiField[# /. externalFields],
-                               {#,_,_} :> SARAH`AntiField[# /. externalFields]} & /@ externalVertices);
+   externalRules = Flatten @ ({{_,#,_} :> LorentzConjugate[# /. externalFields],
+                               {#,_,_} :> LorentzConjugate[# /. externalFields]} & /@ externalVertices);
 
    internalFieldCouplings = (Flatten[(Flatten @ Position[adjacencyMatrix[[#]],Except[0],{1},Heads -> False]
                                 /. {i_Integer :> Table[{#,i,k},{k,adjacencyMatrix[[#,i]]}]}),1] &
@@ -168,9 +175,9 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
    unspecifiedEdgesEqual = Cases[internalFieldCouplings,{i_,i_,_},{2}];
 
    insertFieldRulesLess = MapIndexed[#1 -> SARAH`FieldToInsert[#2[[1]]] &,unspecifiedEdgesLess];
-   insertFieldRulesGreater = (insertFieldRulesLess /. {Rule[{i_,j_,k_},field_] :> Rule[{j,i,k},SARAH`AntiField[field]]});
+   insertFieldRulesGreater = (insertFieldRulesLess /. {Rule[{i_,j_,k_},field_] :> Rule[{j,i,k},LorentzConjugate[field]]});
    insertFieldRulesEqual = MapIndexed[#1 -> {SARAH`FieldToInsert[#2[[1]]+Length[insertFieldRulesLess]],
-                                            SARAH`AntiField[SARAH`FieldToInsert[#2[[1]]+Length[insertFieldRulesLess]]]} &,
+                                            LorentzConjugate[SARAH`FieldToInsert[#2[[1]]+Length[insertFieldRulesLess]]]} &,
                                       unspecifiedEdgesEqual];
    fieldsToInsert = Table[SARAH`FieldToInsert[k],
              {k,Length[insertFieldRulesLess] + Length[insertFieldRulesEqual]}];
