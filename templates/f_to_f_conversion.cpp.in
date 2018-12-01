@@ -96,10 +96,12 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
       const softsusy::QedQcd& qedqcd) {
 
    @ModelName@_mass_eigenstates model_ = model;
-   EvaluationContext context{ model_ };
+   EvaluationContext context {model_};
 
-   const auto uVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>(model);
-   const auto dVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename V::lorentz_conjugate>(model);
+   const auto uVectorCurrent = 
+      vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>(model);
+   const auto dVectorCurrent = 
+      vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename V::lorentz_conjugate>(model);
 
    const auto mVsqr = pow(context.mass<V>({}), 2);
    const auto GF {qedqcd.displayFermiConstant()};

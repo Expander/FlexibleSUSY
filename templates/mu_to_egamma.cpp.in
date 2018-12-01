@@ -58,7 +58,7 @@ inline double sm_width(int generationIndex1,  int generationIndex2, const @Model
    const auto GF {1.1667e-5};
    const double Alpha = Sqr(Fe::electric_charge * unit_charge(context))/(4*Pi);
 
-   return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio ) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
+   return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
 }
 */
 @MuEGamma_InterfaceDefinitions@

@@ -101,8 +101,11 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "// i q^2 A1 * (- i gmunu/q^2) * (-i Qq e) = GF/sqrt2 * gpV\n" <>
                 "// VP\n" <>
 
-                "const auto uEMVectorCurrent = vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename VP::lorentz_conjugate>(model);\n" <>
-                "const auto dEMVectorCurrent = vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename VP::lorentz_conjugate>(model);\n\n" <>
+                "const auto uEMVectorCurrent =\n" <>
+                   IndentText["vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename VP::lorentz_conjugate>(model);\n"] <>
+                "const auto dEMVectorCurrent =\n" <>
+                   IndentText["vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename VP::lorentz_conjugate>(model);\n"] <>
+                      "\n" <>
 
                 "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_penguin[0];\n" <>
                 "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_penguin[1];\n" <>

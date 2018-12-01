@@ -4199,11 +4199,13 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
 
            Print["Creating FToFMasslessV class ..."];
-           (* collect all the {fermion,fermion, massles vector} triplets needed for the requested observables *)
+           (* collect all the {fermion, fermion, massles vector} triplets needed for the requested observables *)
            fieldsForFToFMasslessVDecay =
                DeleteDuplicates @ 
                   Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                     FlexibleSUSYObservable`MuEGamma[pIn_[_Integer]|pIn_?AtomQ, pOut_[_Integer]|pOut_?AtomQ, spectator_] :> {pIn, pOut, spectator}
+                     FlexibleSUSYObservable`MuEGamma[
+                        pIn_[_Integer]|pIn_?AtomQ, pOut_[_Integer]|pOut_?AtomQ, spectator_
+                     ] :> {pIn, pOut, spectator}
                   ];
 
            mu2egammaVertices =
@@ -4216,7 +4218,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["Creating FToFConversionInNucleus class ..."];
            fieldsForFToFConversion =
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
-                FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[_Integer], pOut_[_Integer], nucleus_] :> {pIn, pOut, nucleus}
+                FlexibleSUSYObservable`FToFConversionInNucleus[
+                   pIn_[_Integer], pOut_[_Integer], nucleus_
+                ] :> {pIn, pOut, nucleus}
               ];
 
             If[fieldsForFToFConversion =!= {},

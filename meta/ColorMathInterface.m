@@ -78,7 +78,7 @@ ColorStructureFreeQ[el_] :=
          Superscript[ColorMath`CMd, List[__]] |
          Superscript[ColorMath`CMo, List[__]] |
          Subscript[Superscript[ColorMath`CM\[Delta], _], _] |
-         Superscript[ColorMath`CM\[CapitalDelta],List[_, _]]
+         Superscript[ColorMath`CM\[CapitalDelta], List[_, _]]
    ];
 
 DropColorles::notes = "Drop colorles vertices from the list of Vertex objets  ";

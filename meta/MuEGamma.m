@@ -105,8 +105,13 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                      "default: exit;\n"
                   ] <>
                   "}\n" <>
-                  "const double width = pow(leptonInMassOS,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
-                  "return width;\n"
+                  "\n" <>
+                  "// eq. 51 of arXiv:hep-ph/9510309 (note that we include 'e' in the definition of form_factor)\n" <>
+                  "const double partial_width = pow(leptonInMassOS,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
+
+                  (* TODO: return branching ration, not width *)
+                  "const double total_width {1.};\n" <>
+                  "return partial_width/total_width;\n"
                ], {SARAH`Fd, SARAH`VP},
                (* write routine for b -> s gamma *)
                IndentText[

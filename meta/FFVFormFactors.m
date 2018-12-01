@@ -133,6 +133,7 @@ CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
                      StringJoin @ Riffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, F, S}, ","]  <>
                      ">::value(indices1, indices2, context);\n";
 
+(* create a list of insertion that will get passed to the FFVCreateInterface *)
 f[inFermion_, outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
 
@@ -201,11 +202,9 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
          {CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}
       ];
       sortColorFacRep = SortColorDeltas @@ p;
-      Print[p];
 
       If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
          If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Print["Non zero SSV and zero FFV"];
             Return[{
                {StripSU3Generators[p[[1]], p[[2]], p[[3]],
                   ColorMath`CSimplify[
@@ -218,7 +217,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             ]
          ];
          If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
-            Print["Non zero FFV and non zero SSV"];
             Return[{
                   {0,
                      StripSU3Generators[p[[1]], p[[2]], p[[3]],
@@ -233,15 +231,6 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
             ]
          ];
          If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Print["Non zero FFV and non zero SSV"];
-            Print[sortColorFacRep];
-            Print[
-               {
-                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@
-                     {ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep] (ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep)],
-                        ColorMath`CSimplify[CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep] (ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep)]},
-                  {v1, v2, v3, v4}}
-            ];
             Return[
                {
                   StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
