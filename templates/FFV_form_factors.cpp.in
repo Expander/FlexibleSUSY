@@ -23,20 +23,13 @@
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
  */
 
-#include <valarray>
 #include <complex>
-#include <iostream>
+#include <iostream> // TODO: remove this include
+#include <valarray>
 
-#include "@ModelName@_mu_to_egamma.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
-
-#include "cxx_qft/@ModelName@_qft.hpp"
 #include "concatenate.hpp"
-
-#define INPUTPARAMETER(p) context.model.get_input().p
-#define MODELPARAMETER(p) context.model.get_##p()
-#define DERIVEDPARAMETER(p) context.model.p()
-#define PHASE(p) context.model.get_##p()
+#include "cxx_qft/@ModelName@_qft.hpp"
 
 using namespace flexiblesusy;
 using namespace cxx_qft;
@@ -62,12 +55,13 @@ static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template<class Fj, class Fi, class Spectator, class ExchangeParticle, class Emitter>
+template <class Fj, class Fi, class Spectator, class ExchangeParticle,
+          class Emitter>
 struct FFVEmitterS {
-   static std::valarray<std::complex<double>> value(
-         const typename field_indices<Fj>::type& indices_in,
+   static std::valarray<std::complex<double>>
+   value(const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+         EvaluationContext& context);
 };
 
 /**
@@ -86,20 +80,21 @@ struct FFVEmitterS {
 * \a Args.
 */
 
-template<class FermionIn, class Fi, class Spectator, class Emitter, class ExchangeParticle>
+template <class FermionIn, class Fi, class Spectator, class Emitter,
+          class ExchangeParticle>
 struct FFVEmitterF {
-   static std::valarray<std::complex<double>> value(
-         const typename field_indices<FermionIn>::type& indices_in,
+   static std::valarray<std::complex<double>>
+   value(const typename field_indices<FermionIn>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+         EvaluationContext& context);
 };
 
-template<class Fj, class Fi, class V, class F, class S>
+template <class Fj, class Fi, class V, class F, class S>
 struct FFV {
-static std::valarray<std::complex<double>> value(
-   const typename field_indices<Fj>::type& indices_in, 
-   const typename field_indices<Fi>::type& indices_out, 
-   EvaluationContext& context);
+   static std::valarray<std::complex<double>>
+   value(const typename field_indices<Fj>::type& indices_in,
+         const typename field_indices<Fi>::type& indices_out,
+         EvaluationContext& context);
 };
 } // anonymous namespace
 
@@ -135,91 +130,89 @@ namespace {
 * as specified in arXiv:0808.1819
 */
 
-// function from eq. 15 of hep-ph/9510309 
+// function from eq. 15 of hep-ph/9510309
 double OneLoopFunctionA(double r)
 {
-   if (is_zero(1.0-r)) {
+   if (is_zero(1.0 - r)) {
       return 1.5;
    } else if (is_zero(r)) {
       return 2.0;
-   }
-   else {
-      return (2.0 - 9.0*r + 18.0*r*r - 11.0*r*r*r + 6.0*r*r*r*std::log(r))/pow(1.0-r,4);
+   } else {
+      return (2.0 - 9.0 * r + 18.0 * r * r - 11.0 * r * r * r +
+              6.0 * r * r * r * std::log(r)) /
+             pow(1.0 - r, 4);
    }
 }
 
 double OneLoopFunctionB(double r)
 {
-   if (is_zero(1.0-r)) {
-      return 1.0/12.0;
+   if (is_zero(1.0 - r)) {
+      return 1.0 / 12.0;
    } else if (is_zero(r)) {
-      return 1.0/6.0;
-   }
-   else {
-      return (1.0 - 6.0*r + 3.0*r*r + 2.0*r*r*r - 6.0*r*r*std::log(r))/6.0/pow(1.0-r,4);
+      return 1.0 / 6.0;
+   } else {
+      return (1.0 - 6.0 * r + 3.0 * r * r + 2.0 * r * r * r -
+              6.0 * r * r * std::log(r)) /
+             6.0 / pow(1.0 - r, 4);
    }
 }
 
 double OneLoopFunctionC(double r)
 {
-   if (is_zero(1.0-r)) {
-      return 1.0/3.0;
+   if (is_zero(1.0 - r)) {
+      return 1.0 / 3.0;
    } else if (is_zero(r)) {
       return 1.0;
-   }
-   else {
-      return (1.0 - r*r + 2.0*r*std::log(r))/pow(1.0-r,3);
+   } else {
+      return (1.0 - r * r + 2.0 * r * std::log(r)) / pow(1.0 - r, 3);
    }
 }
 
 double OneLoopFunctionD(double r)
 {
-   if (is_zero(1.0-r)) {
-      return -9.0/2.0;
-   }
-   else {
-      return (16.0 - 45.0*r + 36.0*r*r - 7.0*r*r*r + 6.0*(2.0-3.0*r)*std::log(r))/pow(1.0-r,4);
+   if (is_zero(1.0 - r)) {
+      return -9.0 / 2.0;
+   } else {
+      return (16.0 - 45.0 * r + 36.0 * r * r - 7.0 * r * r * r +
+              6.0 * (2.0 - 3.0 * r) * std::log(r)) /
+             pow(1.0 - r, 4);
    }
 }
 
 double OneLoopFunctionE(double r)
 {
-   if (is_zero(1.0-r)) {
-      return 1.0/12.0;
+   if (is_zero(1.0 - r)) {
+      return 1.0 / 12.0;
    } else if (is_zero(r)) {
-      return 1.0/3.0;
-   }
-   else {
-      return (2.0 + 3.0*r - 6.0*r*r + r*r*r + 6.0*r*std::log(r))/6.0/pow(1.0-r,4);
+      return 1.0 / 3.0;
+   } else {
+      return (2.0 + 3.0 * r - 6.0 * r * r + r * r * r + 6.0 * r * std::log(r)) /
+             6.0 / pow(1.0 - r, 4);
    }
 }
 
 double OneLoopFunctionF(double r)
 {
-   if (is_zero(1.0-r)) {
-      return 2.0/3.0;
-   }
-   else {
-      return (-3.0 + 4.0*r - r*r - 2.0*std::log(r))/pow(1.0-r,3);
+   if (is_zero(1.0 - r)) {
+      return 2.0 / 3.0;
+   } else {
+      return (-3.0 + 4.0 * r - r * r - 2.0 * std::log(r)) / pow(1.0 - r, 3);
    }
 }
 
-template<class Spectator>
-typename field_indices<Spectator>::type
-default_indices_for_spectator( void );
+template <class Spectator>
+typename field_indices<Spectator>::type default_indices_for_spectator(void);
 
-template<>
-typename field_indices<VP>::type
-default_indices_for_spectator<VP>( void )
+template <>
+typename field_indices<VP>::type default_indices_for_spectator<VP>(void)
 {
-  return {};
+   return {};
 }
 
-template<>
-typename field_indices<VG>::type
-default_indices_for_spectator<VG>( void )
+template <>
+typename field_indices<VG>::type default_indices_for_spectator<VG>(void)
 {
-  return {0};
+   return {0};
 }
 
 // emit V from the internal scalar line
