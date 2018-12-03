@@ -163,9 +163,11 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
           fieldsToInsert,
           unresolvedFieldCouplings,resolvedFields,resolvedFieldCouplings,
           diagrams},
+   LoadVerticesIfNecessary[];
+   
    internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
-   externalRules = Flatten @ ({{_,#,_} :> LorentzConjugate[# /. externalFields],
-                               {#,_,_} :> LorentzConjugate[# /. externalFields]} & /@ externalVertices);
+   externalRules = Flatten @ ({{_,#,_} :> SARAH`AntiField[# /. externalFields],
+                               {#,_,_} :> SARAH`AntiField[# /. externalFields]} & /@ externalVertices);
 
    internalFieldCouplings = (Flatten[(Flatten @ Position[adjacencyMatrix[[#]],Except[0],{1},Heads -> False]
                                 /. {i_Integer :> Table[{#,i,k},{k,adjacencyMatrix[[#,i]]}]}),1] &
@@ -175,9 +177,9 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
    unspecifiedEdgesEqual = Cases[internalFieldCouplings,{i_,i_,_},{2}];
 
    insertFieldRulesLess = MapIndexed[#1 -> SARAH`FieldToInsert[#2[[1]]] &,unspecifiedEdgesLess];
-   insertFieldRulesGreater = (insertFieldRulesLess /. {Rule[{i_,j_,k_},field_] :> Rule[{j,i,k},LorentzConjugate[field]]});
+   insertFieldRulesGreater = (insertFieldRulesLess /. {Rule[{i_,j_,k_},field_] :> Rule[{j,i,k},SARAH`AntiField[field]]});
    insertFieldRulesEqual = MapIndexed[#1 -> {SARAH`FieldToInsert[#2[[1]]+Length[insertFieldRulesLess]],
-                                            LorentzConjugate[SARAH`FieldToInsert[#2[[1]]+Length[insertFieldRulesLess]]]} &,
+                                            SARAH`AntiField[SARAH`FieldToInsert[#2[[1]]+Length[insertFieldRulesLess]]]} &,
                                       unspecifiedEdgesEqual];
    fieldsToInsert = Table[SARAH`FieldToInsert[k],
              {k,Length[insertFieldRulesLess] + Length[insertFieldRulesEqual]}];
