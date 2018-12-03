@@ -75,3 +75,6 @@ test/*.spc.*
 test/*.xml
 test/LesHouches.out.*
 test/test_*.callgrind.out*
+test/test_SM_npointfunctions.cpp
+test/test_MSSM_npointfunctions.cpp
+
