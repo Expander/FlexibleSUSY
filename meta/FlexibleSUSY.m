@@ -48,6 +48,7 @@ BeginPackage["FlexibleSUSY`",
               "ThreeLoopMSSM`",
               "Observables`",
               "CXXDiagrams`",
+              "NPointFunctions`",
               "AMuon`",
               "EDM`",
               "EffectiveCouplings`",
@@ -4114,7 +4115,9 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                           {FileNameJoin[{cxxQFTTemplateDir, "vertices.hpp.in"}],
                            FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.hpp"}]},
                           {FileNameJoin[{cxxQFTTemplateDir, "context_base.hpp.in"}],
-                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_context_base.hpp"}]}};
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_context_base.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "npointfunctions.hpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_npointfunctions.hpp"}]}};
 
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
