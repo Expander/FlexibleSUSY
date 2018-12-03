@@ -34,8 +34,6 @@ SARAH`SARAH[InputDirectories] = {
 
 Start["MSSM"];
 
-Needs["TestSuite`"];
-
 modelFile = FileNameJoin[{workingDirectory, "models", "MSSM", "FlexibleSUSY.m"}];
 
 FlexibleSUSY`LoadModelFile[modelFile];
