@@ -1990,7 +1990,9 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            
 (* Write the CXXDiagrams c++ files *)
 WriteCXXDiagramClass[vertices_List,files_List] :=
-  Module[{fields, nPointFunctions, vertexData, cxxVertices, massFunctions, unitCharge},
+  Module[{fields, vertexData, cxxVertices, massFunctions, unitCharge,
+          sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
+          outputDir, cxxDiagramsDir, createdVerticesFile, fileHandle},
     fields = CXXDiagrams`CreateFields[];
     vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData
                                      /@ DeleteDuplicates[vertices],
@@ -1998,6 +2000,21 @@ WriteCXXDiagramClass[vertices_List,files_List] :=
     cxxVertices = CXXDiagrams`CreateVertices[vertices];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
     unitCharge = CXXDiagrams`CreateUnitCharge[];
+    
+    (* Document which vertices are created. This is mainly useful for
+       unit testing. See e.g test/test_MSSM_npointfunctions.m *)
+    outputDir = FileNameJoin[{sarahOutputDir, ToString[FlexibleSUSY`FSEigenstates]}];
+    cxxDiagramsDir = FileNameJoin[{outputDir, "CXXDiagrams"}];
+    createdVerticesFile = FileNameJoin[{cxxDiagramsDir, "CreatedVertices.m"}];
+    
+    If[DirectoryQ[cxxDiagramsDir] === False,
+		   CreateDirectory[cxxDiagramsDir]];
+    
+    (* There is a bug in WriteString[] in older Mathematica versions
+       that causes the files to be left open. *)
+    fileHandle = OpenWrite[createdVerticesFile];
+    Write[fileHandle, vertices];
+    Close[fileHandle];
     
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"          -> fields,
