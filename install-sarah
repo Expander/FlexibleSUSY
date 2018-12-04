@@ -13,7 +13,7 @@ ABSBASEDIR=$(cd $BASEDIR; pwd)
 operating_system="`(uname -s) 2>/dev/null || echo unknown`"
 
 # default SARAH version
-sarah_version="4.12.3"
+sarah_version="4.14.0"
 
 # determine Mathematica user directory
 case "$operating_system" in
@@ -109,7 +109,7 @@ Options:
 This script downloads and installs SARAH.
 At first the SARAH tarball is downloaded from the URL
 
-  https://www.hepforge.org/archive/sarah/
+  https://sarah.hepforge.org/downloads/
 
 and is stored in
 

@@ -68,13 +68,14 @@ FlexibleSUSY requires SARAH to be installed and to be loadable with
 the ``Needs["SARAH`"]`` command from inside Mathematica.  We recommend
 the following setup:
 
+    SARAH_VERSION=4.14.0
     cd ~/.Mathematica/Applications/
-    wget https://www.hepforge.org/archive/sarah/SARAH-4.12.3.tar.gz
-    tar -xf SARAH-4.12.3.tar.gz
-    ln -s  PWD/SARAH-4.12.3/ SARAH
+    wget https://sarah.hepforge.org/downloads/SARAH-${SARAH_VERSION}.tar.gz
+    tar -xf SARAH-${SARAH_VERSION}.tar.gz
+    ln -s ${PWD}/SARAH-${SARAH_VERSION}/ SARAH
 
     cd ~/.Mathematica/Kernel/
-    echo "AppendTo[\ Path, \" HOME/.Mathematica/Applications/SARAH/\"];" >> init.m
+    echo "AppendTo[\$Path, \"${HOME}/.Mathematica/Applications/SARAH/\"];" >> init.m
 
 All the above steps can be executed at once with the `install-sarah`
 script:
