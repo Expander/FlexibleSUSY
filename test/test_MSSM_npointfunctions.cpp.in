@@ -154,7 +154,7 @@ namespace npointfunctions
 }
 
 BOOST_AUTO_TEST_SUITE(selfenergy_test_suite, 
-	* boost::unit_test::tolerance(0.05) )
+	* boost::unit_test::tolerance(1.0e-12) )
 
 BOOST_DATA_TEST_CASE( test_selfenergies,
 	data_points(),
