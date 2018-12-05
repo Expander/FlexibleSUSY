@@ -141,7 +141,7 @@ NPointFunction[inFields_List,outFields_List,
         LoopLevel -> loopLevel,
         Regularize -> regularizationScheme,
         ZeroExternalMomenta -> zeroExternalMomenta],
-      subKernels[[2]], DistributedContexts -> None];
+      subKernels[[2]]];
     
     CloseKernels[subKernels];
     
@@ -184,7 +184,7 @@ GenerateFAModelFileOnKernel[kernel_] :=
       SARAH`MakeCouplingLists;
       
       SARAH`MakeFeynArts[SARAH`Eigenstates -> eigenstates];,
-      kernel, DistributedContexts -> None];
+      kernel];
   ]
 
 WriteParticleNamespaceFile[fileName_String] :=
