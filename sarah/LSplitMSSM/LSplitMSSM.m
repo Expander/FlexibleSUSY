@@ -61,8 +61,8 @@ FermionFields[[9]]  = {Hd, 1, {FHd0, FHdm},  -1/2, 2, 1, RpM};
 FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1, RpM};
 
 ScalarFields[[1]]  = {H  , 1, {Hp, H0}  ,   1/2, 2,  1, RpP};
-ScalarFields[[2]]  = {SEL, 2, {SvL, SeL},  -1/2, 2,  1, RpP};
-ScalarFields[[3]]  = {SER, 2, SeR       ,     1, 1,  1, RpP};
+ScalarFields[[2]]  = {SEL, 2, {SvL, SeL},  -1/2, 2,  1, RpM};
+ScalarFields[[3]]  = {SER, 2, SeR       ,     1, 1,  1, RpM};
 
 (*----------------------------------------------*)
 (*   ROTATIONS                                  *)
@@ -103,14 +103,16 @@ LagReSlep = (
     - ml2 conj[SEL].SEL - me2 conj[SER].SER
     (* using completeness relation of pauli matrices *)
     (* Q: is the Pauli matrix structure preserved at the loop level? *)
-    - g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[SEL].SEL.SEL.conj[SEL]
+    + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[SEL].SEL.SEL.conj[SEL]
     (* + g2ll conj[SEL].SEL *)
     (* - g2ee conj[SER].SER *)
 );
 
 (* part of slepton Lagrangian that needs to be conjugated *)
 LagSlep = (
-    Te conj[H].SER.SEL (* CHECK! *)
+    - Te conj[H].SER.SEL
+    - gYedsle Hd.SEL.e
+    - gYedlse Hd.l.SER
 );
 
 DEFINITION[GaugeES][DiracSpinors] = {

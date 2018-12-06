@@ -100,6 +100,16 @@ ParameterDefinitions = {
     {g2llll,    { Description -> "Quartic-Slepton-Coupling",
                   Real -> True,
                   OutputName -> g2llll,
-                  LaTeX -> "\\tilde{g}_{2\\text{llll}}",
-                  LesHouches -> {SplitMSSM,5} }}
+                  LaTeX -> "\\tilde{g}_{2,\\tilde{l}\\tilde{l}\\tilde{l}\\tilde{l}}",
+                  LesHouches -> {SplitMSSM,5} }},
+    {gYedsle,   { Description -> "Triple-down-Higgsino-Slepton-Electron-Coupling",
+                  Real -> True,
+                  OutputName -> gYedsle,
+                  LaTeX -> "\\tilde{g}_{Y_e,H_d\\tilde{l}e}",
+                  LesHouches -> {SplitMSSM,6} }},
+    {gYedlse,   { Description -> "Triple-down-Higgsino-Electron-Right-Slepton-Coupling",
+                  Real -> True,
+                  OutputName -> gYedlse,
+                  LaTeX -> "\\tilde{g}_{Y_e,H_dl\\tilde{e}}",
+                  LesHouches -> {SplitMSSM,6} }}
 };
