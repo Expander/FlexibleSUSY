@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["NPointFunctions`",{"FlexibleSUSY`","SARAH`","CXXDiagrams`","Vertices`","Parameters`"}];
+BeginPackage["NPointFunctions`",{"FlexibleSUSY`","SARAH`","CXXDiagrams`","Vertices`","Parameters`","Utils`"}];
 
 LoopLevel::usage="";
 Regularize::usage="";
@@ -71,15 +71,20 @@ NPointFunction[inFields_List,outFields_List,
           subKernel,calculationCommand,particleNamespaceFile,
           fileHandle,nPointFunction},
     loopLevel = OptionValue[LoopLevel];
-    If[loopLevel =!= 1,
-       Return["Only loop level 1 is supported"]];
+    Utils`AssertWithMessage[loopLevel === 1,
+			"NPointFunctions`NPointFunction[]: Only loop level 1 is supported"];
+		
     regularizationScheme = OptionValue[Regularize];
-    If[regularizationScheme =!= DimensionalReduction &&
-       regularizationScheme =!= DimensionalRegularization,
-       Return["Unknown regularization scheme: " <> ToString[regularizationScheme]]];
+    Utils`AssertWithMessage[
+			regularizationScheme === DimensionalReduction ||
+      regularizationScheme === DimensionalRegularization,
+			"NPointFunctions`NPointFunction[]: Unknown regularization scheme: " <>
+			ToString[regularizationScheme]];
+		
     zeroExternalMomenta = OptionValue[ZeroExternalMomenta];
-    If[BooleanQ[zeroExternalMomenta] === False,
-       Return["ZeroExternalMomenta must be either True or False"]];
+    Utils`AssertWithMessage[BooleanQ[zeroExternalMomenta],
+			"NPointFunctions`NPointFunction[]: Option ZeroExternalMomenta must \
+be either True or False"];
 
     inFields = Vertices`StripFieldIndices[inFields];
     outFields = Vertices`StripFieldIndices[outFields];

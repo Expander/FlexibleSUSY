@@ -134,6 +134,9 @@ FSFancyLine::usage = "Print separator line in command line mode";
 
 PrintAndReturn::usage = "Print result and return it";
 
+AssertWithMessage::usage = "AssertWithMessage[assertion_, message_String]:
+If assertion does not evaluate to True, print message and Quit[1].";
+
 Begin["`Private`"];
 
 AppendOrReplaceInList[values_List, elem_, test_:SameQ] :=
@@ -264,6 +267,9 @@ FSFancyLine[type_:"-", style__:Bold] :=
     If[!$Notebooks, Print[Style[StringJoin[Array[type&, 70]], style]]];
 
 PrintAndReturn[e___] := (Print[e]; e)
+
+AssertWithMessage[assertion_, message_String] :=
+	If[assertion =!= True, Print[message]; Quit[1]]
 
 End[];
 

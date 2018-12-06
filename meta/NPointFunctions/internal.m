@@ -1,6 +1,12 @@
 (* ::Package:: *)
 
-BeginPackage["NPointFunctions`",{"FeynArts`","FormCalc`"}];
+BeginPackage["NPointFunctions`",{"FeynArts`","FormCalc`","Utils`"}];
+Utils`AssertWithMessage[
+	MemberQ[$Packages, "FeynArts`"],
+  "NPointFunctions`: Unable to load FeynArts` package"];
+Utils`AssertWithMessage[
+	MemberQ[$Packages, "FormCalc`"],
+  "NPointFunctions`: Unable to load FormCalc` package"];
 
 SetFAPaths::usage="";
 
@@ -56,12 +62,14 @@ NPointFunction[inFields_List,outFields_List,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
     If[loopLevel =!= 1,
-      Return["Only LoopLevel 1 is supported"]];
+      Return["NPointFunctions`NPointFunction[]: Only LoopLevel 1 is supported"]];
     If[regularizationScheme =!= DimensionalReduction &&
        regularizationScheme =!= DimensionalRegularization,
-       Return["Unknown regularization scheme: " <> ToString[regularizationScheme]]];
+       Return["NPointFunctions`NPointFunction[]: Unknown regularization scheme: " <>
+              ToString[regularizationScheme]]];
     If[BooleanQ[zeroExternalMomenta] === False,
-       Return["ZeroExternalMomenta must be either True or False"]];
+       Return["NPointFunctions`NPointFunction[]: ZeroExternalMomenta must \
+be either True or False"]];
 
     If[DirectoryQ[formCalcDir] === False,
        CreateDirectory[formCalcDir]];
@@ -196,8 +204,9 @@ RecursivelyZeroRules[nonzeroRules_List, zeroRules_List] :=
 
 SumOverAllFieldIndices[genericAmplitude_] :=
   Module[{genericIndices, fieldType, genericRules},
-    If[Length[genericAmplitude] =!= 1,
-       Return["Length of generic amplitude != 1 not implemented"]];
+    Utils`AssertWithMessage[Length[genericAmplitude] === 1,
+      "NPointFunctions`SumOverAllFieldIndices[]: \
+Length of generic amplitude != 1 not implemented (incompatible FormCalc change?)"];
 
     genericIndices = DeleteDuplicates[
       Cases[List @@ genericAmplitude,
@@ -262,7 +271,6 @@ SetFSConventionRules[] :=
     ];
 
     couplingRules = {
-(* NonCommutative[ChiralityProjector[1]] \[Equal] PL or PR ? *)
         FeynArts`G[_][0][fields__][1] :> SARAH`Cp[fields][1],
         FeynArts`G[_][0][fields__][1] :> SARAH`Cp[fields][1],
         FeynArts`G[_][0][fields__][
