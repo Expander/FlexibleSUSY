@@ -62,7 +62,7 @@ FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1, RpM};
 
 ScalarFields[[1]]  = {H  , 1, {Hp, H0}  ,   1/2, 2,  1, RpP};
 ScalarFields[[2]]  = {SEL, 2, {SvL, SeL},  -1/2, 2,  1, RpM};
-ScalarFields[[3]]  = {SER, 2, SeR       ,     1, 1,  1, RpM};
+ScalarFields[[3]]  = {SER, 2, conj[SeR] ,     1, 1,  1, RpM};
 
 (*----------------------------------------------*)
 (*   ROTATIONS                                  *)
