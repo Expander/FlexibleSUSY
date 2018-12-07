@@ -304,7 +304,7 @@ compilers should be used, replace gcc by icc or icpc::
 
 **Important remark:**
 
-The libraries are linked to the executables with _absolute_ paths.
+The libraries are linked to the executables with *absolute* paths.
 This means that, if you for example move the FlexibleSUSY directory to
 another location, the executables will no longer find the libraries.
 To make the executables find the libraries again, you have to relink
