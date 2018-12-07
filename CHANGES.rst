@@ -158,13 +158,13 @@ New features
     scale Q_match.  ``EXTPAR[203] = 0`` corresponds to Q_match =
     MSUSY.
 
-  ================== ==================== ============================ 
-   SLHA input field   Mathematica symbol   Description                 
-  ================== ==================== ============================ 
-   ``EXTPAR[201]``    ``DeltaYt``          0 = yt(SM), 1 = yt(MSSM)    
-   ``EXTPAR[202]``    ``DeltaOS``          0 = OS stops, 1 = DR stops  
-   ``EXTPAR[203]``    ``Qmatch``           matching scale              
-  ================== ==================== ============================ 
+  ================== ==================== ============================
+   SLHA input field   Mathematica symbol   Description
+  ================== ==================== ============================
+   ``EXTPAR[201]``    ``DeltaYt``          0 = yt(SM), 1 = yt(MSSM)
+   ``EXTPAR[202]``    ``DeltaOS``          0 = OS stops, 1 = DR stops
+   ``EXTPAR[203]``    ``Qmatch``           matching scale
+  ================== ==================== ============================
 
 * The Mathematica script
   ``model_files/HSSUSY/HSSUSY_uncertainty_estimate.m`` has been added.
@@ -314,7 +314,7 @@ Fixed bugs
   of `1312.5220 <https://arxiv.org/abs/1312.5220>`_, if
   ``UseHiggs3LoopSplit == True``.
 
-   Thanks to Pietro Slavich.
+  Thanks to Pietro Slavich.
 
 * [commit a783e318]: Distinguish between tree- and loop-level EWSB
   failures, so problem points where only one fails (but not the
@@ -455,17 +455,17 @@ New features
   corresponds to the loop orders given in the table.
 
   ================== =================================== ==============
-   digit position n   default value (prefactor of 10^n)   parameter     
+   digit position n   default value (prefactor of 10^n)   parameter
   ================== =================================== ==============
-   0                  1 (1-loop)                          αem           
-   1                  2 (2-loop)                          sin(theta\_W) 
-   2                  3 (3-loop)                          αs            
-   3                  1 (1-loop)                          m\_Z          
-   4                  1 (1-loop)                          m\_W          
-   5                  1 (1-loop)                          m\_h          
-   6                  3 (3-loop)                          m\_t          
-   7                  2 (2-loop)                          m\_b          
-   8                  1 (1-loop)                          m\_τ          
+   0                  1 (1-loop)                          αem
+   1                  2 (2-loop)                          sin(theta\_W)
+   2                  3 (3-loop)                          αs
+   3                  1 (1-loop)                          m\_Z
+   4                  1 (1-loop)                          m\_W
+   5                  1 (1-loop)                          m\_h
+   6                  3 (3-loop)                          m\_t
+   7                  2 (2-loop)                          m\_b
+   8                  1 (1-loop)                          m\_τ
   ================== =================================== ==============
 
 * An additional boundary value problem solution algorithm, based on
