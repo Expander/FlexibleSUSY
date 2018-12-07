@@ -29,20 +29,20 @@ Building FlexibleSUSY
 Requirements
 ------------
 
- * C++ compiler (g++ >= 4.8.4 or clang++ >= 3.8.1 or icpc >= 15.0.0)
- * Fortran compiler (gfortran, ifort)
- * Mathematica (version 7.0 or higher)
- * SARAH_ (version 4.11.0 or higher)
- * Boost_ (version 1.37.0 or higher)
- * `Eigen 3`_ (version 3.1 or higher)
- * `GNU scientific library`_
+* C++ compiler (g++ >= 4.8.4 or clang++ >= 3.8.1 or icpc >= 15.0.0)
+* Fortran compiler (gfortran, ifort)
+* Mathematica (version 7.0 or higher)
+* SARAH_ (version 4.11.0 or higher)
+* Boost_ (version 1.37.0 or higher)
+* `Eigen 3`_ (version 3.1 or higher)
+* `GNU scientific library`_
 
 Optional:
 
- * BLAS_
- * LAPACK_
- * LoopTools_ (version 2.8 or higher)
- * Himalaya_
+* BLAS_
+* LAPACK_
+* LoopTools_ (version 2.8 or higher)
+* Himalaya_
 
 
 Installation of SARAH
@@ -480,45 +480,45 @@ Package content
 In the following all sub-directories within the FlexibleSUSY package
 are listed:
 
- * ``addons/`` contains addons for FlexibleSUSY, such as GM2Calc_
+* ``addons/`` contains addons for FlexibleSUSY, such as GM2Calc_
 
- * ``config/`` contains helper scripts and makefile modules for the
-   build system
+* ``config/`` contains helper scripts and makefile modules for the
+  build system
 
- * ``doc/`` contains the FlexibleSUSY documentation
+* ``doc/`` contains the FlexibleSUSY documentation
 
- * ``examples/`` contains examples how to build you own spectrum
-   generator based on FlexibleSUSY
+* ``examples/`` contains examples how to build you own spectrum
+  generator based on FlexibleSUSY
 
- * ``fflite/`` contains an alternative implementation of the
-   Passarino-Veltman loop functions, based on FF
+* ``fflite/`` contains an alternative implementation of the
+  Passarino-Veltman loop functions, based on FF
 
- * ``meta/`` contains the Mathematica meta code which generates the
-   spectrum generators
+* ``meta/`` contains the Mathematica meta code which generates the
+  spectrum generators
 
- * ``model_files/`` contains default model files for some frequently
-   used models (SM, SplitMSSM, MSSM, NMSSM, SMSSM, UMSSM, etc.)
+* ``model_files/`` contains default model files for some frequently
+  used models (SM, SplitMSSM, MSSM, NMSSM, SMSSM, UMSSM, etc.)
 
- * ``model_specific/`` contains model-specific higher order corrections
-   for the MSSM, NMSSM, SM and SplitMSSM from the literature
+* ``model_specific/`` contains model-specific higher order corrections
+  for the MSSM, NMSSM, SM and SplitMSSM from the literature
 
- * ``models/`` This is the output directory where the generated C++ code
-   for the spectrum generators will be stored.
+* ``models/`` This is the output directory where the generated C++
+  code for the spectrum generators will be stored.
 
- * ``Output/`` contains SARAHs model-specific output files
+* ``Output/`` contains SARAHs model-specific output files
 
- * ``sarah/`` contains SARAH model files shipped with FlexibleSUSY
+* ``sarah/`` contains SARAH model files shipped with FlexibleSUSY
 
- * ``slhaea/`` contains the slhaea_ SLHA reader library
+* ``slhaea/`` contains the slhaea_ SLHA reader library
 
- * ``src/`` contains model-independent FlexibleSUSY C++ source code
+* ``src/`` contains model-independent FlexibleSUSY C++ source code
 
- * ``templates/`` contains C++ template files for the spectrum generators
+* ``templates/`` contains C++ template files for the spectrum generators
 
- * ``test/`` contains the FlexibleSUSY test suite
+* ``test/`` contains the FlexibleSUSY test suite
 
- * ``utils/`` contains some utility scripts to perform scans or
-   extract data from SLHA files
+* ``utils/`` contains some utility scripts to perform scans or extract
+  data from SLHA files
 
 .. _slhaea: https://github.com/fthomas/slhaea
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
