@@ -54,7 +54,7 @@ struct overlap_integrals {
 overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd& qedqcd) {
    overlap_integrals res; 
    // get muon pole mass from input slha file
-   const auto muon_pole_mass_5o2 {pow(qedqcd.displayMass(softsusy::mMuon), 5./2.)};
+   const auto muon_pole_mass_5o2 = pow(qedqcd.displayMass(softsusy::mMuon), 5./2.);
    // Tab. 2 of hep-ph/0203110
    switch (N) {
       case Nucleus::Au:
@@ -102,7 +102,7 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
       vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename V::lorentz_conjugate>(model);
 
    const auto mVsqr = pow(context.mass<V>({}), 2);
-   const auto GF {qedqcd.displayFermiConstant()};
+   const auto GF = qedqcd.displayFermiConstant();
    std::complex<double> guLV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * uVectorCurrent;
    std::complex<double> guRV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * uVectorCurrent;
    std::complex<double> gdLV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * dVectorCurrent;

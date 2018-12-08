@@ -76,7 +76,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "EvaluationContext context{ model_ };\n" <>
 
                 "// get Fermi constant from Les Houches input file\n" <>
-                "const auto GF {qedqcd.displayFermiConstant()};\n" <>
+                "const auto GF = qedqcd.displayFermiConstant();\n" <>
 
                 "const auto photon_penguin = calculate_" <> CXXNameOfField[inFermion] <> "_" <>
                     CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[SARAH`Photon] <> "_form_factors (" <>
@@ -180,20 +180,20 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                     ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
                     ", qedqcd" <> ");\n"] <>
 
-                "\nconst auto left {\n" <> IndentText[
+                "\nconst auto left =\n" <> IndentText[
                    "A2R*nuclear_form_factors.D\n" <>
                       "+ gpLV*nuclear_form_factors.Vp\n" <>
                       "+ gnLV*nuclear_form_factors.Vn\n" <>
                       "+ gpLS*nuclear_form_factors.Sp\n" <>
                       "+ gnLS*nuclear_form_factors.Sn\n"
-                ] <> "};\n" <>
-                "const auto right {\n" <> IndentText[
+                ] <> ";\n" <>
+                "const auto right =\n" <> IndentText[
                    "A2L*nuclear_form_factors.D\n" <>
                       "+ gpRV*nuclear_form_factors.Vp\n" <>
                       "+ gnRV*nuclear_form_factors.Vn\n" <>
                       "+ gpRS*nuclear_form_factors.Sp\n" <>
                       "+ gnRS*nuclear_form_factors.Sn\n"
-                ] <> "};\n" <>
+                ] <> ";\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
                 "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
