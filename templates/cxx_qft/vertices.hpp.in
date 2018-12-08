@@ -171,7 +171,7 @@ public:
   using vertex_type = typename Data::vertex_type;
 
   template<int FieldIndex>
-  static typename field_indices<
+  static typename cxx_qft::field_indices<
     typename boost::mpl::at_c<
       boost::mpl::vector<Fields...>,
       FieldIndex
