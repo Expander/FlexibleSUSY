@@ -92,6 +92,10 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "const auto A2L = -0.5 * photon_penguin[2]/(4.*GF/sqrt(2.));\n" <>
                 "const auto A2R = -0.5 * photon_penguin[3]/(4.*GF/sqrt(2.));\n" <>
 
+                (* TODO: remove *)
+                "std::cout << \"A1 \" << photon_penguin[0] << ' ' << photon_penguin[1] << '\\n';\n" <>
+                "std::cout << \"A2 \" << photon_penguin[2] << ' ' << photon_penguin[3] << '\\n';\n" <>
+
                 "\n// ------ penguins ------\n" <>
                 "// 2 up and 1 down quark in proton (gp couplings)\n" <>
                 "// 1 up and 2 down in neutron (gn couplings)\n" <>
@@ -107,10 +111,13 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                    IndentText["vectorCurrent<typename Fd::lorentz_conjugate, Fd, typename VP::lorentz_conjugate>(model);\n"] <>
                       "\n" <>
 
-                "auto gpLV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_penguin[0];\n" <>
-                "auto gpRV = -sqrt(2.0)/GF * (2.*uEMVectorCurrent + dEMVectorCurrent) * photon_penguin[1];\n" <>
-                "auto gnLV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_penguin[0];\n" <>
-                "auto gnRV = -sqrt(2.0)/GF * (uEMVectorCurrent + 2.*dEMVectorCurrent) * photon_penguin[1];\n" <>
+                "// the A1 term if the factor in front of q^2, the photon propagator is -1/q^2, we need only factor -1\n" <>
+                "auto gpLV = -sqrt(2.0)/GF * photon_penguin[0] * (2.*uEMVectorCurrent + dEMVectorCurrent);\n" <>
+                "auto gpRV = -sqrt(2.0)/GF * photon_penguin[1] * (2.*uEMVectorCurrent + dEMVectorCurrent);\n" <>
+                (* TODO: remove *)
+                "std::cout << \"A 4-fermion \" << -sqrt(2.0)/GF * photon_penguin[0] * uEMVectorCurrent << ' ' << -sqrt(2.0)/GF * photon_penguin[1] * uEMVectorCurrent << '\\n';\n" <>
+                "auto gnLV = -sqrt(2.0)/GF * photon_penguin[0] * (uEMVectorCurrent + 2.*dEMVectorCurrent);\n" <>
+                "auto gnRV = -sqrt(2.0)/GF * photon_penguin[1] * (uEMVectorCurrent + 2.*dEMVectorCurrent);\n" <>
 
                 "\n// mediator: massive vector\n" <>
                 StringJoin @ Map[
@@ -125,6 +132,8 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                            CXXNameOfField[#] <> "_FF, " <>
                            "model, qedqcd);\n" <>
 
+                        (* TODO" remove *)
+                        "std::cout << \"Z 4-fermion \" << VZ_penguin[0] << ' ' << VZ_penguin[1] << '\\n';\n" <>
                         "gpLV += 2.*" <> CXXNameOfField[#] <> "_penguin[0] + "    <> CXXNameOfField[#] <> "_penguin[2];\n" <>
                         "gpRV += 2.*" <> CXXNameOfField[#] <> "_penguin[1] + "    <> CXXNameOfField[#] <> "_penguin[3];\n" <>
                         "gnLV += "    <> CXXNameOfField[#] <> "_penguin[0] + 2.*" <> CXXNameOfField[#] <> "_penguin[2];\n" <>
