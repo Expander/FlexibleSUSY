@@ -26,6 +26,7 @@
 #include <valarray>
 #include <complex>
 #include <iostream>
+#include <iomanip> // TODO: remove
 
 #include "@ModelName@_mass_eigenstates.hpp"
 #include "cxx_qft/@ModelName@_qft.hpp"
@@ -103,17 +104,18 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
 
    const auto mVsqr = pow(context.mass<V>({}), 2);
    const auto GF = qedqcd.displayFermiConstant();
-   std::complex<double> guLV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * uVectorCurrent;
-   std::complex<double> guRV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * uVectorCurrent;
-   std::complex<double> gdLV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[0] * dVectorCurrent;
-   std::complex<double> gdRV = sqrt(2.0)/GF * 1./mVsqr * V_exchange[1] * dVectorCurrent;
-   std::cout << "Z-triangle " << V_exchange[0] << ' ' << V_exchange[1] << '\n';
-   std::cout << "GF " << GF << '\n';
-   std::cout << "mZ " << context.mass<V>({}) << '\n';
-   std::cout << "u vector current " << uVectorCurrent << '\n';
-   std::cout << "d vector current " << dVectorCurrent << '\n';
-   std::cout << "gu " << guLV << ' ' << guRV << '\n';
-   std::cout << "gd " << gdLV << ' ' << gdRV << '\n';
+
+   /* The vector-q-q and effective vertex have factor I removed from them.
+      Therefore we miss I^2 = -1 from verices and -I from the numerator
+      of vector propagator which in total gives +I. This 'I' will be used for
+      converting back from amplitude to term in the lagrangian.
+      In our convention, the effective 4-fermion operator is defined as
+         L = - GF/sqrt2 * O
+   */
+   std::complex<double> guLV = -sqrt(2.0)/GF * 1./(-mVsqr) * V_exchange[0] * uVectorCurrent;
+   std::complex<double> guRV = -sqrt(2.0)/GF * 1./(-mVsqr) * V_exchange[1] * uVectorCurrent;
+   std::complex<double> gdLV = -sqrt(2.0)/GF * 1./(-mVsqr) * V_exchange[0] * dVectorCurrent;
+   std::complex<double> gdRV = -sqrt(2.0)/GF * 1./(-mVsqr) * V_exchange[1] * dVectorCurrent;
 
    return {guLV, guRV, gdLV, gdRV};
 }
