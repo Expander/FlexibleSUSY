@@ -99,6 +99,8 @@ t2lLimitS1S2MSMG = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions
 (* t2lLimitS2MS = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions /. mmst2  -> mmsusy + x * dst1, {x,0,0}]]; *)
 (* t2lLimitMSMG = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions /. mmsusy -> mmgl   + x * dst1, {x,0,0}]]; *)
 
+mt /: mt^2 = mmt;
+
 headerName = "mssm_twoloop_mt.hpp";
 implName   = "mssm_twoloop_mt.cpp";
 
@@ -307,12 +309,14 @@ double dMt_over_mt_1loop_susy(const Parameters& pars)
    if (is_equal(mmst1, mmst2, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS1S2] <> ";"] <> "
+
       return result * oneLoop;
    }
 
    if (is_equal(mmgl, mmst1, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS1MG] <> ";"] <> "
+
       return result * oneLoop;
    }
 
@@ -320,10 +324,12 @@ double dMt_over_mt_1loop_susy(const Parameters& pars)
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS2MG] <> ";"] <> "
       return result * oneLoop;
+
    }
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t1l - t1lqcd] <> ";"] <> "
+
    return result * oneLoop;
 }
 
@@ -343,6 +349,7 @@ double dMt_over_mt_2loop_qcd(const Parameters& pars)
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t2lqcd] <> ";"] <> "
+
    return result * twoLoop;
 }
 
@@ -364,11 +371,13 @@ double dMt_over_mt_2loop_susy(const Parameters& pars)
    if (is_equal(mmst1, mmst2, 1e-6) && is_equal(mmst1, mmgl, 1e-6) && is_equal(mmst1, mmsusy, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t2lLimitS1S2MSMG] <> ";"] <> "
+
       return result * twoLoop;
    }
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t2l - t2lqcd] <> ";"] <> "
+
    return result * twoLoop;
 }
 
