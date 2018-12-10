@@ -750,7 +750,8 @@ $(DIR)/test_CMSSMNoFV_benchmark.x.xml: $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE)
 
 $(DIR)/test_compare_ewsb_solvers.x: \
 	$(LIBCMSSMGSLHybrid) $(LIBCMSSMGSLHybridS) $(LIBCMSSMGSLBroyden) \
-	$(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute)
+	$(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute) \
+	$(LIBCMSSMFPITadpole)
 
 $(DIR)/test_loopfunctions.x: $(LIBCMSSM)
 
