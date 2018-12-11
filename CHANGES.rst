@@ -20,6 +20,11 @@ Fixed bugs
   case that cos(theta13) vanishes, and add missing Majorana phases in
   the definition of the PMNS matrix.
 
+* [commit 05664d66c]: Refining criterion for the selection of the
+  degenerate mass limit of the 2-loop SQCD correction to the top mass
+  in the MSSM.  This change improves the numerical precision and the
+  stability of the correction for large SUSY scales above 10 TeV.
+
 
 FlexibleSUSY 2.2.0 [August, 26 2018]
 ====================================
