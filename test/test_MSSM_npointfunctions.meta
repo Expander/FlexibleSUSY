@@ -50,6 +50,10 @@ Close[fileHandle];
 hhSelfenergy = NPointFunctions`NPointFunction[
 	{SARAH`HiggsBoson}, {SARAH`HiggsBoson},
 	NPointFunctions`ZeroExternalMomenta -> True];
+
+Utils`AssertWithMessage[hhSelfenergy =!= $Failed,
+	"test_MSSM_npointfunctions.meta: Unable to calculate the Higgs Selfenergy."];	
+
 hhSelfenergyCode = NPointFunctions`CreateCXXFunctions[
 	{hhSelfenergy}, {"selfenergy_hh_1loop"}][[2]];
 nPointFunctionHeaders = CreateCXXHeaders[];

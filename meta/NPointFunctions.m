@@ -150,6 +150,9 @@ be either True or False"];
     
     CloseKernels[subKernels];
     
+    If[nPointFunction === $Failed,
+			Return[$Failed]];
+    
     CacheNPointFunction[nPointFunction, nPointMeta];
     nPointFunction
   ]
