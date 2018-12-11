@@ -389,8 +389,6 @@ ifeq ($(WITH_MSSM),yes)
 TEST_SH += \
 		$(DIR)/test_MSSM_stable_ewsb_failure.sh \
 		$(DIR)/test_standalone.sh
-TEST_SRC += \
-		$(DIR)/test_MSSM_npointfunctions.cpp
 endif
 
 ifeq ($(WITH_CMSSM),yes)
@@ -423,8 +421,18 @@ TEST_SRC += \
 		$(DIR)/test_SM_higgs_loop_corrections.cpp \
 		$(DIR)/test_SM_tree_level_spectrum.cpp \
 		$(DIR)/test_SM_three_loop_spectrum.cpp \
-		$(DIR)/test_SM_two_loop_spectrum.cpp \
+		$(DIR)/test_SM_two_loop_spectrum.cpp
+endif
+
+ifeq ($(ENABLE_FEYNARTS) $(ENABLE_FORMCALC),yes yes)
+ifeq ($(WITH_SM),yes)
+TEST_SRC += \
 		$(DIR)/test_SM_npointfunctions.cpp
+endif
+ifeq ($(WITH_MSSM),yes)
+TEST_SRC += \
+		$(DIR)/test_MSSM_npointfunctions.cpp
+endif
 endif
 
 ifeq ($(WITH_SMHighPrecision),yes)
