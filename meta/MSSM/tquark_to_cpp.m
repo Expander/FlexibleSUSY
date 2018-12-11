@@ -264,11 +264,11 @@ namespace {
    /// shift gluino mass away from mst1 and mst2 if too close
    double shift_mg(double mg, double mst1, double mst2)
    {
-      if (is_equal_rel(std::min(mst1, mst2), mg, 0.003))
-         return mg * 0.995;
+      if (is_equal_rel(std::min(mst1, mst2), mg, 0.0003))
+         return mg * 0.9995;
 
-      if (is_equal_rel(std::max(mst1, mst2), mg, 0.003))
-         return mg * 1.005;
+      if (is_equal_rel(std::max(mst1, mst2), mg, 0.0003))
+         return mg * 1.0005;
 
       return mg;
    }
@@ -368,7 +368,8 @@ double dMt_over_mt_2loop_susy(const Parameters& pars)
    const double mmst2  = pow2(pars.mst2);
    const double mmsusy = pow2(pars.msusy);
 
-   if (is_equal(mmst1, mmst2, 1e-6) && is_equal(mmst1, mmgl, 1e-6) && is_equal(mmst1, mmsusy, 1e-6)) {
+   if (is_equal(mmst1, mmst2, mmt) && is_equal(mmst1, mmgl, mmt) &&
+       is_equal(mmst1, mmsusy, mmt) && is_equal(std::abs(Xt), 0., 1e-1)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t2lLimitS1S2MSMG] <> ";"] <> "
 
