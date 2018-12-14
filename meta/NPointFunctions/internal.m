@@ -155,15 +155,15 @@ CalculateAmplitudes[classesAmplitudes_, genericInsertions_List,
       DimensionalRegularization, D];
 
     genericAmplitudes = If[zeroExternalMomenta,
-      Evaluate @ OffShell[genericAmplitudes, Sequence @@ Table[k -> 0, {k,
+      Evaluate @ FormCalc`OffShell[genericAmplitudes, Sequence @@ Table[k -> 0, {k,
         Total[Length /@ Head[genericAmplitudes][[1,2]]]}]],
       genericAmplitudes];
 
     calculatedAmplitudes =
       (FormCalc`CalcFeynAmp[Head[genericAmplitudes][#],
-                            Dimension -> dimensionParameter,
-                            OnShell -> onShellFlag,
-                            Invariants -> False] & /@
+                            FormCalc`Dimension -> dimensionParameter,
+                            FormCalc`OnShell -> onShellFlag,
+                            FormCalc`Invariants -> False] & /@
         genericAmplitudes) //. FormCalc`GenericList[];
 
     calculatedAmplitudes = SumOverAllFieldIndices /@ (List @@ calculatedAmplitudes);
@@ -210,9 +210,10 @@ Length of generic amplitude != 1 not implemented (incompatible FormCalc change?)
 
     genericIndices = DeleteDuplicates[
       Cases[List @@ genericAmplitude,
-            Pattern[fieldType,Alternatives[S,F,V,U,T]][
-              FeynArts`Index[Generic,number_Integer]] :> {fieldType,number},
-            Infinity]];
+            Pattern[fieldType,Alternatives[
+							FeynArts`S, FeynArts`F, FeynArts`V, FeynArts`U, FeynArts`T]][
+								FeynArts`Index[Generic,number_Integer]] :> {fieldType,number},
+						Infinity]];
     GenericSum[genericAmplitude[[1]], genericIndices]
   ]
 
@@ -294,7 +295,8 @@ SetFSConventionRules[] :=
         FormCalc`Den[a_,b_] :> 1/(a - b),
         FormCalc`Pair[a_,b_] :> SARAH`sum[lt, 1, 4,
           SARAH`g[lt, lt] * Append[a, lt] * Append[b, lt]],
-        Pattern[fieldType,Alternatives[S,F,V,U,T]][
+        Pattern[fieldType,Alternatives[FeynArts`S, FeynArts`F,
+					FeynArts`V, FeynArts`U, FeynArts`T]][
           FeynArts`Index[Generic,number_Integer]] :>  
             fieldType[GenericIndex[number]],
         FormCalc`k[i_Integer, index___] :> SARAH`Mom[i, index]
@@ -313,7 +315,8 @@ SetFSConventionRules[] :=
          Through[(ToExpression /@ fieldNames[[All,1]])[{indices}]]}],
       Rule @@@ Transpose[
         {ToExpression /@ fieldNames[[All,2]], ToExpression /@ fieldNames[[All,1]]}],
-      {S -> GenericS, F -> GenericF, V -> GenericV, U -> GenericU, T -> GenericT},
+      {FeynArts`S -> GenericS, FeynArts`F -> GenericF, FeynArts`V -> GenericV,
+       FeynArts`U -> GenericU, FeynArts`T -> GenericT},
       {
         Times[-1, field_GenericS | field_GenericV] :>
            Susyno`LieGroups`conj[field],

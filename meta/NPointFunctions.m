@@ -748,7 +748,7 @@ FeynArtsNamesForFields[fields_List,particleNamesFile_String] :=
       Select[lines, StringMatchQ[#,___~~fieldName~~":"~~___] &][[1]]] & /@
         unindexedBaseFields;
 
-    faFieldNames = StringSplit[#][[2]] & /@ fieldLines;
+    faFieldNames = ("FeynArts`" <> StringSplit[#][[2]]) & /@ fieldLines;
     
     faNameRules = Join[
       Sequence @@ {#[[1]][indices_List] :>
