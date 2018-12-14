@@ -102,17 +102,27 @@ LagSplit2 = \
 LagReSlep = (
     - ml2 conj[SEL].SEL - me2 conj[SER].SER
     (* using completeness relation of pauli matrices *)
-    (* Q: is the Pauli matrix structure preserved at the loop level? *)
     + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[SEL].SEL.SEL.conj[SEL]
-    (* + g2ll conj[SEL].SEL *)
-    (* - g2ee conj[SER].SER *)
+    + g2llhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.SEL.conj[SEL]
+    + g2hhhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.H.conj[H]
+    + g1llll Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SEL.SEL.conj[SEL]
+    + g1eeee Delta[lef1,lef1] Delta[lef2,lef2] conj[SER].SER.SER.conj[SER]
+    + g1hhhh Delta[lef1,lef1] Delta[lef2,lef2] conj[H].H.H.conj[H]
+    + g1llhh Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SEL.H.conj[H]
+    + g1eehh Delta[lef1,lef1] Delta[lef2,lef2] conj[SER].SER.H.conj[H]
+    + g1llee Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SEL.SER.conj[SER]
+    + gylele Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SER.conj[SER].SEL
+    + gylehh Delta[lef1,lef1] Delta[lef2,lef2] conj[H].SER.SEL
 );
 
 (* part of slepton Lagrangian that needs to be conjugated *)
 LagSlep = (
     - Te conj[H].SER.SEL
-    - gYedsle Hd.SEL.e
-    - gYedlse Hd.l.SER
+    - gydsle Hd.SEL.e
+    - gydlse Hd.l.SER
+    + g2slwl conj[SEL].FW.l
+    + g1slbl conj[SEL].FB.l
+    + g1sebe conj[SER].FB.e
 );
 
 DEFINITION[GaugeES][DiracSpinors] = {
