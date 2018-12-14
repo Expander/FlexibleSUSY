@@ -260,16 +260,10 @@ SARAH_PATCH="0"
 # required FeynArts version
 required_feynarts_version="3.9.0"
 FEYNARTS_VERSION="unknown"
-FEYNARTS_MAJOR="0"
-FEYNARTS_MINOR="0"
-FEYNARTS_PATCH="0"
 
 # required FormCalc version
 required_formcalc_version="9.5.0"
 FORMCALC_VERSION="unknown"
-FORMCALC_MAJOR="0"
-FORMCALC_MINOR="0"
-FORMCALC_PATCH="0"
 
 # Mathematica version (0 = unknown)
 MATH_VERSION="0"
@@ -3215,12 +3209,13 @@ fi
 
 if test "x${enable_meta}" = "xyes"; then
     check_sarah
-    check_feynarts
-    check_formcalc
     case "$operating_system" in
 	CYGWIN_NT*) check_cygpath ;;
     esac
 fi
+
+check_feynarts
+check_formcalc
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
