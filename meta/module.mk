@@ -70,6 +70,7 @@ META_SRC     := \
 		$(DIR)/CXXDiagrams.m \
 		$(DIR)/NPointFunctions.m \
 		$(DIR)/NPointFunctions/internal.m \
+		$(DIR)/NPointFunctions/createFAModelFile.m \
 		$(DIR)/EDM.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \

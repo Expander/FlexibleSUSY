@@ -178,8 +178,10 @@ be either True or False"];
   ]
 
 GenerateFAModelFileOnKernel[kernel_] :=
-  Module[{currentPath, currentDirectory, sarahInputDirectories,
-          sarahOutputDirectory, sarahModelname, eigenstates},
+  Module[{currentPath, currentDirectory,
+          fsMetaDir = $flexiblesusyMetaDir,
+          sarahInputDirectories, sarahOutputDirectory,
+          sarahModelname, eigenstates},
     currentPath = $Path;
     currentDirectory = Directory[];
     sarahInputDirectories = SARAH`SARAH[InputDirectories];
@@ -190,28 +192,17 @@ GenerateFAModelFileOnKernel[kernel_] :=
     (* Unfortunately, there seems to be no way to restrict
       this to a specific kernel *)
     DistributeDefinitions[currentPath, currentDirectory,
-      sarahInputDirectories, sarahOutputDirectory,
+      fsMetaDir, sarahInputDirectories, sarahOutputDirectory,
       sarahModelName, eigenstates];
     
     ParallelEvaluate[
       $Path = currentPath;
       SetDirectory[currentDirectory];
       
-      Needs["SARAH`"];
+      Get[FileNameJoin[{fsMetaDir, "NPointFunctions", "createFAModelFile.m"}]];
       
-      SARAH`SARAH[InputDirectories] = sarahInputDirectories;
-      SARAH`SARAH[OutputDirectory] = sarahOutputDirectory;
-      
-      Start[sarahModelName];
-      
-      SA`CurrentStates = eigenstates; 
-      SARAH`InitVertexCalculation[eigenstates, False];
-      SARAH`partDefinition = SARAH`ParticleDefinitions[eigenstates];
-      SARAH`Particles[SARAH`Current] = SARAH`Particles[eigenstates];
-      SARAH`ReadVertexList[eigenstates, False, False, True];
-      SARAH`MakeCouplingLists;
-      
-      SARAH`MakeFeynArts[SARAH`Eigenstates -> eigenstates];,
+      NPointFunctions`CreateFAModelFile[sarahInputDirectories,
+				sarahOutputDirectory, sarahModelName, eigenstates],
       kernel];
   ]
 
