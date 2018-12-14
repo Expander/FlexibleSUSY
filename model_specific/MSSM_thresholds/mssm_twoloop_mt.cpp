@@ -219,6 +219,7 @@ double dMt_over_mt_2loop_susy(const Parameters& pars)
 
    if (is_equal(mmst1, mmst2, mmt) && is_equal(mmst1, pow2(pars.mg), mmt) &&
        is_equal(mmst1, mmsusy, mmt) && is_equal(std::abs(Xt), 0., 1e-1)) {
+      const double mgl = pars.mg;
       const double result =
       (32.31481481481482 - (320*mgl*Xt)/(27.*mmsusy) + (1354*log(mmsusy/mmu))/
          27. - (32*mgl*Xt*log(mmsusy/mmu))/(27.*mmsusy) + (16*mgl*Xt*log(mmt/
