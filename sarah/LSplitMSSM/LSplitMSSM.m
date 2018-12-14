@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -102,17 +104,19 @@ LagSplit2 = \
 LagReSlep = (
     - ml2 conj[SEL].SEL - me2 conj[SER].SER
     (* using completeness relation of pauli matrices *)
-    + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[SEL].SEL.SEL.conj[SEL]
-    + g2llhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.SEL.conj[SEL]
+    + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) Delta[gen1, gen2] Delta[gen3, gen4] conj[SEL].SEL.SEL.conj[SEL]
+    + g2llhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) Delta[gen3, gen4] conj[H].H.SEL.conj[SEL]
     + g2hhhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.H.conj[H]
-    + g1llll Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SEL.SEL.conj[SEL]
-    + g1eeee Delta[lef1,lef1] Delta[lef2,lef2] conj[SER].SER.SER.conj[SER]
-    + g1hhhh Delta[lef1,lef1] Delta[lef2,lef2] conj[H].H.H.conj[H]
-    + g1llhh Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SEL.H.conj[H]
-    + g1eehh Delta[lef1,lef1] Delta[lef2,lef2] conj[SER].SER.H.conj[H]
-    + g1llee Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SEL.SER.conj[SER]
-    + gylele Delta[lef1,lef1] Delta[lef2,lef2] conj[SEL].SER.conj[SER].SEL
-    + gylehh Delta[lef1,lef1] Delta[lef2,lef2] conj[H].SER.SEL
+    + g1llll Delta[lef1,lef2] Delta[lef3,lef4] Delta[gen1, gen2] Delta[gen3, gen4] conj[SEL].SEL.SEL.conj[SEL]
+    + g1eeee Delta[gen1,gen2] Delta[gen3,gen4] conj[SER].SER.SER.conj[SER]
+    + g1hhhh Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.H.conj[H]
+    + g1llhh Delta[lef1,lef2] Delta[lef3,lef4] Delta[gen1, gen2] conj[SEL].SEL.H.conj[H]
+    + g1eehh Delta[gen1,gen2] Delta[lef3,lef4] conj[SER].SER.H.conj[H]
+    + g1llee Delta[lef1,lef2] Delta[gen1,gen2] Delta[gen3, gen4] conj[SEL].SEL.SER.conj[SER]
+    + gylele Delta[lef1,lef4] Delta[gen1,gen2] Delta[gen3, gen4] conj[SEL].SER.conj[SER].SEL
+    + gyleh  Delta[lef1,lef3] conj[H].SER.SEL
+    + gyllhh Delta[lef1,lef2] Delta[lef3, lef4] conj[H].H.conj[SEL].SEL
+    + gyeehh conj[H].H.conj[SER].SER
 );
 
 (* part of slepton Lagrangian that needs to be conjugated *)
@@ -152,7 +156,7 @@ DEFINITION[EWSB][GaugeSector] = {
 (* ----- VEVs ---- *)
 
 DEFINITION[EWSB][VEVs] = {
-    {H0, {v,1}, {Ah,\[ImaginaryI]/Sqrt[2]}, {hh,1/Sqrt[2]}}
+    {H0, {v,1}, {Ah,I/Sqrt[2]}, {hh,1/Sqrt[2]}}
 };
 
 (* ---- Mixings ---- *)
