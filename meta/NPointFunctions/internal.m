@@ -8,14 +8,14 @@ Utils`AssertWithMessage[
 	MemberQ[$Packages, "FormCalc`"],
   "NPointFunctions`: Unable to load FormCalc` package"];
 
-SetFAPaths::usage="";
+SetFAFCPaths::usage="";
 
 LoopLevel::usage="";
 Regularize::usage="";
 DimensionalReduction::usage="";
 DimensionalRegularization::usage="";
 ZeroExternalMomenta::usage="";
-NPointFunction::usage="";
+NPointFunctionFAFC::usage="";
 
 GenericS::usage="";
 GenericF::usage="";
@@ -39,7 +39,7 @@ particleNamesFile = "";
 substitutionsFile = "";
 particleNamespaceFile = "";
 
-SetFAPaths[feynArtsDirS_String, formCalcDirS_String, feynArtsModelS_String,
+SetFAFCPaths[feynArtsDirS_String, formCalcDirS_String, feynArtsModelS_String,
            particleNamesFileS_String, substitutionsFileS_String,
            particleNamespaceFileS_String] :=
   (feynArtsDir = feynArtsDirS;
@@ -51,7 +51,7 @@ SetFAPaths[feynArtsDirS_String, formCalcDirS_String, feynArtsModelS_String,
 
    SetFSConventionRules[];)
 
-NPointFunction[inFields_List,outFields_List,
+NPointFunctionFAFC[inFields_List,outFields_List,
     OptionsPattern[{LoopLevel -> 1,
                     Regularize -> DimensionalReduction,
                     ZeroExternalMomenta -> False}]]:=

@@ -136,12 +136,12 @@ be either True or False"];
       
       Get[FileNameJoin[{fsMetaDir, "NPointFunctions", "internal.m"}]];
       
-      NPointFunctions`SetFAPaths[
+      NPointFunctions`SetFAFCPaths[
         feynArtsDir, formCalcDir, feynArtsModel,
         particleNamesFile, substitutionsFile,
         particleNamespaceFile];
       
-      NPointFunctions`NPointFunction[
+      NPointFunctions`NPointFunctionFAFC[
         ToExpression[inFANames], ToExpression[outFANames],
         LoopLevel -> loopLevel,
         Regularize -> regularizationScheme,
