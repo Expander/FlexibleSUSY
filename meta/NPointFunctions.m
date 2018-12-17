@@ -62,7 +62,7 @@ GenericSum::usage="";
 GenericIndex::usage="";
 LorentzIndex::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 SARAHModelName[] := If[SARAH`submodeldir =!= False,
                        SARAH`modelDir <> "-" <> SARAH`submodeldir,

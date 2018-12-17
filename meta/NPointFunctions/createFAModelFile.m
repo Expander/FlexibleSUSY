@@ -24,7 +24,7 @@ BeginPackage["NPointFunctions`", {"SARAH`"}];
 
 CreateFAModelFile::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 CreateFAModelFile[sarahInputDirectories_, sarahOutputDirectory_,
 	sarahModelName_, eigenstates_] :=

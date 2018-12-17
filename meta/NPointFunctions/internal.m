@@ -50,7 +50,7 @@ lt::usage="";
 
 subexpressionToFSRules::usage="";
 
-Begin["Private`"];
+Begin["`Private`"];
 
 feynArtsDir = "";
 formCalcDir = "";
