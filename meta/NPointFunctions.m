@@ -106,6 +106,11 @@ NPointFunction[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunction[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
+    Utils`AssertWithMessage[AllTrue[
+			TreeMasses`IsScalar /@ Join[inFields, outFields], TrueQ],
+			"NPointFunctions`NPointFunction[]: Only external scalars are \
+supported (for now)."];
+
     inFields = Vertices`StripFieldIndices[inFields];
     outFields = Vertices`StripFieldIndices[outFields];
     nPointMeta = {loopLevel, regularizationScheme, zeroExternalMomenta};
@@ -318,7 +323,6 @@ CXXClassForNPointFunction[nPointFunction_] :=
           genericIndices, genericFields, genericSumNames,
           genericSumCode, preCXXRules, cxxExpr,
           subexpressions, cxxSubexpressions},
-(* FIXME: This only works for scalar external fields *)
     externalIndices = ExternalIndicesForNPointFunction[nPointFunction];
     numberOfIndices = Length[externalIndices];
     numberOfMomenta = If[FreeQ[nPointFunction, SARAH`Mom[_Integer, ___]],
