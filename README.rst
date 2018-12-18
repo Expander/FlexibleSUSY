@@ -216,6 +216,11 @@ Note: In order to compile the library, Mathematica must be installed.
 To disable the LibraryLink interface, configure with
 ``--disable-librarylink``.
 
+Further details and examples can be found in the `LibraryLink
+documentation`_.
+
+.. _`LibraryLink documentation`: doc/librarylink.rst
+
 Parameter scans
 ---------------
 
