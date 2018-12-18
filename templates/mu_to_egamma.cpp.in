@@ -34,11 +34,6 @@
 #include "cxx_qft/@ModelName@_qft.hpp"
 #include "@ModelName@_FFV_form_factors.hpp"
 
-#define INPUTPARAMETER(p) context.model.get_input().p
-#define MODELPARAMETER(p) context.model.get_##p()
-#define DERIVEDPARAMETER(p) context.model.p()
-#define PHASE(p) context.model.get_##p()
-
 using namespace flexiblesusy;
 using namespace cxx_qft;
 using namespace @ModelName@_FFV_form_factors;
