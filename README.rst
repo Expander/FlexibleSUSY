@@ -216,6 +216,106 @@ Note: In order to compile the library, Mathematica must be installed.
 To disable the LibraryLink interface, configure with
 ``--disable-librarylink``.
 
+Parameter scans
+---------------
+
+FlexibleSUSY contains two shell scripts aiming to help the user
+performing parameter scans based on SLHA files.
+
+Tabular output
+``````````````
+
+The script ``utils/scan-slha.sh`` performs a scan over an input
+parameter.
+
+Examples:
+
+To perform a scan over :math:`\tan\beta(M_Z)` in the CMSSM (given in
+the SLHA input file in the ``MINPAR[3]`` field) and print out the the
+values of :math:`\tan\beta(M_Z)`, :math:`M_h` (``MASS[25]``) and
+:math:`y_t(M_{\text{SUSY}})` (``YU[2,2]``) run::
+
+     utils/scan-slha.sh \
+        --spectrum-generator=models/CMSSM/run_CMSSM.x \
+        --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+        --scan-range=MINPAR[3]=1~30:10 \
+        --output=MINPAR[3],MASS[25],YU[2:2]
+
+Alternatively, the SLHA input can be piped into the script as
+::
+
+    cat model_files/CMSSM/LesHouches.in.CMSSM \
+       | utils/scan-slha.sh \
+         --spectrum-generator=models/CMSSM/run_CMSSM.x \
+         --scan-range=MINPAR[3]=1~30:10 \
+         --output=MINPAR[3],MASS[25],YU[2:2]
+
+The spectrum generator executable is specified using the
+``--spectrum-generator=`` option.  The parameter to be scanned over as
+well as the scan range and the number of steps must be specified using
+the ``--scan-range=`` option.  The syntax is::
+
+    --scan-range=<block>[<field>]=<start>~<stop>:<number_of_steps>
+
+Here ``<block>`` is the SLHA block in which the input parameter is to
+be found and ``<field>`` is the block entry corresponding to the
+parameter.  ``<start>`` and ``<stop>`` define the scan range and
+``<number_of_steps>`` define the number of steps.  By default the step
+size is linear.  Alternatively, a logarithmic step size can be chosen
+by passing ``--step-size=log`` to the script.  See also
+``utils/scan-slha.sh --help``.  The parameters to print to the output
+stream must be defined using the ``--output=`` option.  The syntax
+is::
+
+    --output=<block>[<fields>]
+
+where ``<block>`` is the SLHA block in which the output parameter is to
+be read from and ``<field>`` is the block entry corresponding to the
+parameter.  To read a matrix element from a block, use a colon ``:`` to
+specify the matrix element indices.  Multiple output parameters can be
+specified by a comma.
+
+Database output
+```````````````
+
+As an alternative, all parameters calculated during a scan can be
+written to a SQLite database using the ``scan-database.sh`` script.
+
+Examples::
+
+    utils/scan-database.sh \
+       --spectrum-generator=models/CMSSM/run_CMSSM.x \
+       --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+       --scan-range=MINPAR[3]=1~30:10 \
+       --database-output-file=scan.db
+
+or::
+
+    cat model_files/CMSSM/LesHouches.in.CMSSM \
+       | ./utils/scan-database.sh \
+         --spectrum-generator=models/CMSSM/run_CMSSM.x \
+         --scan-range=MINPAR[3]=1~30:10 \
+         --database-output-file=scan.db
+
+The name of the database file must be set using the
+``--database-output-file=`` option.
+
+Convert SPheno to FlexibleSUSY model file
+-----------------------------------------
+
+The script ``utils/convert_SPheno_to_FlexibleSUSY.m`` can help to
+convert a SPheno model file (``SPheno.m``) to a FlexibleSUSY model
+file (``FlexibleSUSY.m.in``).  The conversion is not perfect, because
+it is usually not unique.  Therefore one should check the generated
+``FlexibleSUSY.m.in`` file.
+
+Example::
+
+    cat << EOF | math -noprompt > FlexibleSUSY.m.in
+    sphenoFile = "~/.Mathematica/Applications/SARAH/Models/MSSM/SPheno.m";
+    Get["utils/convert_SPheno_to_FlexibleSUSY.m"];
+    EOF
+
 
 Advanced FlexibleSUSY build options
 ===================================
