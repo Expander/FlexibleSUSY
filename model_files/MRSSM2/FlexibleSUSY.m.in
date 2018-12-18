@@ -2,7 +2,7 @@ FSModelName = "MRSSM2";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = MRSSM;
 
-OnlyLowEnergyFlexibleSUSY = False;
+OnlyLowEnergyFlexibleSUSY = True;
 
 MINPAR = {
     {3, TanBeta}
