@@ -13,11 +13,24 @@ extension and reuse.
 * Mailing list:            flexiblesusy@projects.hepforge.org
 * Source code repository:  https://github.com/FlexibleSUSY
 * Bug reports:             https://github.com/FlexibleSUSY/FlexibleSUSY/issues
-* References:
+* References: [1406.2319]_, [1609.00371]_, [1710.03760]_
 
-  - CPC 190 (2015) 139-172 [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
-  - JHEP 1701 (2017) 079 [`arxiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
-  - CPC 230 (2018) 145-217 [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]
+  If you use **FlexibleSUSY** in your work please cite [1406.2319]_
+  and [1710.03760]_.
+
+  If you use the **FlexibleEFTHiggs** approach in your work please
+  cite [1609.00371]_.
+
+  If you use **FlexibleSUSY+Himalaya** or Himalaya_ in your work,
+  please cite [1005.5709]_, [1708.05720]_ and [1807.03509]_.
+
+  FlexibleSUSY depends on SARAH_ and contains components from
+  SOFTSUSY_. Therefore, please also cite the following publications
+  along with FlexibleSUSY:
+
+  - **SARAH** [0909.2863]_, [1002.0840]_, [1207.0906]_, [1309.7223]_
+  - **SOFTSUSY** [hep-ph:0104145]_, [1311.7659]_
+
 
 .. contents:: Table of Contents
 ..    :depth: 2
@@ -523,6 +536,7 @@ are listed:
 .. _slhaea: https://github.com/fthomas/slhaea
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _SARAH: http://sarah.hepforge.org
+.. _SOFTSUSY: http://softsusy.hepforge.org
 .. _Boost: http://www.boost.org
 .. _Eigen 3: http://eigen.tuxfamily.org
 .. _GNU scientific library: http://www.gnu.org/software/gsl/
@@ -530,3 +544,19 @@ are listed:
 .. _LAPACK: http://www.netlib.org/lapack/
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
+
+.. [1406.2319] `CPC 190 (2015) 139-172 <https://inspirehep.net/record/1299998>`_ [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
+.. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arxiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
+.. [1710.03760] `CPC 230 (2018) 145-217 <https://inspirehep.net/record/1629978>`_ [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]
+
+.. [1005.5709]  `JHEP 1008 (2010) 104 <https://inspirehep.net/record/856612>`_  [`arxiv:1005.5709 <https://arxiv.org/abs/1005.5709>`_]
+.. [1708.05720] `Eur.Phys.J. C77 (2017) no.12, 814 <https://inspirehep.net/record/1617767>`_ [`arxiv:1708.05720 <https://arxiv.org/abs/1708.05720>`_]
+.. [1807.03509] `Eur.Phys.J. C78 (2018) no.10, 874 <https://inspirehep.net/record/1681658>`_ [`arxiv:1807.03509 <https://arxiv.org/abs/1807.03509>`_]
+
+.. [0909.2863] `CPC 181 (2010) 1077-1086 <https://inspirehep.net/record/831371>`_ [`arxiv:0909.2863 <http://arxiv.org/abs/0909.2863>`_]
+.. [1002.0840] `CPC 182 (2011) 808-833 <https://inspirehep.net/record/845241>`_   [`arxiv:1002.0840 <http://arxiv.org/abs/1002.0840>`_]
+.. [1207.0906] `CPC 184 (2013) 1792-1809 <https://inspirehep.net/record/1121136>`_ [`arxiv:1207.0906 <http://arxiv.org/abs/1207.0906>`_]
+.. [1309.7223] `CPC 185 (2014) 1773-1790 <https://inspirehep.net/record/1255845>`_ [`arxiv:1309.7223 <http://arxiv.org/abs/1309.7223>`_]
+
+.. [hep-ph:0104145] `CPC 143 (2002) 305-331 <https://inspirehep.net/record/555481>`_ [`arxiv:hep-ph/0104145 <http://arxiv.org/abs/hep-ph/0104145>`_]
+.. [1311.7659] `CPC 185 (2014) 2322 <https://inspirehep.net/record/1266808>`_  [`arxiv:1311.7659 <http://arxiv.org/abs/1311.7659>`_]

@@ -32,12 +32,6 @@ Alternatively, the Mathematica interface of FlexibleSUSY may be used:
 
 \section further_reading Documentation
 
-\subsection Documentation_Installation Installation
-
-- @ref install
-- @ref building
-- @ref documentation
-
 \subsection Documentation_ModelFiles Creating FlexibleSUSY models
 
 - @ref model_file_options
@@ -54,7 +48,6 @@ Alternatively, the Mathematica interface of FlexibleSUSY may be used:
 
 - @ref addons
 - @ref librarylink
-- @ref package
 - @ref utilities
 
 \section References
