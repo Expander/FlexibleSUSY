@@ -1327,8 +1327,8 @@ are defined::
 Model-specific switches
 -----------------------
 
-2- and 3-loop corrections to pole masses
-````````````````````````````````````````
+Two- and three-loop corrections to pole masses
+``````````````````````````````````````````````
 
 MSSM
 ''''
@@ -1394,8 +1394,8 @@ effective CP-odd MSSM-like Higgs must be specified in the
     EffectiveMu = \[Lambda] vS / Sqrt[2];
     EffectiveMASqr = (T[\[Lambda]] vS / Sqrt[2] + 0.5 \[Lambda] \[Kappa] vS^2) (vu^2 + vd^2) / (vu vd);
 
-Standard Model (SM)
-'''''''''''''''''''
+Standard Model
+''''''''''''''
 
 In the Standard Model the two-loop Higgs pole mass corrections of the
 order :math:`O(\alpha_t\alpha_s + \alpha_b\alpha_s)` [arxiv:1407.4336],
@@ -1434,32 +1434,15 @@ by setting in the model file::
            UseSM3LoopRGEs = True;      (* use 3-loop RGEs *)
            UseSM4LoopRGEs = True;      (* use 4-loop RGEs *)
 
-Split-MSSM (``SplitMSSM``)
-''''''''''''''''''''''''''
+Split-MSSM
+''''''''''
 
-In the split-MSSM the two-loop Higgs pole mass corrections from
-[arxiv:1312.5220, Eq. (4.8)] of the order :math:`O(\alpha_t \alpha_s^2)`
-can be used by setting in the model file::
+In the split-MSSM (``SplitMSSM``) the two-loop Higgs pole mass
+corrections from [arxiv:1312.5220, Eq. (4.8)] of the order
+:math:`O(\alpha_t \alpha_s^2)` can be used by setting in the model
+file::
 
     UseHiggs3LoopSplit = True;
-
-3-loop QCD corrections to the top Yukawa coupling
-`````````````````````````````````````````````````
-
-In non-SUSY models the known 3-loop (Standard Model) QCD corrections
-:math:`O(\alpha_s^3)` [arxiv:hep-ph/9911434, arxiv:hep-ph/9912391] can
-be used in the determination of the running :math:`\overline{MS}` top
-Yukawa coupling :math:`y_t` at the low-energy scale by setting::
-
-    UseYukawa3LoopQCD = Automatic;
-
-or::
-
-    UseYukawa3LoopQCD = True;
-
-Note, that these 3-loop corrections are only applied at run-time if
-the threshold correction loop order (block ``FlexibleSUSY[7]``) is set
-to a value > 2.
 
 Three-loop RGEs for specific models
 ```````````````````````````````````
@@ -1496,8 +1479,8 @@ file::
 Two-loop threshold corrections
 ``````````````````````````````
 
-SM
-''
+Standard Model
+''''''''''''''
 
 The known SM 2- and 3-loop QCD threshold corrections of order
 :math:`O(\alpha_s^2 + \alpha_s^3)` to the strong coupling constant are
@@ -1526,9 +1509,42 @@ model file::
 
     UseMSSMAlphaS2Loop = True; (* use two-loop threshold for alpha_s *)
 
+Three-loop threshold corrections
+````````````````````````````````
+
+Standard Model
+''''''''''''''
+
+In non-SUSY models the known 3-loop (Standard Model) QCD corrections
+:math:`O(\alpha_s^3)` [arxiv:hep-ph/9911434, arxiv:hep-ph/9912391] can
+be used in the determination of the running :math:`\overline{MS}` top
+Yukawa coupling :math:`y_t` at the low-energy scale by setting::
+
+    UseYukawa3LoopQCD = Automatic;
+
+or::
+
+    UseYukawa3LoopQCD = True;
+
+Note, that these 3-loop corrections are only applied at run-time if
+the threshold correction loop order (block ``FlexibleSUSY[7]``) is set
+to a value > 2.
+
+In addition, the 3-loop (Standard Model) QCD corrections
+:math:`O(\alpha_s^3)` [arxiv:hep-ph/0004189] to the running
+:math:`\overline{MS}` strong coupling :math:`\alpha_s` can be used at
+the low-energy scale by setting::
+
+    UseSMAlphaS3Loop = True;
+
+Note, that these 3-loop corrections are only applied at run-time if
+the threshold correction loop order (block ``FlexibleSUSY[7]``) is set
+to a value > 2.
+
+
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
 
+.. [hep-ph:0308231] `Phys.Lett. B579 (2004) 180-188 <https://inspirehep.net/record/626390>`_ [`arxiv:hep-ph/0308231 <https://arxiv.org/abs/hep-ph/0308231>`_]
 .. [1406.2319] `CPC 190 (2015) 139-172 <https://inspirehep.net/record/1299998>`_ [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
 .. [1602.05581] `Eur.Phys.J. C76 (2016) no.9, 516 <https://inspirehep.net/record/1422208>`_ [`arxiv:1602.05581 <https://arxiv.org/abs/1602.05581>`_]
-.. [hep-ph:0308231] `Phys.Lett. B579 (2004) 180-188 <https://inspirehep.net/record/626390>`_ [`arxiv:hep-ph/0308231 <https://arxiv.org/abs/hep-ph/0308231>`_]
