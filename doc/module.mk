@@ -5,21 +5,15 @@ DOC_MK       := \
 		$(DIR)/module.mk
 
 DOC_TMPL     := \
-		$(DIR)/addons.dox \
-		$(DIR)/building.dox \
-		$(DIR)/documentation.dox \
 		$(DIR)/FlexibleEFTHiggs.dox \
 		$(DIR)/hssusy.dox \
-		$(DIR)/install.dox \
 		$(DIR)/librarylink.dox \
 		$(DIR)/mainpage.dox.in \
 		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.dox \
 		$(DIR)/mssmefthiggs.dox \
 		$(DIR)/nuhmssmnofvhimalaya.dox \
-		$(DIR)/package.dox \
-		$(DIR)/slha_input.dox \
-		$(DIR)/utilities.dox
+		$(DIR)/slha_input.dox
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
