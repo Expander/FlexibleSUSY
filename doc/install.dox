@@ -1,5 +1,5 @@
 /**
-\page install Installation of SARAH
+\page install Installation of Dependencies
 \tableofcontents
 
 \section installation_of_sarah Installation of SARAH
@@ -22,4 +22,23 @@ script:
     ./install-sarah
 
 See `./install-sarah --help` for more options.
+
+\section installation_of_FAFCLT Installation of FeynArts/FormCalc/LoopTools
+
+If you want FlexibleSUSY to use either FeynArts, FormCalc or LoopTools
+you will need to install these packages first.  Also - as with SARAH -
+they need to be loadable with the ``Needs[]`` command from inside
+Mathematica.  We recommend using the installation script `FeynInstall`
+provided on the FeynArts web page. e.g:
+
+    cd ~/.local
+    wget http://www.feynarts.de/FeynInstall
+    chmod 755 FeynInstall
+    ./FeynInstall
+
+which will install the latest versions of FeynArts, FormCalc and
+LoopTools in the `~/.local/` directory as well as configure Mathematica
+to find these packages.  Note that running the `FeynInstall` script
+might require user intervention.
+
 */
