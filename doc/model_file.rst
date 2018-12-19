@@ -879,8 +879,8 @@ Temporary parameter re-definitions
 ''''''''''''''''''''''''''''''''''
 
 Since FlexibleSUSY 1.4.0, the user can perform a temporary parameter
-definition to be used in the boundary conditions using the Temporary[]
-head.
+definition to be used in the boundary conditions using the
+``Temporary[]`` head.
 
 If a parameter ``p`` set in a boundary conditions in the form
 ``Temporary[p,<expr>]``, the following happens: Immediately after the RG
@@ -999,18 +999,18 @@ If ``FSConvergenceCheck`` is set to ``Automatic``, then the following
 convergence criteria are used:
 
 - In SUSY models the BVP solver stops if the maximum number of
-  iterations has been reached (``FlexibleSUSY[1]``, see @ref
-  slha_input_fields) or the maximum relative difference of the DR-bar
-  masses of the SUSY particles at the SUSY scale between two
-  successive iterations is less than the precision goal
-  (``FlexibleSUSY[0]``, see @ref slha_input_fields).
+  iterations has been reached (``FlexibleSUSY[1]``, see `SLHA input
+  file`_ or the maximum relative difference of the DR-bar masses of
+  the SUSY particles at the SUSY scale between two successive
+  iterations is less than the precision goal (``FlexibleSUSY[0]``, see
+  `SLHA input file`_).
 
 - In non-SUSY models the BVP solver stops if the maximum number of
-  iterations has been reached (``FlexibleSUSY[1]``, see @ref
-  slha_input_fields) or the maximum relative difference of all MS-bar
-  masses of the model at the SUSY scale between two successive
-  iterations is less than the precision goal (``FlexibleSUSY[0]``, see
-  @ref slha_input_fields).
+  iterations has been reached (``FlexibleSUSY[1]``, see `SLHA input
+  file`_ or the maximum relative difference of all MS-bar masses of
+  the model at the SUSY scale between two successive iterations is
+  less than the precision goal (``FlexibleSUSY[0]``, see `SLHA input
+  file`_).
 
 To create a custom convergence tester, the ``FSConvergenceCheck``
 variable must be set to a list containing the running masses and/or
@@ -1124,7 +1124,7 @@ Observables
 
 FlexibleSUSY can calculate various observables.  To enable the
 calculation of a specific observable, the corresponding symbol must be
-added to an extra SLHA output block, see @ref output_blocks .  In the
+added to an extra SLHA output block, see `Output blocks`_ .  In the
 following the supported observables are listed.
 
 Effective Higgs-Photon-Photon and Higgs-Gluon-Gluon couplings
@@ -1544,6 +1544,8 @@ to a value > 2.
 
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
+
+.. _`SLHA input file`: slha_input.rst
 
 .. [hep-ph:0308231] `Phys.Lett. B579 (2004) 180-188 <https://inspirehep.net/record/626390>`_ [`arxiv:hep-ph/0308231 <https://arxiv.org/abs/hep-ph/0308231>`_]
 .. [1406.2319] `CPC 190 (2015) 139-172 <https://inspirehep.net/record/1299998>`_ [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
