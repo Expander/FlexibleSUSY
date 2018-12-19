@@ -2,12 +2,6 @@
 \mainpage FlexibleSUSY @FLEXIBLESUSY_VERSION@
 \tableofcontents
 
-\section Documentation_ModelFiles Creating a FlexibleSUSY model
-
-- @ref model_file_options
-- @ref FlexibleEFTHiggs
-- @ref slha_input_fields
-
 \section Documentation_Models Available FlexibleSUSY models
 
 - @ref hssusy
