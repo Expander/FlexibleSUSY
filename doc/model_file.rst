@@ -399,13 +399,13 @@ the variable ``FSWeakMixingAngleInput`` to either ``Automatic``,
 ``FSFermiConstant`` or ``FSMassW``.  ``FSWeakMixingAngleInput`` is set to
 ``Automatic`` by default.
 
- ====================================== =======================================================
-  Value of ``FSWeakMixingAngleInput``    Parameters from which weak mixing angle is determined  
- ====================================== =======================================================
-  ``FSFermiConstant``                    :math:`G_F` and :math:`M_Z`                                
-  ``FSMassW``                            :math:`M_W` and :math:`M_Z`                                
-  ``Automatic`` (default) (recommended)  chose most precise method automatically                
- ====================================== =======================================================
+====================================== =======================================================
+ Value of ``FSWeakMixingAngleInput``    Parameters from which weak mixing angle is determined  
+====================================== =======================================================
+ ``FSFermiConstant``                    :math:`G_F` and :math:`M_Z`                                
+ ``FSMassW``                            :math:`M_W` and :math:`M_Z`                                
+ ``Automatic`` (default) (recommended)  chose most precise method automatically                
+====================================== =======================================================
 
 Example: Automatically chose most precise method to determine the weak
 mixing angle::
