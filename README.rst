@@ -110,6 +110,17 @@ Building a FlexibleSUSY model
    etc.), edit the FlexibleSUSY model file
    ``models/<model>/FlexibleSUSY.m``.
 
+   Further reading:
+
+   * `FlexibleSUSY model file`_
+   * `FlexibleEFTHiggs`_
+   * `SLHA input parameters`_
+
+.. _`FlexibleSUSY model file`: doc/model_file.rst
+.. _`FlexibleEFTHiggs`: doc/FlexibleEFTHiggs.rst
+.. _`SLHA input parameters`: doc/slha_input.rst
+
+
 2. Create the Makefile and register your model(s)::
 
        ./configure --with-models=<model>
