@@ -26,20 +26,13 @@ In HSSUSY, the ``HighScale`` variable is set to the SUSY scale,
 MSSM using the full 1-loop and dominant 2- and 3-loop threshold
 corrections of :math:`O((\alpha_t + \alpha_b)\alpha_s + (\alpha_t +
 \alpha_b)^2 + \alpha_b\alpha_\tau + \alpha_\tau^2 +
-\alpha_t\alpha_s^2)` from [<a
-href="https://arxiv.org/abs/1407.4081">arXiv:1407.4081</a>, <a
-href="https://arxiv.org/abs/1504.05200">arXiv:1504.05200</a>, <a
-href="https://arxiv.org/abs/1703.08166">arXiv:1703.08166</a>, <a
-href="https://arxiv.org/abs/1807.XXXX">arXiv:1807.XXXX</a>].
+\alpha_t\alpha_s^2)` from [1407.4081]_, [1504.05200]_, [1703.08166]_,
+[1807.03509]_.
 
 The 3- and partial 4-loop renormalization group equations of
-[<a href="https://arxiv.org/abs/1303.4364">arXiv:1303.4364</a>,
-<a href="https://arxiv.org/abs/1307.3536">arXiv:1307.3536</a>,
-<a href="https://arxiv.org/abs/1508.00912">arXiv:1508.00912</a>,
-<a href="https://arxiv.org/abs/1508.02680">arXiv:1508.02680</a>,
-<a href="https://arxiv.org/abs/1604.00853">arXiv:1604.00853</a>]
-are used to run :math:`\lambda(M_\text{SUSY})` down to the electroweak
-scale :math:`M_Z` or :math:`M_{\text{EWSB}}`.
+[1303.4364]_, [1307.3536]_, [1508.00912]_, [1508.02680]_,
+[1604.00853]_ are used to run :math:`\lambda(M_\text{SUSY})` down to
+the electroweak scale :math:`M_Z` or :math:`M_{\text{EWSB}}`.
 
 If :math:`M_{\text{SUSY}}` is set to zero, :math:`M_{\text{SUSY}} =
 \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}` is used.
@@ -60,24 +53,15 @@ as well as from the :math:`\overline{\text{MS}}` masses
 :math:`m_s(2\,\text{GeV})`, :math:`m_d(2\,\text{GeV})`,
 :math:`m_u(2\,\text{GeV})`.  In addition to these 1-loop corrections,
 the known 2-loop and 3-loop QCD threshold corrections for
-:math:`\alpha_s(M_Z)` from [<a
-href="https://arxiv.org/abs/hep-ph/9305305">arXiv:hep-ph/9305305</a>,
-<a
-href="https://arxiv.org/abs/hep-ph/9708255">arXiv:hep-ph/9708255</a>,
-<a
-href="https://arxiv.org/abs/hep-ph/9707474">arXiv:hep-ph/9707474</a>,
-<a
-href="https://arxiv.org/abs/hep-ph/0004189">arXiv:hep-ph/0004189</a>]
-can be taken into account in addition by setting the threshold
-corrections flag appropriately.  In the calculation of the Standard
-Model :math:`\overline{\text{MS}}` top Yukawa coupling,
-:math:`y_t(M_Z)`, the known 2-loop [<a
-href="https://arxiv.org/abs/hep-ph/9803493">arXiv:hep-ph/9803493</a>]
-and 3-loop [<a
-href="https://arxiv.org/abs/hep-ph/9911434">arXiv:hep-ph/9911434</a>]
-QCD corrections can be taken into account.  See Section @ref
-FlexibleSUSY_config for a description of the individual flags to
-enable/disable 2- and 3-loop threshold corrections in FlexibleSUSY.
+:math:`\alpha_s(M_Z)` from [hep-ph:9305305]_, [hep-ph:9708255]_,
+[hep-ph:9707474]_, [hep-ph:0004189]_ can be taken into account in
+addition by setting the threshold corrections flag appropriately.  In
+the calculation of the Standard Model :math:`\overline{\text{MS}}` top
+Yukawa coupling, :math:`y_t(M_Z)`, the known 2-loop [hep-ph:9803493]_
+and 3-loop [hep-ph:9911434]_ QCD corrections can be taken into
+account.  See the documentation of the `SLHA input parameters`_ for a
+description of the individual flags to enable/disable 2- and 3-loop
+threshold corrections in FlexibleSUSY.
 
 EWSB scale
 ``````````
@@ -93,20 +77,17 @@ coupling :math:`\mu^2(M_{\text{EWSB}})`.
 Pole masses
 -----------
 
-The Higgs and W boson pole masses, :math:`M_h` and :math:`M_Z`, are
-calculated at the full 1-loop level, including potential flavour
-mixing and momentum dependence.  Depending on the given configuration
-flags, additional 2-, 3- and 4-loop corrections to the Higgs pole mass
-of :math:`O(\alpha_t\alpha_s + \alpha_b\alpha_s)` [<a
-href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>]
-:math:`O((\alpha_t + \alpha_b)^2)` [<a
-href="https://arxiv.org/abs/1205.6497">arXiv:1205.6497</a>] and
-:math:`O(\alpha_\tau^2)`, as well as 3-loop corrections :math:`O(\alpha_t^3
-+ \alpha_t^2\alpha_s + \alpha_t\alpha_s^2)` [<a
-href="https://arxiv.org/abs/1407.4336">arXiv:1407.4336</a>] and 4-loop
-corrections :math:`O(\alpha_t\alpha_s^3)` [<a
-href="https://arxiv.org/abs/1508.00912">arXiv:1508.00912</a>] can be
-taken into account.
+The Higgs and W boson pole masses, :math:`M_h` and :math:`M_W`, are
+calculated at the full 1-loop level in the Standard Model, including
+potential flavour mixing and momentum dependence.  Depending on the
+given configuration flags, additional 2-, 3- and 4-loop corrections to
+the Higgs pole mass of :math:`O(\alpha_t\alpha_s + \alpha_b\alpha_s)`
+[1407.4336]_ :math:`O((\alpha_t + \alpha_b)^2)` [1205.6497]_ and
+:math:`O(\alpha_\tau^2)`, as well as 3-loop corrections
+:math:`O(\alpha_t^3
++ \alpha_t^2\alpha_s + \alpha_t\alpha_s^2)` [1407.4336]_ and 4-loop
+corrections :math:`O(\alpha_t\alpha_s^3)` [1508.00912]_ can be taken
+into account.
 
 .. note:: Note, that the 3-loop contributions :math:`O(\alpha_t^3 +
           \alpha_t^2\alpha_s)` are incomplete, because the
@@ -295,3 +276,32 @@ When this script is executed, the following figure is produced:
    :align: center
 
 .. _`LibraryLink documentation`: librarylink.rst
+.. _`SLHA input parameters`: slha_input.rst
+
+.. [hep-ph:9305305] `Phys.Lett. B313 (1993) 441-446 <https://inspirehep.net/record/354674>`_ [`arXiv:hep-ph/9305305 <https://arxiv.org/abs/hep-ph/9305305>`_]
+.. [hep-ph:9707474] `Phys.Lett. B424 (1998) 367-374 <https://inspirehep.net/record/446409>`_ [`arXiv:hep-ph/9707474 <https://arxiv.org/abs/hep-ph/9707474>`_]
+.. [hep-ph:9708255] `Nucl.Phys. B510 (1998) 61-87 <https://inspirehep.net/record/446802>`_ [`arXiv:hep-ph/9708255 <https://arxiv.org/abs/hep-ph/9708255>`_]
+.. [hep-ph:9803493] `Nucl.Phys. B539 (1999) 671-690 <https://inspirehep.net/record/468752>`_ [`arXiv:hep-ph/9803493 <https://arxiv.org/abs/hep-ph/9803493>`_]
+.. [hep-ph:9911434] `Nucl.Phys. B573 (2000) 617-651 <https://inspirehep.net/record/510551>`_ [`arXiv:hep-ph/9911434 <https://arxiv.org/abs/hep-ph/9911434>`_]
+.. [hep-ph:9912391] `Phys.Lett. B482 (2000) 99-108 <https://inspirehep.net/record/522686>`_ [`arXiv:hep-ph/9912391 <https://arxiv.org/abs/hep-ph/9912391>`_]
+.. [hep-ph:0004189] `Comput.Phys.Commun. 133 (2000) 43-65 <https://inspirehep.net/record/526362>`_ [`arXiv:hep-ph/0004189 <https://arxiv.org/abs/hep-ph/0004189>`_]
+.. [hep-ph:0105096] `Nucl.Phys. B611 (2001) 403-422 <https://inspirehep.net/record/556417>`_ [`arXiv:hep-ph/0105096 <https://arxiv.org/abs/hep-ph/0105096>`_]
+.. [hep-ph:0210258] `Eur.Phys.J. C29 (2003) 87-101 <https://inspirehep.net/record/600038>`_ [`arXiv:hep-ph/0210258 <https://arxiv.org/abs/hep-ph/0210258>`_]
+.. [hep-ph:0308231] `Phys.Lett. B579 (2004) 180-188 <https://inspirehep.net/record/626390>`_ [`arXiv:hep-ph/0308231 <https://arxiv.org/abs/hep-ph/0308231>`_]
+.. [hep-ph:0507139] `Phys.Atom.Nucl. 71 (2008) 343-350 <https://inspirehep.net/record/687205>`_ [`arXiv:hep-ph/0507139 <https://arxiv.org/abs/hep-ph/0507139>`_]
+.. [hep-ph:0509048] `Phys.Rev. D72 (2005) 095009 <https://inspirehep.net/record/691479>`_ [`arXiv:hep-ph/0509048 <https://arxiv.org/abs/hep-ph/0509048>`_]
+.. [0707.0650] `Int.J.Mod.Phys. A22 (2007) 5245-5277 <https://inspirehep.net/record/755029>`_ [`arXiv:0707.0650 <https://arxiv.org/abs/0707.0650>`_]
+.. [0810.5101] `JHEP 0902 (2009) 037 <https://inspirehep.net/record/800842>`_ [`arXiv:0810.5101 <https://arxiv.org/abs/0810.5101>`_]
+.. [0901.2065] `Phys.Rev. D84 (2011) 034030 <https://inspirehep.net/record/811006>`_ [`arXiv:0901.2065 <https://arxiv.org/abs/0901.2065>`_]
+.. [1009.5455] `C10-06-06.1 <https://inspirehep.net/record/871111>`_ [`arXiv:1009.5455 <https://arxiv.org/abs/1009.5455>`_]
+.. [1205.6497] `JHEP 1208 (2012) 098 <https://inspirehep.net/record/1116539>`_ [`arXiv:1205.6497 <https://arxiv.org/abs/1205.6497>`_]
+.. [1303.4364] `Nucl.Phys. B875 (2013) 552-565 <https://inspirehep.net/record/1224266>`_ [`arXiv:1303.4364 <https://arxiv.org/abs/1303.4364>`_]
+.. [1307.3536] `JHEP 1312 (2013) 089 <https://inspirehep.net/record/1242456>`_ [`arXiv:1307.3536 <https://arxiv.org/abs/1307.3536>`_]
+.. [1407.4081] `JHEP 1409 (2014) 092 <https://inspirehep.net/record/1306517>`_ [`arXiv:1407.4081 <https://arxiv.org/abs/1407.4081>`_]
+.. [1407.4336] `Phys.Rev. D90 (2014) no.7, 073010 <https://inspirehep.net/record/1306632>`_ [`arXiv:1407.4336 <https://arxiv.org/abs/1407.4336>`_]
+.. [1504.05200] `JHEP 1507 (2015) 159 <https://inspirehep.net/record/1362483>`_ [`arXiv:1504.05200 <https://arxiv.org/abs/1504.05200>`_]
+.. [1508.00912] `Phys.Rev. D92 (2015) no.5, 054029 <https://inspirehep.net/record/1386688>`_ [`arXiv:1508.00912 <https://arxiv.org/abs/1508.00912>`_]
+.. [1508.02680] `Phys.Lett. B762 (2016) 151-156 <https://inspirehep.net/record/1387530>`_ [`arXiv:1508.02680 <https://arxiv.org/abs/1508.02680>`_]
+.. [1604.00853] `JHEP 1606 (2016) 175 <https://inspirehep.net/record/1441223>`_ [`arXiv:1604.00853 <https://arxiv.org/abs/1604.00853>`_]
+.. [1703.08166] `Eur.Phys.J. C77 (2017) no.5, 334 <https://inspirehep.net/record/1518961>`_ [`arXiv:1703.08166 <https://arxiv.org/abs/1703.08166>`_]
+.. [1807.03509] `Eur.Phys.J. C78 (2018) no.10, 874 <https://inspirehep.net/record/1681658>`_ [`arXiv:1807.03509 <https://arxiv.org/abs/1807.03509>`_]

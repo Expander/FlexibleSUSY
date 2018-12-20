@@ -9,14 +9,10 @@ NUHMSSMNoFVHimalaya
 
 NUHMSSMNoFVHimalaya (non-universal Higgs MSSM without flavour
 violation + Himalaya) is an implementation of the MSSM without flavour
-violation.  The `Himalaya library`_ [<a
-href="https://arxiv.org/abs/1708.05720">arXiv:1708.05720</a>] is
-linked to this model to include 3-loop corrections of
-:math:`O(\alpha_t\alpha_s^2)` [<a
-href="https://arxiv.org/abs/0803.0672">arXiv:0803.0672</a>, <a
-href="https://arxiv.org/abs/1005.5709">arXiv:1005.5709</a>] to the
-light CP-even Higgs pole mass.  The setup of NUHMSSMNoFVHimalaya is
-shown in the following figure.
+violation.  The `Himalaya library`_ [1708.05720]_ is linked to this
+model to include 3-loop corrections of :math:`O(\alpha_t\alpha_s^2)`
+[0803.0672]_, [1005.5709]_ to the light CP-even Higgs pole mass.  The
+setup of NUHMSSMNoFVHimalaya is shown in the following figure.
 
 .. image:: images/NUHMSSMNoFVHimalaya_tower.svg
    :align: center
@@ -222,3 +218,7 @@ When this script is executed, the following figure is produced:
    :align: center
 
 .. _`Himalaya library`: https://github.com/Himalaya-Library/Himalaya
+
+.. [0803.0672] `Phys.Rev.Lett. 100 (2008) 191602, Phys.Rev.Lett. 101 (2008) 039901 <https://inspirehep.net/record/780752>`_ [`arXiv:0803.0672 <https://arxiv.org/abs/0803.0672>`_]
+.. [1005.5709] `JHEP 1008 (2010) 104 <https://inspirehep.net/record/856612>`_ [`arXiv:1005.5709 <https://arxiv.org/abs/1005.5709>`_]
+.. [1708.05720] `Eur.Phys.J. C77 (2017) no.12, 814 <https://inspirehep.net/record/1617767>`_ [`arXiv:1708.05720 <https://arxiv.org/abs/1708.05720>`_]
