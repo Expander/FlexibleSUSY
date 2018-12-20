@@ -20,7 +20,8 @@ HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
 IMAGE_DIR       := $(DIR)/images
-IMAGES          := $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
+IMAGES          := $(IMAGE_DIR)/FS-logo.png \
+		   $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
 		   $(IMAGE_DIR)/HSSUSY_Mh_Xt.png \
 		   $(IMAGE_DIR)/HSSUSY_tower.svg \
 		   $(IMAGE_DIR)/MSSMEFTHiggs_Mh_MS.png \
