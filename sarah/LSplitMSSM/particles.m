@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -72,27 +74,48 @@ ParticleDefinitions[GaugeES] = {
              FeynArtsNr -> 667,
              LaTeX -> "\\tilde{W}^+",
              OutputName -> "FWp" }},
-    {SeL,  { Description -> "Left Selectron",
+    {SeL1,  { Description -> "Left Selectron",
              PDG -> {0, 0},
              PDG.IX -> {0, 0},
              Mass -> Automatic,
              FeynArtsNr -> 12,
              LaTeX -> "\\tilde{e}_L",
              OutputName -> "eL" }},
-    {SeR,  { Description -> "Right Selectron",
+    {SeL2,  { Description -> "Left Smuon",
+             PDG -> {0, 0},
+             PDG.IX -> {0, 0},
+             Mass -> Automatic,
+             FeynArtsNr -> 12,
+             LaTeX -> "\\tilde{\mu}_L",
+             OutputName -> "muL" }},
+    {SeR1,  { Description -> "Right Selectron",
              PDG -> {0, 0},
              PDG.IX -> {0, 0},
              Mass -> Automatic,
              FeynArtsNr -> 13,
              LaTeX -> "\\tilde{e}_R",
              OutputName -> "eR" }},
-    {SvL,  { Description -> "Left Sneutrino",
+    {SeR2,  { Description -> "Right Smuon",
+             PDG -> {0, 0},
+             PDG.IX -> {0, 0},
+             Mass -> Automatic,
+             FeynArtsNr -> 13,
+             LaTeX -> "\\tilde{\mu}_R",
+             OutputName -> "muR" }},
+    {SvL1,  { Description -> "Left electron-sneutrino",
              PDG -> {0, 0},
              PDG.IX -> {0, 0},
              Mass -> Automatic,
              FeynArtsNr -> 10,
-             LaTeX -> "\\tilde{\\nu}_L",
-             OutputName -> "nL" }}
+             LaTeX -> "\\tilde{\\nu}_{eL}",
+             OutputName -> "enL" }},
+    {SvL2,  { Description -> "Left muon-sneutrino",
+             PDG -> {0, 0},
+             PDG.IX -> {0, 0},
+             Mass -> Automatic,
+             FeynArtsNr -> 10,
+             LaTeX -> "\\tilde{\\nu}_{\muL}",
+             OutputName -> "munL" }}
 };
 
 ParticleDefinitions[EWSB] = {
@@ -218,6 +241,8 @@ WeylFermionAndIndermediate = {
      {fWm,    { Description ->"Negative Wino"}},
      {fWp,    { Description ->"Positive Wino"}},
      {fB,     { Description ->"Bino Weyl-Spinor"}},
-     {SEL,    { Description -> "Left Slepton doublet" }},
-     {SER,    { Description -> "Right Slepton doublet" }}
+     {SEL1,   { Description -> "Left 1st generation Slepton doublet" }},
+     {SEL2,   { Description -> "Left 2nd generation Slepton doublet" }},
+     {SER1,   { Description -> "Right 1st generation Slepton doublet" }},
+     {SER2,   { Description -> "Right 2nd generation Slepton doublet" }}
 };

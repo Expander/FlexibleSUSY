@@ -33,6 +33,29 @@ Model`Date = "2018-12-04";
    generation sleptons.  The convention of arXiv:1407.4081 is used. *)
 
 (*-------------------------------------------*)
+(*   Parameters in matrix form               *)
+(*-------------------------------------------*)
+
+me2 = DiagonalMatrix[{me21, me22}];
+ml2 = DiagonalMatrix[{ml21, ml22}];
+g1llll = {{g1llll11, g1llll12}, {g1llll12, g1llll22}};
+g1eeee = {{g1eeee11, g1eeee12}, {g1eeee12, g1eeee22}};
+g1llhh = DiagonalMatrix[{g1llhh1, g1llhh2}];
+g1eehh = DiagonalMatrix[{g1eehh1, g1eehh2}];
+g1llee = {{g1llee11, g1llee12}, {g1llee21, g1llee22}};
+gylele = {{gylele11, gylele12}, {gylele12, gylele22}};
+gyllhh = DiagonalMatrix[{gyllhh1, gyllhh2}];
+gyeehh = DiagonalMatrix[{gyeehh1, gyeehh2}];
+Te = {{Te11, Te12},{Te21, Te22}};
+gyleh = DiagonalMatrix[{gyleh1, gyleh2}];
+gydsle = DiagonalMatrix[{gydsle1, gydsle2}];
+gydlse = DiagonalMatrix[{gydlse1, gydsle2}];
+g2slwl = DiagonalMatrix[{g2slwl1, g2slwl2}];
+g1slbl = DiagonalMatrix[{g1slbl1, g1slbl2}];
+g1sebe = DiagonalMatrix[{g1sebe1, g1sebe2}];
+
+
+(*-------------------------------------------*)
 (*   Particle Content                        *)
 (*-------------------------------------------*)
 
@@ -63,8 +86,10 @@ FermionFields[[9]]  = {Hd, 1, {FHd0, FHdm},  -1/2, 2, 1, RpM};
 FermionFields[[10]] = {Hu, 1, {FHup, FHu0},   1/2, 2, 1, RpM};
 
 ScalarFields[[1]]  = {H  , 1, {Hp, H0}  ,   1/2, 2,  1, RpP};
-ScalarFields[[2]]  = {SEL, 2, {SvL, SeL},  -1/2, 2,  1, RpM};
-ScalarFields[[3]]  = {SER, 2, conj[SeR] ,     1, 1,  1, RpM};
+ScalarFields[[2]]  = {SEL1, 1, {SvL1,SeL1}, -1/2, 2,  1, RpM};
+ScalarFields[[3]]  = {SEL2, 1, {SvL2,SeL2}, -1/2, 2,  1, RpM};
+ScalarFields[[4]]  = {SER1, 1, conj[SeR1],    1, 1,  1, RpM};
+ScalarFields[[5]]  = {SER2, 1, conj[SeR2],    1, 1, 1, RpM};
 
 (*----------------------------------------------*)
 (*   ROTATIONS                                  *)
@@ -102,31 +127,47 @@ LagSplit2 = \
 
 (* real part of slepton Lagrangian *)
 LagReSlep = (
-    - ml2 conj[SEL].SEL - me2 conj[SER].SER
-    (* using completeness relation of pauli matrices *)
-    + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) Delta[gen1, gen2] Delta[gen3, gen4] conj[SEL].SEL.SEL.conj[SEL]
-    + g2llhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) Delta[gen3, gen4] conj[H].H.SEL.conj[SEL]
+    - ml2[[1,1]] conj[SEL1].SEL1 - ml2[[2,2]] conj[SEL2].SEL2 - me2[[1,1]] conj[SER1].SER1 - me2[[2,2]] conj[SER2].SER2
+    (* using completeness relation of pauli matrices, assuming diagonal and real Yukawa couplings and mass matrices *)
+    + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4])conj[SEL1].SEL1.conj[SEL1].SEL1
+    + 2 g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4])conj[SEL1].SEL1.conj[SEL2].SEL2
+    + g2llll (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4])conj[SEL2].SEL2.conj[SEL2].SEL2
+    + g2llhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.SEL1.conj[SEL1] 
+    + g2llhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.SEL2.conj[SEL2]
     + g2hhhh (2 Delta[lef1,lef4] Delta[lef2,lef3] - Delta[lef1,lef2] Delta[lef3,lef4]) conj[H].H.H.conj[H]
-    + g1llll Delta[lef1,lef2] Delta[lef3,lef4] Delta[gen1, gen2] Delta[gen3, gen4] conj[SEL].SEL.SEL.conj[SEL]
-    + g1eeee Delta[gen1,gen2] Delta[gen3,gen4] conj[SER].SER.SER.conj[SER]
+    + g1llll[[1,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.conj[SEL1].SEL1
+    + 2 g1llll[[1,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.conj[SEL2].SEL2 
+    + g1llll[[2,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL2].SEL2.conj[SEL2].SEL2
+    + g1eeee[[1,1]] conj[SER1].SER1.SER1.conj[SER1]
+    + 2 g1eeee[[1,2]] conj[SER1].SER1.SER2.conj[SER2] 
+    + g1eeee[[2,2]] conj[SER2].SER2.SER2.conj[SER2]
     + g1hhhh Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.H.conj[H]
-    + g1llhh Delta[lef1,lef2] Delta[lef3,lef4] Delta[gen1, gen2] conj[SEL].SEL.H.conj[H]
-    + g1eehh Delta[gen1,gen2] Delta[lef3,lef4] conj[SER].SER.H.conj[H]
-    + g1llee Delta[lef1,lef2] Delta[gen1,gen2] Delta[gen3, gen4] conj[SEL].SEL.SER.conj[SER]
-    + gylele Delta[lef1,lef4] Delta[gen1,gen2] Delta[gen3, gen4] conj[SEL].SER.conj[SER].SEL
-    + gyleh  Delta[lef1,lef3] conj[H].SER.SEL
-    + gyllhh Delta[lef1,lef2] Delta[lef3, lef4] conj[H].H.conj[SEL].SEL
-    + gyeehh conj[H].H.conj[SER].SER
+    + g1llhh[[1,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.H.conj[H] 
+    + g1llhh[[2,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL2].SEL2.H.conj[H]
+    + g1eehh[[1,1]] Delta[lef3,lef4] conj[SER1].SER1.H.conj[H] 
+    + g1eehh[[2,2]] Delta[lef3,lef4] conj[SER2].SER2.H.conj[H]
+    + g1llee[[1,1]] Delta[lef1,lef2] conj[SEL1].SEL1.SER1.conj[SER1]
+    + g1llee[[1,2]] Delta[lef1,lef2] conj[SEL1].SEL1.SER2.conj[SER2]
+    + g1llee[[2,1]] Delta[lef1,lef2] conj[SEL2].SEL2.SER1.conj[SER2] 
+    + g1llee[[2,2]] Delta[lef1,lef2] conj[SEL2].SEL2.SER2.conj[SER2]
+    + gylele[[1,1]] Delta[lef1,lef4] conj[SEL1].SER1.conj[SER1].SEL1 
+    + 2 gylele[[1,2]] Delta[lef1,lef4] conj[SEL1].SER1.conj[SER2].SEL2 
+    + gylele[[2,2]] Delta[lef1,lef4] conj[SEL2].SER2.conj[SER2].SEL2
+    + gyllhh[[1,1]] Delta[lef1,lef2] Delta[lef3, lef4] conj[H].H.conj[SEL1].SEL1 
+    + gyllhh[[2,2]] Delta[lef1,lef2] Delta[lef3, lef4] conj[H].H.conj[SEL2].SEL2
+    + gyeehh[[1,1]] conj[H].H.conj[SER1].SER1 
+    + gyeehh[[2,2]] conj[H].H.conj[SER2].SER2
 );
 
 (* part of slepton Lagrangian that needs to be conjugated *)
 LagSlep = (
-    - Te conj[H].SER.SEL
-    - gydsle Hd.SEL.e
-    - gydlse Hd.l.SER
-    + g2slwl conj[SEL].FW.l
-    + g1slbl conj[SEL].FB.l
-    + g1sebe conj[SER].FB.e
+    - Te[[1,1]] H.conj[SER1].SEL1 - Te[[1,2]] H.conj[SER1].SEL2 - Te[[2,1]] H.conj[SER2].SEL1 - Te[[2,2]] H.conj[SER2].SEL2
+    + gyleh[[1,1]] conj[H].conj[SER1].SEL1 + gyleh[[2,2]] conj[H].conj[SER2].SEL2
+    - gydsle[[1,1]] Hd.SEL1.e - gydsle[[2,2]] Hd.SEL2.e
+    - gydlse[[1,1]] Hd.l.SER1 - gydlse[[2,2]] Hd.l.SER2 
+    + g2slwl[[1,1]] conj[SEL1].FW.l + g2slwl[[2,2]] conj[SEL2].FW.l
+    + g1slbl[[1,1]] conj[SEL1].FB.l + g1slbl[[2,2]] conj[SEL2].FB.l
+    + g1sebe[[1,1]] conj[SER1].FB.e + g1sebe[[2,2]] conj[SER2].FB.e
 );
 
 DEFINITION[GaugeES][DiracSpinors] = {
@@ -167,8 +208,8 @@ DEFINITION[EWSB][MatterSector] = {
     {{{eL}, {conj[eR]}}, {{EL,Ve}, {ER,Ue}}},
     {{fB, fW0, FHd0, FHu0}, {L0, ZN}},
     {{{fWm, FHdm}, {fWp, FHup}}, {{Lm,UM}, {Lp,UP}}},
-    {{SvL}, {Sv, ZV}},
-    {{SeL, SeR}, {Se, ZE}}
+    {{SvL1, SvL2 }, {Sv, ZV}},
+    {{SeL1, SeL2, SeR1, SeR2}, {Se, ZE}}
 };
 
 (*------------------------------------------------------*)

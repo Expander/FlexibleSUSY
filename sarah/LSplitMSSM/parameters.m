@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -53,7 +55,7 @@ ParameterDefinitions = {
     {ZZ,        { Description -> "Photon-Z Mixing Matrix"}},
     {ZW,        { Description -> "W Mixing Matrix",
                   Dependence ->   1/Sqrt[2] {{1, 1},
-                                             {\[ImaginaryI],-\[ImaginaryI]}} }},
+                                             {I,-I}} }},
     {Vu,        { Description ->"Left-Up-Mixing-Matrix"}},
     {Vd,        { Description ->"Left-Down-Mixing-Matrix"}},
     {Uu,        { Description ->"Right-Up-Mixing-Matrix"}},
@@ -94,10 +96,8 @@ ParameterDefinitions = {
                   OutputName -> g2d,
                   LaTeX -> "\\tilde{g}_{2\\text{d}}",
                   LesHouches -> {SplitMSSM,4} }},
-    {me2,       { Description -> "Softbreaking right Slepton Mass" }},
-    {ml2,       { Description -> "Softbreaking left Slepton Mass" }},
-    {Te,        { Description -> "Trilinear-Lepton-Coupling" }},
-
+    {me2,      { Description -> "Softbreaking right 1st generation Slepton Mass" }},
+    {Te,      { Description -> "Trilinear-1-1-Lepton-Coupling" }},
     {g2llll,    { Description -> "Quartic-Slepton-Coupling",
                   Real -> True,
                   OutputName -> g2llll,
@@ -176,21 +176,33 @@ ParameterDefinitions = {
                   LaTeX -> "\\tilde{g}_{2,\\tilde{l}\\tilde{l}\\tilde{l}\\tilde{l}}",
                   LesHouches -> {SplitMSSM,17} }},
 
-    {gylehh,    { Description -> "Quartic-Slepton-Coupling",
+    {gyllhh,    { Description -> "Quartic-Slepton-Coupling",
                   Real -> True,
-                  OutputName -> gylehh,
-                  LaTeX -> "\\tilde{g}_{2,\\tilde{l}\\tilde{l}\\tilde{l}\\tilde{l}}",
+                  OutputName -> gyllhh,
+                  LaTeX -> "\\tilde{g}_{y,\\tilde{l}\\tilde{l}\\tilde{h}\\tilde{h}}",
                   LesHouches -> {SplitMSSM,18} }},
-
+                  
+    {gyeehh,    { Description -> "Quartic-Slepton-Coupling",
+                  Real -> True,
+                  OutputName -> gyeehh,
+                  LaTeX -> "\\tilde{g}_{y,\\tilde{e}\\tilde{e}\\tilde{h}\\tilde{h}}",
+                  LesHouches -> {SplitMSSM,19} }},
+                  
+    {gyleh,     { Description -> "Higgs-Slepton-Slepton-Coupling",
+                  Real -> True,
+                  OutputName -> gyleh,
+                  LaTeX -> "\\tilde{g}_{y,\\tilde{l}\\tilde{e}\\tilde{h}}",
+                  LesHouches -> {SplitMSSM,20} }},              
+                  
     {gydsle,    { Description -> "Triple-down-Higgsino-Slepton-Electron-Coupling",
                   Real -> True,
                   OutputName -> gYedsle,
                   LaTeX -> "\\tilde{g}_{y_e,H_d\\tilde{l}e}",
-                  LesHouches -> {SplitMSSM,19} }},
+                  LesHouches -> {SplitMSSM,21} }},
 
     {gydlse,    { Description -> "Triple-down-Higgsino-Electron-Right-Slepton-Coupling",
                   Real -> True,
                   OutputName -> gYedlse,
                   LaTeX -> "\\tilde{g}_{y_e,H_dl\\tilde{e}}",
-                  LesHouches -> {SplitMSSM,20} }}
+                  LesHouches -> {SplitMSSM,22} }}
 };
