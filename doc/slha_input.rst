@@ -2,7 +2,6 @@ SLHA input parameters
 =====================
 
 .. contents:: Table of Contents
-..    :depth: 2
 
 FlexibleSUSY configuration block (FlexibleSUSY)
 -----------------------------------------------

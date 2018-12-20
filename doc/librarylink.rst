@@ -5,7 +5,6 @@ The FlexibleSUSY-generated spectrum generators can be called from
 within Mathematica using Wolfram's LibraryLink interface.
 
 .. contents:: Table of Contents
-..    :depth: 2
 
 Quick start
 -----------

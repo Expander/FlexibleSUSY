@@ -2,7 +2,6 @@ FlexibleSUSY model file
 =======================
 
 .. contents:: Table of Contents
-..    :depth: 2
 
 Model information
 -----------------

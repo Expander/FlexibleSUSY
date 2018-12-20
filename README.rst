@@ -33,7 +33,7 @@ extension and reuse.
 
 
 .. contents:: Table of Contents
-..    :depth: 2
+   :depth: 2
 
 
 Building FlexibleSUSY

@@ -2,7 +2,6 @@ Meta code
 =========
 
 .. contents:: Table of Contents
-..    :depth: 2
 
 Re-usable meta code packages
 ----------------------------
