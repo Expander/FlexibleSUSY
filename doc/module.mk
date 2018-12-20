@@ -8,7 +8,6 @@ DOC_TMPL     := \
 		$(DIR)/FlexibleEFTHiggs.rst \
 		$(DIR)/HSSUSY.rst \
 		$(DIR)/librarylink.rst \
-		$(DIR)/mainpage.dox.in \
 		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.rst \
 		$(DIR)/MSSMEFTHiggs.rst \
@@ -34,7 +33,6 @@ EXAMPLES        := $(EXAMPLES_DIR)/HSSUSY_uncertainty_estimate.m \
 INDEX_PAGE      := $(HTML_OUTPUT_DIR)/index.html
 MAN_PAGE        := $(MAN_OUTPUT_DIR)/index.html
 DOXYFILE        := $(DIR)/Doxyfile
-DOXYGEN_MAINPAGE:= $(DIR)/mainpage.dox
 
 PAPER_PDF_1     := $(PDF_OUTPUT_DIR)/flexiblesusy-1.0.pdf
 PAPER_PDF_2     := $(PDF_OUTPUT_DIR)/flexiblesusy-2.0.pdf
@@ -86,7 +84,6 @@ clean-$(MODNAME):
 
 distclean-$(MODNAME): clean-$(MODNAME)
 		-rm -rf $(HTML_OUTPUT_DIR)
-		-rm -f $(DOXYGEN_MAINPAGE)
 		-rm -f $(PAPER_PDF)
 
 clean::         clean-$(MODNAME)
