@@ -642,7 +642,8 @@ are listed:
   Passarino-Veltman loop functions, based on FF
 
 * ``meta/`` contains the Mathematica meta code which generates the
-  spectrum generators
+  spectrum generators.  See the `meta code documentation`_ for more
+  details.
 
 * ``model_files/`` contains default model files for some frequently
   used models (SM, SplitMSSM, MSSM, NMSSM, SMSSM, UMSSM, etc.)
@@ -679,6 +680,8 @@ are listed:
 .. _LAPACK: http://www.netlib.org/lapack/
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
+
+.. _`meta code documentation`: doc/meta_code.rst
 
 .. [1406.2319] `CPC 190 (2015) 139-172 <https://inspirehep.net/record/1299998>`_ [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
 .. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arxiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]

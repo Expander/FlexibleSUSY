@@ -8,7 +8,7 @@ DOC_TMPL     := \
 		$(DIR)/FlexibleEFTHiggs.rst \
 		$(DIR)/HSSUSY.rst \
 		$(DIR)/librarylink.rst \
-		$(DIR)/meta_code.dox \
+		$(DIR)/meta_code.rst \
 		$(DIR)/model_file.rst \
 		$(DIR)/MSSMEFTHiggs.rst \
 		$(DIR)/NUHMSSMNoFVHimalaya.rst \
