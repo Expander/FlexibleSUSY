@@ -40,6 +40,12 @@ been obtained from [1303.4364]_, [1504.05200]_.
 Loop corrections to masses
 ``````````````````````````
 
+Standard Model
+''''''''''''''
+
+``meta/SM/Mh2_effpot.m`` contains the QCD contributions to the 4-loop
+effective Higgs potential in the Standard Model from [1508.00912]_
+
 ``meta/ThreeLoopQCD.m`` contains a routine, which returns the ratio of
 the :math:`\overline{\text{MS}}` top mass over the top pole mass,
 [hep-ph:9912391]_, Eq. (10).  The expression contains the full
@@ -51,16 +57,33 @@ top pole mass over the running top mass up to the 2-loop level in the
 :math:`\overline{\text{MS}}` and :math:`\overline{\text{DR}}` schemes
 [hep-ph:0210258]_, [hep-ph:9803493]_.
 
+MSSM
+''''
+
 ``meta/TwoLoopMSSM.m`` contains routines, which return the
 analytic 2-loop corrections to the Higgs masses in the CP-conserving
 MSSM [hep-ph:0105096]_.
 
+
 Threshold corrections
 `````````````````````
+
+Standard Model
+''''''''''''''
+
+``meta/SM/mf_3loop_qcd.m`` contains the 3-loop relation between a quark pole
+mass and the corresponding running :math:`\overline{\text{MS}}` mass
+from [hep-ph:9912391]_, [hep-ph:9911434]_.
+
+2HDM
+''''
 
 ``meta/THDM/Thresholds_1L_full.m`` contains the implementation of the
 complete analytic 1-loop threshold corrections of the THDM and the
 THDM + Higgsinos + gauginos to the MSSM [0901.2065]_.
+
+MSSM
+''''
 
 ``meta/MSSM/tquark_2loop_strong.m`` contains the analytic
 expression for the 2-loop relation :math:`O(\alpha_s^2)` between the top
@@ -97,3 +120,4 @@ the Standard Model (without the top quark) and the
 .. [1009.5455] `C10-06-06.1 <https://inspirehep.net/record/871111>`_ [`arXiv:1009.5455 <https://arxiv.org/abs/1009.5455>`_]
 .. [1303.4364] `Nucl.Phys. B875 (2013) 552-565 <https://inspirehep.net/record/1224266>`_ [`arXiv:1303.4364 <https://arxiv.org/abs/1303.4364>`_]
 .. [1504.05200] `JHEP 1507 (2015) 159 <https://inspirehep.net/record/1362483>`_ [`arXiv:1504.05200 <https://arxiv.org/abs/1504.05200>`_]
+.. [1508.00912] `Phys.Rev. D92 (2015) no.5, 054029 <https://inspirehep.net/record/1386688>`_ [`arXiv:1508.00912 <https://arxiv.org/abs/1508.00912>`_]
