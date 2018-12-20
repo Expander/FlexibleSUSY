@@ -6,13 +6,13 @@ DOC_MK       := \
 
 DOC_TMPL     := \
 		$(DIR)/FlexibleEFTHiggs.rst \
-		$(DIR)/hssusy.dox \
+		$(DIR)/HSSUSY.rst \
 		$(DIR)/librarylink.rst \
 		$(DIR)/mainpage.dox.in \
 		$(DIR)/meta_code.dox \
 		$(DIR)/model_file.rst \
-		$(DIR)/mssmefthiggs.dox \
-		$(DIR)/nuhmssmnofvhimalaya.dox \
+		$(DIR)/MSSMEFTHiggs.rst \
+		$(DIR)/NUHMSSMNoFVHimalaya.rst \
 		$(DIR)/slha_input.rst
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)

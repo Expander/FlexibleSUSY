@@ -117,6 +117,7 @@ systems.
 Output:
 
 .. image:: images/HSSUSY_Mh_Xt.png
+   :align: center
 
 Using the Mathematica interface functions
 -----------------------------------------

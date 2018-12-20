@@ -154,6 +154,25 @@ Example::
 Using FlexibleSUSY
 ==================
 
+Available models
+----------------
+
+FlexibleSUSY ships with many pre-generated models.  The following
+table includes an (incomplete) list of models with a detailed
+documentation.
+
+======================== ====================================
+ Model                    Description
+======================== ====================================
+ `HSSUSY`_                high-scale MSSM (pure EFT)
+ `MSSMEFTHiggs`_          high-scale MSSM (FlexibleEFTHiggs)
+ `NUHMSSMNoFVHimalaya`_   fixed-order MSSM
+======================== ====================================
+
+.. _`HSSUSY`: doc/HSSUSY.rst
+.. _`MSSMEFTHiggs`: doc/MSSMEFTHiggs.rst
+.. _`NUHMSSMNoFVHimalaya`: doc/NUHMSSMNoFVHimalaya.rst
+
 Plotting the mass spectrum and renormalization group running
 ------------------------------------------------------------
 
