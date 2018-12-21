@@ -106,8 +106,8 @@ NPointFunction[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunction[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
-    Utils`AssertWithMessage[AllTrue[
-			TreeMasses`IsScalar /@ Join[inFields, outFields], TrueQ],
+    Utils`AssertWithMessage[And @@
+			TreeMasses`IsScalar /@ Join[inFields, outFields],
 			"NPointFunctions`NPointFunction[]: Only external scalars are \
 supported (for now)."];
 
