@@ -175,8 +175,8 @@ supported (for now)."];
     
     CloseKernels[subKernels];
     
-    If[nPointFunction === $Failed,
-			Return[$Failed]];
+    Utils`AssertWithMessage[nPointFunction =!= $Failed,
+			"NPointFunctions`NPointFunction[]: Calculation failed"];
     
     CacheNPointFunction[nPointFunction, nPointMeta];
     nPointFunction
