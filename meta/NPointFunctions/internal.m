@@ -81,15 +81,16 @@ NPointFunctionFAFC[inFields_List,outFields_List,
           topologies,diagrams,amplitudes,genericInsertions,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
-    If[loopLevel =!= 1,
-      Return["NPointFunctions`NPointFunction[]: Only LoopLevel 1 is supported"]];
-    If[regularizationScheme =!= DimensionalReduction &&
-       regularizationScheme =!= DimensionalRegularization,
-       Return["NPointFunctions`NPointFunction[]: Unknown regularization scheme: " <>
-              ToString[regularizationScheme]]];
-    If[BooleanQ[zeroExternalMomenta] === False,
-       Return["NPointFunctions`NPointFunction[]: ZeroExternalMomenta must \
-be either True or False"]];
+    Utils`AssertWithMessage[loopLevel === 1,
+			"NPointFunctions`NPointFunctionFAFC[]: Only loop level 1 is supported"];
+    Utils`AssertWithMessage[
+			regularizationScheme === DimensionalReduction ||
+      regularizationScheme === DimensionalRegularization,
+			"NPointFunctions`NPointFunctionFAFC[]: Unknown regularization scheme: " <>
+			ToString[regularizationScheme]];
+    Utils`AssertWithMessage[zeroExternalMomenta === True || zeroExternalMomenta === False,
+			"NPointFunctions`NPointFunctionFAFC[]: Option ZeroExternalMomenta must \
+be either True or False"];
 
     If[DirectoryQ[formCalcDir] === False,
        CreateDirectory[formCalcDir]];

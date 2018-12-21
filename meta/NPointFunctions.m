@@ -102,7 +102,7 @@ NPointFunction[inFields_List,outFields_List,
 			ToString[regularizationScheme]];
 		
     zeroExternalMomenta = OptionValue[ZeroExternalMomenta];
-    Utils`AssertWithMessage[BooleanQ[zeroExternalMomenta],
+    Utils`AssertWithMessage[zeroExternalMomenta === True || zeroExternalMomenta === False,
 			"NPointFunctions`NPointFunction[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
