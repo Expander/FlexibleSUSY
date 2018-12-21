@@ -130,10 +130,10 @@ CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 MATH_INC_PATHS := config/mathematica_include_paths.sh
 
 # package information files
-README_FILE    := README.md
+README_FILE    := README.rst
 AUTHORS_FILE   := AUTHORS
 COPYING_FILE   := COPYING
-ChangeLog_FILE := ChangeLog.md
+ChangeLog_FILE := CHANGES.rst
 
 .PHONY:  all allsrc allexec alllib allll alltest clean clean-dep \
 	 clean-executables clean-generated clean-lib clean-obj \

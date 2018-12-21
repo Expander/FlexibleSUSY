@@ -1632,6 +1632,7 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
               threeLoopHiggsHeaders = threeLoopHiggsHeaders <> "\
 #ifdef ENABLE_HIMALAYA
 #include \"HierarchyCalculator.hpp\"
+#include \"version.hpp\"
 #endif
 ";
              ];
