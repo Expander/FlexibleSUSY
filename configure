@@ -66,10 +66,6 @@ SARAH_MODEL_DIR=""
 CONFIGHDR=${CONFIGDIR}/config.h
 CONFIGHDR_TMPL=${CONFIGDIR}/config.h.in
 
-# target dox file with Doxygen \mainpage
-DOC_MAINPAGE=$BASEDIR/doc/mainpage.dox
-DOC_MAINPAGE_TMPL=$BASEDIR/doc/mainpage.dox.in
-
 # target makefile file for the standalone example
 STANDALONE_MAKEFILES="\
  ${BASEDIR}/examples/standalone-model/Makefile \
@@ -1864,7 +1860,7 @@ check_fortran_libs() {
         g77|f77)
             FLIBS="-lg2c -lm" ;;
         ifort)
-            FLIBS="-lifcore -limf -ldl -lintlc -lsvml" ;;
+            FLIBS="-lifcore -lifport -limf -ldl -lintlc -lsvml" ;;
     esac
 }
 
@@ -3384,15 +3380,6 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e 's|@n@|\
 |g' \
     < $CONFIGHDR_TMPL > $CONFIGHDR
-
-sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
-    -e "s|@FLEXIBLESUSY_MAJOR@|$FLEXIBLESUSY_MAJOR|" \
-    -e "s|@FLEXIBLESUSY_MINOR@|$FLEXIBLESUSY_MINOR|" \
-    -e "s|@FLEXIBLESUSY_PATCH@|$FLEXIBLESUSY_PATCH|" \
-    -e "s|@FLEXIBLESUSY_EXTRA@|$FLEXIBLESUSY_EXTRA|" \
-    -e "s|@GIT_COMMIT@|$GIT_COMMIT|"   \
-    -e "s|@PKGNAME@|$PROGRAM_NAME|"    \
-    < $DOC_MAINPAGE_TMPL > $DOC_MAINPAGE
 
 sed -e "s|@MATH@|$MATH|" \
     -e "s|@OPERATING_SYSTEM@|$operating_system|" \

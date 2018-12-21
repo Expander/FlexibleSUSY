@@ -4,6 +4,9 @@
 FlexibleSUSY
 ============
 
+.. image:: doc/images/FS-logo.png
+   :align: right
+
 FlexibleSUSY provides Mathematica and C++ code to create spectrum
 generators for non-minimal supersymmetric models.  It is designed for
 generating fast and modular C++ code, allowing for easy modification,
@@ -13,14 +16,27 @@ extension and reuse.
 * Mailing list:            flexiblesusy@projects.hepforge.org
 * Source code repository:  https://github.com/FlexibleSUSY
 * Bug reports:             https://github.com/FlexibleSUSY/FlexibleSUSY/issues
-* References:
+* References: [1406.2319]_, [1609.00371]_, [1710.03760]_
 
-  - CPC 190 (2015) 139-172 [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
-  - JHEP 1701 (2017) 079 [`arxiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
-  - CPC 230 (2018) 145-217 [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]
+  If you use **FlexibleSUSY** in your work please cite [1406.2319]_
+  and [1710.03760]_.
+
+  If you use the **FlexibleEFTHiggs** approach in your work please
+  cite [1609.00371]_.
+
+  If you use **FlexibleSUSY+Himalaya** or Himalaya_ in your work,
+  please cite [1005.5709]_, [1708.05720]_ and [1807.03509]_.
+
+  FlexibleSUSY depends on SARAH_ and contains components from
+  SOFTSUSY_. Therefore, please also cite the following publications
+  along with FlexibleSUSY:
+
+  - **SARAH** [0909.2863]_, [1002.0840]_, [1207.0906]_, [1309.7223]_
+  - **SOFTSUSY** [hep-ph:0104145]_, [1311.7659]_
+
 
 .. contents:: Table of Contents
-..    :depth: 2
+   :depth: 2
 
 
 Building FlexibleSUSY
@@ -117,6 +133,17 @@ Building a FlexibleSUSY model
    etc.), edit the FlexibleSUSY model file
    ``models/<model>/FlexibleSUSY.m``.
 
+   Further reading:
+
+   * `FlexibleSUSY model file`_
+   * `FlexibleEFTHiggs`_
+   * `SLHA input parameters`_
+
+.. _`FlexibleSUSY model file`: doc/model_file.rst
+.. _`FlexibleEFTHiggs`: doc/FlexibleEFTHiggs.rst
+.. _`SLHA input parameters`: doc/slha_input.rst
+
+
 2. Create the Makefile and register your model(s)::
 
        ./configure --with-models=<model>
@@ -149,6 +176,25 @@ Example::
 
 Using FlexibleSUSY
 ==================
+
+Available models
+----------------
+
+FlexibleSUSY ships with many pre-generated models.  The following
+table includes an (incomplete) list of models with a detailed
+documentation.
+
+======================== ====================================
+ Model                    Description
+======================== ====================================
+ `HSSUSY`_                high-scale MSSM (pure EFT)
+ `MSSMEFTHiggs`_          high-scale MSSM (FlexibleEFTHiggs)
+ `NUHMSSMNoFVHimalaya`_   fixed-order MSSM
+======================== ====================================
+
+.. _`HSSUSY`: doc/HSSUSY.rst
+.. _`MSSMEFTHiggs`: doc/MSSMEFTHiggs.rst
+.. _`NUHMSSMNoFVHimalaya`: doc/NUHMSSMNoFVHimalaya.rst
 
 Plotting the mass spectrum and renormalization group running
 ------------------------------------------------------------
@@ -222,6 +268,111 @@ FlexibleSUSY documentation.
 Note: In order to compile the library, Mathematica must be installed.
 To disable the LibraryLink interface, configure with
 ``--disable-librarylink``.
+
+Further details and examples can be found in the `LibraryLink
+documentation`_.
+
+.. _`LibraryLink documentation`: doc/librarylink.rst
+
+Parameter scans
+---------------
+
+FlexibleSUSY contains two shell scripts aiming to help the user
+performing parameter scans based on SLHA files.
+
+Tabular output
+``````````````
+
+The script ``utils/scan-slha.sh`` performs a scan over an input
+parameter.
+
+Examples:
+
+To perform a scan over :math:`\tan\beta(M_Z)` in the CMSSM (given in
+the SLHA input file in the ``MINPAR[3]`` field) and print out the the
+values of :math:`\tan\beta(M_Z)`, :math:`M_h` (``MASS[25]``) and
+:math:`y_t(M_{\text{SUSY}})` (``YU[2,2]``) run::
+
+     utils/scan-slha.sh \
+        --spectrum-generator=models/CMSSM/run_CMSSM.x \
+        --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+        --scan-range=MINPAR[3]=1~30:10 \
+        --output=MINPAR[3],MASS[25],YU[2:2]
+
+Alternatively, the SLHA input can be piped into the script as
+::
+
+    cat model_files/CMSSM/LesHouches.in.CMSSM \
+       | utils/scan-slha.sh \
+         --spectrum-generator=models/CMSSM/run_CMSSM.x \
+         --scan-range=MINPAR[3]=1~30:10 \
+         --output=MINPAR[3],MASS[25],YU[2:2]
+
+The spectrum generator executable is specified using the
+``--spectrum-generator=`` option.  The parameter to be scanned over as
+well as the scan range and the number of steps must be specified using
+the ``--scan-range=`` option.  The syntax is::
+
+    --scan-range=<block>[<field>]=<start>~<stop>:<number_of_steps>
+
+Here ``<block>`` is the SLHA block in which the input parameter is to
+be found and ``<field>`` is the block entry corresponding to the
+parameter.  ``<start>`` and ``<stop>`` define the scan range and
+``<number_of_steps>`` define the number of steps.  By default the step
+size is linear.  Alternatively, a logarithmic step size can be chosen
+by passing ``--step-size=log`` to the script.  See also
+``utils/scan-slha.sh --help``.  The parameters to print to the output
+stream must be defined using the ``--output=`` option.  The syntax
+is::
+
+    --output=<block>[<fields>]
+
+where ``<block>`` is the SLHA block in which the output parameter is to
+be read from and ``<field>`` is the block entry corresponding to the
+parameter.  To read a matrix element from a block, use a colon ``:`` to
+specify the matrix element indices.  Multiple output parameters can be
+specified by a comma.
+
+Database output
+```````````````
+
+As an alternative, all parameters calculated during a scan can be
+written to a SQLite database using the ``scan-database.sh`` script.
+
+Examples::
+
+    utils/scan-database.sh \
+       --spectrum-generator=models/CMSSM/run_CMSSM.x \
+       --slha-input-file=model_files/CMSSM/LesHouches.in.CMSSM \
+       --scan-range=MINPAR[3]=1~30:10 \
+       --database-output-file=scan.db
+
+or::
+
+    cat model_files/CMSSM/LesHouches.in.CMSSM \
+       | ./utils/scan-database.sh \
+         --spectrum-generator=models/CMSSM/run_CMSSM.x \
+         --scan-range=MINPAR[3]=1~30:10 \
+         --database-output-file=scan.db
+
+The name of the database file must be set using the
+``--database-output-file=`` option.
+
+Convert SPheno to FlexibleSUSY model file
+-----------------------------------------
+
+The script ``utils/convert_SPheno_to_FlexibleSUSY.m`` can help to
+convert a SPheno model file (``SPheno.m``) to a FlexibleSUSY model
+file (``FlexibleSUSY.m.in``).  The conversion is not perfect, because
+it is usually not unique.  Therefore one should check the generated
+``FlexibleSUSY.m.in`` file.
+
+Example::
+
+    cat << EOF | math -noprompt > FlexibleSUSY.m.in
+    sphenoFile = "~/.Mathematica/Applications/SARAH/Models/MSSM/SPheno.m";
+    Get["utils/convert_SPheno_to_FlexibleSUSY.m"];
+    EOF
 
 
 Advanced FlexibleSUSY build options
@@ -514,7 +665,8 @@ are listed:
   Passarino-Veltman loop functions, based on FF
 
 * ``meta/`` contains the Mathematica meta code which generates the
-  spectrum generators
+  spectrum generators.  See the `meta code documentation`_ for more
+  details.
 
 * ``model_files/`` contains default model files for some frequently
   used models (SM, SplitMSSM, MSSM, NMSSM, SMSSM, UMSSM, etc.)
@@ -543,6 +695,7 @@ are listed:
 .. _slhaea: https://github.com/fthomas/slhaea
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _SARAH: http://sarah.hepforge.org
+.. _SOFTSUSY: http://softsusy.hepforge.org
 .. _Boost: http://www.boost.org
 .. _Eigen 3: http://eigen.tuxfamily.org
 .. _GNU scientific library: http://www.gnu.org/software/gsl/
@@ -550,3 +703,21 @@ are listed:
 .. _LAPACK: http://www.netlib.org/lapack/
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
+
+.. _`meta code documentation`: doc/meta_code.rst
+
+.. [1406.2319] `CPC 190 (2015) 139-172 <https://inspirehep.net/record/1299998>`_ [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
+.. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arxiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
+.. [1710.03760] `CPC 230 (2018) 145-217 <https://inspirehep.net/record/1629978>`_ [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]
+
+.. [1005.5709]  `JHEP 1008 (2010) 104 <https://inspirehep.net/record/856612>`_  [`arxiv:1005.5709 <https://arxiv.org/abs/1005.5709>`_]
+.. [1708.05720] `Eur.Phys.J. C77 (2017) no.12, 814 <https://inspirehep.net/record/1617767>`_ [`arxiv:1708.05720 <https://arxiv.org/abs/1708.05720>`_]
+.. [1807.03509] `Eur.Phys.J. C78 (2018) no.10, 874 <https://inspirehep.net/record/1681658>`_ [`arxiv:1807.03509 <https://arxiv.org/abs/1807.03509>`_]
+
+.. [0909.2863] `CPC 181 (2010) 1077-1086 <https://inspirehep.net/record/831371>`_ [`arxiv:0909.2863 <http://arxiv.org/abs/0909.2863>`_]
+.. [1002.0840] `CPC 182 (2011) 808-833 <https://inspirehep.net/record/845241>`_   [`arxiv:1002.0840 <http://arxiv.org/abs/1002.0840>`_]
+.. [1207.0906] `CPC 184 (2013) 1792-1809 <https://inspirehep.net/record/1121136>`_ [`arxiv:1207.0906 <http://arxiv.org/abs/1207.0906>`_]
+.. [1309.7223] `CPC 185 (2014) 1773-1790 <https://inspirehep.net/record/1255845>`_ [`arxiv:1309.7223 <http://arxiv.org/abs/1309.7223>`_]
+
+.. [hep-ph:0104145] `CPC 143 (2002) 305-331 <https://inspirehep.net/record/555481>`_ [`arxiv:hep-ph/0104145 <http://arxiv.org/abs/hep-ph/0104145>`_]
+.. [1311.7659] `CPC 185 (2014) 2322 <https://inspirehep.net/record/1266808>`_  [`arxiv:1311.7659 <http://arxiv.org/abs/1311.7659>`_]
