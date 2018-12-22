@@ -698,9 +698,7 @@ CacheNPointFunction[nPointFunction_, nPointMeta_List] :=
        Write[fileHandle,{}];
        Close[fileHandle]];
 
-    fileHandle = OpenRead[nPointFunctionsFile];
-    nPointFunctions = Read[fileHandle];
-    Close[fileHandle];
+    nPointFunctions = Get[nPointFunctionsFile];
 
     position = Position[nPointFunctions[[All,1]], nPointFunction[[1]]];
     If[Length[position] =!= 0,
@@ -717,8 +715,8 @@ CacheNPointFunction[nPointFunction_, nPointMeta_List] :=
 CachedNPointFunction[inFields_List, outFields_List, nPointMeta_List] :=
   Module[{sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           outputDir, nPointFunctionsDir, cacheName,
-          nPointFunctionsFile,fileHandle,nPointFunctions,
-          unindexedExternalFields,position},
+          nPointFunctionsFile, nPointFunctions,
+          unindexedExternalFields, position},
     cacheName = CacheNameForMeta[nPointMeta];
 
     outputDir = FileNameJoin[{sarahOutputDir, ToString[FlexibleSUSY`FSEigenstates]}];
@@ -728,9 +726,7 @@ CachedNPointFunction[inFields_List, outFields_List, nPointMeta_List] :=
     If[!FileExistsQ[nPointFunctionsFile],
        Return[Null]];
 
-    fileHandle = OpenRead[nPointFunctionsFile];
-    nPointFunctions = Read[fileHandle];
-    Close[fileHandle];
+    nPointFunctions = Get[nPointFunctionsFile];
 
     unindexedExternalFields = {Vertices`StripFieldIndices[#[[1]]],
                                Vertices`StripFieldIndices[#[[2]]]} & /@
@@ -748,17 +744,13 @@ CacheNameForMeta[nPointMeta_List] :=
   "cache_" <> StringJoin[Riffle[ToString /@ nPointMeta, "_"]] <> ".m"
 
 FeynArtsNamesForFields[fields_List,particleNamesFile_String] :=
-  Module[{fileHandle,fileContents,lines,
-          unindexedBaseFields,fieldLines,
+  Module[{lines, unindexedBaseFields, fieldLines,
           faFieldNames, faNameRules},
-    fileHandle = OpenRead[particleNamesFile,BinaryFormat -> True];
-    fileContents = ReadString[fileHandle];
-    Close[fileHandle];
+    lines = Utils`ReadLinesInFile[particleNamesFile];
     
     unindexedBaseFields = DeleteDuplicates[CXXDiagrams`AtomHead[
       CXXDiagrams`RemoveLorentzConjugation[#]] & /@ fields];
 
-    lines = StringSplit[fileContents,"\n"];
     fieldLines = Module[{fieldName = ToString[#]},
       Select[lines, StringMatchQ[#,___~~fieldName~~":"~~___] &][[1]]] & /@
         unindexedBaseFields;

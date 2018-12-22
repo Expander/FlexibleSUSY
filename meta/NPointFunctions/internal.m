@@ -249,33 +249,12 @@ FCAmplitudesToFSConvention[amplitudes_, abbreviations_, subexpressions_] :=
 
 subexpressionToFSRules = {};
 SetFSConventionRules[] :=
-  Module[{substitutionsHandle, substitutionsContents,
-          substitutions, invertibleSubstitutions,
-          invertedSubstitutions, indexRules, field,
+  Module[{lines, indexRules, field,
           fieldsHandle, fieldContents, fieldNames, massRules,
           fieldNamespaces, couplingRules, generalFCRules, fieldType},
-    substitutionsHandle = OpenRead[substitutionsFile,BinaryFormat -> True];
-    substitutionsContents = ReadString[substitutionsHandle];
-    Close[substitutionsHandle];
+    lines = Utils`ReadLinesInFile[particleNamesFile];
 
-    substitutions = ReleaseHold[List @@@ Map[Hold,
-      ToExpression[substitutionsContents,StandardForm,Hold],
-      {2}]];
-
-    invertibleSubstitutions = Cases[substitutions,
-      Hold[ass_[f_[fsExpr_],fcExpr_]] /;
-        (MemberQ[{UpSet,Set},ass] &&
-           !(f === Conjugate &&
-             ToString[AtomHead[fsExpr]] === ToString[AtomHead[fcExpr]] <> "C"))];
-
-    invertedSubstitutions =
-      InvertFCConventionSubstitution /@ invertibleSubstitutions;
-
-    fieldsHandle = OpenRead[particleNamesFile,BinaryFormat -> True];
-    fieldContents = ReadString[fieldsHandle];
-    Close[fieldsHandle];
-
-    fieldNames = Cases[StringSplit[fieldContents,"\n"],
+    fieldNames = Cases[lines,
                        line_String /; (Length[StringSplit[line,": "]] == 2) :> 
                          StringSplit[line,": "]];
     fieldNamespaces = Get[particleNamespaceFile];
@@ -351,7 +330,6 @@ SetFSConventionRules[] :=
     ];
 
     subexpressionToFSRules = Join[
-      invertedSubstitutions,
       massRules,
       fieldNameToFSRules,
       couplingRules,
@@ -362,37 +340,6 @@ SetFSConventionRules[] :=
       sumOverRules,
       {FeynArts`IndexSum -> Sum}
     ];
-  ]
-
-InvertFCConventionSubstitution[substitution_Hold] :=
-  Module[{function,fsSymbol,fcSymbol,pattern,arg},
-    function = Head[substitution[[1,1]]];
-    fsSymbol = substitution[[1,1,1]];
-    fcSymbol = substitution[[1,2]];
-
-    If[Length[fsSymbol] =!= 0,
-       pattern = fsSymbol[[1]]; fsSymbol = Head[fsSymbol],
-       pattern = Null];
-    If[Length[fcSymbol] =!= 0,
-       arg = fcSymbol[[1]]; fcSymbol = Head[fcSymbol],
-       arg = Null];
-
-    If[(pattern === Null && arg =!= Null) ||
-       (pattern =!= Null && arg === Null),
-       Return["No heuristic to invert " <> ToString[substitution]]];
-
-    If[pattern =!= Null,
-       If[Head[pattern] =!= Pattern,
-          Return["No heuristic to invert " <> ToString[substitution]]];
-       If[pattern[[1]] =!= arg,
-          Return["No heuristic to invert " <> ToString[substitution]]]];
-
-    If[function === Conjugate,
-       function = Susyno`LieGroups`conj];
-
-    If[pattern =!= Null,
-       fcSymbol[Pattern[Evaluate[arg],___]] :> Evaluate[function[fsSymbol[arg]]],
-       fcSymbol -> function[fsSymbol]]
   ]
 
 sumOverRules = {
