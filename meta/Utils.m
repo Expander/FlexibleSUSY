@@ -137,6 +137,10 @@ PrintAndReturn::usage = "Print result and return it";
 AssertWithMessage::usage = "AssertWithMessage[assertion_, message_String]:
 If assertion does not evaluate to True, print message and Quit[1].";
 
+ReadLinesInFile::usage = "ReadLinesInFile[fileName_String]:
+Read the entire contents of the file given by fileName and return it
+as a list of Strings representing the lines in the file.";
+
 Begin["`Private`"];
 
 AppendOrReplaceInList[values_List, elem_, test_:SameQ] :=
@@ -270,6 +274,20 @@ PrintAndReturn[e___] := (Print[e]; e)
 
 AssertWithMessage[assertion_, message_String] :=
 	If[assertion =!= True, Print[message]; Quit[1]]
+
+ReadLinesInFile[fileName_String] :=
+	Module[{fileHandle, lines = {}, line},
+		fileHandle = OpenRead[fileName, BinaryFormat -> True];
+		
+		While[(line = Read[fileHandle, String]) =!= EndOfFile,
+			AssertWithMessage[line =!= $Failed,
+				"Utils`ReadLinesInFile[]: Unable to read line from file '" <>
+				fileName <> "'"];
+			AppendTo[lines, line]]
+		
+    Close[fileHandle];
+    lines
+	]
 
 End[];
 
