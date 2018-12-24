@@ -34,6 +34,8 @@ extension and reuse.
   - **SARAH** [0909.2863]_, [1002.0840]_, [1207.0906]_, [1309.7223]_
   - **SOFTSUSY** [hep-ph:0104145]_, [1311.7659]_
 
+  The list of references in BibTeX format can be found in
+  `<doc/references.bib>`_.
 
 .. contents:: Table of Contents
    :depth: 2
