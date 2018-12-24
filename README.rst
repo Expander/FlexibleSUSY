@@ -22,7 +22,7 @@ extension and reuse.
   and [1710.03760]_.
 
   If you use the **FlexibleEFTHiggs** approach in your work please
-  cite [1609.00371]_.
+  cite [1609.00371]_ and [1710.03760]_.
 
   If you use **FlexibleSUSY+Himalaya** or Himalaya_ in your work,
   please cite [1005.5709]_, [1708.05720]_ and [1807.03509]_.

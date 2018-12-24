@@ -8,8 +8,10 @@ MSSMEFTHiggs
 
 MSSMEFTHiggs (FlexibleEFTHiggs for the MSSM) is an implementation of
 the Standard Model, matched to the MSSM at the SUSY scale,
-:math:`M_\text{SUSY}`.  The setup of MSSMEFTHiggs is shown in the
-following figure.
+:math:`M_\text{SUSY}`.  The matching is performed at the 1-loop level
+using the FlexibleEFTHiggs approach described in [1609.00371]_ and
+[1710.03760]_.  The setup of MSSMEFTHiggs is shown in the following
+figure.
 
 .. image:: images/MSSMEFTHiggs_tower.svg
    :align: center
@@ -291,4 +293,5 @@ When this script is executed, the following figure is produced:
 .. [1604.00853] `JHEP 1606 (2016) 175 <https://inspirehep.net/record/1441223>`_ [`arXiv:1604.00853 <https://arxiv.org/abs/1604.00853>`_]
 .. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arXiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
 .. [1703.08166] `Eur.Phys.J. C77 (2017) no.5, 334 <https://inspirehep.net/record/1518961>`_ [`arXiv:1703.08166 <https://arxiv.org/abs/1703.08166>`_]
+.. [1710.03760] `CPC 230 (2018) 145-217 <https://inspirehep.net/record/1629978>`_ [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]
 .. [1807.03509] `Eur.Phys.J. C78 (2018) no.10, 874 <https://inspirehep.net/record/1681658>`_ [`arXiv:1807.03509 <https://arxiv.org/abs/1807.03509>`_]
