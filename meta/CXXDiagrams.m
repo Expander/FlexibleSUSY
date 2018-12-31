@@ -462,37 +462,6 @@ LoadVerticesIfNecessary[] :=
 
 (* Returns the vertex type for a vertex with a given list of fields *)
 VertexTypeForFields[fields_List] :=
-  Module[{fermions, scalarCount, vectorCount, fermionCount, vertexType = "UnknownVertexType"},
-    fermions = Vertices`StripFieldIndices /@ Select[fields, TreeMasses`IsFermion];
-      
-    scalarCount = Length @ Select[fields, TreeMasses`IsScalar];
-    vectorCount = Length @ Select[fields, TreeMasses`IsVector];
-    fermionCount = Length @ fermions;
-       
-    If[fermionCount === 2 && scalarCount === 1 && vectorCount === 0,
-       vertexType = LeftAndRightComponentedVertex];
-    If[fermionCount === 2 && scalarCount === 0 && vectorCount === 1,
-       If[fermions[[1]] === LorentzConjugate[fermions[[2]]],
-          vertexType = LeftAndRightComponentedVertex]];
-    If[fermionCount === 0 && scalarCount === 2 && vectorCount === 1,
-       vertexType = SingleComponentedVertex];
-    vertexType
-  ]
-
-(* Returns the different SARAH`Cp coupling parts for a vertex with a given list of fields *)
-CouplingsForFields[fields_List] :=
-    Module[{vertexType, couplings},
-      vertexType = VertexTypeForFields[fields];
-      couplings = {SARAH`Cp @@ fields};
-      
-      Switch[vertexType,
-             SingleComponentedVertex, couplings,
-             LeftAndRightComponentedVertex, {couplings[[1]][SARAH`PL], couplings[[1]][SARAH`PR]},
-             "UnknownVertexType",{}]
-   ]
-
-(* Returns the vertex type for a vertex with a given list of fields *)
-VertexTypeForFields[fields_List] :=
   Module[{scalarCount, vectorCount, fermionCount, ghostCount},
     scalarCount = Length @ Select[fields, TreeMasses`IsScalar];
     vectorCount = Length @ Select[fields, TreeMasses`IsVector];
