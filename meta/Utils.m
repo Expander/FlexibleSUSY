@@ -139,7 +139,8 @@ If assertion does not evaluate to True, print message and Quit[1].";
 
 ReadLinesInFile::usage = "ReadLinesInFile[fileName_String]:
 Read the entire contents of the file given by fileName and return it
-as a list of Strings representing the lines in the file.";
+as a list of Strings representing the lines in the file.
+Warning: This function may ignore empty lines.";
 
 Begin["`Private`"];
 
