@@ -8,24 +8,25 @@ By default, FlexibleSUSY creates a "full model" spectrum generator,
 where the pole mass spectrum is calculated at the 1- or 2-loop level
 in the MS-bar/DR-bar scheme in the full model.
 
-FlexibleEFTHiggs is a feature of FlexibleSUSY, to perform the 1-loop
-calculation of the lightest Higgs pole mass of the given model in an
-effective field theory (EFT), which is the Standard Model.
-FlexibleEFTHiggs combines the features of full model calculation (the
-inclusion of all logarithmic and non-logarithmic Higgs mass
-contributions) with the ones of an EFT (the resummation of leading and
-sub-leading logarithms to all orders).  In FlexibleEFTHiggs, the
-quartic Higgs coupling of the Standard Model is determined at the SUSY
-scale by requiring that the lightest CP-even Higgs pole mass in the
-full model is equarl to the Standard Model Higgs pole mass.
+FlexibleEFTHiggs [1609.00371]_, [1710.03760]_ is an approach of
+FlexibleSUSY, to perform the 1-loop calculation of the lightest Higgs
+pole mass of the given BSM model in an effective field theory (EFT),
+which is assumed to be the Standard Model.  FlexibleEFTHiggs combines
+the features of full model calculation (the inclusion of all
+logarithmic and non-logarithmic Higgs mass contributions) with the
+ones of an EFT (the resummation of leading and sub-leading logarithms
+to all orders).  In FlexibleEFTHiggs, the quartic Higgs coupling of
+the Standard Model is determined at the SUSY scale by requiring that
+the lightest CP-even Higgs pole mass in the full model is equarl to
+the Standard Model Higgs pole mass.
 
 FlexibleEFTHiggs is exact at the 1-loop level.  In particular, all
 power-suppressed 1-loop terms of the order :math:`O(v^2/M^2)`, where
 :math:`M` is the scale of heavy new non-Standard Model particles, are
 correctly taken into account.  In addition, leading and sub-leading
 logarithms of the scale :math:`M` are resummed to all orders.  At the
-2-loop level, FlexibleEFTHiggs misses only non-logarithmic
-contribution.
+2-loop level, FlexibleEFTHiggs misses only non-logarithmic BSM
+contributions.
 
 FlexibleEFTHiggs spectrum generator
 -----------------------------------
@@ -147,3 +148,6 @@ mixing parameter :math:`X_t`, and :math:`\tan\beta`::
     EffectiveMu = \[Mu];
 
 .. _`FlexibleSUSY model file`: model_file.rst
+
+.. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arXiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
+.. [1710.03760] `CPC 230 (2018) 145-217 <https://inspirehep.net/record/1629978>`_ [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]

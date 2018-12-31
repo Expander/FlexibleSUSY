@@ -108,7 +108,7 @@ HSSUSY takes the following physics parameters as input:
 :math:`M_3(M_\text{SUSY})`                      Gluino mass                                                              ``EXTPAR[3]``      ``M3Input``
 :math:`\mu(M_\text{SUSY})`                      :math:`\mu`-parameter                                                    ``EXTPAR[4]``      ``MuInput``
 :math:`m_A(M_\text{SUSY})`                      running CP-odd Higgs mass                                                ``EXTPAR[5]``      ``mAInput``
-:math:`M_{\text{EWSB}}`                         scale at which the pole mass spectrum is calculated                      ``EXTPAR[5]``      ``MEWSB``
+:math:`M_{\text{EWSB}}`                         scale at which the pole mass spectrum is calculated                      ``EXTPAR[6]``      ``MEWSB``
 :math:`A_t(M_\text{SUSY})`                      trililear stop coupling                                                  ``EXTPAR[7]``      ``AtInput``
 :math:`A_b(M_\text{SUSY})`                      trililear sbottom coupling                                               ``EXTPAR[8]``      ``AbInput``
 :math:`A_\tau(M_\text{SUSY})`                   trililear stau coupling                                                  ``EXTPAR[9]``      ``AtauInput``

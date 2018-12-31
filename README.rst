@@ -22,7 +22,7 @@ extension and reuse.
   and [1710.03760]_.
 
   If you use the **FlexibleEFTHiggs** approach in your work please
-  cite [1609.00371]_.
+  cite [1609.00371]_ and [1710.03760]_.
 
   If you use **FlexibleSUSY+Himalaya** or Himalaya_ in your work,
   please cite [1005.5709]_, [1708.05720]_ and [1807.03509]_.
@@ -34,6 +34,8 @@ extension and reuse.
   - **SARAH** [0909.2863]_, [1002.0840]_, [1207.0906]_, [1309.7223]_
   - **SOFTSUSY** [hep-ph:0104145]_, [1311.7659]_
 
+  The list of references in BibTeX format can be found in
+  `<doc/references.bib>`_.
 
 .. contents:: Table of Contents
    :depth: 2
