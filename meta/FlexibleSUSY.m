@@ -1990,13 +1990,15 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[vertices_List,files_List] :=
+WriteCXXDiagramClass[vertices_List,files_List,
+		OptionsPattern[{StripColorStructure -> False}]] :=
   Module[{fields, nPointFunctions, vertexData, cxxVertices, massFunctions, unitCharge},
     fields = CXXDiagrams`CreateFields[];
     vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData
                                      /@ DeleteDuplicates[vertices],
                                      "\n\n"];
-    cxxVertices = CXXDiagrams`CreateVertices[vertices];
+    cxxVertices = CXXDiagrams`CreateVertices[vertices,
+			StripColorStructure -> OptionValue[StripColorStructure]];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
     unitCharge = CXXDiagrams`CreateUnitCharge[];
     
@@ -4103,7 +4105,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
            
-           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],cxxQFTFiles];
+           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],cxxQFTFiles,
+					   StripColorStructure -> True];
 
            PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
