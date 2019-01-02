@@ -2022,7 +2022,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
                {{{
          *)
          insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
-               {extParticles, f @@@  extParticles}
+               {extParticles, ffff @@@  extParticles}
             ];
 
          {interfacePrototypes, interfaceDefinitions} =
