@@ -27,7 +27,7 @@ BeginPackage["FFVFormFactors`",
 ];
 
 FFVFormFactorsCreateInterfaceFunction::usage = "";
-f::usage = "";
+ffff::usage = "";
 
 Begin["Private`"];
 
@@ -134,7 +134,7 @@ CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
                      ">::value(indices1, indices2, context);\n";
 
 (* create a list of insertion that will get passed to the FFVCreateInterface *)
-f[inFermion_, outFermion_, spectator_] :=
+ffff[inFermion_, outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
 
       scalars = getParticlesOfType[TreeMasses`IsScalar];
