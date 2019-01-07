@@ -132,6 +132,8 @@ FSFancyPrint::usage = "Print text in fancy headline style";
 
 FSFancyLine::usage = "Print separator line in command line mode";
 
+PrintHeadline::usage = "Print fancy head line";
+
 PrintAndReturn::usage = "Print result and return it";
 
 Begin["`Private`"];
@@ -262,6 +264,14 @@ FSFancyPrint[text_, level_:1] :=
 
 FSFancyLine[type_:"-", style__:Bold] :=
     If[!$Notebooks, Print[Style[StringJoin[Array[type&, 70]], style]]];
+
+PrintHeadline[text__] :=
+    Block[{},
+          Print[""];
+          FSFancyLine[];
+          FSFancyPrint[text];
+          FSFancyLine[];
+         ];
 
 PrintAndReturn[e___] := (Print[e]; e)
 

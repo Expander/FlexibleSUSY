@@ -99,6 +99,8 @@ t2lLimitS1S2MSMG = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions
 (* t2lLimitS2MS = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions /. mmst2  -> mmsusy + x * dst1, {x,0,0}]]; *)
 (* t2lLimitMSMG = CollectTerms @ Normal[Series[(t2l - t2lqcd) //. loopFunctions /. mmsusy -> mmgl   + x * dst1, {x,0,0}]]; *)
 
+mt /: mt^2 = mmt;
+
 headerName = "mssm_twoloop_mt.hpp";
 implName   = "mssm_twoloop_mt.cpp";
 
@@ -262,11 +264,11 @@ namespace {
    /// shift gluino mass away from mst1 and mst2 if too close
    double shift_mg(double mg, double mst1, double mst2)
    {
-      if (is_equal_rel(std::min(mst1, mst2), mg, 0.003))
-         return mg * 0.995;
+      if (is_equal_rel(std::min(mst1, mst2), mg, 0.0003))
+         return mg * 0.9995;
 
-      if (is_equal_rel(std::max(mst1, mst2), mg, 0.003))
-         return mg * 1.005;
+      if (is_equal_rel(std::max(mst1, mst2), mg, 0.0003))
+         return mg * 1.0005;
 
       return mg;
    }
@@ -307,12 +309,14 @@ double dMt_over_mt_1loop_susy(const Parameters& pars)
    if (is_equal(mmst1, mmst2, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS1S2] <> ";"] <> "
+
       return result * oneLoop;
    }
 
    if (is_equal(mmgl, mmst1, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS1MG] <> ";"] <> "
+
       return result * oneLoop;
    }
 
@@ -320,10 +324,12 @@ double dMt_over_mt_1loop_susy(const Parameters& pars)
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS2MG] <> ";"] <> "
       return result * oneLoop;
+
    }
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t1l - t1lqcd] <> ";"] <> "
+
    return result * oneLoop;
 }
 
@@ -343,6 +349,7 @@ double dMt_over_mt_2loop_qcd(const Parameters& pars)
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t2lqcd] <> ";"] <> "
+
    return result * twoLoop;
 }
 
@@ -361,14 +368,17 @@ double dMt_over_mt_2loop_susy(const Parameters& pars)
    const double mmst2  = pow2(pars.mst2);
    const double mmsusy = pow2(pars.msusy);
 
-   if (is_equal(mmst1, mmst2, 1e-6) && is_equal(mmst1, mmgl, 1e-6) && is_equal(mmst1, mmsusy, 1e-6)) {
+   if (is_equal(mmst1, mmst2, mmt) && is_equal(mmst1, mmgl, mmt) &&
+       is_equal(mmst1, mmsusy, mmt) && is_equal(std::abs(Xt), 0., 1e-1)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t2lLimitS1S2MSMG] <> ";"] <> "
+
       return result * twoLoop;
    }
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t2l - t2lqcd] <> ";"] <> "
+
    return result * twoLoop;
 }
 
