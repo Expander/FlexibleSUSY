@@ -8,9 +8,9 @@ FlexibleSUSY
    :align: right
 
 FlexibleSUSY provides Mathematica and C++ code to create spectrum
-generators for non-minimal supersymmetric models.  It is designed for
-generating fast and modular C++ code, allowing for easy modification,
-extension and reuse.
+generators for supersymmetric and non-supersymmetric models.  It is
+designed for generating fast and modular C++ code, allowing for easy
+modification, extension and reuse.
 
 * Homepage:                https://flexiblesusy.hepforge.org
 * Mailing list:            flexiblesusy@projects.hepforge.org
