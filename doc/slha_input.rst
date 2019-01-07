@@ -1,3 +1,5 @@
+.. sectnum::
+
 SLHA input parameters
 =====================
 

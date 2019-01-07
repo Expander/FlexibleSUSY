@@ -1,5 +1,9 @@
+.. sectnum::
+
 FlexibleEFTHiggs
 ================
+
+.. contents:: Table of Contents
 
 Overview
 --------

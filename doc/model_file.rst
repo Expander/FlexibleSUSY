@@ -1,3 +1,5 @@
+.. sectnum::
+
 FlexibleSUSY model file
 =======================
 
