@@ -1470,10 +1470,21 @@ Standard Model
 ''''''''''''''
 
 In the Standard Model the known four-loop RGEs from [arxiv:1508.00912,
-arXiv:1604.00853, 1508.02680] can be used by setting in the model
-file::
+arXiv:1604.00853, arxiv:1508.02680] can be used by setting in the
+model file::
 
     UseSM4LoopRGEs = True; (* use four-loop SM RGEs *)
+
+Five-loop RGEs for specific models
+``````````````````````````````````
+
+Standard Model
+''''''''''''''
+
+In the Standard Model the known five-loop QCD RGE from
+[arxiv:1606.08659] can be used by setting in the model file::
+
+    UseSM5LoopRGEs = True; (* use five-loop SM QCD RGE *)
 
 Two-loop threshold corrections
 ``````````````````````````````
