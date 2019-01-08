@@ -2591,7 +2591,12 @@ EOF
     
     if test "x$enable_formcalc" = "xyes"; then
         checking_msg "working FormCalc"
-		    "$MATH" <<EOF > /dev/null
+        
+        if test "x$enable_feynarts" != "xyes"; then
+            result "no (disabled because FeynArts is disabled)"
+            enable_formcalc="no"
+        else
+            "$MATH" <<EOF > /dev/null
 Needs["FeynArts\`"];
 Needs["FormCalc\`"];
 SetDirectory[CreateDirectory[]];
@@ -2609,13 +2614,14 @@ If[MatchQ[Head[fcFeynAmp], Amp[{{FeynArts\`S[1], __}} -> {{FeynArts\`S[1], __}}]
   Quit[0]];
 Quit[1];
 EOF
-        local _formcalc_is_working="$?"
-        if test "x${_formcalc_is_working}" = "x0" ; then
-            result "yes (performed test calculation of S[1] -> S[1] in the SM)"
-        else
-            result "no (unable to calculate S[1] -> S[1] in the SM)"
-            message "Error: FormCalc is not working properly."
-            exit 1
+            local _formcalc_is_working="$?"
+            if test "x${_formcalc_is_working}" = "x0" ; then
+                result "yes (performed test calculation of S[1] -> S[1] in the SM)"
+            else
+                result "no (unable to calculate S[1] -> S[1] in the SM)"
+                message "Error: FormCalc is not working properly."
+               exit 1
+            fi
         fi
 		fi
 }
