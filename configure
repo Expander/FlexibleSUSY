@@ -2592,8 +2592,13 @@ EOF
         checking_msg "working FormCalc"
         
         if test "x$enable_feynarts" != "xyes"; then
-            result "no (disabled because FeynArts support is disabled)"
-            enable_formcalc="no"
+            if test "x$enable_formcalc" = "xautomatic"; then
+                enable_formcalc="no"
+                result "no (disabled because FeynArts support is disabled)"
+            else
+                enable_formcalc="yes"
+                result "yes (cannot perform test calculation because FeynArts support is disabled)"
+            fi
         else
             "$MATH" <<EOF > /dev/null
 Needs["FeynArts\`"];
@@ -2619,7 +2624,7 @@ EOF
                 result "yes (performed test calculation of S[1] -> S[1] in the SM)"
             elif test "x$enable_formcalc" = "xautomatic"; then
                 enable_formcalc="no"
-                result "ok (test calculation of S[1] -> S[1] failed -- support disabled)"
+                result "no (test calculation of S[1] -> S[1] failed -- support disabled)"
             else
                 result "no (unable to calculate S[1] -> S[1] in the SM)"
                 message "Error: FormCalc is not working properly."
