@@ -183,6 +183,7 @@ EffectiveMu;
 EffectiveMASqr;
 UseSM3LoopRGEs = False;
 UseSM4LoopRGEs = False;
+UseSM5LoopRGEs = False;
 UseSMAlphaS3Loop = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2Loop = False;
@@ -366,14 +367,6 @@ allBVPSolvers = { TwoScaleSolver, LatticeSolver, SemiAnalyticSolver };
 HaveEWSBSolver[solver_] := MemberQ[FlexibleSUSY`FSEWSBSolvers, solver];
 
 HaveBVPSolver[solver_] := MemberQ[FlexibleSUSY`FSBVPSolvers, solver];
-
-PrintHeadline[text__] :=
-    Block[{},
-          Print[""];
-          Utils`FSFancyLine[];
-          Utils`FSFancyPrint[text];
-          Utils`FSFancyLine[];
-         ];
 
 DecomposeVersionString[version_String] :=
     ToExpression /@ StringSplit[version, "."];
@@ -2725,10 +2718,16 @@ FSCheckFlags[] :=
 
            If[FlexibleSUSY`UseSM4LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
               Print["Adding 4-loop SM beta-function from ",
-                    "[arxiv:1508.00912, arXiv:1604.00853, 1508.02680]"];
+                    "[arxiv:1508.00912, arXiv:1604.00853, arxiv:1508.02680]"];
               References`AddReference["Martin:2015eia"];
               References`AddReference["Chetyrkin:2016ruf"];
               References`AddReference["Bednyakov:2015ooa"];
+             ];
+
+           If[FlexibleSUSY`UseSM5LoopRGEs || FlexibleSUSY`FlexibleEFTHiggs,
+              Print["Adding 5-loop SM beta-function from ",
+                    "[arxiv:1606.08659]"];
+              References`AddReference["Baikov:2016tgj"];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
@@ -2922,7 +2921,7 @@ ReadPoleMassPrecisions[defaultPrecision_Symbol, highPrecisionList_List,
 
 LoadModelFile[file_String] :=
     Module[{},
-           PrintHeadline["Loading FlexibleSUSY model file"];
+           Utils`PrintHeadline["Loading FlexibleSUSY model file"];
            If[FileExistsQ[file],
               Get[file];
               CheckModelFileSettings[];
@@ -3131,6 +3130,18 @@ AddSM4LoopRGE[beta_List, couplings_List] :=
            beta /. rules
           ];
 
+AddSM5LoopRGE[beta_List, couplings_List] :=
+    Module[{rules, MakeRule},
+           MakeRule[coupling_] := {
+               RuleDelayed[{coupling         , b1_, b2_, b3_, b4_},
+                           {coupling         , b1 , b2 , b3 , b4, Part[ThreeLoopSM`BetaSM[coupling], 5]}],
+               RuleDelayed[{coupling[i1_,i2_], b1_, b2_, b3_, b4_},
+                           {coupling[i1,i2]  , b1 , b2 , b3 , b4, Part[ThreeLoopSM`BetaSM[coupling], 5] CConversion`PROJECTOR}]
+           };
+           rules = Flatten[MakeRule /@ couplings];
+           beta /. rules
+          ];
+
 AddSM4LoopRGEs[] := Module[{
     gauge = { SARAH`strongCoupling },
     yuks  = { SARAH`UpYukawa },
@@ -3139,6 +3150,12 @@ AddSM4LoopRGEs[] := Module[{
     SARAH`BetaGauge = AddSM4LoopRGE[SARAH`BetaGauge, gauge];
     SARAH`BetaYijk  = AddSM4LoopRGE[SARAH`BetaYijk , yuks];
     SARAH`BetaLijkl = AddSM4LoopRGE[SARAH`BetaLijkl, quart];
+    ];
+
+AddSM5LoopRGEs[] := Module[{
+    gauge = { SARAH`strongCoupling }
+    },
+    SARAH`BetaGauge = AddSM5LoopRGE[SARAH`BetaGauge, gauge];
     ];
 
 AddMSSM3LoopRGE[beta_List, couplings_List] :=
@@ -3239,6 +3256,10 @@ ReadSARAHBetaFunctions[] :=
 
            If[FlexibleSUSY`UseSM4LoopRGEs,
               AddSM4LoopRGEs[];
+             ];
+
+           If[FlexibleSUSY`UseSM5LoopRGEs,
+              AddSM5LoopRGEs[];
              ];
 
            If[FlexibleSUSY`UseMSSM3LoopRGEs,
@@ -3402,7 +3423,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
             semiAnalyticHighScaleFiles, semiAnalyticSUSYScaleFiles, semiAnalyticLowScaleFiles,
             semiAnalyticSolnsOutputFile, semiAnalyticEWSBSubstitutions = {}, semiAnalyticInputScale = ""},
 
-           PrintHeadline["Starting FlexibleSUSY"];
+           Utils`PrintHeadline["Starting FlexibleSUSY"];
            FSDebugOutput["meta code directory: ", $flexiblesusyMetaDir];
            FSDebugOutput["config directory   : ", $flexiblesusyConfigDir];
            FSDebugOutput["templates directory: ", $flexiblesusyTemplateDir];
@@ -3426,7 +3447,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            Print["  Model file: ", OptionValue[InputFile]];
            Print["  Model output directory: ", FSOutputDir];
            
-           PrintHeadline["Reading SARAH output files"];
+           Utils`PrintHeadline["Reading SARAH output files"];
            PrepareFSRules[];
            
            {susyBetaFunctionsSARAH, susyBreakingBetaFunctionsSARAH} = ReadSARAHBetaFunctions[];
@@ -3597,7 +3618,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            ReplaceIndicesInUserInput[allInputParameterIndexReplacementRules];
            ReplaceIndicesInUserInput[allExtraParameterIndexReplacementRules];
 
-           PrintHeadline["Creating model parameter classes"];
+           Utils`PrintHeadline["Creating model parameter classes"];
            Print["Creating class for susy parameters ..."];
            WriteRGEClass[susyBetaFunctions, anomDim,
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "susy_parameters.hpp.in"}],
@@ -3740,7 +3761,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            (* apply user-defined rules *)
            vertexRules = vertexRules /. FlexibleSUSY`FSVertexRules;
 
-           PrintHeadline["Creating model"];
+           Utils`PrintHeadline["Creating model"];
            Print["Creating class for model ..."];
            WriteModelClass[massMatrices, ewsbEquations, FlexibleSUSY`EWSBOutputParameters,
                            DeleteDuplicates[Flatten[#[[2]]& /@ solverEwsbSubstitutions]], nPointFunctions, vertexRules, Parameters`GetPhases[],
@@ -3755,14 +3776,14 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            },
                            diagonalizationPrecision];
 
-           PrintHeadline["Creating SLHA model"];
+           Utils`PrintHeadline["Creating SLHA model"];
            Print["Creating class for SLHA model ..."];
            WriteModelSLHAClass[massMatrices,
                                {{FileNameJoin[{$flexiblesusyTemplateDir, "model_slha.hpp.in"}],
                                  FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_model_slha.hpp"}]}
                                }];
 
-           PrintHeadline["Creating utilities"];
+           Utils`PrintHeadline["Creating utilities"];
            Print["Creating utilities class ..."];
            WriteUtilitiesClass[massMatrices, Join[susyBetaFunctions, susyBreakingBetaFunctions],
                                inputParameters, Parameters`GetExtraParameters[],
@@ -3811,7 +3832,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                               FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_plot_rgflow.gnuplot"}]}}
                            ];
 
-           PrintHeadline["Creating solver framework"];
+           Utils`PrintHeadline["Creating solver framework"];
            Print["Creating generic solver class templates ..."];
            spectrumGeneratorInterfaceInputFile = If[
                FlexibleSUSY`FlexibleEFTHiggs === True,
@@ -3840,7 +3861,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_susy_scale_constraint.hpp"}]}
                                    }];
 
-           PrintHeadline["Creating Weinberg angle class ..."];
+           Utils`PrintHeadline["Creating Weinberg angle class ..."];
            WriteWeinbergAngleClass[Join[deltaVBwave, deltaVBvertex, deltaVBbox], vertexRules,
                                    {{FileNameJoin[{$flexiblesusyTemplateDir, "weinberg_angle.hpp.in"}],
                                      FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_weinberg_angle.hpp"}]},
@@ -3849,7 +3870,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                    }];
 
            If[HaveBVPSolver[FlexibleSUSY`TwoScaleSolver],
-              PrintHeadline["Creating two-scale solver"];
+              Utils`PrintHeadline["Creating two-scale solver"];
               Print["Creating class for convergence tester ..."];
               WriteConvergenceTesterClass[FlexibleSUSY`FSConvergenceCheck,
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "two_scale_convergence_tester.hpp.in"}],
@@ -3960,7 +3981,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
              ]; (* If[HaveBVPSolver[FlexibleSUSY`TwoScaleSolver] *)
 
            If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver],
-              PrintHeadline["Creating semi-analytic solver"];
+              Utils`PrintHeadline["Creating semi-analytic solver"];
 
               Parameters`AddExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
 
@@ -4117,7 +4138,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
               Parameters`RemoveExtraParameters[SemiAnalytic`CreateCoefficientParameters[semiAnalyticSolns]];
              ]; (* If[HaveBVPSolver[FlexibleSUSY`SemiAnalyticSolver] *)
 
-           PrintHeadline["Creating observables"];
+           Utils`PrintHeadline["Creating observables"];
            Print["Creating class for effective couplings ..."];
            (* @note separating this out for now for simplicity *)
            (* @todo maybe implement a flag (like for addons) to turn on/off? *)
@@ -4173,7 +4194,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],cxxQFTFiles,
 					   StripColorStructure -> True];
 
-           PrintHeadline["Creating Mathematica interface"];
+           Utils`PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
            WriteMathLink[inputParameters, extraSLHAOutputBlocks,
                          {{FileNameJoin[{$flexiblesusyTemplateDir, "librarylink.cpp.in"}],
@@ -4184,7 +4205,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{FSOutputDir, "run_" <> FlexibleSUSY`FSModelName <> ".m"}]}
                          }];
 
-           PrintHeadline["Creating user examples"];
+           Utils`PrintHeadline["Creating user examples"];
            Print["Creating user example spectrum generator program ..."];
            WriteUserExample[inputParameters,
                             {{FileNameJoin[{$flexiblesusyTemplateDir, "run.cpp.in"}],
@@ -4202,7 +4223,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                                 FileNameJoin[{FSOutputDir, "LesHouches.in." <> FlexibleSUSY`FSModelName <> "_generated"}]}}
                              ];
 
-           PrintHeadline["FlexibleSUSY has finished"];
+           Utils`PrintHeadline["FlexibleSUSY has finished"];
           ];
 
 End[];

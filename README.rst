@@ -8,9 +8,9 @@ FlexibleSUSY
    :align: right
 
 FlexibleSUSY provides Mathematica and C++ code to create spectrum
-generators for non-minimal supersymmetric models.  It is designed for
-generating fast and modular C++ code, allowing for easy modification,
-extension and reuse.
+generators for supersymmetric and non-supersymmetric models.  It is
+designed for generating fast and modular C++ code, allowing for easy
+modification, extension and reuse.
 
 * Homepage:                https://flexiblesusy.hepforge.org
 * Mailing list:            flexiblesusy@projects.hepforge.org
@@ -133,18 +133,9 @@ Building a FlexibleSUSY model
 
    To modify the model details (input parameters, boundary conditions,
    etc.), edit the FlexibleSUSY model file
-   ``models/<model>/FlexibleSUSY.m``.
-
-   Further reading:
-
-   * `FlexibleSUSY model file`_
-   * `FlexibleEFTHiggs`_
-   * `SLHA input parameters`_
-
-.. _`FlexibleSUSY model file`: doc/model_file.rst
-.. _`FlexibleEFTHiggs`: doc/FlexibleEFTHiggs.rst
-.. _`SLHA input parameters`: doc/slha_input.rst
-
+   ``models/<model>/FlexibleSUSY.m``.  For more details see the
+   documentation of the `FlexibleSUSY model file`_ and
+   `FlexibleEFTHiggs`_.
 
 2. Create the Makefile and register your model(s)::
 
@@ -198,11 +189,43 @@ documentation.
 .. _`MSSMEFTHiggs`: doc/MSSMEFTHiggs.rst
 .. _`NUHMSSMNoFVHimalaya`: doc/NUHMSSMNoFVHimalaya.rst
 
-Plotting the mass spectrum and renormalization group running
-------------------------------------------------------------
 
-The pole mass spectrum and the RG flow can be written to data files
-for easy plotting.  In the MSSM for example these data files can be
+Command line
+------------
+
+For each model FlexibleSUSY creates an executable
+``models/<model>/run_<model>.x`` that can be run from the command
+line.  The executable accepts the input in the SLHA format, for
+example in form of a file::
+
+    ./models/MSSM/run_MSSM.x \
+       --slha-input-file=models/MSSM/LesHouches.in.MSSM \
+       --slha-output-file=LesHouches.out.MSSM
+
+or as a stream::
+
+    cat models/MSSM/LesHouches.in.MSSM \
+       | ./models/MSSM/run_MSSM.x --slha-input-file=- --slha-output-file=LesHouches.out.MSSM
+
+For a documentation of FlexibleSUSY-specific switches in the SLHA
+input see the section on `SLHA input parameters`_.
+
+By default the executable writes the output in SLHA format to stdout.
+The output can also be appended to an SQLite database::
+
+    ./models/MSSM/run_MSSM.x \
+       --slha-input-file=models/MSSM/LesHouches.in.MSSM \
+       --slha-output-file=LesHouches.out.MSSM \
+       --database-output-file=points.db
+
+See ``models/<model>/run_<model>.x --help`` for further options.
+
+
+Mass spectrum and renormalization group running
+```````````````````````````````````````````````
+
+The pole mass spectrum and the RG flow can be written to text files
+for easy plotting.  In the MSSM for example these text files can be
 generated via::
 
     ./models/MSSM/run_MSSM.x \
@@ -211,7 +234,8 @@ generated via::
        --spectrum-output-file=MSSM_spectrum.dat
 
 The generated files ``MSSM_rgflow.dat`` and ``MSSM_spectrum.dat`` can
-be plotted with the gnuplot scripts in the model directory::
+be plotted for example with the gnuplot scripts in the model
+directory::
 
     gnuplot -persist -e "filename='MSSM_spectrum.dat'" \
        models/MSSM/MSSM_plot_spectrum.gnuplot
@@ -220,9 +244,9 @@ be plotted with the gnuplot scripts in the model directory::
        models/MSSM/MSSM_plot_rgflow.gnuplot
 
 The gnuplot scripts are just for illustration and currently plot all
-DR-bar parameters, regardless of mass dimension, so the resulting plot
-is not particularly informative.  However, the user may adapt the
-scripts to plot any chosen subset of the parameters.
+running parameters, regardless of their mass dimension, so the
+resulting plot is not particularly informative.  However, one may
+easily adapt the scripts to plot any chosen subset of the parameters.
 
 
 Mathematica interface
@@ -694,6 +718,20 @@ are listed:
 * ``utils/`` contains some utility scripts to perform scans or extract
   data from SLHA files
 
+
+Further reading
+===============
+
+* `FlexibleSUSY model file`_
+* `FlexibleEFTHiggs`_
+* `LibraryLink documentation`_
+* `meta code documentation`_
+* `SLHA input parameters`_
+
+
+References
+==========
+
 .. _slhaea: https://github.com/fthomas/slhaea
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _SARAH: http://sarah.hepforge.org
@@ -706,7 +744,10 @@ are listed:
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
 
+.. _`FlexibleSUSY model file`: doc/model_file.rst
+.. _`FlexibleEFTHiggs`: doc/FlexibleEFTHiggs.rst
 .. _`meta code documentation`: doc/meta_code.rst
+.. _`SLHA input parameters`: doc/slha_input.rst
 
 .. [1406.2319] `CPC 190 (2015) 139-172 <https://inspirehep.net/record/1299998>`_ [`arxiv:1406.2319 <https://arxiv.org/abs/1406.2319>`_]
 .. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arxiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]

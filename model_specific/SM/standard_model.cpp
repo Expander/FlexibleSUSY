@@ -1208,6 +1208,10 @@ Standard_model Standard_model::calc_beta(int loops) const
                beta_g3 += calc_beta_g3_four_loop(traces);
                beta_Lambdax += calc_beta_Lambdax_four_loop(traces);
                beta_Yu += calc_beta_Yu_four_loop(traces);
+
+               if (loops > 4) {
+                  beta_g3 += calc_beta_g3_five_loop(traces);
+               }
             }
          }
       }
@@ -1376,6 +1380,17 @@ double Standard_model::calc_beta_g3_four_loop(const Beta_traces&) const
       Lambdax*Quad(Yu(2,2)) - 0.12603833934188147*Quad(Yu(2,2))*Sqr(g3) +
       0.16927060578749137*Quad(g3)*Sqr(Yu(2,2)) - 0.003640358849186505*Sqr(
       Lambdax)*Sqr(Yu(2,2))));
+
+   return beta_g3;
+}
+
+double Standard_model::calc_beta_g3_five_loop(const Beta_traces&) const
+{
+   DEFINE_PROJECTOR(3,3,3,3)
+
+   double beta_g3;
+
+   beta_g3 = Re(271.4283824198132*Power11(g3)*Power5(oneOver16PiSqr));
 
    return beta_g3;
 }

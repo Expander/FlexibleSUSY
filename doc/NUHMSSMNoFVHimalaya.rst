@@ -216,6 +216,10 @@ When this script is executed, the following figure is produced:
 .. image:: images/NUHMSSMNoFVHimalaya_Mh_MS.png
    :align: center
 
+
+References
+----------
+
 .. _`Himalaya library`: https://github.com/Himalaya-Library/Himalaya
 
 .. [0803.0672] `Phys.Rev.Lett. 100 (2008) 191602, Phys.Rev.Lett. 101 (2008) 039901 <https://inspirehep.net/record/780752>`_ [`arXiv:0803.0672 <https://arxiv.org/abs/0803.0672>`_]

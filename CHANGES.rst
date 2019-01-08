@@ -1,6 +1,19 @@
 FlexibleSUSY 2.2.1 [not released yet]
 =====================================
 
+New features
+------------
+
+* Implementation of the 5-loop beta function of the strong gauge
+  coupling in the SM from [`1606.08659
+  <https://arxiv.org/abs/1606.08659>`_].  The 5-loop contribution is
+  enabled in all FlexibleEFTHiggs models by default and can be enabled
+  in other SM-like models by setting the flag ::
+
+      UseSM5LoopRGEs = True
+
+  in the corresponding model file.
+
 Fixed bugs
 ----------
 

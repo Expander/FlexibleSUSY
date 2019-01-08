@@ -1,5 +1,9 @@
+.. sectnum::
+
 FlexibleEFTHiggs
 ================
+
+.. contents:: Table of Contents
 
 Overview
 --------
@@ -146,6 +150,10 @@ mixing parameter :math:`X_t`, and :math:`\tan\beta`::
     
     UseHiggs2LoopMSSM = True;
     EffectiveMu = \[Mu];
+
+
+References
+----------
 
 .. _`FlexibleSUSY model file`: model_file.rst
 
