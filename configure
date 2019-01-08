@@ -2560,7 +2560,6 @@ EOF
             FORMCALC_VERSION=$(cat "${formcalcconfig}")
             
             if version_at_least $FORMCALC_VERSION "${required_formcalc_version}"; then
-                enable_formcalc="yes"
                 result "ok (version ${FORMCALC_VERSION})"
             elif test "x$enable_formcalc" = "xautomatic"; then
                 enable_formcalc="no"
@@ -2589,11 +2588,11 @@ EOF
         exit 1
     fi
     
-    if test "x$enable_formcalc" = "xyes"; then
+    if test "x$enable_formcalc" != "xno"; then
         checking_msg "working FormCalc"
         
         if test "x$enable_feynarts" != "xyes"; then
-            result "no (disabled because FeynArts is disabled)"
+            result "no (disabled because FeynArts support is disabled)"
             enable_formcalc="no"
         else
             "$MATH" <<EOF > /dev/null
@@ -2616,11 +2615,15 @@ Quit[1];
 EOF
             local _formcalc_is_working="$?"
             if test "x${_formcalc_is_working}" = "x0" ; then
+                enable_formcalc="yes"
                 result "yes (performed test calculation of S[1] -> S[1] in the SM)"
+            elif test "x$enable_formcalc" = "xautomatic"; then
+                enable_formcalc="no"
+                result "ok (test calculation of S[1] -> S[1] failed -- support disabled)"
             else
                 result "no (unable to calculate S[1] -> S[1] in the SM)"
                 message "Error: FormCalc is not working properly."
-               exit 1
+                exit 1
             fi
         fi
 		fi
