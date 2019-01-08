@@ -1554,6 +1554,9 @@ the threshold correction loop order (block ``FlexibleSUSY[7]``) is set
 to a value > 2.
 
 
+References
+----------
+
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
 

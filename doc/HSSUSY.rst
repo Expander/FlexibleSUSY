@@ -275,6 +275,10 @@ When this script is executed, the following figure is produced:
 .. image:: images/HSSUSY_Mh_MS.png
    :align: center
 
+
+References
+----------
+
 .. _`LibraryLink documentation`: librarylink.rst
 .. _`SLHA input parameters`: slha_input.rst
 

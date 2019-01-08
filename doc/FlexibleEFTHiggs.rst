@@ -151,6 +151,10 @@ mixing parameter :math:`X_t`, and :math:`\tan\beta`::
     UseHiggs2LoopMSSM = True;
     EffectiveMu = \[Mu];
 
+
+References
+----------
+
 .. _`FlexibleSUSY model file`: model_file.rst
 
 .. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arXiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]

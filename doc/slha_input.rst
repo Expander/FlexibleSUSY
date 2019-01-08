@@ -584,6 +584,7 @@ physical input parameters, which are not contained in a SLHA-compliant
   1      SM Higgs pole mass                     any positive double            125.09
 ======= ====================================== ============================== ==================
 
+
 MODSEL block (MODSEL)
 ---------------------
 
@@ -607,12 +608,17 @@ block, as defined in SLHA-2:
  12      Output scale for running parameters    any positive, non-zero double             0 (= SUSYScale)
 ======= ====================================== ========================================= ===========================
 
+
 Output blocks
 -------------
 
 In FlexibleSUSY the user can define additional SLHA output blocks.
 Please refer to the section on output blocks in `FlexibleSUSY model
 file`_ section for more information.
+
+
+References
+----------
 
 .. _`FlexibleSUSY model file`: model_file.rst
 
