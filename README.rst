@@ -59,6 +59,8 @@ Optional:
 
 * BLAS_
 * LAPACK_
+* FeynArts_ (version 3.9 or higher)
+* FormCalc_ (version 9.5 or higher)
 * LoopTools_ (version 2.8 or higher)
 * Himalaya_
 
@@ -86,6 +88,24 @@ script::
 
 See ``./install-sarah --help`` for more options.
 
+Installation of FeynArts/FormCalc/LoopTools
+-------------------------------------------
+
+If you want FlexibleSUSY to use either FeynArts, FormCalc or LoopTools
+you will need to install these packages first.  Also - as with SARAH -
+they need to be loadable with the ``Needs[]`` command from inside
+Mathematica.  We recommend using the installation script `FeynInstall`
+provided on the FeynArts web page. e.g:
+
+    cd ~/.local
+    wget http://www.feynarts.de/FeynInstall
+    chmod 755 FeynInstall
+    ./FeynInstall
+
+which will install the latest versions of FeynArts, FormCalc and
+LoopTools in the `~/.local/` directory as well as configure Mathematica
+to find these packages.  Note that running the `FeynInstall` script
+might require user intervention.
 
 Building a FlexibleSUSY model
 -----------------------------

@@ -36,6 +36,8 @@ VertexTypes::usage="";
 CXXNameOfField::usage="";
 LorentzConjugateOperation::usage="";
 LorentzConjugate::usage="";
+RemoveLorentzConjugation::usage="";
+AtomHead::usage="";
 CreateFields::usage="";
 FeynmanDiagramsOfType::usage="";
 VerticesForDiagram::usage="";
@@ -77,10 +79,21 @@ CXXBoolValue[True] = "true"
 CXXBoolValue[False] = "false"
 
 (* TODO: Better name than LorentzConjugate *)
-LorentzConjugateOperation[field_] := If[FermionQ[field] || GhostQ[field],
-                                        "bar",
-                                        "conj"]
-LorentzConjugate[field_] := SARAH`AntiField[field]
+(* FIXME: We decide this on our own which is bad, but 
+	SARAH`AntiField[] only works after one has called some
+	SARAH routines like in LoadVerticesIfNecessary[].
+	But CXXDiagrams should be stateless, hence we avoid relying
+	SARAH here. *)
+LorentzConjugateOperation[field_] :=
+	If[TreeMasses`IsFermion[field] || TreeMasses`IsGhost[field],
+		"bar", "conj"]
+LorentzConjugate[field_] :=
+	If[TreeMasses`IsFermion[field] || TreeMasses`IsGhost[field],
+		SARAH`bar[field], Susyno`LieGroups`conj[field]]
+
+RemoveLorentzConjugation[p_] := p
+RemoveLorentzConjugation[SARAH`bar[p_]] := p
+RemoveLorentzConjugation[Susyno`LieGroups`conj[p_]] := p
 
 AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
 
@@ -152,7 +165,7 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
           unresolvedFieldCouplings,resolvedFields,resolvedFieldCouplings,
           diagrams},
    LoadVerticesIfNecessary[];
-
+   
    internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
    externalRules = Flatten @ ({{_,#,_} :> SARAH`AntiField[# /. externalFields],
                                {#,_,_} :> SARAH`AntiField[# /. externalFields]} & /@ externalVertices);

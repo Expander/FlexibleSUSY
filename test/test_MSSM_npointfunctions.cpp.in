@@ -1,0 +1,197 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#define BOOST_TEST_MODULE Test NPointFunctions
+#include <boost/test/included/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
+#include <boost/version.hpp>
+
+#include "random_sign_dataset.hpp"
+#include "test_complex_equality.hpp"
+
+#include "lowe.h"
+
+#include "MSSM_two_scale_spectrum_generator.hpp"
+#include "MSSM_input_parameters.hpp"
+#include "MSSM_mass_eigenstates.hpp"
+
+@NPointFunctions_Headers@
+
+using namespace flexiblesusy;
+namespace bdata = boost::unit_test::data;
+
+namespace
+{
+constexpr int number_of_random_samples = 100;
+static_assert( number_of_random_samples >= 2,
+	"There must be at least two random samples." );
+
+auto random_data_points( void ) -> decltype(
+	bdata::random( 5.0, 30.0 ) ^
+	boost_test_tools::random_sign_dataset{} ^
+	bdata::random( 1.94e+16, 1.95e+16 ) ^
+	bdata::random( 500000.0, 10000000.0 ) ^
+	bdata::random( 500000.0, 10000000.0 ) ^
+	bdata::random( 700.0, 3000.0 ) ^
+	bdata::random( 700.0, 3000.0 ) ^
+	bdata::random( 700.0, 3000.0 )
+)
+{
+	auto TanBeta_random = bdata::random( 5.0, 30.0 );
+	auto signMu_random = boost_test_tools::random_sign_dataset{};
+	auto Q_random = bdata::random( 1.94e+16, 1.95e+16 );
+	auto mHd2IN_random = bdata::random( 500000.0, 10000000.0 );
+	auto mHu2IN_random = bdata::random( 500000.0, 10000000.0 );
+	auto MassBInput_random = bdata::random( 700.0, 3000.0 );
+	auto MassWBInput_random = bdata::random( 700.0, 3000.0 );
+	auto MassGInput_random = bdata::random( 700.0, 3000.0 );
+	
+	return (
+		std::move(TanBeta_random) ^ std::move(signMu_random) ^
+		std::move(Q_random) ^ std::move(mHd2IN_random) ^
+		std::move(mHu2IN_random) ^ std::move(MassBInput_random) ^
+		std::move(MassWBInput_random) ^ std::move(MassGInput_random)
+	);
+}
+
+auto data_points( void ) -> decltype(
+	bdata::xrange( 1, number_of_random_samples + 1 ) ^
+	random_data_points()
+)
+{
+	auto random_datset =
+		bdata::xrange( 1, number_of_random_samples + 1 ) ^
+		random_data_points();
+	
+	return std::move(random_datset);
+}
+
+MSSM_input_parameters wrap_input_parameters(
+	double TanBeta, int SignMu, double Qin, double mHd2IN,
+	double mHu2IN, double MassBInput, double MassWBInput,
+	double MassGInput )
+{
+	MSSM_input_parameters input;
+	
+	input.TanBeta = TanBeta;
+	input.SignMu = SignMu;
+	input.Qin = Qin;
+	input.mHd2IN = mHd2IN;
+	input.mHu2IN = mHu2IN;
+	input.MassBInput = MassBInput;
+	input.MassWBInput = MassWBInput;
+	input.MassGInput = MassGInput;
+	
+	// Pick a sensible value for sfermion masses
+	double sfermion_massSqr = (input.mHd2IN + input.mHu2IN) / 2.0;
+	Eigen::Matrix<double,3,3> sfermion_mass_matrix;
+	
+	sfermion_mass_matrix <<
+		sfermion_massSqr, 0, 0,
+		0, sfermion_massSqr, 0,
+		0, 0, sfermion_massSqr;
+	
+	input.mq2Input = sfermion_mass_matrix;
+	input.ml2Input = sfermion_mass_matrix;
+	input.md2Input = sfermion_mass_matrix;
+	input.mu2Input = sfermion_mass_matrix;
+	input.me2Input = sfermion_mass_matrix;
+	
+	return input;
+}
+
+MSSM_mass_eigenstates calculate_spectrum(
+	const MSSM_input_parameters &input )
+{
+	softsusy::QedQcd qedqcd;
+	
+	Spectrum_generator_settings spectrum_generator_settings;
+	spectrum_generator_settings.set(
+		Spectrum_generator_settings::calculate_sm_masses, 1.0 );
+	
+	MSSM_spectrum_generator<Two_scale> spectrum_generator;
+	spectrum_generator.set_settings( spectrum_generator_settings );
+	spectrum_generator.set_parameter_output_scale( qedqcd.get_scale() );
+
+	spectrum_generator.run( qedqcd, input );
+	return spectrum_generator.get_model();
+}
+}
+
+#define INPUTPARAMETER(p) context.model.get_input().p
+#define MODELPARAMETER(p) context.model.get_##p()
+#define DERIVEDPARAMETER(p) context.model.p()
+#define PHASE(p) context.model.get_##p()
+
+namespace flexiblesusy
+{
+namespace MSSM_cxx_diagrams
+{
+@CXXDiagrams_VertexData@
+
+@CXXDiagrams_Vertices@
+
+namespace npointfunctions
+{
+@NPointFunctions_Selfenergy_hh_1loop@
+}
+}
+}
+
+BOOST_AUTO_TEST_SUITE(selfenergy_test_suite, 
+	* boost::unit_test::tolerance(1.0e-12) )
+
+BOOST_DATA_TEST_CASE( test_selfenergies,
+	data_points(),
+  index, TanBeta, SignMu, Qin, mHd2IN, mHu2IN, MassBInput,
+	MassWBInput, MassGInput )
+{
+	auto input_parameters = wrap_input_parameters(
+		TanBeta, SignMu, Qin, mHd2IN, mHu2IN, MassBInput,
+		MassWBInput, MassGInput );
+	auto model = calculate_spectrum( input_parameters );
+	
+	auto problems = model.get_problems();
+	BOOST_WARN_MESSAGE( !problems.have_problem(),
+		"There was an error calculating the spectrum: " <<
+		problems << "Skipping data point..." );
+		
+	if( problems.have_problem() == false )
+	{
+		auto hh_mix = model.get_ZH();
+	
+		auto fs_selfenergy_hh_unrotated =
+			model.self_energy_hh_1loop( 0 );
+		auto fs_selfenergy_hh = hh_mix * fs_selfenergy_hh_unrotated *
+			hh_mix.adjoint();
+		
+		auto np_selfenergy_hh = [&model] ( int i1, int i2 ) {
+			return MSSM_cxx_diagrams::npointfunctions::selfenergy_hh_1loop(
+				model, std::array<int, 2>{ i1, i2 },
+				std::array<Eigen::Vector4d, 0>{} );
+		};
+		
+		TEST_COMPLEX_EQUALITY( np_selfenergy_hh(0,0), fs_selfenergy_hh(0,0) );
+		TEST_COMPLEX_EQUALITY( np_selfenergy_hh(0,1), fs_selfenergy_hh(0,1) );
+		TEST_COMPLEX_EQUALITY( np_selfenergy_hh(1,0), fs_selfenergy_hh(1,0) );
+		TEST_COMPLEX_EQUALITY( np_selfenergy_hh(1,1), fs_selfenergy_hh(1,1) );
+	} else
+		BOOST_TEST( true );
+}
+
+BOOST_AUTO_TEST_SUITE_END()

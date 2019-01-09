@@ -51,7 +51,7 @@ EDMContributingGraphs[] := contributingGraphs
 EDMContributingDiagramsForFieldAndGraph[field_,graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> field, 2 -> SARAH`AntiField[field], 3 -> TreeMasses`GetPhoton[]}];
+         {1 -> field, 2 -> CXXDiagrams`LorentzConjugate[field], 3 -> TreeMasses`GetPhoton[]}];
 
     Select[diagrams,IsDiagramSupported[field,graph,#] &]
  ]
