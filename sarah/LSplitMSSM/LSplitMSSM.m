@@ -26,7 +26,7 @@ Off[General::spell]
 
 Model`Name = "LSplitMSSM";
 Model`NameLaTeX ="LSplitMSSM";
-Model`Authors = "A.Voigt";
+Model`Authors = "F.Esser,A.Voigt";
 Model`Date = "2018-12-04";
 
 (* Implementation of the split-MSSM with extra light 1st and 2nd
