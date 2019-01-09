@@ -355,8 +355,6 @@ allBetaFunctions = {};
 
 GetBetaFunctions[] := allBetaFunctions;
 
-allOutputParameters = {};
-
 numberOfModelParameters = 0;
 
 allEWSBSolvers = { GSLHybrid, GSLHybridS, GSLBroyden, GSLNewton,
@@ -3338,11 +3336,11 @@ ConvertBetaFunctions[susyBetaFunctionsSARAH_, susyBreakingBetaFunctionsSARAH_] :
             susyBreakingBetaFunctions = BetaFunction`ConvertSarahRGEs[ApplyFSBetaFunctionRules @ susyBreakingBetaFunctionsSARAH];
             susyBreakingBetaFunctions = Select[susyBreakingBetaFunctions, (BetaFunction`GetAllBetaFunctions[#]!={})&];
 
-            FlexibleSUSY`allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
+            allBetaFunctions = Join[susyBetaFunctions, susyBreakingBetaFunctions];
            
             numberOfSusyParameters = BetaFunction`CountNumberOfParameters[susyBetaFunctions];
             numberOfSusyBreakingParameters = BetaFunction`CountNumberOfParameters[susyBreakingBetaFunctions];
-            FlexibleSUSY`numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
+            numberOfModelParameters = numberOfSusyParameters + numberOfSusyBreakingParameters;
             
             {susyBetaFunctions, susyBreakingBetaFunctions}
 		]
@@ -3351,7 +3349,7 @@ SetupMassMatrices[allParameters_] :=
 		Module[{Lat$massMatrices, massMatrices,
 		        allIntermediateOutputParameters,
 		        allIntermediateOutputParameterIndexReplacementRules},
-           FlexibleSUSY`allIndexReplacementRules = Join[
+           allIndexReplacementRules = Join[
              Parameters`CreateIndexReplacementRules[allParameters],
              {Global`upQuarksDRbar[i_,j_] :> Global`upQuarksDRbar[i-1,j-1],
              Global`downQuarksDRbar[i_,j_] :> Global`downQuarksDRbar[i-1,j-1],
@@ -3387,7 +3385,7 @@ SetupOutputParameters[massMatrices_] :=
                     Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices]]], Null];
 
            Parameters`SetOutputParameters[allOutputParameters];
-           allOutputParameters
+           DebugPrint["output parameters = ", allOutputParameters];
     ]
            
 
@@ -3557,8 +3555,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                Parameters`GetExtraParameters[]
             ];
            
-           allOutputParameters = SetupOutputParameters[massMatrices];
-           DebugPrint["output parameters = ", allOutputParameters];
+           SetupOutputParameters[massMatrices];
 
            (* backwards compatibility replacements in constraints *)
            backwardsCompatRules = {
