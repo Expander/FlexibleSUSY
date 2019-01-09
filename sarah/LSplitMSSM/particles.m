@@ -89,7 +89,7 @@ ParticleDefinitions[GaugeES] = {
              PDG.IX -> {0},
              Mass -> Automatic,
              FeynArtsNr -> 14,
-             LaTeX -> "\\tilde{\mu}_L",
+             LaTeX -> "\\tilde{\\mu}_L",
              OutputName -> "muL" }},
     {SeR1,  { Description -> "Right Selectron",
              PDG -> {0},
@@ -103,7 +103,7 @@ ParticleDefinitions[GaugeES] = {
              PDG.IX -> {0},
              Mass -> Automatic,
              FeynArtsNr -> 16,
-             LaTeX -> "\\tilde{\mu}_R",
+             LaTeX -> "\\tilde{\\mu}_R",
              OutputName -> "muR" }},
     {SvL1,  { Description -> "Left electron-sneutrino",
              PDG -> {0},
@@ -117,7 +117,7 @@ ParticleDefinitions[GaugeES] = {
              PDG.IX -> {0},
              Mass -> Automatic,
              FeynArtsNr -> 12,
-             LaTeX -> "\\tilde{\\nu}_{\muL}",
+             LaTeX -> "\\tilde{\\nu}_{\\muL}",
              OutputName -> "munL" }}
 };
 
