@@ -185,12 +185,6 @@ ParameterDefinitions = {
                   OutputName -> g1eeee22,
                   LaTeX -> "\\tilde{g}_{2,\\tilde{e}\\tilde{e}\\tilde{e}\\tilde{e}}^{22}",
                   LesHouches -> {SplitMSSM,9} }},
-                  
-    {g1hhhh,    { Description -> "Quartic-U(1)-Higgs-Coupling",
-                  Real -> True,
-                  OutputName -> g1hhhh,
-                  LaTeX -> "\\tilde{g}_{1,\\tilde{h}\\tilde{h}\\tilde{h}\\tilde{h}}",
-                  LesHouches -> {SplitMSSM,10} }},
 
     {g1llhh1,   { Description -> "Quartic-U(1)-Higgs-Left-1-Slepton-Coupling",
                   Real -> True,

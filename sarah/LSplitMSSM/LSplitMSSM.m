@@ -142,7 +142,6 @@ LagReSlep = (
     + g1eeee[[1,1]] conj[SER1].SER1.SER1.conj[SER1]
     + 2 g1eeee[[1,2]] conj[SER1].SER1.SER2.conj[SER2] 
     + g1eeee[[2,2]] conj[SER2].SER2.SER2.conj[SER2]
-    + g1hhhh Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.H.conj[H]
     + g1llhh[[1,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.H.conj[H] 
     + g1llhh[[2,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL2].SEL2.H.conj[H]
     + g1eehh[[1,1]] Delta[lef3,lef4] conj[SER1].SER1.H.conj[H] 
