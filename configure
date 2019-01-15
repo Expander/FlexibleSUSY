@@ -3261,6 +3261,9 @@ if test "x${enable_meta}" = "xyes"; then
     esac
     check_feynarts
     check_formcalc
+else
+    enable_feynarts=no
+    enable_formcalc=no
 fi
 
 if test "x${enable_compile}" = "xyes"; then
