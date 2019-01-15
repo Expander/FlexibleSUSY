@@ -3259,10 +3259,9 @@ if test "x${enable_meta}" = "xyes"; then
     case "$operating_system" in
 	CYGWIN_NT*) check_cygpath ;;
     esac
+    check_feynarts
+    check_formcalc
 fi
-
-check_feynarts
-check_formcalc
 
 if test "x${enable_compile}" = "xyes"; then
     check_multiarch
