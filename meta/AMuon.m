@@ -61,7 +61,7 @@ GetCXXMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultip
 AMuonContributingDiagramsForGraph[graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> AMuonGetMuon[], 2 -> SARAH`AntiField[AMuonGetMuon[]], 3 -> TreeMasses`GetPhoton[]}];
+         {1 -> AMuonGetMuon[], 2 -> CXXDiagrams`LorentzConjugate[AMuonGetMuon[]], 3 -> TreeMasses`GetPhoton[]}];
          
     Select[diagrams,IsDiagramSupported[graph,#] &]
  ]

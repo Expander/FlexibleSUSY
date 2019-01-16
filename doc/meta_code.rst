@@ -1,3 +1,5 @@
+.. sectnum::
+
 Meta code
 =========
 
@@ -26,15 +28,23 @@ integrates a system of coupled renormalization group equations.
 Beta functions
 ``````````````
 
-``meta/ThreeLoopMSSM.m`` contains a routine which returns the beta
-functions of the MSSM up to the 3-loop level.  The beta functions are
-stored in the files ``meta/MSSM/beta_*.m``, which have been obtained
-from http://www.liv.ac.uk/~dij/betas/allgennb.log [hep-ph:0308231]_.
+Standard Model
+''''''''''''''
 
 ``meta/ThreeLoopSM.m`` contains a routine which returns the beta
 functions of the Standard Model up to the 3-loop level.  The beta
 functions are stored in the files ``meta/SM/beta_*.m``, which have
-been obtained from [1303.4364]_, [1504.05200]_.
+been obtained from [1303.4364]_, [1504.05200]_ with some additional 4-
+and 5-loop corrections from [1508.00912]_, [1508.02680]_,
+[1604.00853]_, [1606.08659]_.
+
+MSSM
+''''
+
+``meta/ThreeLoopMSSM.m`` contains a routine which returns the beta
+functions of the MSSM up to the 3-loop level.  The beta functions are
+stored in the files ``meta/MSSM/beta_*.m``, which have been obtained
+from http://www.liv.ac.uk/~dij/betas/allgennb.log [hep-ph:0308231]_.
 
 Loop corrections to masses
 ``````````````````````````
@@ -46,10 +56,10 @@ Standard Model
 effective Higgs potential in the Standard Model from [1508.00912]_
 
 ``meta/ThreeLoopQCD.m`` contains a routine, which returns the ratio of
-the :math:`\overline{\text{MS}}` top mass over the top pole mass,
-[hep-ph:9912391]_, Eq. (10).  The expression contains the full
-renormalization scale dependence, which has been taken from
-[hep-ph:9911434]_.
+the :math:`\overline{\text{MS}}` top mass over the top pole mass in
+the SM up to 3-loop level in QCD from [hep-ph:9912391]_, Eq. (10).
+The expression contains the full renormalization scale dependence,
+which has been taken from [hep-ph:9911434]_.
 
 ``meta/TwoLoopQCD.m`` contains routines, which return the ratio of the
 top pole mass over the running top mass up to the 2-loop level in the
@@ -105,6 +115,18 @@ the Standard Model (without the top quark) and the
 :math:`\overline{\text{DR}}` value in the MSSM [hep-ph:0509048]_,
 [0810.5101]_, [1009.5455]_.
 
+
+C++ source code formatting
+``````````````````````````
+
+``meta/TextFormatting.m`` contains routines for text formatting of
+long expressions in C/C++ form, see ``WrapText[]`` and
+``IndentText[]``.
+
+
+References
+----------
+
 .. [hep-ph:9803493] `Nucl.Phys. B539 (1999) 671-690 <https://inspirehep.net/record/468752>`_ [`arXiv:hep-ph/9803493 <https://arxiv.org/abs/hep-ph/9803493>`_]
 .. [hep-ph:9911434] `Nucl.Phys. B573 (2000) 617-651 <https://inspirehep.net/record/510551>`_ [`arXiv:hep-ph/9911434 <https://arxiv.org/abs/hep-ph/9911434>`_]
 .. [hep-ph:9912391] `Phys.Lett. B482 (2000) 99-108 <https://inspirehep.net/record/522686>`_ [`arXiv:hep-ph/9912391 <https://arxiv.org/abs/hep-ph/9912391>`_]
@@ -120,3 +142,6 @@ the Standard Model (without the top quark) and the
 .. [1303.4364] `Nucl.Phys. B875 (2013) 552-565 <https://inspirehep.net/record/1224266>`_ [`arXiv:1303.4364 <https://arxiv.org/abs/1303.4364>`_]
 .. [1504.05200] `JHEP 1507 (2015) 159 <https://inspirehep.net/record/1362483>`_ [`arXiv:1504.05200 <https://arxiv.org/abs/1504.05200>`_]
 .. [1508.00912] `Phys.Rev. D92 (2015) no.5, 054029 <https://inspirehep.net/record/1386688>`_ [`arXiv:1508.00912 <https://arxiv.org/abs/1508.00912>`_]
+.. [1508.02680] `Phys.Lett. B762 (2016) 151-156 <https://inspirehep.net/record/1387530>`_ [`arXiv:1508.02680 <https://arxiv.org/abs/1508.02680>`_]
+.. [1604.00853] `JHEP 1606 (2016) 175 <https://inspirehep.net/record/1441223>`_ [`arXiv:1604.00853 <https://arxiv.org/abs/1604.00853>`_]
+.. [1606.08659] `Phys.Rev.Lett. 118 (2017) no.8, 082002 <https://inspirehep.net/record/1472834>`_ [`arXiv:1606.08659 <https://arxiv.org/abs/1606.08659>`_]

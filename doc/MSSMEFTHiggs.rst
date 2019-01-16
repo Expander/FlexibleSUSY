@@ -52,10 +52,11 @@ hybrid calculation, which combines a fixed-order with an EFT
 calculation.  See [1609.00371]_ for a detailed description of the
 FlexibleEFTHiggs method.
 
-The 3- and partial 4-loop renormalization group equations of
+The 3- and partial 4- and 5-loop renormalization group equations of
 [1303.4364]_, [1307.3536]_, [1508.00912]_, [1508.02680]_,
-[1604.00853]_ are used to run :math:`\lambda(M_\text{SUSY})` down to
-the electroweak scale :math:`M_Z` or :math:`M_t`.
+[1604.00853]_, [1606.08659]_ are used to run
+:math:`\lambda(M_\text{SUSY})` down to the electroweak scale
+:math:`M_Z` or :math:`M_t`.
 
 If :math:`M_{\text{SUSY}}` is set to zero, :math:`M_{\text{SUSY}} =
 \sqrt{m_{\tilde{t}_1}m_{\tilde{t}_2}}` is used.
@@ -264,6 +265,10 @@ When this script is executed, the following figure is produced:
 .. image:: images/MSSMEFTHiggs_Mh_MS.png
    :align: center
 
+
+References
+----------
+
 .. _`SLHA input parameters`: slha_input.rst
 
 .. [hep-ph:9305305] `Phys.Lett. B313 (1993) 441-446 <https://inspirehep.net/record/354674>`_ [`arXiv:hep-ph/9305305 <https://arxiv.org/abs/hep-ph/9305305>`_]
@@ -291,6 +296,7 @@ When this script is executed, the following figure is produced:
 .. [1508.00912] `Phys.Rev. D92 (2015) no.5, 054029 <https://inspirehep.net/record/1386688>`_ [`arXiv:1508.00912 <https://arxiv.org/abs/1508.00912>`_]
 .. [1508.02680] `Phys.Lett. B762 (2016) 151-156 <https://inspirehep.net/record/1387530>`_ [`arXiv:1508.02680 <https://arxiv.org/abs/1508.02680>`_]
 .. [1604.00853] `JHEP 1606 (2016) 175 <https://inspirehep.net/record/1441223>`_ [`arXiv:1604.00853 <https://arxiv.org/abs/1604.00853>`_]
+.. [1606.08659] `Phys.Rev.Lett. 118 (2017) no.8, 082002 <https://inspirehep.net/record/1472834>`_ [`arXiv:1606.08659 <https://arxiv.org/abs/1606.08659>`_]
 .. [1609.00371] `JHEP 1701 (2017) 079 <https://inspirehep.net/record/1484857>`_ [`arXiv:1609.00371 <https://arxiv.org/abs/1609.00371>`_]
 .. [1703.08166] `Eur.Phys.J. C77 (2017) no.5, 334 <https://inspirehep.net/record/1518961>`_ [`arXiv:1703.08166 <https://arxiv.org/abs/1703.08166>`_]
 .. [1710.03760] `CPC 230 (2018) 145-217 <https://inspirehep.net/record/1629978>`_ [`arXiv:1710.03760 <https://arxiv.org/abs/1710.03760>`_]
