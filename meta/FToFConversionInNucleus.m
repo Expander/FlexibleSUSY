@@ -93,6 +93,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "const auto A2R = -0.5 * photon_penguin[3]/(4.*GF/sqrt(2.));\n" <>
 
                 (* TODO: remove *)
+                "std::cout << std::setprecision(15);\n" <>
                 "std::cout << \"A1 \" << photon_penguin[0] << ' ' << photon_penguin[1] << '\\n';\n" <>
                 "std::cout << \"A2 \" << photon_penguin[2] << ' ' << photon_penguin[3] << '\\n';\n" <>
 
