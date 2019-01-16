@@ -241,7 +241,7 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             beta = loopFactor CollectMatMul[beta / loopFactor];
             (* declare SARAH traces locally *)
             localDecl  = localDecl <> Traces`CreateLocalCopiesOfSARAHTraces[expr, sarahTraces, "TRACE_STRUCT"];
-            If[beta === 0 || PossibleZeroQ[beta],
+            If[beta == 0,
                beta = CConversion`CreateZero[type];
               ];
             beta       = Parameters`DecreaseIndexLiterals[beta];
