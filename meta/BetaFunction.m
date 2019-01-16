@@ -159,7 +159,7 @@ FactorOutLoopFactor[expr_] :=
           ];
 
 TimeConstrainedSimplify[expr_] :=
-    TimeConstrained[Simplify[expr], FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint, expr];
+    TimeConstrained[Factor[expr], FlexibleSUSY`FSSimplifyBetaFunctionsTimeConstraint, expr];
 
 CollectMatMul[expr_] :=
     TimeConstrained[Collect[expr, SARAH`MatMul[___], TimeConstrainedSimplify],
