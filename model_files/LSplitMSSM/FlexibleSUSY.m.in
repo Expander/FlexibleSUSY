@@ -1,6 +1,8 @@
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
 FSDefaultSARAHModel = LSplitMSSM;
+AutomaticInputAtMSUSY = False;
+FSSimplifyBetaFunctionsTimeConstraint = 2; (* @todo: unset later *)
 
 (* input parameters *)
 
@@ -58,7 +60,43 @@ HighScaleInput = {
     {gYu      , gYuTree + UnitStep[LambdaLoopOrder-1] gYu1L},
     {gYd      , gYdTree + UnitStep[LambdaLoopOrder-1] gYd1L},
     {g2u      , g2uTree + UnitStep[LambdaLoopOrder-1] g2u1L},
-    {g2d      , g2dTree + UnitStep[LambdaLoopOrder-1] g2d1L}
+    {g2d      , g2dTree + UnitStep[LambdaLoopOrder-1] g2d1L},
+    {gleh11, 0},
+    {gleh12, 0},
+    {gleh21, 0},
+    {gleh22, 0},
+    {geeee11, 0},
+    {geeee12, 0},
+    {geeee22, 0},
+    {geehh11, 0},
+    {geehh12, 0},
+    {geehh21, 0},
+    {geehh22, 0},
+    {glele12, 0},
+    {gllee11, 0},
+    {gllee12, 0},
+    {gllee21, 0},
+    {gllee22, 0},
+    {gllhha11, 0},
+    {gllhha12, 0},
+    {gllhha21, 0},
+    {gllhha22, 0},
+    {gllhhb1, 0},
+    {gllhhb2, 0},
+    {gllll11, 0},
+    {gllll12, 0},
+    {gllll21, 0},
+    {gllll22, 0},
+    {gdlse1, ZEROMATRIX[3,1]},
+    {gdlse2, ZEROMATRIX[3,1]},
+    {gdsle1, ZEROMATRIX[3,1]},
+    {gdsle2, ZEROMATRIX[3,1]},
+    {gsebe1, ZEROMATRIX[3,1]},
+    {gsebe2, ZEROMATRIX[3,1]},
+    {gslbl1, ZEROMATRIX[3,1]},
+    {gslbl2, ZEROMATRIX[3,1]},
+    {gslwl1, ZEROMATRIX[3,1]},
+    {gslwl2, ZEROMATRIX[3,1]}
 };
 
 (* The scale where we impose the EWSB conditions
@@ -77,6 +115,14 @@ LowScaleInput = {
    {\[Mu] , MuInput},
    {MassB , M1Input},
    {MassWB, M2Input},
+   {me11, mse2[1,1]},
+   {me12, mse2[1,2]},
+   {me21, mse2[2,1]},
+   {me22, mse2[2,2]},
+   {ml11, msl2[1,1]},
+   {ml12, msl2[1,2]},
+   {ml21, msl2[2,1]},
+   {ml22, msl2[2,2]},
    {v, Sqrt[2] MZMSbar / Sqrt[GUTNormalization[g1]^2 g1^2 + g2^2]},
    {Yu, Automatic},
    {Yd, Automatic},
@@ -87,6 +133,14 @@ InitialGuessAtLowScale = {
    {\[Mu] , MuInput},
    {MassB , M1Input},
    {MassWB, M2Input},
+   {me11, mse2[1,1]},
+   {me12, mse2[1,2]},
+   {me21, mse2[2,1]},
+   {me22, mse2[2,2]},
+   {ml11, msl2[1,1]},
+   {ml12, msl2[1,2]},
+   {ml21, msl2[2,1]},
+   {ml22, msl2[2,2]},
    {v, LowEnergyConstant[vev]},
    {Yu, Automatic},
    {Yd, Automatic},
@@ -99,6 +153,17 @@ MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 
 UseHiggs2LoopSM = True;
+
+ExtraSLHAOutputBlocks = {
+   {FlexibleSUSYLowEnergy,
+           {{21, FlexibleSUSYObservable`aMuon} } },
+   {EFFHIGGSCOUPLINGS, NoScale,
+           {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
+            {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
+            {3, FlexibleSUSYObservable`CpPseudoScalarPhotonPhoton},
+            {4, FlexibleSUSYObservable`CpPseudoScalarGluonGluon} } }
+};
+
 
 (*** Split-MSSM boundary conditions to the MSSM ***)
 (* Taken from arXiv:1407.4081 *)
