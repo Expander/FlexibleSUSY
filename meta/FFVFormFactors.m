@@ -38,6 +38,19 @@ MyReIm[z_] := If[$VersionNumber >= 10.1,
 
 FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon.";
 
+(* given external particles Fj, Fi & V and a list of lists like
+{
+   particles in the loop
+   {Fv, Hpm},
+   {
+      color factors
+      {1, 1},
+      vertices
+      {{bar[Fv], Fe, conj[Hpm]}, {bar[Fe], Fv, Hpm},  {conj[Hpm], Hpm, VP}, {bar[Fv], Fv, VP}}
+   }
+}
+
+*)
 FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
    Module[{prototype, definition,
            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[Fj],
