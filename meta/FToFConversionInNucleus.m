@@ -134,7 +134,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                            "model, qedqcd);\n" <>
 
                         (* TODO" remove *)
-                        "std::cout << \"Z 4-fermion \" << VZ_penguin[0] << ' ' << VZ_penguin[1] << '\\n';\n" <>
+                        "std::cout << \"Z 4-fermion \" << VZ_penguin[0] / (-sqrt(2.0)/GF) * 16*Pi*Pi << ' ' << VZ_penguin[1]/ (-sqrt(2.0)/GF) * 16*Pi*Pi << '\\n';\n" <>
                         "gpLV += 2.*" <> CXXNameOfField[#] <> "_penguin[0] + "    <> CXXNameOfField[#] <> "_penguin[2];\n" <>
                         "gpRV += 2.*" <> CXXNameOfField[#] <> "_penguin[1] + "    <> CXXNameOfField[#] <> "_penguin[3];\n" <>
                         "gnLV += "    <> CXXNameOfField[#] <> "_penguin[0] + 2.*" <> CXXNameOfField[#] <> "_penguin[2];\n" <>
