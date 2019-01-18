@@ -12,6 +12,7 @@ FlexibleSUSY contains several packages with general algorithms needed
 in Quantum Field Theory calculations and implementations of analytic
 expressions from the literature.
 
+
 Passarino-Veltman loop functions
 ````````````````````````````````
 
@@ -19,11 +20,42 @@ Passarino-Veltman loop functions
 Passarino-Veltman 1-loop functions :math:`A_0`, :math:`B_0`,
 :math:`B_1`, :math:`B_{00}`, :math:`B_{11}`, etc.
 
+
 Renormalization group equation integrator
 `````````````````````````````````````````
 
 ``meta/RGIntegrator.m`` contains a routine, which perturbatively
-integrates a system of coupled renormalization group equations.
+integrates a system of coupled renormalization group equations::
+
+    Get["meta/RGIntegrator.m"];
+    ?RGIntegrate
+
+Example 1: Integrating a single RGE up to 2-loop order::
+
+    Get["meta/RGIntegrator.m"];
+    betas = { {g, h a g^2} };
+    RGIntegrate[betas, Q1, Q2, loopOrder -> 2]
+
+yields::
+
+    {g[Q1] -> g[Q2] + a h g[Q2]^2 Log[Q1/Q2] + a^2 h^2 g[Q2]^3 Log[Q1/Q2]^2}
+
+Example 2: Interation of the following coupled system::
+
+    Get["meta/RGIntegrator.m"];
+    betas = { {g, h a g^2, h^2 b g^2 l^2},
+              {l, h (c l^2 + d g^2), h^2 (e l^4 + f g^2 l^2)} };
+    RGIntegrate[betas, Q1, Q2]
+
+yields::
+
+    {g[Q1] -> g[Q2] + a*h*g[Q2]^2*Log[Q1/Q2] +
+        h^2*(b*g[Q2]^2*l[Q2]^2*Log[Q1/Q2] + a^2*g[Q2]^3*Log[Q1/Q2]^2),
+      l[Q1] -> l[Q2] + h*(d*g[Q2]^2*Log[Q1/Q2] + c*l[Q2]^2*Log[Q1/Q2]) +
+        h^2*(f*g[Q2]^2*l[Q2]^2*Log[Q1/Q2] + e*l[Q2]^4*Log[Q1/Q2] +
+          a*d*g[Q2]^3*Log[Q1/Q2]^2 + c*d*g[Q2]^2*l[Q2]*Log[Q1/Q2]^2 +
+          c^2*l[Q2]^3*Log[Q1/Q2]^2)}
+
 
 Beta functions
 ``````````````
@@ -32,11 +64,33 @@ Standard Model
 ''''''''''''''
 
 ``meta/ThreeLoopSM.m`` contains a routine which returns the beta
-functions of the Standard Model up to the 3-loop level.  The beta
+functions of the Standard Model up to the 5-loop level.  The beta
 functions are stored in the files ``meta/SM/beta_*.m``, which have
-been obtained from [1303.4364]_, [1504.05200]_ with some additional 4-
-and 5-loop corrections from [1508.00912]_, [1508.02680]_,
-[1604.00853]_, [1606.08659]_.
+been obtained at 3-loop level from [1303.4364]_, [1504.05200]_ with
+some additional 4- and 5-loop corrections from [1508.00912]_,
+[1508.02680]_, [1604.00853]_, [1606.08659]_.
+
+.. note:: The loop factors :math:`1/(4\pi)^2` have been omitted.
+
+Example: Extracting the 5-loop QCD beta function for :math:`g_3`::
+
+    b = Get["meta/SM/beta_g3.m"];
+
+    bg3 = { k^1 b[[1]],
+            k^2 b[[2]],
+            k^3 b[[3]],
+            k^4 b[[4]],
+            k^5 b[[5]] };
+
+    bg3 /. { g1 -> 0, g2 -> 0, gb -> 0, gt -> 0 } // Chop
+
+Output::
+
+    { -7*g3^3*k,
+      -26*g3^5*k^2,
+      (65*g3^7*k^3)/2,
+      -2472.2837425797156*g3^9*k^4,
+      271.4283824198132*g3^11*k^5 }
 
 MSSM
 ''''
@@ -45,6 +99,26 @@ MSSM
 functions of the MSSM up to the 3-loop level.  The beta functions are
 stored in the files ``meta/MSSM/beta_*.m``, which have been obtained
 from http://www.liv.ac.uk/~dij/betas/allgennb.log [hep-ph:0308231]_.
+
+Example: Extracting the 3-loop QCD beta function for :math:`g_3` in
+the MSSM::
+
+    trace[args__] := Tr[Dot[args]];
+    Adj = ConjugateTranspose;
+    Yt = Yb = Ye = Array[0&, {3,3}];
+
+    b = Get["meta/MSSM/beta_g3.m"];
+
+    bg3 = { k^1 b[[1]],
+            k^2 b[[2]],
+            k^3 b[[3]] };
+
+    bg3 /. { g1 -> 0, g2 -> 0 }
+
+Output::
+
+     {-3*g3^3*k, 14*g3^5*k^2, (347*g3^7*k^3)/3}
+
 
 Loop corrections to masses
 ``````````````````````````
@@ -55,11 +129,57 @@ Standard Model
 ``meta/SM/Mh2_effpot.m`` contains the QCD contributions to the 4-loop
 effective Higgs potential in the Standard Model from [1508.00912]_
 
+Example::
+
+    Get["meta/SM/Mh2_effpot.m"];
+
+    k = 1/(4 Pi)^2;
+    yt = 0.9;
+    g3 = 1.166;
+    v = 247.5;
+    \[Lambda] = 0.25;
+    mu2 = -8.55 10^3;
+    mt = yt v / Sqrt[2];
+    Q = 173.34;
+
+    Sqrt[DMh2]
+
+Output::
+
+    124.926
+
+------
+
 ``meta/ThreeLoopQCD.m`` contains a routine, which returns the ratio of
 the :math:`\overline{\text{MS}}` top mass over the top pole mass in
 the SM up to 3-loop level in QCD from [hep-ph:9912391]_, Eq. (10).
 The expression contains the full renormalization scale dependence,
 which has been taken from [hep-ph:9911434]_.
+
+Example::
+
+    Get["meta/ThreeLoopQCD.m"];
+    Start["SM"];
+    FlexibleSUSY`M[Fu] = mt;
+
+    h = k (4 Pi)^2;
+
+    MtOvermt = GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. {
+        Log[Q^2/mt^2] -> -Lbar[t],
+        Log[mt^2/Q^2] -> Lbar[t]
+    };
+
+    Mt = mt N[Collect[MtOvermt, {k, g3, Lbar[__]}, Simplify]]
+
+Output::
+
+    mt*(1 +
+        g3^2*k*(5.333333333333333 - 4*Lbar[t]) +
+        g3^4*k^2*(131.78498721717762 - 80.66666666666667*Lbar[t] + 22*Lbar[t]^2) +
+        g3^6*k^3*(4712.740192659316 - 2031.1382275647934*Lbar[t] + 710*Lbar[t]^2 - 132*Lbar[t]^3))
+
+------
+
 
 ``meta/TwoLoopQCD.m`` contains routines, which return the ratio of the
 top pole mass over the running top mass up to the 2-loop level in the
@@ -84,12 +204,57 @@ Standard Model
 mass and the corresponding running :math:`\overline{\text{MS}}` mass
 from [hep-ph:9912391]_, [hep-ph:9911434]_.
 
+Example::
+
+    Get["meta/SM/mf_3loop_qcd.m"];
+
+    L = Lbar[t];
+    NL = 5;
+    NH = 1;
+
+    Mt = mt N[Collect[MtOvermt, {k, g3, Lbar[__]}, Simplify]]
+
+Output::
+
+    mt*(1 +
+        g3^2*k*(5.333333333333333 - 4*Lbar[t]) +
+        g3^4*k^2*(131.78498721717762 - 80.66666666666667*Lbar[t] + 22*Lbar[t]^2) +
+        g3^6*k^3*(4712.740192659316 - 2031.1382275647934*Lbar[t] + 710*Lbar[t]^2 - 132*Lbar[t]^3))
+
 2HDM
 ''''
 
 ``meta/THDM/Thresholds_1L_full.m`` contains the implementation of the
 complete analytic 1-loop threshold corrections of the THDM and the
 THDM + Higgsinos + gauginos to the MSSM [0901.2065]_.
+
+Example::
+
+    Get["meta/THDM/Thresholds_1L_full.m"];
+
+    tc = (4 Pi)^2 GetTHDMThresholds1L[];
+
+    $Assumptions = { Element[ht, Reals], Element[Mu, Reals], Element[At, Reals] };
+
+    Yu[i_, k_] := DiagonalMatrix[{0,0,ht}][[i,k]];
+    Tu[i_, k_] := DiagonalMatrix[{0,0,ht At}][[i,k]];
+    Yd[__] := 0;
+    Ye[__] := 0;
+    Td[__] := 0;
+    Te[__] := 0;
+    g2 = gY = 0;
+
+    {l1, l2, l3, l4, l5, l6, l7} = Collect[tc, ht, Simplify]
+
+Output::
+
+    { -3*ht^4*Mu^4*D0[msq[3], msq[3], msu[3], msu[3]],
+      -3*ht^4*(B0[msq[3], msq[3], Q] + B0[msu[3], msu[3], Q] + At^2*(2*C0[msq[3], msq[3], msu[3]] + 2*C0[msq[3], msu[3], msu[3]] + At^2*D0[msq[3], msq[3], msu[3], msu[3]])),
+      -3*ht^4*Mu^2*(C0[msq[3], msu[3], msu[3]] + At^2*D0[msq[3], msq[3], msu[3], msu[3]]),
+      -3*ht^4*Mu^2*(C0[msq[3], msq[3], msu[3]] + At^2*D0[msq[3], msq[3], msu[3], msu[3]]),
+      -3*At^2*ht^4*Mu^2*D0[msq[3], msq[3], msu[3], msu[3]],
+       3*At*ht^4*Mu^3*D0[msq[3], msq[3], msq[3], msq[3]],
+       3*At*ht^4*Mu*(C0[msq[3], msq[3], msu[3]] + C0[msq[3], msu[3], msu[3]] + At^2*D0[msq[3], msq[3], msq[3], msq[3]]) }
 
 MSSM
 ''''
@@ -99,15 +264,21 @@ expression for the 2-loop relation :math:`O(\alpha_s^2)` between the top
 quark pole mass and the :math:`\overline{\text{DR}}` top mass in the
 MSSM [hep-ph:0210258]_, [hep-ph:0507139]_.
 
+----
+
 ``meta/MSSM/bquark_2loop_sqcd_decoupling.m`` contains the analytic
 expression for the 2-loop relation :math:`O(\alpha_s^2)` between the
 :math:`\overline{\text{MS}}` bottom quark mass in the Standard Model
 (without the top quark) and the :math:`\overline{\text{DR}}` bottom
 mass in the MSSM [0707.0650]_.
 
+----
+
 ``meta/MSSM/dmtauas2.m`` contains the analytic expression for the
 2-loop relation between the tau lepton pole mass and the
 :math:`\overline{\text{DR}}` tau mass in the MSSM.
+
+----
 
 ``meta/MSSM/das2.m`` contains the analytic expression for the 2-loop
 relation between the :math:`\overline{\text{MS}}` :math:`\alpha_s` in
@@ -122,6 +293,30 @@ C++ source code formatting
 ``meta/TextFormatting.m`` contains routines for text formatting of
 long expressions in C/C++ form, see ``WrapText[]`` and
 ``IndentText[]``.
+
+Example: Formatting long expression::
+
+    Get["meta/TextFormatting.m"];
+
+    (* long expression *)
+    dmt = Get["meta/MSSM/tquark_2loop_strong.m"];
+
+    maxWidth = 70;
+    indent = 3;
+
+    "dmt = " <> WrapText[ToString[dmt, CForm], maxWidth, indent]
+
+Output::
+
+    dmt = (Power(GS,4)*((-11*colorCA*colorCF*MGl*mmst1*s2t)/(-mmgl + mmst1) + (6
+       *Power(colorCF,2)*MGl*mmst1*s2t)/(-mmgl + mmst1) - (6*Power(colorCF
+       ,2)*MGl*mmst2*s2t)/(-mmgl + mmst1) + (6*Power(colorCF,2)*MGl*mmst1*
+       mmst2*s2t)/((-mmgl + mmst1)*(mmst1 - mmst2)) - (6*Power(colorCF,2)*
+       MGl*Power(mmst2,2)*s2t)/((-mmgl + mmst1)*(mmst1 - mmst2)) + (11*
+       colorCA*colorCF*MGl*mmst2*s2t)/(-mmgl + mmst2) - (6*Power(colorCF,2
+       )*MGl*mmst2*s2t)/(-mmgl + mmst2) - (Power(colorCF,2)*MGl*mmst1*
+       Power(s2t,3))/(-mmgl + mmst1) + (7*Power(colorCF,2)*MGl*mmst2*Power
+       (s2t,3))/(-mmgl + mmst1) - (6*Power(colorCF,2)*MGl*mmst1*mmst2*[...]
 
 
 References

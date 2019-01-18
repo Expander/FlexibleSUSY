@@ -61,7 +61,7 @@ or the loop order of the pole mass calculation can be selected.
   3      calculate SM pole masses                 0 (no) or 1 (yes)                             0 (= no)                               
   4      pole mass loop order                     0, 1, 2, 3, 4                                 4 (= 4-loop)                           
   5      EWSB loop order                          0, 1, 2, 3, 4                                 4 (= 4-loop)                           
-  6      beta function loop order                 0, 1, 2, 3, 4                                 4 (= 4-loop)                           
+  6      beta function loop order                 0, 1, 2, 3, 4, 5                              4 (= 4-loop)                           
   7      threshold corrections loop order         0, 1, 2, 3                                    3 (= 3-loop)                           
   8      higgs 2-loop correction O(at as)         0, 1                                          1 (= enabled)                          
   9      higgs 2-loop correction O(ab as)         0, 1                                          1 (= enabled)                          
@@ -153,7 +153,8 @@ beta-function loop order (``FlexibleSUSY[6]``)
 ``````````````````````````````````````````````
 
 Loop order of the renormalization group running.  0 = no running, 1 =
-1-loop running, 2 = 2-loop running, 3 = 3-loop running (if available).
+1-loop running, 2 = 2-loop running, 3 = 3-loop running (if available),
+etc.
 
 Threshold correction loop order (``FlexibleSUSY[7]``)
 `````````````````````````````````````````````````````
