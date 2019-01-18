@@ -91,11 +91,11 @@ See ``./install-sarah --help`` for more options.
 Installation of FeynArts/FormCalc/LoopTools
 -------------------------------------------
 
-If you want FlexibleSUSY to use either FeynArts, FormCalc or LoopTools
-you will need to install these packages first.  Also - as with SARAH -
-they need to be loadable with the ``Needs[]`` command from inside
-Mathematica.  We recommend using the installation script `FeynInstall`
-provided on the FeynArts web page. e.g:
+If you want FlexibleSUSY to use either FeynArts_, FormCalc_ or
+LoopTools_ you will need to install these packages first.  Also — as
+with SARAH — they need to be loadable with the ``Needs[]`` command
+from inside Mathematica.  We recommend using the installation script
+``FeynInstall`` provided on the FeynArts web page. e.g.::
 
     cd ~/.local
     wget http://www.feynarts.de/FeynInstall
@@ -103,9 +103,9 @@ provided on the FeynArts web page. e.g:
     ./FeynInstall
 
 which will install the latest versions of FeynArts, FormCalc and
-LoopTools in the `~/.local/` directory as well as configure Mathematica
-to find these packages.  Note that running the `FeynInstall` script
-might require user intervention.
+LoopTools in the ``~/.local/`` directory as well as configure
+Mathematica to find these packages.  Note that running the
+``FeynInstall`` script might require user intervention.
 
 Building a FlexibleSUSY model
 -----------------------------
@@ -738,6 +738,8 @@ References
 .. _SOFTSUSY: http://softsusy.hepforge.org
 .. _Boost: http://www.boost.org
 .. _Eigen 3: http://eigen.tuxfamily.org
+.. _FeynArts: http://www.feynarts.de
+.. _FormCalc: http://www.feynarts.de/formcalc
 .. _GNU scientific library: http://www.gnu.org/software/gsl/
 .. _BLAS: http://www.netlib.org/blas/
 .. _LAPACK: http://www.netlib.org/lapack/
