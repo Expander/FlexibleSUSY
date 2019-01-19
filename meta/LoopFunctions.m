@@ -299,7 +299,7 @@ B22zero[m1_, m2_, mu_] :=
           PossibleZeroQ[m1 - m2],
           (m2^2*(1 + Delta + Log[mu^2/m2^2]))/2,
           True,
-          (A0impl[m2,mu] + m1^2 B0impl[m1, m2, mu] + (m1^2 + m2^2)/2)/4
+          (A0impl[m2,mu] + m1^2 B0zero[m1, m2, mu] + (m1^2 + m2^2)/2)/4
       ];
 
 DivB22[p_, m1_, m2_, _] := Delta (3*m1^2 + 3*m2^2 - p^2)/12;
