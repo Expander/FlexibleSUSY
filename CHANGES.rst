@@ -34,6 +34,9 @@ Changes
 
 * The unused file ``test/SOFTSUSY/nmssm1loop.f`` has been removed.
 
+* The calculation of the vertices with the ``CXXDiagrams`` module has
+  been improved and is now significantly faster.
+
 Fixed bugs
 ----------
 
