@@ -2579,7 +2579,7 @@ EOF
             enable_formcalc="no"
         else
             result "not ok"
-            message "Error: Cannot not check FormCalc version."
+            message "Error: Cannot check FormCalc version."
             exit 1
         fi
     elif test "x$enable_formcalc" = "xautomatic"; then
