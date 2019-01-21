@@ -25,7 +25,7 @@ Changes
 * The documentation of FlexibleSUSY has been extended and changed to
   the `reStructuredText <http://docutils.sourceforge.net/rst.html>`_
   format for easier access.  The documentation root file is
-  `README.rst`.  It can be read online at `github
+  `README.rst <README.rst>`_.  It can be read online at `github
   <https://github.com/FlexibleSUSY/FlexibleSUSY/blob/development/README.rst>`_
   or locally using for example `restview
   <https://mg.pov.lt/restview/>`_::
