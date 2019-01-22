@@ -2060,19 +2060,36 @@ check_looptools_libs() {
     check_library "libooptools" "$looptools_lib_dir" \
 	"$default_lib_paths"
     if test "x$found_lib" = "x" ; then
-        message "Error: libooptools must be installed if you want"
-        message "   to use LoopTools, see http://www.feynarts.de/looptools/"
-        message "   You can use the --with-looptools-libdir= option to specify the"
-        message "   location of the libooptools library."
-        exit 1
+        check_library "libooptools-quad" "$looptools_lib_dir" \
+	     "$default_lib_paths"
+        if test "x$found_lib" != "x" ; then
+            local LOOPTOOLSLIBS_="-looptools-quad"
+            if [ "$found_lib" = "libooptools-quad.a" ]; then
+                case "${FC}" in
+                    gfortran*)
+                        LOOPTOOLSLIBS_+=" -lquadmath"
+                        ;;
+                    ifort*)
+                        LOOPTOOLSLIBS_+=" -lquadmath"
+                        ;;
+                esac
+            fi
+        else
+            message "Error: libooptools must be installed if you want"
+            message "   to use LoopTools, see http://www.feynarts.de/looptools/"
+            message "   You can use the --with-looptools-libdir= option to specify the"
+            message "   location of the libooptools library."
+            exit 1
+        fi
     else
         local LOOPTOOLSLIBS_="-looptools"
-        if [ -z "$looptools_lib_dir" ]; then
-            # assume that the linker will look in the default paths
-            LOOPTOOLSLIBS="$LOOPTOOLSLIBS_"
-        else
-            LOOPTOOLSLIBS="-L$looptools_lib_dir $LOOPTOOLSLIBS_"
-        fi
+    fi
+
+    if [ -z "$looptools_lib_dir" ]; then
+        # assume that the linker will look in the default paths
+        LOOPTOOLSLIBS="$LOOPTOOLSLIBS_"
+    else
+        LOOPTOOLSLIBS="-L$looptools_lib_dir $LOOPTOOLSLIBS_"
     fi
 }
 
