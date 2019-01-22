@@ -1,4 +1,4 @@
-FlexibleSUSY 2.2.1 [not released yet]
+FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
 
 New features
