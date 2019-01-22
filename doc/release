@@ -9,7 +9,8 @@ When releasing FlexibleSUSY, please follow these steps:
       git pull organization development
 
  1. Create a commit where the version number (in configure and
-    ChangeLog) is updated.  This commit should have the commit message
+    CHANGES.rst) is updated.  This commit should have the commit
+    message
 
       version <version>
 
