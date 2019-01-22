@@ -2507,7 +2507,7 @@ check_feynarts() {
     "$MATH" <<EOF > /dev/null
 Needs["FeynArts\`"];
 If[!MemberQ[\$Packages, "FeynArts\`"], Quit[1]];
-Export["${feynartsconfig}", FeynArts\`\$FeynArts, "String"];
+Export["${feynartsconfig}", StringJoin @@ Riffle[ToString /@ FeynArts\`\$FeynArts, "."], "String"];
 Quit[0];
 EOF
     local _feynarts_is_available="$?"
@@ -2555,7 +2555,7 @@ check_formcalc() {
     "$MATH" <<EOF > /dev/null
 Needs["FormCalc\`"];
 If[!MemberQ[\$Packages, "FormCalc\`"], Quit[1]];
-Export["${formcalcconfig}", FormCalc\`\$FormCalc, "String"];
+Export["${formcalcconfig}", StringJoin @@ Riffle[ToString /@ FormCalc\`\$FormCalc, "."], "String"];
 Quit[0];
 EOF
     local _formcalc_is_available="$?"
