@@ -397,13 +397,13 @@ PhotonEmitter, ExchangeField
                       >;
 
    for (const auto& index: index_range<MuonVertex>()) {
-      const auto muonIndices = MuonVertex::template field_indices<0>(index);
+      const auto muonIndices = MuonVertex::template indices_of_field<0>(index);
 
       if (muonIndices != indices)
          continue;
 
-      const auto photonEmitterIndices = MuonVertex::template field_indices<2>(index);
-      const auto exchangeFieldIndices = MuonVertex::template field_indices<1>(index);
+      const auto photonEmitterIndices = MuonVertex::template indices_of_field<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template indices_of_field<1>(index);
 
       if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
           isSMField<ExchangeField>(exchangeFieldIndices))
@@ -455,13 +455,13 @@ PhotonEmitter, ExchangeField
                       >;
 
    for (const auto& index: index_range<MuonVertex>()) {
-      const auto muonIndices = MuonVertex::template field_indices<0>(index);
+      const auto muonIndices = MuonVertex::template indices_of_field<0>(index);
 
       if (muonIndices != indices)
          continue;
 
-      const auto photonEmitterIndices = MuonVertex::template field_indices<2>(index);
-      const auto exchangeFieldIndices = MuonVertex::template field_indices<1>(index);
+      const auto photonEmitterIndices = MuonVertex::template indices_of_field<2>(index);
+      const auto exchangeFieldIndices = MuonVertex::template indices_of_field<1>(index);
 
       if (isSMField<PhotonEmitter>(photonEmitterIndices) &&
           isSMField<ExchangeField>(exchangeFieldIndices))
