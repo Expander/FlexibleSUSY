@@ -1,4 +1,4 @@
-FlexibleSUSY 2.2.1 [not released yet]
+FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
 
 New features
@@ -14,6 +14,29 @@ New features
 
   in the corresponding model file.
 
+* An internal FeynArts_/FormCalc_ interface has been added, which
+  allows for loop calculations inside FlexibleSUSY's meta code.  This
+  interface is currently optional and FlexibleSUSY can be run without
+  a FeynArts_/FormCalc_ installation.
+
+Changes
+-------
+
+* The documentation of FlexibleSUSY has been extended and changed to
+  the `reStructuredText <http://docutils.sourceforge.net/rst.html>`_
+  format for easier access.  The documentation root file is
+  `README.rst <README.rst>`_.  It can be read online at `github
+  <https://github.com/FlexibleSUSY/FlexibleSUSY/blob/development/README.rst>`_
+  or locally using for example `restview
+  <https://mg.pov.lt/restview/>`_::
+
+      restview README.rst
+
+* The unused file ``test/SOFTSUSY/nmssm1loop.f`` has been removed.
+
+* The calculation of the vertices with the ``CXXDiagrams`` module has
+  been improved and is now significantly faster.
+
 Fixed bugs
 ----------
 
@@ -22,8 +45,6 @@ Fixed bugs
 
 * [commit 79651844]: Avoid linker-specific ``--start-group`` and
   ``--end-group`` in order to make the tests build on MacOS.
-
-  Thanks to Wojciech Kotlarski.
 
 * [commits 6a4a32324, 2cdd71861, 90ca05d70]: Compatibility fixes for
   SARAH 4.14.0.
@@ -38,6 +59,17 @@ Fixed bugs
   top mass in the MSSM.  This change improves the numerical precision
   and the stability of the correction for large SUSY scales above 10
   TeV.
+
+* [commits 41d704f05, e0b468e3a]: Correcting implementation of
+  analytic ``B00`` function in ``meta/LoopFunctions.m`` for vanishing
+  momentum.
+
+* [commits 4a8b249e0, ff0ca140b]: The speed of the conversion of the
+  SARAH-generated beta functions to FlexibleSUSY format has been
+  improved.  This change is significant for complicated BSM models
+  with many couplings.
+
+* [commit e88c1c8ab]: Fix linking with ifort compiled LoopTools_.
 
 
 FlexibleSUSY 2.2.0 [August, 26 2018]
@@ -1946,3 +1978,6 @@ FlexibleSUSY-0.5 [November 18, 2013]
 
 .. _GM2Calc: https://arxiv.org/abs/1510.08071
 .. _MhEFT: https://gabrlee.com/code/
+.. _FeynArts: http://www.feynarts.de
+.. _FormCalc: http://www.feynarts.de/formcalc
+.. _LoopTools: http://www.feynarts.de/looptools/

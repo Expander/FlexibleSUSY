@@ -5,7 +5,7 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=2
-FLEXIBLESUSY_MINOR=2
+FLEXIBLESUSY_MINOR=3
 FLEXIBLESUSY_PATCH=0
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
@@ -2507,7 +2507,10 @@ check_feynarts() {
     "$MATH" <<EOF > /dev/null
 Needs["FeynArts\`"];
 If[!MemberQ[\$Packages, "FeynArts\`"], Quit[1]];
-Export["${feynartsconfig}", FeynArts\`\$FeynArts, "String"];
+If[Head[FeynArts\`\$FeynArts] === List,
+    Export["${feynartsconfig}", StringJoin @@ Riffle[ToString /@ FeynArts\`\$FeynArts, "."], "String"],
+    Export["${feynartsconfig}", FeynArts\`\$FeynArts, "String"]
+  ];
 Quit[0];
 EOF
     local _feynarts_is_available="$?"
@@ -2555,7 +2558,10 @@ check_formcalc() {
     "$MATH" <<EOF > /dev/null
 Needs["FormCalc\`"];
 If[!MemberQ[\$Packages, "FormCalc\`"], Quit[1]];
-Export["${formcalcconfig}", FormCalc\`\$FormCalc, "String"];
+If[Head[FormCalc\`\$FormCalc] === List,
+    Export["${formcalcconfig}", StringJoin @@ Riffle[ToString /@ FormCalc\`\$FormCalc, "."], "String"],
+    Export["${formcalcconfig}", FormCalc\`\$FormCalc, "String"]
+  ];
 Quit[0];
 EOF
     local _formcalc_is_available="$?"
@@ -2579,7 +2585,7 @@ EOF
             enable_formcalc="no"
         else
             result "not ok"
-            message "Error: Cannot not check FormCalc version."
+            message "Error: Cannot check FormCalc version."
             exit 1
         fi
     elif test "x$enable_formcalc" = "xautomatic"; then
