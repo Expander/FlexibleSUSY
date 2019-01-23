@@ -268,7 +268,7 @@ SetFSConventionRules[] :=
        SARAH`Mass[ToExpression[#][{indices}]]) & /@ fieldNames[[All,1]],
       (Symbol["Mass" <> #] ->  
        SARAH`Mass[ToExpression[#]]) & /@ fieldNames[[All,1]],
-      {FeynArts`Mass[field_,faSpec_] :> SARAH`Mass[field]}
+      {FeynArts`Mass[field_,faSpec_ : Null] :> SARAH`Mass[field]}
     ];
 
     couplingRules = {
