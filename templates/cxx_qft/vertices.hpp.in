@@ -181,7 +181,7 @@ namespace @ModelName@_cxx_diagrams
       template <int FieldIndex>
       static typename field_indices<typename boost::mpl::at_c<
          boost::mpl::vector<Fields...>, FieldIndex>::type>::type
-      field_indices(const indices_type& indices)
+      indices_of_field(const indices_type& indices)
       {
          using namespace boost::mpl;
          using fields = vector<Fields...>;
