@@ -1988,17 +1988,13 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
            ];
            
 (* Write the CXXDiagrams c++ files *)
-WriteCXXDiagramClass[vertices_List,files_List,
-		OptionsPattern[{StripColorStructure -> False}]] :=
-  Module[{fields, vertexData, cxxVertices, massFunctions, unitCharge,
+WriteCXXDiagramClass[vertices_List, files_List] :=
+  Module[{fields, cxxVertices, massFunctions, unitCharge,
           sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           outputDir, cxxDiagramsDir, createdVerticesFile, fileHandle},
     fields = CXXDiagrams`CreateFields[];
-    vertexData = StringJoin @ Riffle[CXXDiagrams`CreateVertexData
-                                     /@ DeleteDuplicates[vertices],
-                                     "\n\n"];
-    cxxVertices = CXXDiagrams`CreateVertices[vertices,
-			StripColorStructure -> OptionValue[StripColorStructure]];
+    
+    cxxVertices = CXXDiagrams`CreateVertices[vertices];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
     unitCharge = CXXDiagrams`CreateUnitCharge[];
     
@@ -2019,7 +2015,6 @@ WriteCXXDiagramClass[vertices_List,files_List,
     
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"          -> fields,
-                             "@CXXDiagrams_VertexData@"      -> vertexData,
                              "@CXXDiagrams_Vertices@"        -> cxxVertices,
                              "@CXXDiagrams_MassFunctions@"   -> massFunctions,
                              "@CXXDiagrams_UnitCharge@"      -> TextFormatting`IndentText[unitCharge],
@@ -4195,8 +4190,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
            
-           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices],cxxQFTFiles,
-					   StripColorStructure -> True];
+           WriteCXXDiagramClass[Join[edmVertices, aMuonVertices], cxxQFTFiles];
 
            Utils`PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];

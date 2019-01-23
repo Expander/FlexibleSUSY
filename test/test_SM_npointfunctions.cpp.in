@@ -108,9 +108,10 @@ namespace flexiblesusy
 {
 namespace SM_cxx_diagrams
 {
-@CXXDiagrams_VertexData@
-
+namespace detail
+{
 @CXXDiagrams_Vertices@
+}
 
 namespace npointfunctions
 {

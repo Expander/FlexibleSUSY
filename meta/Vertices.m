@@ -46,8 +46,6 @@ ReplaceUnrotatedFields::usage;
 StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 StripFieldIndices::usage;
 
-FindVertexWithLorentzStructure::usage="";
-SarahToFSVertexConventions::usage="";
 SortFieldsInCp::usage="";
 
 Begin["`Private`"]
@@ -315,23 +313,6 @@ VertexExp[cpPattern_, nPointFunctions_, massMatrices_] := Module[{
     -I factor TreeMasses`ReplaceDependencies[contraction] /.
 	Parameters`ApplyGUTNormalization[]
 ];
-
-SarahToFSVertexConventions[sortedFields_List, expr_,
-		OptionsPattern[{StripColorStructure -> False}]] :=
-	Module[{contraction},
-		contraction = If[OptionValue[StripColorStructure],
-			StripGroupStructure[expr, {}],
-			expr];
-		
-		(* corrupts a polynomial (monomial + monomial + ...) summand *)
-    contraction = Block[{SARAH`sum},
-			ExpandSarahSum @ SimplifyContraction @ contraction];
-		
-    (* see SPhenoCouplingList[] in SARAH/Package/SPheno/SPhenoCoupling.m
-       for the following sign factor *)
-    -I TreeMasses`ReplaceDependencies[contraction] /.
-			Parameters`ApplyGUTNormalization[]
-  ]
 
 SARAHVertex[fieldsInRotatedCp_List] := Module[{
 	sarahVertex = SARAH`Vertex @ StripFieldIndices[fieldsInRotatedCp],

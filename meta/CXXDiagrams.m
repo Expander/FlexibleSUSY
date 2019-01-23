@@ -22,47 +22,68 @@
 
 *)
 
+(*** This module generates c++ code capable of representing fields, vertices and diagrams. ***)
 BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`","CConversion`"}];
 
-(* This module generates c++ code intended to be used similarly to SARAH's fields and Vertex[] function *)
 
-(* Vertex types *)
-ScalarVertex::usage="";
-ChiralVertex::usage="";
-MomentumDifferenceVertex::usage="";
-InverseMetricVertex::usage="";
+(*** Debug only ***)
+SortedVertex::usage="";
+GaugeStructureOfVertexLorentzPart::usage="";
+FullGaugeStructureFromParts::usage="";
+GaugeStructureOfVertex::usage="";
+IsLorentzIndex::usage="";
+IsColourIndex::usage="";
 
-VertexTypes::usage="";
+
+(*** Public interfaces that model fields ***)
+CreateFields::usage="";
 CXXNameOfField::usage="";
 LorentzConjugateOperation::usage="";
 LorentzConjugate::usage="";
 RemoveLorentzConjugation::usage="";
-AtomHead::usage="";
-CreateFields::usage="";
-FeynmanDiagramsOfType::usage="";
-VerticesForDiagram::usage="";
-ContractionsBetweenVerticesForDiagramFromGraph::usage="";
-CreateVertexData::usage="";
+NumberOfFieldIndices::usage="";
+CreateMassFunctions::usage="";
+includeLorentzIndices::usage="";
+
+(*** Public interfaces that model vertices ***)
+(** We need to encode the vertex structure for every unbroken gauge group:
+- Identity component of Poincare group
+- SU(3)) **)
+(* A basis for the currently implemented Lorentz structures of vertices *)
+ScalarVertex::usage="A Lorentz scalar (invariant) vertex";
+ChiralVertex::usage="A vertex decomposing into left/right projectors";
+MomentumDifferenceVertex::usage="A vertex with a momentum difference (p^\\mu - q^\\nv)";
+InverseMetricVertex::usage="A vertex proportional to g^{\\mu \\nu}";
+
+(* A basis for the currently implemented colour structures of vertices *)
+UncolouredVertex::usage="A SU(3) invariant vertex";
+KroneckerDeltaColourVertex::usage="A vertex proportional to \\delta( ct1, ct2 )";
+GellMannVertex::usage="A vertex proportional to \\Lambda^t_{a b}";
+AdjointlyColouredVertex::usage="A vertex proportional to f^{a b c}";
+
 CreateVertices::usage="";
 VertexRulesForVertices::usage="";
-CreateMassFunctions::usage="";
+
+(*** Public interfaces that model diagrams ***)
+FeynmanDiagramsOfType::usage="";
+VerticesForDiagram::usage="";
+ColourFactorForDiagram::usage="";
+ContractionsBetweenVerticesForDiagramFromGraph::usage="";
+
+(*** Public utility functions ***)
+AtomHead::usage="";
 CreateUnitCharge::usage="";
-NumberOfFieldIndices::usage="";
-FieldInfo::usage="";
-includeLorentzIndices::usage="";
 
 Begin["`Private`"];
 
-VertexTypes[] := {
-    ScalarVertex,
-    ChiralVertex,
-    MomentumDifferenceVertex,
-    InverseMetricVertex
-};
+(* Internally, we need to represent left chiral and right chiral
+ vertices separately. *)
+LeftChiralVertex::usage="A left projector part of a vertex";
+RightChiralVertex::usage="A right projector part of a vertex";
 
 (* Return a string corresponding to the c++ class name of the field.
- Note that "bar" and "conj" get turned into bar<...>::type and
- conj<...>::type respectively! *)
+ Note that "bar" and "conj" get turned into "typename bar<...>::type" and
+ "typename conj<...>::type" respectively! *)
 CXXNameOfField[p_, OptionsPattern[{prefixNamespace -> False}]] :=
   If[StringQ[OptionValue[prefixNamespace]],
      OptionValue[prefixNamespace] <> "::",
@@ -216,6 +237,150 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
 
+ColourFactorForDiagram[diagram_List] := 1
+
+IndexPrefixForType[SARAH`generation] := "gt"
+IndexPrefixForType[SARAH`lorentz] := "lt"
+IndexPrefixForType[SARAH`color] := "ct"
+IndexPrefixForType[indexType_] := 
+	(Print["Unknown index type: " <> ToString[indexType] <> " encountered."]; Quit[1])
+
+IndexFields[fields_List] :=
+	Module[{indexSpecifications, indexTypes, indexNames},
+		indexSpecifications =
+			GetParticleIndices[SARAH`getParticleName[#]] & /@ fields;
+		indexSpecifications =
+			Cases[#, Except[{SARAH`generation, 1}]] & /@ indexSpecifications;
+		
+		indexTypes = Map[First, indexSpecifications, {2}];
+		
+		indexNames = MapIndexed["SARAH`" <> #1 <> ToString[#2[[1]]] &,
+			Map[IndexPrefixForType, indexTypes, {2}], {2}];
+		
+		(#[[1]][Symbol /@ #[[2]]] & /@ Transpose[{fields, indexNames}]) /.
+			field_[{}] :> field
+	]
+
+SortedVertex[fields_List] :=
+	Module[{sortedFields, indexedSortedFields, vertexList, vertex, types,
+			similarVertexList, similarVertex, fieldReplacementRules},
+    LoadVerticesIfNecessary[];
+		sortedFields = Vertices`SortFieldsInCp[fields];
+    
+    vertexList = Switch[Length[fields],
+			3, SARAH`VertexList3,
+			4, SARAH`VertexList4,
+			_, Print["CXXDiagrams`SortedVertex[]: Only three- and four-point vertices are supported"];
+				Quit[1]];
+    
+    vertex = Select[vertexList, Vertices`StripFieldIndices[#[[1]]] === sortedFields &, 1];
+    vertex = If[vertex =!= {}, vertex[[1]],
+			types = SARAH`getType[#, False, FlexibleSUSY`FSEigenstates] & /@ sortedFields;
+			similarVertexList = SA`VertexList[Symbol[StringJoin[SymbolName /@ types]]];
+			
+			Utils`AssertWithMessage[similarVertexList =!= {},
+				"CXXDiagrams`SortedVertex[]: Cannot determine Lorentz structure of " <> ToString[fields] <> " vertex."];
+			similarVertex = similarVertexList[[1]];
+			
+			indexedSortedFields = IndexFields[sortedFields];
+			fieldReplacementRules = Rule @@@ Transpose[{similarVertex[[1]], indexedSortedFields}];
+			
+			{indexedSortedFields, Sequence @@ Transpose[{
+				Table[0, {Length[similarVertex] - 1}],
+					Rest[similarVertex][[All,2]] /. fieldReplacementRules}]}
+		];
+		
+		(* Be consistent with the conventions in Vertices.m *)
+		{vertex[[1]], Sequence @@ Transpose[
+			{-I * Rest[vertex][[All,1]], Rest[vertex][[All,2]]}]}
+	]
+
+LabelLorentzPart[{scalar_, 1}] := {scalar, ScalarVertex}
+
+LabelLorentzPart[{scalar_,
+		SARAH`PL | SARAH`LorentzProduct[
+			SARAH`gamma[lIndex_] /; IsLorentzIndex[lIndex], SARAH`PL]}] :=
+	{scalar, LeftChiralVertex}
+	
+LabelLorentzPart[{scalar_,
+		SARAH`PR | SARAH`LorentzProduct[
+			SARAH`gamma[lIndex_] /; IsLorentzIndex[lIndex], SARAH`PR]}] :=
+	{scalar, RightChiralVertex}
+	
+LabelLorentzPart[{scalar_, SARAH`Mom[in_, lIndex1_] - SARAH`Mom[out_, lIndex2_]}] :=
+	{scalar, MomentumDifferenceVertex[in, out]} /;
+	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2]
+
+LabelLorentzPart[{scalar_, SARAH`g[lIndex1_, lIndex2_]}] :=
+	{scalar, InverseMetricVertex} /;
+	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2]
+
+LabelLorentzPart[vertexPart_] := 
+	(Print["Unknown Lorentz structure in vertex ", vertexPart]; Quit[1])
+
+
+GaugeStructureOfVertexLorentzPart[{scalar_, lorentzStructure_}] :=
+	{scalar, UncolouredVertex, lorentzStructure} /;
+	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+
+GaugeStructureOfVertexLorentzPart[
+	{scalar_ * SARAH`Delta[cIndex1_, cIndex2_], lorentzStructure_}] :=
+	{scalar, KroneckerDeltaColourVertex[cIndex1, cIndex2], lorentzStructure} /;
+	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+	
+GaugeStructureOfVertexLorentzPart[
+	{scalar_ * SARAH`Lam[cIndex1_, cIndex2_, cIndex3_], lorentzStructure_}] :=
+	{scalar, GellMannVertex[cIndex1, cIndex2, cIndex3], lorentzStructure} /;
+	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+	
+GaugeStructureOfVertexLorentzPart[
+	{scalar_ * SARAH`fSU3[cIndex1_, cIndex2_, cIndex3_], lorentzStructure_}] :=
+	{scalar, AdjointlyColouredVertex[cIndex1, cIndex2, cIndex3], lorentzStructure} /;
+	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+
+GaugeStructureOfVertexLorentzPart[vertexPart_] := 
+	(Print["Unknown colour structure in vertex ", vertexPart]; Quit[1])
+
+(* Assuming all Gauge structure combinations are different *)
+FullGaugeStructureFromParts[gaugeParts_List] :=
+	Module[{leftChiralParts, rightChiralParts, nonChiralParts, chiralParts,
+			gaugeStructures},
+		leftChiralParts = Cases[gaugeParts, {_, _, LeftChiralVertex}];
+		rightChiralParts = Cases[gaugeParts, {_, _, RightChiralVertex}];
+		nonChiralParts = Complement[gaugeParts, leftChiralParts, rightChiralParts];
+		
+		chiralParts = Flatten[Cases[rightChiralParts,
+			{rightScalar_, #[[2]], RightChiralVertex} :>
+			{{#[[1]], rightScalar}, #[[2]], ChiralVertex}] &
+			/@ leftChiralParts, 1];
+			
+		leftChiralParts = Complement[leftChiralParts, chiralParts,
+			SameTest -> (#1[[2]] == #2[[2]] &)];
+		rightChiralParts = Complement[rightChiralParts, chiralParts,
+			SameTest -> (#1[[2]] == #2[[2]] &)];
+		
+		gaugeStructures = Sequence @@@
+			{nonChiralParts, chiralParts, leftChiralParts, rightChiralParts};
+		Utils`AssertWithMessage[Length[gaugeStructures] === 1,
+			"Vertex with composite gauge structure encountered."];
+		
+		gaugeStructures[[1]]
+	]
+
+GaugeStructureOfVertex[sortedVertex_] :=
+	Module[{lorentzParts, gaugeStructures},
+		(* This is arguably a bug in SARAH causing e.g {hh, hh, VZ} to be mapped to {0, 0} *)
+		lorentzParts = If[MatchQ[sortedVertex, {_, {_, 0}}],
+			Utils`AssertWithMessage[sortedVertex[[2,1]] === 0,
+				"CXXDiagrams`SortedVertex[]: ill-formed SARAH vertex: " <> ToString[sortedVertex]];
+			{{0, MomentumDifferenceVertex[sortedVertex[[1,1]], sortedVertex[[1,2]]]}},
+			LabelLorentzPart /@ sortedVertex[[2;;]]];
+		
+		gaugeStructures = GaugeStructureOfVertexLorentzPart /@ lorentzParts;
+		
+		FullGaugeStructureFromParts[gaugeStructures]
+	]
+
 CreateVertexData[fields_List] := 
   Module[{dataClassName},
     dataClassName = "VertexData<" <> StringJoin[Riffle[
@@ -230,69 +395,39 @@ CreateVertexData[fields_List] :=
     "};"
   ]
 
-(* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
- The returned value is a list {prototypes, definitions}. *)
-CreateVertices[vertices_List, OptionsPattern[{StripColorStructure -> False}]] :=
-  StringJoin @ Riffle[
-		CreateVertex[#, StripColorStructure -> OptionValue[StripColorStructure]] & /@
-			DeleteDuplicates[vertices], "\n\n"]
+CreateVertices[vertices_List] :=
+  StringJoin @ Riffle[CreateVertex /@ DeleteDuplicates[vertices], "\n\n"]
 
-(* Creates the actual c++ code for a vertex with given fields.
- You should never need to change this code! *)
-CreateVertex[fields_List, OptionsPattern[{StripColorStructure -> False}]] :=
-  Module[{functionClassName},
-    LoadVerticesIfNecessary[];
-    functionClassName = "Vertex<" <> StringJoin @ Riffle[
-    CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields, ", "] <> ">";
+CreateVertex[fields_List] :=
+  Module[{fieldSequence},
+		fieldSequence = StringJoin @ Riffle[
+			CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields, ", "];
 
-    "template<> inline\n" <> 
-    functionClassName <> "::vertex_type\n" <>
-    functionClassName <> "::evaluate(const indices_type& indices, const context_base& context)\n" <>
-    "{\n" <>
-    TextFormatting`IndentText @ VertexFunctionBodyForFields[fields,
-			StripColorStructure -> OptionValue[StripColorStructure]] <> "\n" <>
-    "}"
+    "template<> struct VertexImpl<" <> fieldSequence <> ">" <> "\n" <>
+    "{\n" <> TextFormatting`IndentText[
+			"using vertex_type = " <> SymbolName[VertexTypeForFields[fields]] <> ";\n\n" <>
+			"static vertex_type evaluate(const typename Vertex<" <> fieldSequence <> 
+				">::indices_type& indices, \n" <>
+				TextFormatting`IndentText["const context_base& context)\n"] <>
+			"{\n" <> TextFormatting`IndentText[
+				VertexFunctionBodyForFields[fields] <> "\n"] <>
+			"}" <> "\n"] <>
+		"};"
   ]
 
-VertexFunctionBodyForFields[fields_List, OptionsPattern[{StripColorStructure -> False}]] := 
-	Switch[Length[fields],
-		3, VertexFunctionBodyForFieldsImpl[fields, SARAH`VertexList3,
-			StripColorStructure -> OptionValue[StripColorStructure]],
-		4, VertexFunctionBodyForFieldsImpl[fields, SARAH`VertexList4,
-			StripColorStructure -> OptionValue[StripColorStructure]],
-		_, "non-(3,4)-point vertex"]
+VertexTypeForFields[fields_List] :=
+	AtomHead[GaugeStructureOfVertex[SortedVertex[fields]][[3]]]
 
-VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
-		OptionsPattern[{StripColorStructure -> False}]] :=
-  Module[{sortedFields, sortedIndexedFields, indexedFields,
+VertexFunctionBodyForFields[fields_List] := 
+	Module[{sortedFields, sortedIndexedFields, indexedFields, indexFields,
           fieldsOrdering, sortedFieldsOrdering, inverseFOrdering,
-          fOrderingWRTSortedF, vertex, vExpression, vertexIsZero = False,
-          vertexType = VertexTypeForFields[fields], expr, exprL, exprR,
+          fOrderingWRTSortedF, expr, exprL, exprR,
           vertexRules, incomingScalar, outgoingScalar},
-    sortedFields = Vertices`SortFieldsInCp[fields];
+    sortedVertex = SortedVertex[fields];
+    sortedIndexedFields = sortedVertex[[1]];
+    sortedFields = Vertices`StripFieldIndices /@ sortedIndexedFields;
     
-    vertex = Select[vertexList, StripFieldIndices[#[[1]]] === sortedFields &, 1];
-    If[vertex === {}, vertexIsZero = True, vertex = vertex[[1]]];
-
-    If[vertexIsZero,
-       Return[Switch[vertexType,
-         ScalarVertex,
-         "return vertex_type(0);",
-         
-         ChiralVertex,
-         "return vertex_type(0, 0);",
-         
-         MomentumDifferenceVertex,
-         "return vertex_type(0, " <> StringJoin[Riffle[
-            ToString /@ Flatten[Position[fields,
-               field_ /; TreeMasses`IsScalar[field] || TreeMasses`IsGhost[field],
-               {1}, Heads -> False] - 1],
-            ", "]] <> ");",
-         
-         InverseMetricVertex,
-         "return vertex_type(0);"]]];
-
-    sortedIndexedFields = vertex[[1]];
+		indexFields = {SARAH`Cp @@ sortedFields -> SARAH`Cp @@ sortedIndexedFields};
     
     (* Mathematica 7 does not know about permutations... :'-( *)
     fieldsOrdering = Ordering[fields];
@@ -302,19 +437,15 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
     fOrderingWRTSortedF = sortedFieldsOrdering[[inverseFOrdering]];
 
     indexedFields = sortedIndexedFields[[fOrderingWRTSortedF]];
-
-    Switch[vertexType,
-      ScalarVertex,
-      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) ->
-        Vertices`FindVertexWithLorentzStructure[Rest[vertex], 1][[1]]};
+    
+    gaugeStructure = GaugeStructureOfVertex[sortedVertex];
+    Switch[gaugeStructure[[3]],
+      ScalarVertex | InverseMetricVertex,
+      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> gaugeStructure[[1]]};
       
-      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
-        sortedFields, sortedIndexedFields] /. vertexRules;
+      expr = Vertices`SortCp[SARAH`Cp @@ fields] /. indexFields /. vertexRules;
       
-      expr = Vertices`SarahToFSVertexConventions[sortedFields, expr,
-				StripColorStructure -> OptionValue[StripColorStructure]];
-      expr = TreeMasses`ReplaceDependenciesReverse[expr];
-      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
+      DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
@@ -322,65 +453,42 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
       
       ChiralVertex,
       vertexRules = {
-        (SARAH`Cp @@ sortedIndexedFields)[SARAH`PL] ->
-          Vertices`FindVertexWithLorentzStructure[Rest[vertex], SARAH`PL][[1]],
-        (SARAH`Cp @@ sortedIndexedFields)[SARAH`PR] ->
-          Vertices`FindVertexWithLorentzStructure[Rest[vertex], SARAH`PR][[1]]};
+        (SARAH`Cp @@ sortedIndexedFields)[SARAH`PL] -> gaugeStructure[[1,2]],
+        (SARAH`Cp @@ sortedIndexedFields)[SARAH`PR] -> gaugeStructure[[1,2]]
+      };
 
-      exprL = CanonicalizeCoupling[(SARAH`Cp @@ fields)[SARAH`PL],
-        sortedFields, sortedIndexedFields] /. vertexRules;
-      exprR = CanonicalizeCoupling[(SARAH`Cp @@ fields)[SARAH`PR],
-        sortedFields, sortedIndexedFields] /. vertexRules;
+      exprL = Vertices`SortCp[(SARAH`Cp @@ fields)[SARAH`PL]] /.
+				indexFields /. vertexRules;
+      exprR = Vertices`SortCp[(SARAH`Cp @@ fields)[SARAH`PR]] /.
+				indexFields /. vertexRules;
 
-      exprL = Vertices`SarahToFSVertexConventions[sortedFields, exprL,
-				StripColorStructure -> OptionValue[StripColorStructure]];
-      exprR = Vertices`SarahToFSVertexConventions[sortedFields, exprR,
-				StripColorStructure -> OptionValue[StripColorStructure]];
-      exprL = TreeMasses`ReplaceDependenciesReverse[exprL];
-      exprR = TreeMasses`ReplaceDependenciesReverse[exprR];
-      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
+      DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
       Parameters`CreateLocalConstRefs[{exprL, exprR}] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " left = " <>
-      Parameters`ExpressionToString[exprL] <> ";\n\n" <>
+				Parameters`ExpressionToString[exprL] <> ";\n\n" <>
       "const " <> GetComplexScalarCType[] <> " right = " <>
-      Parameters`ExpressionToString[exprR] <> ";\n\n" <>
+				Parameters`ExpressionToString[exprR] <> ";\n\n" <>
       "return vertex_type(left, right);",
 
-      MomentumDifferenceVertex,
-      {incomingScalar, outgoingScalar} = Replace[vertex[[2,2]],
-        SARAH`Mom[is_,_] - SARAH`Mom[os_,_] :> {is, os}];
-      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
+      MomentumDifferenceVertex[__],
+      {incomingScalar, outgoingScalar} = List @@ gaugeStructure[[3]];
+      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> gaugeStructure[[1]]};
       
-      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
-        sortedFields, sortedIndexedFields] /. vertexRules;
+      expr = Vertices`SortCp[SARAH`Cp @@ fields] /. indexFields /. vertexRules;
       
-      expr = Vertices`SarahToFSVertexConventions[sortedFields, expr,
-				StripColorStructure -> OptionValue[StripColorStructure]];
-      expr = TreeMasses`ReplaceDependenciesReverse[expr];
       "int minuend_index = " <> 
         ToString[Position[indexedFields, incomingScalar][[1,1]] - 1] <> ";\n" <>
       "int subtrahend_index = " <>
         ToString[Position[indexedFields, outgoingScalar][[1,1]] - 1] <> ";\n\n" <>
-      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
+      DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
       "return vertex_type(result, minuend_index, subtrahend_index);",
-
-      InverseMetricVertex,
-      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
       
-      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
-        sortedFields, sortedIndexedFields] /. vertexRules;
-      
-      expr = Vertices`SarahToFSVertexConventions[sortedFields, expr,
-				StripColorStructure -> OptionValue[StripColorStructure]];
-      expr = TreeMasses`ReplaceDependenciesReverse[expr];
-      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
-      Parameters`CreateLocalConstRefs[expr] <> "\n" <>
-      "const " <> GetComplexScalarCType[] <> " result = " <>
-      Parameters`ExpressionToString[expr] <> ";\n\n" <>
-      "return vertex_type(result);"
+      _,
+      Print["Unrecognized gauge structure: " <> ToString[gaugeStructure[[3]]]];
+      Quit[1]
     ]
   ]
 
@@ -399,19 +507,6 @@ DeclareIndices[indexedFields_List, arrayName_String] :=
 
 GetComplexScalarCType[] :=
     CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]]
-
-(* Get a mathematical expression of the requested vertex
-   in terms of its canonically ordered vertex. *)
-CanonicalizeCoupling[
-    coupling_, sortedFields_List, sortedIndexedFields_List] :=
-  Module[{expr},
-    (* Note: Cannot use indexed fields, because their internal
-    SARAH ordering is different... *)
-    expr = Vertices`SortCp[coupling];
-    
-    (* Index the fields *)
-    expr = expr /. {SARAH`Cp @@ sortedFields -> SARAH`Cp @@ sortedIndexedFields}
-  ]
   
 CreateMassFunctions[] :=
   Module[{massiveFields,
@@ -419,7 +514,7 @@ CreateMassFunctions[] :=
     massiveFields = TreeMasses`GetParticles[];
 
     StringJoin @ Riffle[
-      Module[{fieldInfo = FieldInfo[#], numberOfIndices},
+      Module[{fieldInfo = TreeMasses`FieldInfo[#], numberOfIndices},
              numberOfIndices = Length @ fieldInfo[[5]];
                                    
              "template<> inline\n" <>
@@ -448,7 +543,7 @@ CreateUnitCharge[] :=
          TextFormatting`IndentText @ 
            ("std::array<int, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
               If[TreeMasses`GetDimension[electron] =!= 1,
-                 " " <> ToString @ (FieldInfo[electron][[2]]-1) <> (* Electron has the lowest index *)
+                 " " <> ToString @ (TreeMasses`FieldInfo[electron][[2]]-1) <> (* Electron has the lowest index *)
                  If[numberOfElectronIndices =!= 1,
                     StringJoin @ Table[", 0", {numberOfElectronIndices-1}],
                     ""] <> " ",
@@ -460,7 +555,7 @@ CreateUnitCharge[] :=
          TextFormatting`IndentText @ 
            ("std::array<int, " <> ToString @ numberOfPhotonIndices <> "> photon_indices = {" <>
                If[TreeMasses`GetDimension[photon] =!= 1,
-                 " " <> ToString @ (FieldInfo[photon][[2]]-1) <>
+                 " " <> ToString @ (TreeMasses`FieldInfo[photon][[2]]-1) <>
                  If[numberOfPhotonIndices =!= 1,
                     StringJoin @ Table[", 0", {numberOfPhotonIndices-1}],
                     ""] <> " ",
@@ -479,10 +574,10 @@ CreateUnitCharge[] :=
          "}"
   ]
 
-NumberOfFieldIndices[field_] := Length @ FieldInfo[field][[5]]
+NumberOfFieldIndices[field_] := Length @ TreeMasses`FieldInfo[field][[5]]
 
 IndexBoundsForField[field_] :=
-  Module[{fieldInfo = FieldInfo[field]},
+  Module[{fieldInfo = TreeMasses`FieldInfo[field]},
     If[NumberOfFieldIndices[field] === 0,
        Return[{{},{}}]];
     If[Length @ Cases[fieldInfo[[5]],{SARAH`generation,_}] === 0,
@@ -501,45 +596,30 @@ LoadVerticesIfNecessary[] :=
         SARAH`MakeCouplingLists;
    ]
 
-(* Returns the vertex type for a vertex with a given list of fields *)
-VertexTypeForFields[fields_List] :=
-  Module[{scalarCount, vectorCount, fermionCount, ghostCount},
-    scalarCount = Length @ Select[fields, TreeMasses`IsScalar];
-    vectorCount = Length @ Select[fields, TreeMasses`IsVector];
-    fermionCount = Length @ Select[fields, TreeMasses`IsFermion];
-    ghostCount = Length @ Select[fields, TreeMasses`IsGhost];
-    
-    Switch[{fermionCount, scalarCount, vectorCount, ghostCount},
-      {0, 3, 0, 0}, ScalarVertex,
-      {0, 1, 0, 2}, ScalarVertex,
-      {0, 4, 0, 0}, ScalarVertex,
-      {2, 1, 0, 0}, ChiralVertex,
-      {2, 0, 1, 0}, ChiralVertex,
-      {0, 2, 1, 0}, MomentumDifferenceVertex,
-      {0, 1, 2, 0}, InverseMetricVertex,
-      {0, 2, 2, 0}, InverseMetricVertex,
-      _, "(UnknownVertexType: " <> ToString[fields] <> ")"]
-  ]
+IsColourIndex[index_] := StringMatchQ[ToString @ index, "ct" ~~ __]
+IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __]
 
-IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __];
+StripUnbrokenGaugeIndices[p_] := StripColourIndices[StripLorentzIndices[p]]
 
-StripLorentzIndices[p_Symbol] := p;
-StripLorentzIndices[SARAH`bar[p_]] := SARAH`bar[StripLorentzIndices[p]];
-StripLorentzIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripLorentzIndices[p]];
-StripLorentzIndices[p_] := Module[{remainingIndices},
-                                  remainingIndices = Select[p[[1]], (!IsLorentzIndex[#] &)];
-                                  If[Length[remainingIndices] === 0, Head[p],
-                                     Head[p][remainingIndices]]
-                                  ];
+StripLorentzIndices[p_Symbol] := p
+StripLorentzIndices[SARAH`bar[p_]] := SARAH`bar[StripLorentzIndices[p]]
+StripLorentzIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripLorentzIndices[p]]
+StripLorentzIndices[p_] := 
+	Module[{remainingIndices},
+		remainingIndices = Select[p[[1]], (!IsLorentzIndex[#] &)];
+		If[Length[remainingIndices] === 0, Head[p],
+			Head[p][remainingIndices]]
+	]
 
-FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] := 
-    Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
-                                {SARAH`getParticleName @ field, ___}][[1]]},
-            fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
-            If[!OptionValue[includeLorentzIndices],
-               DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
-               fieldInfo]
-          ]
+StripColourIndices[p_Symbol] := p
+StripColourIndices[SARAH`bar[p_]] := SARAH`bar[StripColourIndices[p]]
+StripColourIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripColourIndices[p]]
+StripColourIndices[p_] := 
+	Module[{remainingIndices},
+		remainingIndices = Select[p[[1]], (!IsColourIndex[#] &)];
+		If[Length[remainingIndices] === 0, Head[p],
+			Head[p][remainingIndices]]
+	]
 
 End[];
 EndPackage[];

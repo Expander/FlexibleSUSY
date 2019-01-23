@@ -154,7 +154,11 @@ CreateDependencePrototypes::usage="";
 CreateDependenceFunctions::usage="";
 
 ColorChargedQ::usage="";
+
 FieldInfo::usage="";
+includeLorentzIndices::usage="";
+includeColourIndices::usage="";
+
 IsScalar::usage="";
 IsFermion::usage="";
 IsVector::usage="";
@@ -280,14 +284,19 @@ GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
 ParticleQ[p_, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[GetParticles[states], p];
 
-FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] :=
-    Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
-                                {SARAH`getParticleName @ field, ___}][[1]]},
-            fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
-            If[!OptionValue[includeLorentzIndices],
-               DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
-               fieldInfo]
-          ]
+FieldInfo[field_, OptionsPattern[{includeLorentzIndices -> False,
+	includeColourIndices -> False}]] := 
+	Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
+		{SARAH`getParticleName @ field, ___}][[1]]},
+		fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
+		
+		fieldInfo = If[!OptionValue[includeLorentzIndices],
+			DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
+			fieldInfo];
+		If[!OptionValue[includeColourIndices],
+			DeleteCases[fieldInfo, {SARAH`color, _}, {2}],
+			fieldInfo]
+	]
 
 IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getType[sym, False, states] === type;
