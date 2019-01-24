@@ -38,19 +38,18 @@ Model`Date = "2018-12-04";
 
 me2 = {{me11, me12}, {me21, me22}};
 ml2 = {{ml11, ml12}, {ml21, ml22}};
-gllll = {{gllll11, gllll12}, {gllll21, gllll22}};
+glllla = {{glllla11, glllla12}, {glllla12, glllla22}};
 gllhha = {{gllhha11, gllhha12}, {gllhha21, gllhha22}};
-gllhhb = DiagonalMatrix[{gllhhb1, gllhhb2}];
+gllhhb = {{gllhhb11, gllhhb12}, {gllhhb21, gllhhb22}};
 geeee = {{geeee11, geeee12}, {geeee12, geeee22}};
 geehh = {{geehh11, geehh12}, {geehh21, geehh22}};
-gllee = {{gllee11, gllee12}, {gllee21, gllee22}};
-glele12;
+glleea = {{glleea11, glleea12}, {glleea21, glleea22}};
 gleh =  {{gleh11, gleh12}, {gleh21, gleh22}};
-gdsle = DiagonalMatrix[{gdsle1, gdsle2}];
-gdlse = DiagonalMatrix[{gdlse1, gdlse2}];
-gslwl = DiagonalMatrix[{gslwl1, gslwl2}];
-gslbl = DiagonalMatrix[{gslbl1, gslbl2}];
-gsebe = DiagonalMatrix[{gsebe1, gsebe2}];
+gdsle = {{gdsle11, gdsle12},{gdsle21, gdsle22}};
+gdlse = {{gdlse11, gdlse12},{gdlse21, gdsle22}};
+gslwl = DiagonalMatrix[{gslwl11, gslwl22}];
+gslbl = DiagonalMatrix[{gslbl11, gslbl22}];
+gsebe = DiagonalMatrix[{gsebe11, gsebe22}];
 
 
 (*-------------------------------------------*)
@@ -112,32 +111,33 @@ LagHC = - Yd conj[H].d.q - Ye conj[H].e.l + Yu H.u.q;
 (* arXiv:1407.4081, Eq. (4), w/o gluino *)
 LagSplit = \
     - MassWB/2 FW.FW - MassB/2 FB.FB - \[Mu] Hu.Hd \
-    - g2u conj[H].FW.Hu - (gYu/Sqrt[2]) conj[H].FB.Hu \
-    + g2d H.FW.Hd - (gYd/Sqrt[2]) H.FB.Hd;
+    - g2u conj[H].FW.Hu - (g1u/Sqrt[2]) conj[H].FB.Hu \
+    + g2d H.FW.Hd - (g1d/Sqrt[2]) H.FB.Hd;
 
 (* The following terms are in principle also allowed, but omitted in
    this model *)
 LagSplit2 = \
     - g2u Hu.conj[FW].conj[H] \
     + g2d FW.conj[H].conj[Hd] \
-    - (gYu/Sqrt[2]) Hu.conj[FB].conj[H] \
-    - (gYd/Sqrt[2]) FB.conj[H].conj[Hd] ;
+    - (g1u/Sqrt[2]) Hu.conj[FB].conj[H] \
+    - (g1d/Sqrt[2]) FB.conj[H].conj[Hd] ;
 
 (* real part of slepton Lagrangian *)
 LagReSlep = (
     - ml2[[1,1]] conj[SEL1].SEL1 - ml2[[1,2]] conj[SEL1].SEL2 - ml2[[2,1]] conj[SEL2].SEL1 - ml2[[2,2]] conj[SEL2].SEL2
     - me2[[1,1]] conj[SER1].SER1 - me2[[1,2]] conj[SER1].SER2 - me2[[2,1]] conj[SER2].SER1 - me2[[2,2]] conj[SER2].SER2
     (* using completeness relation of pauli matrices, assuming real Yukawa couplings *)
-    (*treating "Delta[lef1,lef4] Delta[lef2,lef3] conj[SEL1].SEL1.conj[SEL1].SEL1" and "Delta[lef1,lef2] Delta[lef3,lef4])conj[SEL1].SEL1.conj[SEL1].SEL1" as being equal*)
-    + gllll[[1,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.conj[SEL1].SEL1
-    + gllll[[1,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.conj[SEL2].SEL2
-    + gllll[[2,1]] Delta[lef1,lef4] Delta[lef2,lef3] conj[SEL1].SEL1.conj[SEL2].SEL2
-    + gllll[[2,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL2].SEL2.conj[SEL2].SEL2
+    + glllla[[1,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.conj[SEL1].SEL1
+    + 2 glllla[[1,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL1].SEL1.conj[SEL2].SEL2
+    + glllla[[2,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[SEL2].SEL2.conj[SEL2].SEL2
+    + 2 gllllb Delta[lef1,lef4] Delta[lef2,lef3]conj[SEL1].SEL1.conj[SEL2].SEL2
     + gllhha[[1,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.SEL1.conj[SEL1]
     + gllhha[[1,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.SEL1.conj[SEL2]
     + gllhha[[2,1]] Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.SEL2.conj[SEL1]
     + gllhha[[2,2]] Delta[lef1,lef2] Delta[lef3,lef4] conj[H].H.SEL2.conj[SEL2]
     + gllhhb[[1,1]] Delta[lef1,lef4] Delta[lef2,lef3] conj[H].H.SEL1.conj[SEL1]
+    + gllhhb[[1,2]] Delta[lef1,lef4] Delta[lef2,lef3] conj[H].H.SEL1.conj[SEL2]
+    + gllhhb[[2,1]] Delta[lef1,lef4] Delta[lef2,lef3] conj[H].H.SEL2.conj[SEL1]
     + gllhhb[[2,2]] Delta[lef1,lef4] Delta[lef2,lef3] conj[H].H.SEL2.conj[SEL2]
     + geeee[[1,1]] conj[SER1].SER1.SER1.conj[SER1]
     + 2 geeee[[1,2]] conj[SER1].SER1.SER2.conj[SER2]
@@ -146,20 +146,30 @@ LagReSlep = (
     + geehh[[1,2]] conj[H].H.conj[SER1].SER2
     + geehh[[2,1]] conj[H].H.conj[SER2].SER1
     + geehh[[2,2]] conj[H].H.conj[SER2].SER2
-    + gllee[[1,1]] conj[SEL1].SEL1.SER1.conj[SER1]
-    + gllee[[1,2]] conj[SEL1].SEL1.SER2.conj[SER2]
-    + gllee[[2,1]] conj[SEL2].SEL2.SER1.conj[SER2]
-    + gllee[[2,2]] conj[SEL2].SEL2.SER2.conj[SER2]
-    + glele12  conj[SEL1].SER1.conj[SER2].SEL2
+    + glleea[[1,1]] conj[SEL1].SEL1.SER1.conj[SER1]
+    + glleea[[1,2]] conj[SEL1].SEL1.SER2.conj[SER2]
+    + glleea[[2,1]] conj[SEL2].SEL2.SER1.conj[SER2]
+    + glleea[[2,2]] conj[SEL2].SEL2.SER2.conj[SER2]
+
 );
 
 (* part of slepton Lagrangian that needs to be conjugated *)
 LagSlep = (
-    + gleh[[1,1]] conj[H].SER1.SEL1 + gleh[[1,2]] conj[H].SER1.SEL2 + gleh[[2,1]] conj[H].SER2.SEL1+ gleh[[2,2]] conj[H].SER2.SEL2
-    - gdsle[[1,1]] Hd.SEL1.e - gdsle[[2,2]] Hd.SEL2.e
-    - gdlse[[1,1]] Hd.l.SER1 - gdlse[[2,2]] Hd.l.SER2
-    + gslwl[[1,1]] conj[SEL1].FW.l + gslwl[[2,2]] conj[SEL2].FW.l
-    + gslbl[[1,1]] conj[SEL1].FB.l + gslbl[[2,2]] conj[SEL2].FB.l
+    + glleeb conj[SEL1].SER1.conj[SER2].SEL2
+    + gleh[[1,1]] conj[H].SER1.SEL1
+    + gleh[[2,1]] conj[H].SER1.SEL2
+    + gleh[[1,2]] conj[H].SER2.SEL1
+    + gleh[[2,2]] conj[H].SER2.SEL2
+    - gdsle[[1,1]] Delta[1, gen3] Hd.SEL1.e
+    - gdsle[[1,2]] Delta[2, gen3] Hd.SEL1.e
+    - gdsle[[2,1]] Delta[1, gen3] Hd.SEL2.e
+    - gdsle[[2,2]] Delta[2, gen3] Hd.SEL2.e
+    - gdlse[[1,1]] Delta[1, gen2] Hd.l.SER1
+    - gdlse[[1,2]] Delta[2, gen2] Hd.l.SER1
+    - gdlse[[2,1]] Delta[1, gen2] Hd.l.SER2
+    - gdlse[[2,2]] Delta[2, gen2] Hd.l.SER2
+    - gslwl[[1,1]] conj[SEL1].FW.l + gslwl[[2,2]] conj[SEL2].FW.l
+    - gslbl[[1,1]] conj[SEL1].FB.l + gslbl[[2,2]] conj[SEL2].FB.l
     + gsebe[[1,1]] conj[SER1].FB.e + gsebe[[2,2]] conj[SER2].FB.e
 );
 
