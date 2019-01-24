@@ -29,23 +29,7 @@ BeginPackage["FToFConversionInNucleus`",
 FToFConversionInNucleusCreateInterface::usage = "";
 
 Begin["Private`"];
-(*
-(* we pass the generation index but a particle might also have other indices, like color, so we need to construct full vector of indices *)
-CreateIndexArray[particle_, idxName_String, generationIndex_String] :=
-    Module[{numberOfIndices = CXXDiagrams`NumberOfFieldIndices[particle]},
-        "std::array<int, " <> ToString @ numberOfIndices <>
-            "> " <> idxName <> " = {" <>
-            If[TreeMasses`GetDimension[particle] =!= 1,
-                generationIndex <>
-                    If[numberOfIndices1 =!= 1,
-                        StringJoin @ Table[", 0", {numberOfIndices-1}],
-                        ""] <> " ",
-                If[numberOfIndices =!= 0,
-                    StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
-                    ""]
-            ] <> "};\n"
-    ];
-*)
+
 FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
     Module[{prototype, definition},
 
@@ -186,8 +170,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
 
                 "\n" <>
                 "const auto nuclear_form_factors =\n" <>
-                   IndentText["get_overlap_integrals(flexiblesusy::" <>
-                    ToString[FlexibleSUSY`FSModelName] <> "_f_to_f_conversion::Nucleus::" <> SymbolName[nucleus] <>
+                   IndentText["get_overlap_integrals(Nucleus::" <> SymbolName[nucleus] <>
                     ", qedqcd" <> ");\n"] <>
 
                 "\nconst auto left =\n" <> IndentText[
@@ -195,18 +178,23 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                       "+ gpLV*nuclear_form_factors.Vp\n" <>
                       "+ gnLV*nuclear_form_factors.Vn\n" <>
                       "+ gpLS*nuclear_form_factors.Sp\n" <>
-                      "+ gnLS*nuclear_form_factors.Sn\n"
+                      "+ gnLS*nuclear_form_factors.Sn"
                 ] <> ";\n" <>
-                "const auto right =\n" <> IndentText[
+                "\nconst auto right =\n" <> IndentText[
                    "A2L*nuclear_form_factors.D\n" <>
                       "+ gpRV*nuclear_form_factors.Vp\n" <>
                       "+ gnRV*nuclear_form_factors.Vn\n" <>
                       "+ gpRS*nuclear_form_factors.Sp\n" <>
-                      "+ gnRS*nuclear_form_factors.Sn\n"
+                      "+ gnRS*nuclear_form_factors.Sn"
                 ] <> ";\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
-                "return 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n"
+                "double res = 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n" <>
+
+                 "\n// normalize to capture\n" <>
+                 "double capture_rate = get_capture_rate(Nucleus::" <> SymbolName[nucleus] <> ");\n\n" <>
+
+                 "return res/capture_rate;\n"
             ] <>
             "}\n";
     

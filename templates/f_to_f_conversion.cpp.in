@@ -20,7 +20,7 @@
  * @file @ModelName@_f_to_f_conversion.cpp
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
- * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@
  */
 
 #include <valarray>
@@ -76,6 +76,15 @@ overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd&
          std::cout << "Unknown nucleus\n";
       break;
    } 
+}
+
+double get_capture_rate (const Nucleus N) {
+   switch (N) {
+      case Nucleus::Au:
+         return 8.84868e-18;
+      case Nucleus::Al:
+         return 4.64079e-19;
+   }
 }
 
 template <class FOutBar, class FIn, class VBar>
