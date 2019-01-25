@@ -3,7 +3,7 @@ include test/SOFTSUSY/module.mk
 DIR      := test
 MODNAME  := test
 WITH_$(MODNAME) := yes
-MODtest_MOD := SM SplitMSSM MSSM_higgs MSSM_thresholds NMSSM_higgs
+MODtest_MOD := SM SM_thresholds SplitMSSM MSSM_higgs MSSM_thresholds NMSSM_higgs
 MODtest_DEP := $(patsubst %,model_specific/%,$(MODtest_MOD))
 MODtest_INC := $(patsubst %,-Imodel_specific/%,$(MODtest_MOD))
 MODtest_LIB := $(foreach M,$(MODtest_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
@@ -93,6 +93,11 @@ TEST_META := \
 ifeq ($(ENABLE_THREADS),yes)
 TEST_SRC += \
 		$(DIR)/test_thread_pool.cpp
+endif
+
+ifeq ($(ENABLE_TSIL),yes)
+TEST_SRC += \
+		$(DIR)/test_sm_twoloop_mt.cpp
 endif
 
 ifneq ($(findstring two_scale,$(SOLVERS)),)
@@ -976,7 +981,8 @@ $(TEST_EXE): $(LIBSOFTSUSY) $(MODtest_LIB) $(LIBTEST) $(LIBFLEXI) $(filter-out -
 $(DIR)/test_%.x: $(DIR)/test_%.o
 		$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
-		$(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
+		$(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS) \
+		$(TSILLIBS)
 
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += -Itest/SOFTSUSY $(MODtest_INC) $(BOOSTFLAGS) $(EIGENFLAGS)
