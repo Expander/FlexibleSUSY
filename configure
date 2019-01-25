@@ -2250,9 +2250,28 @@ check_tsil_incl() {
 }
 
 #_____________________________________________________________________
+check_tsil_size() {
+    local tsil_dir=$([ -n "$tsil_inc_dir" ] && echo "$tsil_inc_dir" || echo "$tsil_lib_dir")
+
+    if [ -f "${tsil_dir}/Makefile" ] ; then
+        local tsil_makefile="${tsil_dir}/Makefile"
+        local tsil_size=$({ echo "first: ; @echo \$(TSIL_SIZE)"
+                            cat "$tsil_makefile"
+                          } | make -f - first
+              )
+        [ -n "$tsil_size" ] && CPPFLAGS="$CPPFLAGS $tsil_size"
+    else
+        message "Warning: Could not determine TSIL floating point type TSIL_SIZE."
+        message "   TSIL's default will be assumed."
+    fi
+
+    return 0
+}
+
+#_____________________________________________________________________
 check_tsil() {
     if test "x$enable_tsil" != "xno" ; then
-        if check_tsil_incl && check_tsil_libs ; then
+        if check_tsil_incl && check_tsil_libs && check_tsil_size ; then
             enable_tsil=yes
         else
             if [ "x$enable_tsil" = xyes ] ; then
