@@ -45,11 +45,6 @@ geeee = {{geeee11, geeee12}, {geeee12, geeee22}};
 geehh = {{geehh11, geehh12}, {geehh21, geehh22}};
 glleea = {{glleea11, glleea12}, {glleea21, glleea22}};
 gleh =  {{gleh11, gleh12}, {gleh21, gleh22}};
-gdsle = {{gdsle11, gdsle12},{gdsle21, gdsle22}};
-gdlse = {{gdlse11, gdlse12},{gdlse21, gdsle22}};
-gslwl = DiagonalMatrix[{gslwl11, gslwl22}];
-gslbl = DiagonalMatrix[{gslbl11, gslbl22}];
-gsebe = DiagonalMatrix[{gsebe11, gsebe22}];
 
 
 (*-------------------------------------------*)
@@ -160,17 +155,11 @@ LagSlep = (
     + gleh[[2,1]] conj[H].SER1.SEL2
     + gleh[[1,2]] conj[H].SER2.SEL1
     + gleh[[2,2]] conj[H].SER2.SEL2
-    - gdsle[[1,1]] Delta[1, gen3] Hd.SEL1.e
-    - gdsle[[1,2]] Delta[2, gen3] Hd.SEL1.e
-    - gdsle[[2,1]] Delta[1, gen3] Hd.SEL2.e
-    - gdsle[[2,2]] Delta[2, gen3] Hd.SEL2.e
-    - gdlse[[1,1]] Delta[1, gen2] Hd.l.SER1
-    - gdlse[[1,2]] Delta[2, gen2] Hd.l.SER1
-    - gdlse[[2,1]] Delta[1, gen2] Hd.l.SER2
-    - gdlse[[2,2]] Delta[2, gen2] Hd.l.SER2
-    - gslwl[[1,1]] conj[SEL1].FW.l + gslwl[[2,2]] conj[SEL2].FW.l
-    - gslbl[[1,1]] conj[SEL1].FB.l + gslbl[[2,2]] conj[SEL2].FB.l
-    + gsebe[[1,1]] conj[SER1].FB.e + gsebe[[2,2]] conj[SER2].FB.e
+    - gdsle1 Hd.SEL1.e - gdsle2 Hd.SEL2.e
+    - gdlse1 Hd.l.SER2 - gdlse2 Hd.l.SER2
+    - gslwl1 conj[SEL1].FW.l - gslwl2 conj[SEL2].FW.l
+    - gslbl1 conj[SEL1].FB.l - gslbl2 conj[SEL2].FB.l
+    + gsebe1 conj[SER1].FB.e + gsebe2 conj[SER2].FB.e
 );
 
 DEFINITION[GaugeES][DiracSpinors] = {
