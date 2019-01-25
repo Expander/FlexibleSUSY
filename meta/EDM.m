@@ -105,7 +105,8 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
 				StringJoin @ Riffle[Module[{graph = #[[1]], diagrams = #[[2]]},
 					StringJoin @ Riffle[Module[{diagram = #},
 						"val += " <> 
-						ToString @ ProjectColourFactor[field, CXXDiagrams`ColourFactorForDiagram[diagram]] <>
+						ToString @ ProjectColourFactor[field,
+							CXXDiagrams`ColourFactorForDiagramFromGraph[diagram, graph]] <>
 						" * " <> 
 						CXXEvaluatorForFieldAndDiagramFromGraph[field, diagram, graph] <>
 						"::value(indices, context);"

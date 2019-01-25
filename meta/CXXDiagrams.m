@@ -67,7 +67,7 @@ VertexRulesForVertices::usage="";
 (*** Public interfaces that model diagrams ***)
 FeynmanDiagramsOfType::usage="";
 VerticesForDiagram::usage="";
-ColourFactorForDiagram::usage="";
+ColourFactorForDiagramFromGraph::usage="";
 ContractionsBetweenVerticesForDiagramFromGraph::usage="";
 
 (*** Public utility functions ***)
@@ -237,7 +237,104 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
 
-ColourFactorForDiagram[diagram_List] := 1
+(* Convert color structures to the ColorMath convention *)
+ConvertColourStructureToColorMathConvention[fields_List,
+	GellMannVertex[cIndex1_, cIndex2_, cIndex3_]] :=
+(* FIXME: Factor of two? *)
+	2 ColorMath`CMt[{cIndex1}, cIndex2, cIndex3] 
+
+ConvertColourStructureToColorMathConvention[fields_List,
+	AdjointlyColouredVertex[cIndex1_, cIndex2_, cIndex3_]] :=
+	ColorMath`CMf[cIndex1, cIndex2, cIndex3] 
+
+ConvertColourStructureToColorMathConvention[indexedFields_List,
+	KroneckerDeltaColourVertex[cIndex1_, cindex2_]] := 
+	Module[{colouredField1, colouredField2, colourRep1, colourRep2},
+		(* If the result has a color Delta, we need to find out if it's adj. or fundamental
+			because they are represented by different symbols in ColorMath.
+			Also, in ColorMath the order of indices matters. As stated in  ColorMath tutorial notebook:
+
+			"Note that lower and upper indices are different. One position is taken to define incoming
+			quarks/outgoing anti-quarks, and the other position is used for outgoing quarks and incoming
+			anti-quarks. What is taken to be what is a question of definition."
+		*)
+    
+    colouredField1 = Select[indexedFields, !FreeQ[#, cIndex1] &][[1]];
+    colouredField2 = Select[indexedFields, !FreeQ[#, cIndex2] &][[2]];
+    
+    colourRep1 = SARAH`getColorRep[colouredField1];
+    colourRep2 = SARAH`getColorRep[colouredField2];
+		
+    Utils`AssertWithMessage[Abs[colourRep1] == Abs[colourRep2],
+			"CXXDiagrams`ConvertColourStructureToColorMathConvention[]: " <>
+			"Two colour indices in Kronecker delta that come from fields " <>
+			"of incompatible representations."];
+		
+		(* FIXME: Are these orderings correct? *)
+		Switch[{colourRep1, colourRep2},
+			{SARAH`T, -SARAH`T}, ColorMath`CMdelta[cIndex2, cIndex1],
+			{-SARAH`T, SARAH`T}, ColorMath`CMdelta[cIndex1, cIndex2],
+			{O, O}, ColorMath`CMDelta[cIndex2, cIndex1],
+			_,
+			Print["CXXDiagrams`ConvertColourStructureToColorMathConvention[]: " <>
+				"Two colour indices in Kronecker delta that come from fields " <>
+				"or representations we cannot handle: " <>
+				ToString[{colourRep1, colourRep2}]];
+			Quit[1];
+			]
+	]
+
+(** \brief Calculate the colour factor of a given diagram with a given
+ * topology.
+ * \param[in] diagram The diagram specifiying all occurring fields
+ * \param[in] graph The topology of the diagram as adjacency matrix
+ * \returns The color factor for \a diagram.
+ *)
+ColourFactorForDiagramFromGraph[diagram_, graph_] :=
+	Module[{indexedFields = IndexFields[Flatten[diagram]],
+			vertexFields = Cases[diagram, {__}],
+			indexedVertexFields,
+			indexedDiagram, sortedVertices, vertices,
+			verticesOrderings, sortedVerticesOrderings,
+			fOrderingWRTSortedVs, defaultIndexedVertices,
+			colourStructures, colorMathExpression},
+		indexedDiagram = diagram /. Rule @@@ Transpose[{
+			#[Unique[]] & /@ Flatten[diagram], indexedFields}];
+		indexedVertexFields = Cases[indexedDiagram, {__}];
+		
+		(** TODO: Connect the color indices **)
+		
+		sortedVertices = SortedVertex /@ vertexFields;
+		
+    (* Mathematica 7 does not know about permutations... :'-( *)
+    verticesOrderings = Ordering /@ vertexFields;
+    sortedVerticesOrderings = Ordering /@ sortedVertices[[All,1]];
+
+    inverseVOrderings = Ordering /@ verticesOrderings;
+
+    fOrderingWRTSortedVs = Part @@@ Transpose[
+			{sortedVerticesOrderings, inverseVOrderings}];
+
+    defaultIndexedVertices = Part @@@ Transpose[
+			{sortedVerticesOrderings, fOrderingWRTSortedVs}];
+		
+		vertices = (#[[1]] /. (Rule @@@
+			Map[Vertices`FieldIndexList,
+				Transpose[{#[[2]], #[[3]]}], {2}]
+			) &) /@
+			Transpose[{sortedVertices,
+				defaultIndexedVertices, indexedVertexFields}];
+		
+		colourStructures = Cases[
+			(GaugeStructureOfVertex /@ vertices)[[All,2]],
+			Except[UncolouredVertex]];
+		
+		colorMathExpression = Times @@@
+			(ConvertColourStructureToColorMathConvention /@ colourStructures);
+		
+		If[colorMathExpression === 1, 1,
+			ColorMath`CSimplify[colorMathExpression]]
+	]
 
 IndexPrefixForType[SARAH`generation] := "gt"
 IndexPrefixForType[SARAH`lorentz] := "lt"
@@ -367,17 +464,16 @@ FullGaugeStructureFromParts[gaugeParts_List] :=
 		gaugeStructures[[1]]
 	]
 
-GaugeStructureOfVertex[sortedVertex_] :=
+GaugeStructureOfVertex[vertex_] :=
 	Module[{lorentzParts, gaugeStructures},
 		(* This is arguably a bug in SARAH causing e.g {hh, hh, VZ} to be mapped to {0, 0} *)
 		lorentzParts = If[MatchQ[sortedVertex, {_, {_, 0}}],
 			Utils`AssertWithMessage[sortedVertex[[2,1]] === 0,
 				"CXXDiagrams`SortedVertex[]: ill-formed SARAH vertex: " <> ToString[sortedVertex]];
 			{{0, MomentumDifferenceVertex[sortedVertex[[1,1]], sortedVertex[[1,2]]]}},
-			LabelLorentzPart /@ sortedVertex[[2;;]]];
+			LabelLorentzPart /@ vertex[[2;;]]];
 		
 		gaugeStructures = GaugeStructureOfVertexLorentzPart /@ lorentzParts;
-		
 		FullGaugeStructureFromParts[gaugeStructures]
 	]
 
