@@ -1,0 +1,57 @@
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
+
+#ifndef SM_TWO_LOOP_MT_H
+#define SM_TWO_LOOP_MT_H
+
+#ifdef TSIL_SIZE_DOUBLE
+typedef double TSIL_REAL;
+#else
+typedef long double TSIL_REAL;
+#endif
+
+/**
+ * Convention:
+ *
+ * g3: SM MS-bar strong gauge coupling
+ * yt: SM MS-bar top Yukawa coupling
+ * s : squared momentum
+ * t : squared SM MS-bar top mass
+ * h : squared SM MS-bar higgs mass
+ * qq: squared MS-bar renormalization scale
+ */
+
+namespace flexiblesusy {
+namespace sm_twoloop_mt {
+
+/// returns 1-loop O(as) correction to mt
+TSIL_REAL delta_mt_1loop_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+
+/// returns scalar part of 1-loop O(at) correction to mt
+TSIL_REAL delta_mt_1loop_at_S(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns left part of 1-loop O(at) correction to mt
+TSIL_REAL delta_mt_1loop_at_L(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns right part of 1-loop O(at) correction to mt
+TSIL_REAL delta_mt_1loop_at_R(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+} // namespace sm_twoloop_mt
+} // namespace flexiblesusy
+
+#endif

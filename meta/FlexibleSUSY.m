@@ -193,6 +193,7 @@ UseHiggs3LoopSM = False;
 UseHiggs4LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
+UseSMYukawa2Loop = False;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {
@@ -2601,6 +2602,7 @@ FSCheckFlags[] :=
            If[FlexibleSUSY`UseHiggs3LoopSM === True,
               FlexibleSUSY`UseHiggs2LoopSM = True;
               FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseSMYukawa2Loop = True;
               FlexibleSUSY`UseYukawa3LoopQCD = True;
               FlexibleSUSY`UseSM3LoopRGEs = True;
              ];
@@ -2609,6 +2611,7 @@ FSCheckFlags[] :=
               FlexibleSUSY`UseHiggs2LoopSM = True;
               FlexibleSUSY`UseHiggs3LoopSM = True;
               FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseSMYukawa2Loop = True;
               FlexibleSUSY`UseYukawa3LoopQCD = True;
               FlexibleSUSY`UseSM3LoopRGEs = True;
               FlexibleSUSY`UseSM4LoopRGEs = True;
@@ -2623,6 +2626,12 @@ FSCheckFlags[] :=
                     "[arxiv:hep-ph/9911434, arxiv:hep-ph/9912391]"];
               References`AddReference["Chetyrkin:1999qi"];
               References`AddReference["Melnikov:2000qh"];
+             ];
+
+           If[FlexibleSUSY`UseSMYukawa2Loop || FlexibleSUSY`FlexibleEFTHiggs,
+              Print["Adding 2-loop SM O(as^2,at*as,at^2) corrections to yt from ",
+                    "[arXiv:1604.01134]"];
+              References`AddReference["Martin:2016xsp"];
              ];
 
            If[FlexibleSUSY`UseSMAlphaS3Loop || FlexibleSUSY`FlexibleEFTHiggs,
