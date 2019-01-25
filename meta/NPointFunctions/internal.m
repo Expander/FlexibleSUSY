@@ -281,6 +281,12 @@ SetFSConventionRules[] :=
             FeynArts`NonCommutative[Global`ChiralityProjector[1]]] :>
           SARAH`Cp[fields][SARAH`PR],
         FeynArts`G[_][0][fields__][
+            FeynArts`NonCommutative[Global`DiracMatrix[FeynArts`KI1[3]],Global`ChiralityProjector[-1]]] :>
+          SARAH`Cp[fields][SARAH`PL],
+        FeynArts`G[_][0][fields__][
+            FeynArts`NonCommutative[Global`DiracMatrix[FeynArts`KI1[3]],Global`ChiralityProjector[1]]] :>
+          SARAH`Cp[fields][SARAH`PR],
+        FeynArts`G[_][0][fields__][
             Global`MetricTensor[KI1[i1_Integer],KI1[i2_Integer]]] :>
           SARAH`Cp[fields][SARAH`g[LorentzIndex[{fields}[[i1]]],
                                    LorentzIndex[{fields}[[i2]]]]],
