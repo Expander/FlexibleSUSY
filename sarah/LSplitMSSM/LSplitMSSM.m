@@ -156,7 +156,7 @@ LagSlep = (
     + gleh[[1,2]] conj[H].SER2.SEL1
     + gleh[[2,2]] conj[H].SER2.SEL2
     - gdsle1 Hd.SEL1.e - gdsle2 Hd.SEL2.e
-    - gdlse1 Hd.l.SER2 - gdlse2 Hd.l.SER2
+    - gdlse1 Hd.l.SER1 - gdlse2 Hd.l.SER2
     - gslwl1 conj[SEL1].FW.l - gslwl2 conj[SEL2].FW.l
     - gslbl1 conj[SEL1].FB.l - gslbl2 conj[SEL2].FB.l
     + gsebe1 conj[SER1].FB.e + gsebe2 conj[SER2].FB.e
