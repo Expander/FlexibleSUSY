@@ -78,8 +78,9 @@ NPointFunction[inFields_List,outFields_List,
                     Regularize -> Switch[FlexibleSUSY`FSRenormalizationScheme,
                       FlexibleSUSY`DRbar, DimensionalReduction,
                       FlexibleSUSY`MSbar, DimensionalRegularization],
-                    ZeroExternalMomenta -> False}]]:=
+                    CheckCache -> True, ZeroExternalMomenta -> False}]]:=
   Module[{loopLevel, zeroExternalMomenta, regularizationScheme, nPointMeta,
+          checkCache,
           sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           fsMetaDir = $flexiblesusyMetaDir,
           outputDir,
@@ -106,6 +107,11 @@ NPointFunction[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunction[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
+    checkCache = OptionValue[CheckCache];
+    Utils`AssertWithMessage[checkCache === True || checkCache === False,
+            "NPointFunctions`NPointFunctions[]: Option CheckCache must be either \
+            True or False."];
+
     Utils`AssertWithMessage[And @@
 			TreeMasses`IsScalar /@ Join[inFields, outFields],
 			"NPointFunctions`NPointFunction[]: Only external scalars are \
@@ -122,10 +128,13 @@ supported (for now)."];
        CreateDirectory[nPointFunctionsDir]];
 
     nPointFunctionFile = FileNameJoin[{nPointFunctionsDir, "temp"}];
-    nPointFunction = CachedNPointFunction[
-      inFields, outFields, nPointMeta];
-    If[nPointFunction =!= Null,
-       Return[nPointFunction]];
+
+    If[checkCache === True,
+        nPointFunction = CachedNPointFunction[
+            inFields, outFields, nPointMeta];
+        If[nPointFunction =!= Null,
+            Return[nPointFunction]]
+    ];
 
     feynArtsDir = FileNameJoin[{outputDir, "FeynArts"}];
     formCalcDir = FileNameJoin[{outputDir, "FormCalc"}];
