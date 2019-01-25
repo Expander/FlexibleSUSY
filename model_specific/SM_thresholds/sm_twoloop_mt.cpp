@@ -725,6 +725,16 @@ TSIL_REAL delta_mt_1loop_at_R(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL 
    return std::real(Sigma1R(t, h, yt, s, qq));
 }
 
+TSIL_REAL delta_mt_2loop_as_as_flexiblesusy(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
+{
+   return std::real(deltamt2QCD(g3, t, qq));
+}
+
+TSIL_REAL delta_mt_2loop_as_as_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
+{
+   return std::real(deltamt2QCDspheno(g3, t, qq));
+}
+
 
 } // namespace sm_twoloop_mt
 } // namespace flexiblesusy

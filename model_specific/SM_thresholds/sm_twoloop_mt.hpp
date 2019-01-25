@@ -56,6 +56,12 @@ TSIL_REAL delta_mt_1loop_at_L(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL 
 /// returns right part of 1-loop O(at) correction to mt
 TSIL_REAL delta_mt_1loop_at_R(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
 
+/// returns 2-loop O(as^2) correction to mt in FlexibleSUSY convention, Eq.(9) of [1710.03760]
+TSIL_REAL delta_mt_2loop_as_as_flexiblesusy(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+
+/// returns 2-loop O(as^2) correction to mt in SPheno convention
+TSIL_REAL delta_mt_2loop_as_as_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+
 } // namespace sm_twoloop_mt
 } // namespace flexiblesusy
 
