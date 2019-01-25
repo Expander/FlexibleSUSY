@@ -26,7 +26,12 @@ typedef long double TSIL_REAL;
 #endif
 
 /**
- * Convention:
+ * @file sm_twoloop_mt.hpp
+ * @brief declaration of 2-loop corrections to mt(MS-bar,SM) from [arXiv:1604.01134]
+ * @author Harun Acaroglu
+ * @author Alexander Voigt
+ *
+ * Conventions:
  *
  * g3: SM MS-bar strong gauge coupling
  * yt: SM MS-bar top Yukawa coupling
