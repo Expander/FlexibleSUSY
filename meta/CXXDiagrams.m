@@ -23,7 +23,7 @@
 *)
 
 (*** This module generates c++ code capable of representing fields, vertices and diagrams. ***)
-BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`","CConversion`"}];
+BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`", "CConversion`", "ColorMath`"}];
 
 
 (*** Debug only ***)
@@ -33,7 +33,7 @@ FullGaugeStructureFromParts::usage="";
 GaugeStructureOfVertex::usage="";
 IsLorentzIndex::usage="";
 IsColourIndex::usage="";
-
+IndexFields::usage="";
 
 (*** Public interfaces that model fields ***)
 CreateFields::usage="";
@@ -248,7 +248,7 @@ ConvertColourStructureToColorMathConvention[fields_List,
 	ColorMath`CMf[cIndex1, cIndex2, cIndex3] 
 
 ConvertColourStructureToColorMathConvention[indexedFields_List,
-	KroneckerDeltaColourVertex[cIndex1_, cindex2_]] := 
+	KroneckerDeltaColourVertex[cIndex1_, cIndex2_]] := 
 	Module[{colouredField1, colouredField2, colourRep1, colourRep2},
 		(* If the result has a color Delta, we need to find out if it's adj. or fundamental
 			because they are represented by different symbols in ColorMath.
@@ -260,28 +260,30 @@ ConvertColourStructureToColorMathConvention[indexedFields_List,
 		*)
     
     colouredField1 = Select[indexedFields, !FreeQ[#, cIndex1] &][[1]];
-    colouredField2 = Select[indexedFields, !FreeQ[#, cIndex2] &][[2]];
+    colouredField2 = Select[indexedFields, !FreeQ[#, cIndex2] &][[1]];
     
     colourRep1 = SARAH`getColorRep[colouredField1];
     colourRep2 = SARAH`getColorRep[colouredField2];
 		
-    Utils`AssertWithMessage[Abs[colourRep1] == Abs[colourRep2],
+    Utils`AssertWithMessage[colourRep1 == colourRep2,
 			"CXXDiagrams`ConvertColourStructureToColorMathConvention[]: " <>
 			"Two colour indices in Kronecker delta that come from fields " <>
 			"of incompatible representations."];
 		
 		(* FIXME: Are these orderings correct? *)
-		Switch[{colourRep1, colourRep2},
-			{SARAH`T, -SARAH`T}, ColorMath`CMdelta[cIndex2, cIndex1],
-			{-SARAH`T, SARAH`T}, ColorMath`CMdelta[cIndex1, cIndex2],
-			{O, O}, ColorMath`CMDelta[cIndex2, cIndex1],
+		Switch[{colourRep1},
+			{SARAH`T}, If[RemoveLorentzConjugation[colouredField1] === colouredField1,
+				ColorMath`CMdelta[cIndex2, cIndex1],
+				ColorMath`CMdelta[cIndex1, cIndex2]
+			],
+			{O}, ColorMath`CMDelta[cIndex2, cIndex1],
 			_,
 			Print["CXXDiagrams`ConvertColourStructureToColorMathConvention[]: " <>
 				"Two colour indices in Kronecker delta that come from fields " <>
 				"or representations we cannot handle: " <>
 				ToString[{colourRep1, colourRep2}]];
 			Quit[1];
-			]
+		]
 	]
 
 (** \brief Calculate the colour factor of a given diagram with a given
@@ -326,11 +328,16 @@ ColourFactorForDiagramFromGraph[diagram_, graph_] :=
 				defaultIndexedVertices, indexedVertexFields}];
 		
 		colourStructures = Cases[
-			(GaugeStructureOfVertex /@ vertices)[[All,2]],
+			Transpose[{
+				vertices[[All,1]],
+				(GaugeStructureOfVertex /@ vertices)[[All,2]]
+			}],
 			Except[UncolouredVertex]];
 		
-		colorMathExpression = Times @@@
-			(ConvertColourStructureToColorMathConvention /@ colourStructures);
+		Print[colourStructures];
+		
+		colorMathExpression = Times @@
+			(ConvertColourStructureToColorMathConvention @@@ colourStructures);
 		
 		If[colorMathExpression === 1, 1,
 			ColorMath`CSimplify[colorMathExpression]]
