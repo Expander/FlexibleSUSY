@@ -17,6 +17,11 @@
 // ====================================================================
 
 #include "sm_twoloop_mt.hpp"
+
+#include "config.h"
+
+#ifdef ENABLE_TSIL
+
 #include <tsil_cpp.h>
 #include <cmath>
 
@@ -794,3 +799,108 @@ TSIL_REAL delta_mt_2loop_at_at_LR_spheno(
 
 } // namespace sm_twoloop_mt
 } // namespace flexiblesusy
+
+#else // ENABLE_TSIL
+
+#include "error.hpp"
+
+namespace flexiblesusy {
+namespace sm_twoloop_mt {
+
+#define ERROR_NO_TSIL(fun)                                      \
+   do {                                                         \
+      throw SetupError("TSIL is required to call " fun);        \
+   } while (false)
+
+/* ******************** 1-loop ******************** */
+
+TSIL_REAL delta_mt_1loop_as(TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_1loop_as");
+}
+
+TSIL_REAL delta_mt_1loop_at_S(TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_1loop_at_S");
+}
+
+TSIL_REAL delta_mt_1loop_at_L(TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_1loop_at_L");
+}
+
+TSIL_REAL delta_mt_1loop_at_R(TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_1loop_at_R");
+}
+
+/* ******************** 2-loop ******************** */
+
+/// FlexibleSUSY convention ///
+
+TSIL_REAL delta_mt_2loop_as_as_flexiblesusy(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_as_as_flexiblesusy");
+}
+
+TSIL_REAL delta_mt_2loop_as_at_S_flexiblesusy(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_as_at_S_flexiblesusy");
+}
+
+TSIL_REAL delta_mt_2loop_as_at_LR_flexiblesusy(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_as_at_LR_flexiblesusy");
+}
+
+TSIL_REAL delta_mt_2loop_at_at_S_flexiblesusy(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_at_at_S_flexiblesusy");
+}
+
+TSIL_REAL delta_mt_2loop_at_at_LR_flexiblesusy(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_at_at_LR_flexiblesusy");
+}
+
+/// SPheno convention ///
+
+TSIL_REAL delta_mt_2loop_as_as_spheno(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_as_as_spheno");
+}
+
+TSIL_REAL delta_mt_2loop_as_at_S_spheno(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_as_at_S_spheno");
+}
+
+TSIL_REAL delta_mt_2loop_as_at_LR_spheno(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_as_at_LR_spheno");
+}
+
+TSIL_REAL delta_mt_2loop_at_at_S_spheno(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_at_at_S_spheno");
+}
+
+TSIL_REAL delta_mt_2loop_at_at_LR_spheno(
+   TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL, TSIL_REAL)
+{
+   ERROR_NO_TSIL("delta_mt_2loop_at_at_LR_spheno");
+}
+
+} // namespace sm_twoloop_mt
+} // namespace flexiblesusy
+
+#endif // ENABLE_TSIL
