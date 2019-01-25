@@ -45,17 +45,6 @@ geeee = {{geeee11, geeee12}, {geeee12, geeee22}};
 geehh = {{geehh11, geehh12}, {geehh21, geehh22}};
 glleea = {{glleea11, glleea12}, {glleea21, glleea22}};
 gleh =  {{gleh11, gleh12}, {gleh21, gleh22}};
-(*each of the following couplings states a 3-vector in lepton generation space*)
-gdsle1;
-gdsle2;
-gdlse1;
-gdlse2;
-gslwl1; 
-gslwl2;
-gslbl1;
-gslbl2;
-gsebe1; 
-gsebe2;
 
 
 (*-------------------------------------------*)
