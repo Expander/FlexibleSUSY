@@ -44,23 +44,65 @@ typedef long double TSIL_REAL;
 namespace flexiblesusy {
 namespace sm_twoloop_mt {
 
+/* ******************** 1-loop ******************** */
+
 /// returns 1-loop O(as) correction to mt
-TSIL_REAL delta_mt_1loop_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+TSIL_REAL delta_mt_1loop_as(
+   TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
 
 /// returns scalar part of 1-loop O(at) correction to mt
-TSIL_REAL delta_mt_1loop_at_S(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+TSIL_REAL delta_mt_1loop_at_S(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
 
 /// returns left part of 1-loop O(at) correction to mt
-TSIL_REAL delta_mt_1loop_at_L(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+TSIL_REAL delta_mt_1loop_at_L(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
 
 /// returns right part of 1-loop O(at) correction to mt
-TSIL_REAL delta_mt_1loop_at_R(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+TSIL_REAL delta_mt_1loop_at_R(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/* ******************** 2-loop ******************** */
 
 /// returns 2-loop O(as^2) correction to mt in FlexibleSUSY convention, Eq.(9) of [1710.03760]
-TSIL_REAL delta_mt_2loop_as_as_flexiblesusy(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+TSIL_REAL delta_mt_2loop_as_as_flexiblesusy(
+   TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+
+/// returns scalar part of 2-loop O(as*at) correction to mt in FlexibleSUSY convention
+TSIL_REAL delta_mt_2loop_as_at_S_flexiblesusy(
+   TSIL_REAL g3, TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns left+right part of 2-loop O(as*at) correction to mt in FlexibleSUSY convention
+TSIL_REAL delta_mt_2loop_as_at_LR_flexiblesusy(
+   TSIL_REAL g3, TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns scalar part of 2-loop O(at^2) correction to mt in FlexibleSUSY convention
+TSIL_REAL delta_mt_2loop_at_at_S_flexiblesusy(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns left+right part of 2-loop O(at^2) correction to mt in FlexibleSUSY convention
+TSIL_REAL delta_mt_2loop_at_at_LR_flexiblesusy(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
 
 /// returns 2-loop O(as^2) correction to mt in SPheno convention
-TSIL_REAL delta_mt_2loop_as_as_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+TSIL_REAL delta_mt_2loop_as_as_spheno(
+   TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
+
+/// returns scalar part of 2-loop O(as*at) correction to mt in SPheno convention
+TSIL_REAL delta_mt_2loop_as_at_S_spheno(
+   TSIL_REAL g3, TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns left+right part of 2-loop O(as*at) correction to mt in SPheno convention
+TSIL_REAL delta_mt_2loop_as_at_LR_spheno(
+   TSIL_REAL g3, TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns scalar part of 2-loop O(at^2) correction to mt in SPheno convention
+TSIL_REAL delta_mt_2loop_at_at_S_spheno(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
+
+/// returns left+right part of 2-loop O(at^2) correction to mt in SPheno convention
+TSIL_REAL delta_mt_2loop_at_at_LR_spheno(
+   TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL s, TSIL_REAL qq);
 
 } // namespace sm_twoloop_mt
 } // namespace flexiblesusy
