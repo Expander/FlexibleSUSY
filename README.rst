@@ -63,6 +63,7 @@ Optional:
 * FormCalc_ (version 9.5 or higher)
 * LoopTools_ (version 2.8 or higher)
 * Himalaya_
+* TSIL_
 
 
 Installation of SARAH
@@ -745,6 +746,7 @@ References
 .. _LAPACK: http://www.netlib.org/lapack/
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
+.. _TSIL: https://www.niu.edu/spmartin/tsil/
 
 .. _`FlexibleSUSY model file`: doc/model_file.rst
 .. _`FlexibleEFTHiggs`: doc/FlexibleEFTHiggs.rst
