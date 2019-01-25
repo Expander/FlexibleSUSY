@@ -567,6 +567,19 @@ directory configure via
 Note: LoopTools 2.8 or higher is required.
 
 
+TSIL support
+------------
+
+Some extensions of FlexibleSUSY require TSIL_.  In order to link TSIL_
+to FlexibleSUSY, configure via::
+
+    $TSIL_DIR=/path/to/tsil
+
+    ./configure --enable-tsil \
+       --with-tsil-incdir=$TSIL_DIR \
+       --with-tsil-libdir=$TSIL_DIR
+
+
 Creating an addon
 -----------------
 

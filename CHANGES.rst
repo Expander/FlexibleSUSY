@@ -1,3 +1,19 @@
+FlexibleSUSY 2.3.1 [not released yet]
+=====================================
+
+New features
+------------
+
+* Implementation of the 2-loop O(αt αs + αt^2) contributions to the
+  running MS-bar top mass of the Standard Model from [`1604.01134
+  <https://arxiv.org/abs/1604.01134>`_].  The contributions can be
+  enabled in SM-like models by setting the flag::
+
+      UseSMYukawa2Loop = True
+
+  Note that FlexibleSUSY must be configured with TSIL_ to use these
+  corrections, see `README.rst <README.rst>`_.
+
 FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
 
@@ -1981,3 +1997,4 @@ FlexibleSUSY-0.5 [November 18, 2013]
 .. _FeynArts: http://www.feynarts.de
 .. _FormCalc: http://www.feynarts.de/formcalc
 .. _LoopTools: http://www.feynarts.de/looptools/
+.. _TSIL: https://www.niu.edu/spmartin/tsil/
