@@ -67,7 +67,8 @@ VertexRulesForVertices::usage="";
 (*** Public interfaces that model diagrams ***)
 FeynmanDiagramsOfType::usage="";
 VerticesForDiagram::usage="";
-ColourFactorForDiagramFromGraph::usage="";
+IndexDiagramFromGraph::usage="";
+ColourFactorForIndexedDiagramFromGraph::usage="";
 ContractionsBetweenVerticesForDiagramFromGraph::usage="";
 
 (*** Public utility functions ***)
@@ -237,6 +238,20 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
 
+(** \brief Get the color index of a given field
+ * \param[in] field The indexed field
+ * \returns The color index of \a field
+ * For any given indexed field or antifield that has a color charge,
+ * return the color index.
+ *)
+GetFieldColorIndex[field_ /; TreeMasses`ColorChargedQ[field]]:=
+	Module[{colorIndices = Select[Vertices`FieldIndexList[field], IsColourIndex]},
+		Utils`AssertWithMessage[Length[colorIndices] === 1,
+			"ColorMathInterface`GetFieldColorIndex[]: Argument " <>
+			ToString[field] <> " does not have exactly one color index."];
+    colorIndices[[1]]
+  ]
+
 (* Convert color structures to the ColorMath convention *)
 ConvertColourStructureToColorMathConvention[fields_List,
 	GellMannVertex[cIndex1_, cIndex2_, cIndex3_]] :=
@@ -286,61 +301,101 @@ ConvertColourStructureToColorMathConvention[indexedFields_List,
 		]
 	]
 
+(* FIXME: Are these correct? *)
+ColorMathToSARAHConvention[expr_] :=
+	expr /. {
+		Subscript[Superscript[CM\[Delta], cIndex1_], cIndex2_] :>
+			SARAH`Delta[cIndex1, cIndex2],
+		Superscript[CM\[Delta], {indices__}] :> SARAH`Delta[indices],
+		ColorMath`Nc -> 3,
+		ColorMath`TR -> 1/2
+	}
+		
+
+(** FIXME: This implementation only takes care of colour indices
+ * and does not work on loops with only one vertex
+ *)
+IndexDiagramFromGraph[diagram_, graph_] :=
+	Module[{diagramWithUIDs, indexedFields, indexedDiagram, i, j,
+		connectedParticles, field1, field2, replacementList = {}},
+		indexedFields = IndexFields[Flatten[diagram]];
+		
+		diagramWithUIDs = If[Head[#] === List,
+			(#[Unique[]] &) /@ #, #[Unique[]]] & /@ diagram;
+		
+		indexedDiagram = diagramWithUIDs /. Rule @@@ Transpose[
+			{Flatten[diagramWithUIDs], indexedFields}];
+		
+		For[i = 1, i <= Length[diagram], i++,
+			For[j = i+1, j <= Length[diagram], j++,
+				connectedParticles = CXXDiagrams`ContractionsBetweenVerticesForDiagramFromGraph[i, j, diagram, graph];
+				If[connectedParticles === {}, Continue[]];
+				For[k = 1, k <= Length[connectedParticles], k++,
+					If[TreeMasses`ColorChargedQ[
+							If[ListQ[diagram[[i]]], diagram[[i, connectedParticles[[k,1]]]], diagram[[i]]]
+            ],
+						field1 = If[ListQ[diagram[[i]]], indexedDiagram[[i, connectedParticles[[k,1]]]], indexedDiagram[[i]]];
+						field2 = If[ListQ[diagram[[j]]], indexedDiagram[[j, connectedParticles[[k,2]]]], indexedDiagram[[j]]];
+						AppendTo[replacementList, GetFieldColorIndex[field2] -> GetFieldColorIndex[field1]];
+					];
+				]
+			]
+		];
+		
+		indexedDiagram /. replacementList
+	]
+
 (** \brief Calculate the colour factor of a given diagram with a given
  * topology.
- * \param[in] diagram The diagram specifiying all occurring fields
- * \param[in] graph The topology of the diagram as adjacency matrix
+ * \param[in] diagram The indexed diagram specifiying all occurring
+ * fields. All indices need to be properly connected!
+ * \param[in] graph The topology of the diagram as adjacency matrix.
  * \returns The color factor for \a diagram.
  *)
-ColourFactorForDiagramFromGraph[diagram_, graph_] :=
-	Module[{indexedFields = IndexFields[Flatten[diagram]],
-			vertexFields = Cases[diagram, {__}],
-			indexedVertexFields,
-			indexedDiagram, sortedVertices, vertices,
-			verticesOrderings, sortedVerticesOrderings,
-			fOrderingWRTSortedVs, defaultIndexedVertices,
+ColourFactorForIndexedDiagramFromGraph[indexedDiagram_, graph_] :=
+	Module[{indexedVertexFields = Cases[indexedDiagram, {__}],
+			vertexFields, sortedVertices, vertices,
+			verticesOrderings, inverseVOrderings, sortedVerticesOrderings,
+			fOrderingWRTSortedVs, defaultIndexedVertexFields,
 			colourStructures, colorMathExpression},
-		indexedDiagram = diagram /. Rule @@@ Transpose[{
-			#[Unique[]] & /@ Flatten[diagram], indexedFields}];
-		indexedVertexFields = Cases[indexedDiagram, {__}];
-		
-		(** TODO: Connect the color indices **)
-		
+		vertexFields = Vertices`StripFieldIndices /@ indexedVertexFields;
 		sortedVertices = SortedVertex /@ vertexFields;
 		
     (* Mathematica 7 does not know about permutations... :'-( *)
     verticesOrderings = Ordering /@ vertexFields;
-    sortedVerticesOrderings = Ordering /@ sortedVertices[[All,1]];
+    sortedVerticesOrderings = Ordering /@
+			Map[Vertices`StripFieldIndices, sortedVertices[[All,1]], {2}];
 
     inverseVOrderings = Ordering /@ verticesOrderings;
 
     fOrderingWRTSortedVs = Part @@@ Transpose[
 			{sortedVerticesOrderings, inverseVOrderings}];
 
-    defaultIndexedVertices = Part @@@ Transpose[
-			{sortedVerticesOrderings, fOrderingWRTSortedVs}];
+    defaultIndexedVertexFields = Part @@@ Transpose[
+			{sortedVertices[[All,1]], fOrderingWRTSortedVs}];
 		
-		vertices = (#[[1]] /. (Rule @@@
-			Map[Vertices`FieldIndexList,
-				Transpose[{#[[2]], #[[3]]}], {2}]
-			) &) /@
+		vertices = ({#[[3]], Sequence @@ Rest[#[[1]]]} /. 
+			Flatten[Thread /@ Rule @@@
+				Map[Vertices`FieldIndexList,
+					Transpose[{#[[2]], #[[3]]}], {2}]
+				] &) /@
 			Transpose[{sortedVertices,
-				defaultIndexedVertices, indexedVertexFields}];
+				defaultIndexedVertexFields, indexedVertexFields}];
 		
 		colourStructures = Cases[
 			Transpose[{
 				vertices[[All,1]],
 				(GaugeStructureOfVertex /@ vertices)[[All,2]]
 			}],
-			Except[UncolouredVertex]];
-		
-		Print[colourStructures];
+			Except[{_, UncolouredVertex}]];
 		
 		colorMathExpression = Times @@
 			(ConvertColourStructureToColorMathConvention @@@ colourStructures);
 		
 		If[colorMathExpression === 1, 1,
-			ColorMath`CSimplify[colorMathExpression]]
+			ColorMathToSARAHConvention[
+				ColorMath`CSimplify[colorMathExpression]]
+			]
 	]
 
 IndexPrefixForType[SARAH`generation] := "gt"
@@ -350,19 +405,24 @@ IndexPrefixForType[indexType_] :=
 	(Print["Unknown index type: " <> ToString[indexType] <> " encountered."]; Quit[1])
 
 IndexFields[fields_List] :=
-	Module[{indexSpecifications, indexTypes, indexNames},
+	Module[{indexSpecifications, indexTypes, indexNames,
+		field, conjugation},
 		indexSpecifications =
-			GetParticleIndices[SARAH`getParticleName[#]] & /@ fields;
+			TreeMasses`GetParticleIndices[SARAH`getParticleName[#]] & /@ fields;
 		indexSpecifications =
 			Cases[#, Except[{SARAH`generation, 1}]] & /@ indexSpecifications;
 		
 		indexTypes = Map[First, indexSpecifications, {2}];
 		
-		indexNames = MapIndexed["SARAH`" <> #1 <> ToString[#2[[1]]] &,
+		(* FIXME: We really should start at index 1 and not 43! *)
+		indexNames = MapIndexed[
+			"SARAH`" <> #1 <> ToString[#2[[1]] + 42] &,
 			Map[IndexPrefixForType, indexTypes, {2}], {2}];
 		
-		(#[[1]][Symbol /@ #[[2]]] & /@ Transpose[{fields, indexNames}]) /.
-			field_[{}] :> field
+		(#[[1]][Symbol /@ #[[2]]] & /@ Transpose[{fields, indexNames}]) /. {
+			field_[{}] :> field,
+			conjugation_[field_][indices_List] :> conjugation[field[indices]]
+		}
 	]
 
 SortedVertex[fields_List] :=
@@ -478,7 +538,7 @@ GaugeStructureOfVertex[vertex_] :=
 			Utils`AssertWithMessage[sortedVertex[[2,1]] === 0,
 				"CXXDiagrams`SortedVertex[]: ill-formed SARAH vertex: " <> ToString[sortedVertex]];
 			{{0, MomentumDifferenceVertex[sortedVertex[[1,1]], sortedVertex[[1,2]]]}},
-			LabelLorentzPart /@ vertex[[2;;]]];
+			LabelLorentzPart /@ Rest[vertex]];
 		
 		gaugeStructures = GaugeStructureOfVertexLorentzPart /@ lorentzParts;
 		FullGaugeStructureFromParts[gaugeStructures]

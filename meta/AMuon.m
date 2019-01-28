@@ -107,10 +107,11 @@ AMuonCreateCalculation[gTaggedDiagrams_List] :=
         ] <> "};\n\n" <>
                                  
     StringJoin @ Riffle[Module[{graph = #[[1]], diagrams = #[[2]]},
-			StringJoin @ Riffle[Module[{diagram = #},
+			StringJoin @ Riffle[Module[{diagram = #,
+					indexedDiagram = CXXDiagrams`IndexDiagramFromGraph[diagram, graph]},
 				"val += " <> 
 				ToString @ ProjectColourFactor[
-					CXXDiagrams`ColourFactorForDiagramFromGraph[diagram, graph]] <>
+					CXXDiagrams`ColourFactorForIndexedDiagramFromGraph[indexedDiagram, graph]] <>
 				" * " <> 
 				CXXEvaluatorForDiagramFromGraph[diagram, graph] <>
 				"::value(indices, context);"

@@ -419,7 +419,7 @@ ContainsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
     Or @@ (IsMassless[#,states]& /@ sym);
 
 ColorChargedQ[field_] :=
-    !FreeQ[FieldInfo[field], SARAH`color];
+    !FreeQ[FieldInfo[field, includeColourIndices -> True], SARAH`color];
 
 GetColoredParticles[] :=
     Select[GetParticles[], ColorChargedQ];
