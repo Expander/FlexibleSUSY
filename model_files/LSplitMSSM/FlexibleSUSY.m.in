@@ -51,6 +51,11 @@ HighScale = MSUSY;
 
 HighScaleFirstGuess = MSUSY;
 
+(* Hypercharges of 1st and 2nd generation sleptons *)
+Y1L = Y2L = -1;
+Y1R = Y2R = -2;
+c2b = Cos[2 ArcTan[TanBeta]];
+
 HighScaleInput = {
     {\[Lambda], lambdaTree
                 + UnitStep[LambdaLoopOrder-1] (lambda1LReg + lambda1LPhi)
@@ -61,43 +66,66 @@ HighScaleInput = {
     {g1d      , gYdTree + UnitStep[LambdaLoopOrder-1] gYd1L},
     {g2u      , g2uTree + UnitStep[LambdaLoopOrder-1] g2u1L},
     {g2d      , g2dTree + UnitStep[LambdaLoopOrder-1] g2d1L},
-    {gllhhb11 , 0},
-    {gllhha11 , 0},
-    {gllhhb12 , 0},
+
+    {gllhha11 , 1/8 (3/5 g1^2 Y1L - g2^2) c2b},
     {gllhha12 , 0},
-    {gllhhb21 , 0},
     {gllhha21 , 0},
-    {gllhhb22 , 0},
-    {gllhha22 , 0},
-    {geehh11  , 0},
+    {gllhha22 , 1/8 (3/5 g1^2 Y2L - g2^2) c2b},
+
+    {gllhhb11 , 1/4 g2^2 c2b},
+    {gllhhb12 , 0},
+    {gllhhb21 , 0},
+    {gllhhb22 , 1/4 g2^2 c2b},
+
+    {geehh11  , 1/8 3/5 g1^2 c2b Y1R},
     {geehh12  , 0},
     {geehh21  , 0},
-    {geehh22  , 0},
-    {glleea11 , 0},
-    {glleea12 , 0},
-    {glllla11 , 0},
-    {gllllb   , 0},
-    {glllla12 , 0},
-    {glleea21 , 0},
-    {glleea22 , 0},
-    {glllla22 , 0},
-    {geeee11  , 0},
-    {geeee12  , 0},
-    {geeee22  , 0},
+    {geehh22  , 1/8 3/5 g1^2 c2b Y2R},
+
+    {glleea11 , -1/8 3/5 g1^2 Y1L Y1R},
+    {glleea12 , -1/8 3/5 g1^2 Y1L Y2R},
+    {glleea21 , -1/8 3/5 g1^2 Y2L Y1R},
+    {glleea22 , -1/8 3/5 g1^2 Y2L Y2R},
     {glleeb   , 0},
+
+    {glllla11 , -1/8 3/5 g1^2 Y1L^2 - 1/8 g2^2},
+    {glllla12 , -1/8 3/5 g1^2 Y1L Y2L + 1/8 g2^2},
+    {glllla22 , -1/8 3/5 g1^2 Y2L^2 - 1/8 g2^2},
+    {gllllb   , -1/4 g2^2},
+
+    {geeee11  , -1/8 3/5 g1^2 Y1L Y1L},
+    {geeee12  , -1/8 3/5 g1^2 Y1L Y2L},
+    {geeee22  , -1/8 3/5 g1^2 Y2L Y2L},
+
     {gdlse1   , ZEROMATRIX[3,1]},
     {gdlse2   , ZEROMATRIX[3,1]},
     {gdsle1   , ZEROMATRIX[3,1]},
     {gdsle2   , ZEROMATRIX[3,1]},
-    {gslbl1   , ZEROMATRIX[3,1]},
-    {gslwl1   , ZEROMATRIX[3,1]},
-    {gslbl2   , ZEROMATRIX[3,1]},
-    {gslwl2   , ZEROMATRIX[3,1]},
-    {gsebe1   , ZEROMATRIX[3,1]},
-    {gsebe2   , ZEROMATRIX[3,1]},
+
+    {gslbl1[1], Sqrt[3/5] g1 Y1L/Sqrt[2]},
+    {gslbl1[2], 0},
+    {gslbl1[3], 0},
+    {gslbl2[1], 0},
+    {gslbl2[2], Sqrt[3/5] g1 Y2L/Sqrt[2]},
+    {gslbl2[3], 0},
+
+    {gslwl1[1], g2},
+    {gslwl1[2], 0},
+    {gslwl1[3], 0},
+    {gslwl2[1], 0},
+    {gslwl2[2], g2},
+    {gslwl2[3], 0},
+
+    {gsebe1[1], Sqrt[3/5] g1 Y1R/Sqrt[2]},
+    {gsebe1[2], 0},
+    {gsebe1[3], 0},
+    {gsebe2[1], 0},
+    {gsebe2[2], Sqrt[3/5] g1 Y2R/Sqrt[2]},
+    {gsebe2[3], 0},
+
     {gleh11   , 0},
-    {gleh21   , 0},
     {gleh12   , 0},
+    {gleh21   , 0},
     {gleh22   , 0}
 };
 
@@ -206,13 +234,13 @@ lambda1LPhi = 1/(4 Pi)^2 (
             + Log[msd2[3,3]/SCALE^2]
         )
         + (9 g1^4 + 25 g2^4) (
-            + Log[msl2[1,1]/SCALE^2]
-            + Log[msl2[2,2]/SCALE^2]
+            (* + Log[msl2[1,1]/SCALE^2] *)
+            (* + Log[msl2[2,2]/SCALE^2] *)
             + Log[msl2[3,3]/SCALE^2]
         )
         + 18 g1^4 (
-            + Log[mse2[1,1]/SCALE^2]
-            + Log[mse2[2,2]/SCALE^2]
+            (* + Log[mse2[1,1]/SCALE^2] *)
+            (* + Log[mse2[2,2]/SCALE^2] *)
             + Log[mse2[3,3]/SCALE^2]
         )
     )
@@ -271,8 +299,10 @@ gYu1L = 1/(4 Pi)^2 g1 Sqrt[3/5] Sin[ArcTan[TanBeta]] (
      + (9 Yu[3,3]^2)/(4 Sin[ArcTan[TanBeta]]^2)
      + (4 g1^2 - 9 (g1^2 + 5 g2^2) Cos[ArcTan[TanBeta]]^2)/40 Log[mAInput^2/SCALE^2]
      + (g1^2/10) (
-         +   Log[msl2[1,1]/SCALE^2] +   Log[msl2[2,2]/SCALE^2] +   Log[msl2[3,3]/SCALE^2]
-         + 2 Log[mse2[1,1]/SCALE^2] + 2 Log[mse2[2,2]/SCALE^2] + 2 Log[mse2[3,3]/SCALE^2]
+         (* +   Log[msl2[1,1]/SCALE^2] +   Log[msl2[2,2]/SCALE^2] *)
+         +   Log[msl2[3,3]/SCALE^2]
+         (* + 2 Log[mse2[1,1]/SCALE^2] + 2 Log[mse2[2,2]/SCALE^2] *)
+         + 2 Log[mse2[3,3]/SCALE^2]
      )
      + (g1^2/30) (
          +   Log[msq2[1,1]/SCALE^2] +   Log[msq2[2,2]/SCALE^2] +   Log[msq2[3,3]/SCALE^2]
@@ -288,8 +318,10 @@ gYd1L = 1/(4 Pi)^2 g1 Sqrt[3/5] Cos[ArcTan[TanBeta]] (
      + (3 g1^2/80) (-44 + 7 Sin[ArcTan[TanBeta]]^2)
      + (4 g1^2 - 9 (g1^2 + 5 g2^2) Sin[ArcTan[TanBeta]]^2)/40 Log[mAInput^2/SCALE^2]
      + (g1^2/10) (
-         +   Log[msl2[1,1]/SCALE^2] +   Log[msl2[2,2]/SCALE^2] +   Log[msl2[3,3]/SCALE^2]
-         + 2 Log[mse2[1,1]/SCALE^2] + 2 Log[mse2[2,2]/SCALE^2] + 2 Log[mse2[3,3]/SCALE^2]
+         (* +   Log[msl2[1,1]/SCALE^2] +   Log[msl2[2,2]/SCALE^2] *)
+         +   Log[msl2[3,3]/SCALE^2]
+         (* + 2 Log[mse2[1,1]/SCALE^2] + 2 Log[mse2[2,2]/SCALE^2] *)
+         + 2 Log[mse2[3,3]/SCALE^2]
      )
      + (g1^2/30) (
          +   Log[msq2[1,1]/SCALE^2] +   Log[msq2[2,2]/SCALE^2] +   Log[msq2[3,3]/SCALE^2]
@@ -305,8 +337,8 @@ g2u1L = 1/(4 Pi)^2 g2 Sin[ArcTan[TanBeta]] (
      + 9 Yu[3,3]^2/(4 Sin[ArcTan[TanBeta]]^2)
      + (20 g2^2 + 3 (-9 g1^2 + 35 g2^2) Cos[ArcTan[TanBeta]]^2)/120 Log[mAInput^2/SCALE^2]
      + g2^2/6 (
-         + Log[msl2[1,1]/SCALE^2]
-         + Log[msl2[2,2]/SCALE^2]
+         (* + Log[msl2[1,1]/SCALE^2] *)
+         (* + Log[msl2[2,2]/SCALE^2] *)
          + Log[msl2[3,3]/SCALE^2]
      )
      + g2^2/2 (
@@ -325,7 +357,7 @@ g2d1L = 1/(4 Pi)^2 g2 Cos[ArcTan[TanBeta]] (
      + (g2^2/2) Log[msq2[2,2]/SCALE^2]
      + (g2^2/2) Log[msq2[3,3]/SCALE^2]
      + (20 g2^2 + 3 (-9 g1^2 + 35 g2^2) Sin[ArcTan[TanBeta]]^2)/120 Log[mAInput^2/SCALE^2]
-     + (g2^2/6) Log[msl2[1,1]/SCALE^2]
-     + (g2^2/6) Log[msl2[2,2]/SCALE^2]
+     (* + (g2^2/6) Log[msl2[1,1]/SCALE^2] *)
+     (* + (g2^2/6) Log[msl2[2,2]/SCALE^2] *)
      + (g2^2/6) Log[msl2[3,3]/SCALE^2]
 );
