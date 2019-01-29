@@ -78,9 +78,9 @@ NPointFunction[inFields_List,outFields_List,
                     Regularize -> Switch[FlexibleSUSY`FSRenormalizationScheme,
                       FlexibleSUSY`DRbar, DimensionalReduction,
                       FlexibleSUSY`MSbar, DimensionalRegularization],
-                    CheckCache -> True, ZeroExternalMomenta -> False}]]:=
+                    UseCache -> True, ZeroExternalMomenta -> False}]]:=
   Module[{loopLevel, zeroExternalMomenta, regularizationScheme, nPointMeta,
-          checkCache,
+          useCache,
           sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           fsMetaDir = $flexiblesusyMetaDir,
           outputDir,
@@ -107,9 +107,9 @@ NPointFunction[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunction[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
-    checkCache = OptionValue[CheckCache];
-    Utils`AssertWithMessage[checkCache === True || checkCache === False,
-            "NPointFunctions`NPointFunctions[]: Option CheckCache must be either \
+    useCache = OptionValue[UseCache];
+    Utils`AssertWithMessage[useCache === True || useCache === False,
+            "NPointFunctions`NPointFunctions[]: Option UseCache must be either \
             True or False."];
 
     Utils`AssertWithMessage[And @@
@@ -129,7 +129,7 @@ supported (for now)."];
 
     nPointFunctionFile = FileNameJoin[{nPointFunctionsDir, "temp"}];
 
-    If[checkCache === True,
+    If[useCache === True,
         nPointFunction = CachedNPointFunction[
             inFields, outFields, nPointMeta];
         If[nPointFunction =!= Null,
@@ -187,7 +187,9 @@ supported (for now)."];
     Utils`AssertWithMessage[nPointFunction =!= $Failed,
 			"NPointFunctions`NPointFunction[]: Calculation failed"];
     
-    CacheNPointFunction[nPointFunction, nPointMeta];
+    If[useCache === True,
+        CacheNPointFunction[nPointFunction, nPointMeta]];
+
     nPointFunction
   ]
 

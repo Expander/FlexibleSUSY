@@ -50,7 +50,7 @@ templateCode = StringJoin @ Riffle[Utils`ReadLinesInFile[
 
 hhSelfenergy = NPointFunctions`NPointFunction[
 	{SARAH`HiggsBoson}, {SARAH`HiggsBoson},
-    NPointFunctions`CheckCache -> False,
+    NPointFunctions`UseCache -> False,
 	NPointFunctions`ZeroExternalMomenta -> True];
 
 hhSelfenergyCode = NPointFunctions`CreateCXXFunctions[
