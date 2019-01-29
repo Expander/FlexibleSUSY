@@ -312,12 +312,16 @@ ColorMathToSARAHConvention[expr_] :=
 	}
 		
 
-(** FIXME: This implementation only takes care of colour indices
- * and does not work on loops with only one vertex
+(** \brief Fully index all fields in a given diagram such that
+ * contracted fields share the same indices.
+ * \param[in] diagram The diagram to index
+ * \param[in] graph The graph giving the topology of \a diagram
+ * \returns An indexed version of \a diagram in which
+ * contracted fields share the same indices.
  *)
 IndexDiagramFromGraph[diagram_, graph_] :=
-	Module[{diagramWithUIDs, indexedFields, indexedDiagram, i, j,
-		connectedParticles, field1, field2, replacementList = {}},
+	Module[{diagramWithUIDs, indexedFields, indexedDiagram,
+		vIndex1, vIndex2, contractIndices},
 		indexedFields = IndexFields[Flatten[diagram]];
 		
 		diagramWithUIDs = If[Head[#] === List,
@@ -326,23 +330,27 @@ IndexDiagramFromGraph[diagram_, graph_] :=
 		indexedDiagram = diagramWithUIDs /. Rule @@@ Transpose[
 			{Flatten[diagramWithUIDs], indexedFields}];
 		
-		For[i = 1, i <= Length[diagram], i++,
-			For[j = i+1, j <= Length[diagram], j++,
-				connectedParticles = CXXDiagrams`ContractionsBetweenVerticesForDiagramFromGraph[i, j, diagram, graph];
-				If[connectedParticles === {}, Continue[]];
-				For[k = 1, k <= Length[connectedParticles], k++,
-					If[TreeMasses`ColorChargedQ[
-							If[ListQ[diagram[[i]]], diagram[[i, connectedParticles[[k,1]]]], diagram[[i]]]
-            ],
-						field1 = If[ListQ[diagram[[i]]], indexedDiagram[[i, connectedParticles[[k,1]]]], indexedDiagram[[i]]];
-						field2 = If[ListQ[diagram[[j]]], indexedDiagram[[j, connectedParticles[[k,2]]]], indexedDiagram[[j]]];
-						AppendTo[replacementList, GetFieldColorIndex[field2] -> GetFieldColorIndex[field1]];
-					];
-				]
-			]
-		];
+		contractIndices = Module[{
+				vIndex1 = #[[1]], vIndex2 = #[[2]], connectedFields},
+			connectedFields = ContractionsBetweenVerticesForDiagramFromGraph[
+				vIndex1, vIndex2, diagram, graph];
+			
+			Module[{field1, field2},
+				field1 = If[Head[diagram[[vIndex1]]] === List,
+					indexedDiagram[[vIndex1, #[[1]]]],
+					indexedDiagram[[vIndex1]]];
+				field2 = If[Head[diagram[[vIndex2]]] === List,
+					indexedDiagram[[vIndex2, #[[2]]]],
+					indexedDiagram[[vIndex2]]];
+				
+				Thread[Rule[Vertices`FieldIndexList[field1],
+					Vertices`FieldIndexList[field2]]]
+			] & /@ connectedFields
+		] & /@ Flatten[
+			Table[{v1, v2}, {v1, Length[diagram]}, {v2, v1, Length[diagram]}],
+		1];
 		
-		indexedDiagram /. replacementList
+		indexedDiagram /. Flatten[contractIndices]
 	]
 
 (** \brief Calculate the colour factor of a given diagram with a given
