@@ -186,9 +186,10 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	
 	unresolvedFieldCouplings = internalFieldCouplings
 		/. insertFieldRulesLess /. insertFieldRulesGreater /. insertFieldRulesEqual;
-
-	resolvedFields = SARAH`InsFields[{C @@@ unresolvedFieldCouplings,
-		fieldsToInsert}][[All,2]];
+	
+	resolvedFields = If[fieldsToInsert === {}, {{}},
+		SARAH`InsFields[{C @@@ unresolvedFieldCouplings,
+			fieldsToInsert}][[All,2]]];
 
 	If[resolvedFields === {}, Return[{}]];
 
