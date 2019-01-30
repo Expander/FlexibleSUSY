@@ -238,29 +238,29 @@ and performs an uncertainty estimate of missing higher order
 corrections.  Three main sources of the theory uncertainty are taken
 into account:
 
- - **SM uncertainty**: Missing higher order corrections in the
-   calculation of the running Standard Model top Yukawa coupling and
-   in the calculation of the Higgs pole mass.  The uncertainty from
-   this source is estimated by (i) switching on/off the 3-loop QCD
-   contributions in the calculation of the running top Yukawa coupling
-   :math:`y_t^{\text{SM}}(M_Z)` from the top pole mass and by (ii)
-   varying the renormalization scale at which the Higgs pole mass is
-   calculated within the interval :math:`[M_{\text{EWSB}}/2, 2
-   M_{\text{EWSB}}]`.
+* **SM uncertainty**: Missing higher order corrections in the
+  calculation of the running Standard Model top Yukawa coupling and
+  in the calculation of the Higgs pole mass.  The uncertainty from
+  this source is estimated by (i) switching on/off the 3-loop QCD
+  contributions in the calculation of the running top Yukawa coupling
+  :math:`y_t^{\text{SM}}(M_Z)` from the top pole mass and by (ii)
+  varying the renormalization scale at which the Higgs pole mass is
+  calculated within the interval :math:`[M_{\text{EWSB}}/2, 2
+  M_{\text{EWSB}}]`.
 
- - **EFT uncertainty**: Missing terms of :math:`O(v^2/M_{\text{SUSY}}^2)`.
-   These missing terms are estimated by adding 1-loop terms of the
-   form :math:`v^2/M_{\text{SUSY}}^2` to the quartic Higgs coupling
-   :math:`\lambda(M_\text{SUSY})`.
+* **EFT uncertainty**: Missing terms of :math:`O(v^2/M_{\text{SUSY}}^2)`.
+  These missing terms are estimated by adding 1-loop terms of the
+  form :math:`v^2/M_{\text{SUSY}}^2` to the quartic Higgs coupling
+  :math:`\lambda(M_\text{SUSY})`.
 
- - **SUSY uncertainty**: Missing higher order corrections in the
-   calculation of the quartic Higgs coupling
-   :math:`\lambda(M_\text{SUSY})`.  This uncertainty is estimated
-   by (i) varying the matching scale within the interval
-   :math:`[M_{\text{SUSY}}/2, 2 M_{\text{SUSY}}]` and by (ii)
-   re-parametrization of :math:`\lambda(M_\text{SUSY})` in terms of
-   :math:`y_t^{\text{MSSM}}(M_\text{SUSY})` and
-   :math:`g_3^{\text{MSSM}}(M_\text{SUSY})`.
+* **SUSY uncertainty**: Missing higher order corrections in the
+  calculation of the quartic Higgs coupling
+  :math:`\lambda(M_\text{SUSY})`.  This uncertainty is estimated
+  by (i) varying the matching scale within the interval
+  :math:`[M_{\text{SUSY}}/2, 2 M_{\text{SUSY}}]` and by (ii)
+  re-parametrization of :math:`\lambda(M_\text{SUSY})` in terms of
+  :math:`y_t^{\text{MSSM}}(M_\text{SUSY})` and
+  :math:`g_3^{\text{MSSM}}(M_\text{SUSY})`.
 
 The following code snippet illustrates the calculation of the Higgs
 pole mass calculated at the 3-loop level with HSSUSY as a function of
