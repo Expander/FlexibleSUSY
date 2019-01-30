@@ -95,6 +95,10 @@ NPointFunctionFAFC[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunctionFAFC[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
+    excludedTopologies = Lookup[<|NPointFunctions`OneParticleIrreducible -> FeynArts`Internal,
+                                {} -> {}|>,
+                                OptionValue[ExcludedTopologies]];
+
     If[DirectoryQ[formCalcDir] === False,
        CreateDirectory[formCalcDir]];
     SetDirectory[formCalcDir];

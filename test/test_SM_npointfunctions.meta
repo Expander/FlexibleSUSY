@@ -52,7 +52,7 @@ hhSelfenergy = NPointFunctions`NPointFunction[
 	{SARAH`HiggsBoson}, {SARAH`HiggsBoson},
     NPointFunctions`UseCache -> False,
 	NPointFunctions`ZeroExternalMomenta -> True,
-    NPointFunctions`ExcludedTopologies -> FeynArts`Internal];
+    NPointFunctions`ExcludedTopologies -> NPointFunctions`OneParticleIrreducible];
 
 hhSelfenergyCode = NPointFunctions`CreateCXXFunctions[
 	{hhSelfenergy}, {"selfenergy_hh_1loop"}][[2]];
