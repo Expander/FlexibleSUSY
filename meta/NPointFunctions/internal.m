@@ -35,6 +35,7 @@ Regularize::usage="";
 DimensionalReduction::usage="";
 DimensionalRegularization::usage="";
 ZeroExternalMomenta::usage="";
+ExcludedTopologies::usage="Option to exclude specific topologies in FeynArts";
 NPointFunctionFAFC::usage="";
 
 GenericS::usage="";
