@@ -74,10 +74,12 @@ SetFAFCPaths[feynArtsDirS_String, formCalcDirS_String, feynArtsModelS_String,
 NPointFunctionFAFC[inFields_List,outFields_List,
     OptionsPattern[{LoopLevel -> 1,
                     Regularize -> DimensionalReduction,
-                    ZeroExternalMomenta -> False}]]:=
+                    ZeroExternalMomenta -> False,
+                    ExcludedTopologies -> {}}]]:=
   Module[{loopLevel = OptionValue[LoopLevel],
           regularizationScheme = OptionValue[Regularize],
           zeroExternalMomenta = OptionValue[ZeroExternalMomenta],
+          excludedTopologies = OptionValue[ExcludedTopologies],
           topologies,diagrams,amplitudes,genericInsertions,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
@@ -98,7 +100,7 @@ be either True or False"];
 
     topologies = FeynArts`CreateTopologies[loopLevel,
       Length[inFields] -> Length[outFields],
-      ExcludeTopologies -> Internal];
+      ExcludeTopologies -> excludedTopologies];
       
     diagrams = FeynArts`InsertFields[topologies,
       inFields -> outFields,
