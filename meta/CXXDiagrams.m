@@ -56,6 +56,7 @@ MomentumDifferenceVertex::usage="A vertex with a momentum difference (p^\\mu - q
 InverseMetricVertex::usage="A vertex proportional to g^{\\mu \\nu}";
 
 (* A basis for the currently implemented colour structures of vertices *)
+ZeroColouredVertex::usage="A vertex that is identically zero";
 UncolouredVertex::usage="A SU(3) invariant vertex";
 KroneckerDeltaColourVertex::usage="A vertex proportional to \\delta( ct1, ct2 )";
 GellMannVertex::usage="A vertex proportional to \\Lambda^t_{a b}";
@@ -274,6 +275,9 @@ GetFieldColorIndex[field_ /; TreeMasses`ColorChargedQ[field]]:=
 
 (* Convert color structures to the ColorMath convention *)
 ConvertColourStructureToColorMathConvention[fields_List,
+	ZeroColouredVertex] := 0
+
+ConvertColourStructureToColorMathConvention[fields_List,
 	GellMannVertex[cIndex1_, cIndex2_, cIndex3_]] :=
 (* FIXME: Factor of two? *)
 	2 ColorMath`CMt[{cIndex1}, cIndex2, cIndex3] 
@@ -330,7 +334,6 @@ ColorMathToSARAHConvention[expr_] :=
 		ColorMath`Nc -> 3,
 		ColorMath`TR -> 1/2
 	}
-		
 
 (** \brief Fully index all fields in a given diagram such that
  * contracted fields share the same indices.
@@ -511,6 +514,9 @@ LabelLorentzPart[vertexPart_] :=
 	(Print["Unknown Lorentz structure in vertex ", vertexPart]; Quit[1])
 
 
+GaugeStructureOfVertexLorentzPart[{0, lorentzStructure_}] :=
+	{0, ZeroColouredVertex, lorentzStructure}
+
 GaugeStructureOfVertexLorentzPart[{scalar_, lorentzStructure_}] :=
 	{scalar, UncolouredVertex, lorentzStructure} /;
 	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
@@ -535,26 +541,70 @@ GaugeStructureOfVertexLorentzPart[vertexPart_] :=
 
 (* Assuming all Gauge structure combinations are different *)
 FullGaugeStructureFromParts[gaugeParts_List] :=
-	Module[{leftChiralParts, rightChiralParts, nonChiralParts, chiralParts,
-			gaugeStructures},
-		leftChiralParts = Cases[gaugeParts, {_, _, LeftChiralVertex}];
-		rightChiralParts = Cases[gaugeParts, {_, _, RightChiralVertex}];
-		nonChiralParts = Complement[gaugeParts, leftChiralParts, rightChiralParts];
+	Module[{nonzeroLeftChiralParts, nonzeroRightChiralParts,\
+			zeroLeftChiralParts, zeroRightChiralParts,
+			nonChiralParts, chiralParts, gaugeStructures},
+		zeroLeftChiralParts = Cases[gaugeParts,
+			{_, ZeroColouredVertex, LeftChiralVertex}];
+		zeroRightChiralParts = Cases[gaugeParts,
+			{_, ZeroColouredVertex, RightChiralVertex}];
 		
-		chiralParts = Flatten[Cases[rightChiralParts,
+		nonzeroLeftChiralParts = Cases[gaugeParts,
+			{_, Except[ZeroColouredVertex], LeftChiralVertex}];
+		nonzeroRightChiralParts = Cases[gaugeParts,
+			{_, Except[ZeroColouredVertex], RightChiralVertex}];
+		
+		nonChiralParts = Complement[gaugeParts,
+			zeroLeftChiralParts, zeroRightChiralParts,
+			nonzeroLeftChiralParts, nonzeroRightChiralParts];
+		
+		(* First we pair up the nonzero chiral parts with matchin
+		 * colour structures *)
+		chiralParts = Flatten[Cases[nonzeroRightChiralParts,
 			{rightScalar_, #[[2]], RightChiralVertex} :>
 			{{#[[1]], rightScalar}, #[[2]], ChiralVertex}] &
-			/@ leftChiralParts, 1];
+			/@ nonzeroLeftChiralParts, 1];
+		
+		nonzeroLeftChiralParts = Complement[nonzeroLeftChiralParts,
+			chiralParts, SameTest -> (#1[[2]] == #2[[2]] &)];
+		nonzeroRightChiralParts = Complement[nonzeroRightChiralParts,
+			chiralParts, SameTest -> (#1[[2]] == #2[[2]] &)];
+		
+		(* The remaining parts (if any) could be paired up
+		 * in an arbitrary way.
+		 * i.e we cannot do it consistently unless there is exactly one
+		 * left and one right part remaining. *)
+		If[Length[nonzeroLeftChiralParts] +
+			Length[zeroLeftChiralParts] === 1 && 
+			Length[nonzeroRightChiralParts] +
+			Length[zeroRightChiralParts] === 1,
+		
+			AppendTo[chiralParts, Switch[
+				{Length[zeroLeftChiralParts], Length[zeroRightChiralParts]},
+				{1, 1}, {{0, 0}, ZeroColouredVertex, ChiralVertex},
+				{1, 0}, {{0, nonzeroRightChiralParts[[1,1]]},
+					nonzeroRightChiralParts[[1,2]], ChiralVertex},
+				{0, 1}, {{nonzeroLefttChiralParts[[1,1]], 0},
+					nonzeroLeftChiralParts[[1,2]], ChiralVertex},
+				{0, 0},
+				Print["Incompatible chiral structures: " <>
+					ToString[nonzeroLeftChiralParts[[1]]] <> ", " <>
+					ToString[nonzeroRightChiralParts[[1]]]];
+				Quit[1];
+			]];
 			
-		leftChiralParts = Complement[leftChiralParts, chiralParts,
-			SameTest -> (#1[[2]] == #2[[2]] &)];
-		rightChiralParts = Complement[rightChiralParts, chiralParts,
-			SameTest -> (#1[[2]] == #2[[2]] &)];
+			nonzeroLeftChiralParts = zeroLeftChiralParts = {};
+			nonzeroRightChiralParts = zeroRightChiralParts = {};
+		];
 		
 		gaugeStructures = Sequence @@@
-			{nonChiralParts, chiralParts, leftChiralParts, rightChiralParts};
+			{nonChiralParts, chiralParts,
+			nonzeroLeftChiralParts, nonzeroRightChiralParts,
+			zeroLeftChiralParts, zeroRightChiralParts};
+		
 		Utils`AssertWithMessage[Length[gaugeStructures] === 1,
-			"Vertex with composite gauge structure encountered."];
+			"Vertex with composite gauge structure encountered:" <>
+			ToString[gaugeParts]];
 		
 		gaugeStructures[[1]]
 	]
