@@ -217,11 +217,21 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 	Module[{fields1 = diagram[[v1]], fields2 = diagram[[v2]],
 			preceedingNumberOfFields1 = Total[graph[[v1, ;;v2]]] - graph[[v1,v2]],
 			preceedingNumberOfFields2 = Total[graph[[v2, ;;v1]]] - graph[[v2,v1]],
-			contractedFieldIndices1, contractedFieldIndices2},
+			contractedFieldIndices1, contractedFieldIndices2,
+			stepSize = If[v1 === v2, 2, 1]},
+		If[v1 === v2,
+			preceedingNumberOfFields2 = preceedingNumberOfFields2 + 1];
+		If[v1 < v2,
+			preceedingNumberOfFields1 =
+				preceedingNumberOfFields1 + graph[[v1,v1]]];
+		If[v2 < v1,
+			preceedingNumberOfFields2 =
+				preceedingNumberOfFields2 + graph[[v2,v2]]];
+		
 		contractedFieldIndices1 = Table[k, {k, preceedingNumberOfFields1 + 1,
-			preceedingNumberOfFields1 + graph[[v1,v2]]}];
+			preceedingNumberOfFields1 + stepSize * graph[[v1,v2]], stepSize}];
 		contractedFieldIndices2 = Table[k, {k, preceedingNumberOfFields2 + 1,
-			preceedingNumberOfFields2 + graph[[v2,v1]]}];
+			preceedingNumberOfFields2 + stepSize * graph[[v2,v1]], stepSize}];
 		
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
