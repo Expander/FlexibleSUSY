@@ -622,20 +622,6 @@ GaugeStructureOfVertex[vertex_] :=
 		FullGaugeStructureFromParts[gaugeStructures]
 	]
 
-CreateVertexData[fields_List] := 
-  Module[{dataClassName},
-    dataClassName = "VertexData<" <> StringJoin[Riffle[
-      CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
-    ", "]] <> ">";
-    
-    "template<> struct " <> dataClassName <> "\n" <>
-    "{\n" <>
-    TextFormatting`IndentText[
-      "using vertex_type = " <> SymbolName[VertexTypeForFields[fields]] <>
-         ";"] <> "\n" <>
-    "};"
-  ]
-
 CreateVertices[vertices_List] :=
   StringJoin @ Riffle[CreateVertex /@ DeleteDuplicates[vertices], "\n\n"]
 
