@@ -80,7 +80,7 @@ NPointFunctionFAFC[inFields_List,outFields_List,
   Module[{loopLevel = OptionValue[LoopLevel],
           regularizationScheme = OptionValue[Regularize],
           zeroExternalMomenta = OptionValue[ZeroExternalMomenta],
-          excludedTopologies = OptionValue[ExcludedTopologies],
+          excludedTopologies,
           topologies,diagrams,amplitudes,genericInsertions,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
@@ -95,6 +95,11 @@ NPointFunctionFAFC[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunctionFAFC[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
+    Utils`AssertWithMessage[KeyExistsQ[<|NPointFunctions`OneParticleIrreducible -> FeynArts`Internal,
+                                {} -> {}|>,
+                                OptionValue[ExcludedTopologies]],
+        "NPointFunctions`NPointFunctionFAFC[]: Option ExcludedTopologies "
+        <> ToString[OptionValue[ExcludedTopologies]] <> " is not valid."];
     excludedTopologies = Lookup[<|NPointFunctions`OneParticleIrreducible -> FeynArts`Internal,
                                 {} -> {}|>,
                                 OptionValue[ExcludedTopologies]];
