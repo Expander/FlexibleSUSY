@@ -369,6 +369,3 @@ sumOverRules = {
 
 End[];
 EndPackage[];
-
-
-

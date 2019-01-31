@@ -812,6 +812,3 @@ CreateCXXHeaders[OptionsPattern[{LoopFunctions -> "FlexibleSUSY"}]] :=
 
 End[];
 EndPackage[];
-
-
-
