@@ -81,9 +81,12 @@ NPointFunctionFAFC[inFields_List,outFields_List,
           regularizationScheme = OptionValue[Regularize],
           zeroExternalMomenta = OptionValue[ZeroExternalMomenta],
           excludedTopologies,
+          ReplaceExcludedTops,
           topologies,diagrams,amplitudes,genericInsertions,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
+    ReplaceExcludedTops = {{} -> {},
+            NPointFunctions`OneParticleReducible -> FeynArts`Internal};
     Utils`AssertWithMessage[loopLevel === 1,
 			"NPointFunctions`NPointFunctionFAFC[]: Only loop level 1 is supported"];
     Utils`AssertWithMessage[
@@ -95,14 +98,11 @@ NPointFunctionFAFC[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunctionFAFC[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
-    Utils`AssertWithMessage[KeyExistsQ[<|NPointFunctions`OneParticleIrreducible -> FeynArts`Internal,
-                                {} -> {}|>,
+    Utils`AssertWithMessage[KeyExistsQ[ReplaceExcludedTops,
                                 OptionValue[ExcludedTopologies]],
-        "NPointFunctions`NPointFunctionFAFC[]: Option ExcludedTopologies "
+        "NPointFunctions`NPointFunctionFAFC[]: Option ExcludedTopologies: "
         <> ToString[OptionValue[ExcludedTopologies]] <> " is not valid."];
-    excludedTopologies = Lookup[<|NPointFunctions`OneParticleIrreducible -> FeynArts`Internal,
-                                {} -> {}|>,
-                                OptionValue[ExcludedTopologies]];
+    excludedTopologies = OptionValue[ExcludedTopologies] /. ReplaceExcludedTops;
 
     If[DirectoryQ[formCalcDir] === False,
        CreateDirectory[formCalcDir]];
