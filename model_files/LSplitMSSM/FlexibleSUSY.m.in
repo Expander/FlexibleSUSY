@@ -59,7 +59,7 @@ beta = ArcTan[TanBeta];
 cb = Cos[beta];
 sb = Sin[beta];
 c2b = Cos[2 beta];
-YeMSSM[2,2] = Ye[2,2]/cb;
+YeMSSM[2,2] = Ye[2,2]/(cb (1 + deltaMu));
 Te[1,1] = 0;
 Te[1,2] = 0;
 Te[2,1] = 0;
@@ -200,7 +200,8 @@ UseHiggs2LoopSM = True;
 
 ExtraSLHAOutputBlocks = {
    {FlexibleSUSYLowEnergy,
-           {{21, FlexibleSUSYObservable`aMuon} } },
+           {{1, FlexibleSUSYObservable`aMuon},
+            {2, FlexibleSUSYObservable`aMuonUncertainty} } },
    {EFFHIGGSCOUPLINGS, NoScale,
            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
             {2, FlexibleSUSYObservable`CpHiggsGluonGluon},
@@ -374,4 +375,14 @@ g2d1L = 1/(4 Pi)^2 g2 Cos[ArcTan[TanBeta]] (
      (* + (g2^2/6) Log[msl2[1,1]/SCALE^2] *)
      (* + (g2^2/6) Log[msl2[2,2]/SCALE^2] *)
      + (g2^2/6) Log[msl2[3,3]/SCALE^2]
+);
+
+(* arXiv:0808.1530, Eq. (8) *)
+deltaMu = -1/(4 Pi)^2 \[Mu] TanBeta (
+    + g2^2 MassWB (1 + 1/2) TCIabc[MassB, MassWB, Sqrt[msl2[2,2]]]
+    + 3/5 g1^2 MassB (
+        + TCIabc[\[Mu], MassB, Sqrt[mse2[2,2]]]
+        - 1/2 TCIabc[\[Mu], MassB, Sqrt[msl2[2,2]]]
+        - TCIabc[MassB, Sqrt[msl2[2,2]], Sqrt[mse2[2,2]]]
+    )
 );
