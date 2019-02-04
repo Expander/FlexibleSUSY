@@ -17,6 +17,7 @@ EXTPAR = {
     {5, mAInput},
     {6, MEWSB},
     {7, AtInput},
+    {11, AmuInput},
     {25, TanBeta},
     {100, LambdaLoopOrder}
 };
@@ -51,10 +52,18 @@ HighScale = MSUSY;
 
 HighScaleFirstGuess = MSUSY;
 
-(* Hypercharges of 1st and 2nd generation sleptons *)
-Y1L = Y2L = -1;
-Y1R = Y2R = -2;
-c2b = Cos[2 ArcTan[TanBeta]];
+(* Hypercharges of sleptons *)
+YL = -1;
+YR = -2;
+beta = ArcTan[TanBeta];
+cb = Cos[beta];
+sb = Sin[beta];
+c2b = Cos[2 beta];
+YeMSSM[2,2] = Ye[2,2]/cb;
+Te[1,1] = 0;
+Te[1,2] = 0;
+Te[2,1] = 0;
+Te[2,2] = AmuInput YeMSSM[2,2];
 
 HighScaleInput = {
     {\[Lambda], lambdaTree
@@ -67,46 +76,51 @@ HighScaleInput = {
     {g2u      , g2uTree + UnitStep[LambdaLoopOrder-1] g2u1L},
     {g2d      , g2dTree + UnitStep[LambdaLoopOrder-1] g2d1L},
 
-    {gllhha11 , 1/8 (3/5 g1^2 Y1L - g2^2) c2b},
+    {gllhha11 , 1/4 (3/5 g1^2 YL - g2^2) c2b},
     {gllhha12 , 0},
     {gllhha21 , 0},
-    {gllhha22 , 1/8 (3/5 g1^2 Y2L - g2^2) c2b},
+    {gllhha22 , 1/4 (3/5 g1^2 YL - g2^2) c2b},
 
-    {gllhhb11 , 1/4 g2^2 c2b},
+    {gllhhb11 , 1/2 g2^2 c2b},
     {gllhhb12 , 0},
     {gllhhb21 , 0},
-    {gllhhb22 , 1/4 g2^2 c2b},
+    {gllhhb22 , -YeMSSM[2,2]^2 cb^2 + 1/2 g2^2 c2b},
 
-    {geehh11  , 1/8 3/5 g1^2 c2b Y1R},
+    {geehh11  , -1/4 3/5 g1^2 c2b YR},
     {geehh12  , 0},
     {geehh21  , 0},
-    {geehh22  , 1/8 3/5 g1^2 c2b Y2R},
+    {geehh22  , -YeMSSM[2,2]^2 cb^2 - 1/4 3/5 g1^2 c2b YR},
 
-    {glleea11 , -1/8 3/5 g1^2 Y1L Y1R},
-    {glleea12 , -1/8 3/5 g1^2 Y1L Y2R},
-    {glleea21 , -1/8 3/5 g1^2 Y2L Y1R},
-    {glleea22 , -1/8 3/5 g1^2 Y2L Y2R},
+    {glleea11 , 1/4 3/5 g1^2 YL YR},
+    {glleea12 , 1/4 3/5 g1^2 YL YR},
+    {glleea21 , 1/4 3/5 g1^2 YL YR},
+    {glleea22 , -YeMSSM[2,2]^2 + 1/4 3/5 g1^2 YL YR},
     {glleeb   , 0},
 
-    {glllla11 , -1/8 3/5 g1^2 Y1L^2 - 1/8 g2^2},
-    {glllla12 , -1/8 3/5 g1^2 Y1L Y2L + 1/8 g2^2},
-    {glllla22 , -1/8 3/5 g1^2 Y2L^2 - 1/8 g2^2},
+    {glllla11 , -1/8 3/5 g1^2 YL^2 - 1/8 g2^2},
+    {glllla12 , -1/8 3/5 g1^2 YL^2 + 1/8 g2^2},
+    {glllla22 , -1/8 3/5 g1^2 YL^2 - 1/8 g2^2},
     {gllllb   , -1/4 g2^2},
 
-    {geeee11  , -1/8 3/5 g1^2 Y1L Y1L},
-    {geeee12  , -1/8 3/5 g1^2 Y1L Y2L},
-    {geeee22  , -1/8 3/5 g1^2 Y2L Y2L},
+    {geeee11  , -1/8 3/5 g1^2 YR^2},
+    {geeee12  , -1/8 3/5 g1^2 YR^2},
+    {geeee22  , -1/8 3/5 g1^2 YR^2},
 
     {gdlse1   , ZEROMATRIX[3,1]},
-    {gdlse2   , ZEROMATRIX[3,1]},
-    {gdsle1   , ZEROMATRIX[3,1]},
-    {gdsle2   , ZEROMATRIX[3,1]},
+    {gdlse2[1], 0},
+    {gdlse2[2], YeMSSM[2,2]},
+    {gdlse2[3], 0},
 
-    {gslbl1[1], Sqrt[3/5] g1 Y1L/Sqrt[2]},
+    {gdsle1   , ZEROMATRIX[3,1]},
+    {gdsle2[1], 0},
+    {gdsle2[2], YeMSSM[2,2]},
+    {gdsle2[3], 0},
+
+    {gslbl1[1], Sqrt[3/5] g1 YL/Sqrt[2]},
     {gslbl1[2], 0},
     {gslbl1[3], 0},
     {gslbl2[1], 0},
-    {gslbl2[2], Sqrt[3/5] g1 Y2L/Sqrt[2]},
+    {gslbl2[2], Sqrt[3/5] g1 YL/Sqrt[2]},
     {gslbl2[3], 0},
 
     {gslwl1[1], g2},
@@ -116,17 +130,17 @@ HighScaleInput = {
     {gslwl2[2], g2},
     {gslwl2[3], 0},
 
-    {gsebe1[1], Sqrt[3/5] g1 Y1R/Sqrt[2]},
+    {gsebe1[1], Sqrt[3/5] g1 YR/Sqrt[2]},
     {gsebe1[2], 0},
     {gsebe1[3], 0},
     {gsebe2[1], 0},
-    {gsebe2[2], Sqrt[3/5] g1 Y2R/Sqrt[2]},
+    {gsebe2[2], Sqrt[3/5] g1 YR/Sqrt[2]},
     {gsebe2[3], 0},
 
-    {gleh11   , 0},
-    {gleh12   , 0},
-    {gleh21   , 0},
-    {gleh22   , 0}
+    {gleh11   , -Te[1,1] cb},
+    {gleh12   , -Te[1,2] cb},
+    {gleh21   , -Te[2,1] cb},
+    {gleh22   , -Te[2,2] cb + Conj[\[Mu]] YeMSSM[2,2] sb}
 };
 
 (* The scale where we impose the EWSB conditions
