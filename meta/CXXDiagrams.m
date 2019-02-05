@@ -160,6 +160,20 @@ CreateFields[] :=
          StringJoin[Riffle[CXXNameOfField /@ ghosts, ", "]] <> ">;"
   ]
 
+(** \brief Get the lorentz index of a given field
+ * \param[in] field The indexed field
+ * \returns The lorentz index of \a field
+ * For any given indexed field or antifield that has a lorentz index,
+ * return it.
+ *)
+LorentzIndexOfField[field_]:=
+	Module[{lorentzIndices = Select[Vertices`FieldIndexList[field], IsLorentzIndex]},
+		Utils`AssertWithMessage[Length[lorentzIndices] === 1,
+			"CXXDiagrams`LorentzIndexOfField[]: Argument " <>
+			ToString[field] <> " does not have exactly one color index."];
+    lorentzIndices[[1]]
+  ]
+
 (* adjacencyMatrix must be undirected (i.e symmetric) *)
 FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	Module[{externalVertices = externalFields[[All,1]],
