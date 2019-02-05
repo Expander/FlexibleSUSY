@@ -308,7 +308,8 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
           fieldsOrdering, sortedFieldsOrdering, inverseFOrdering,
           fOrderingWRTSortedF, vertex, vExpression, vertexIsZero = False,
           vertexType = VertexTypeForFields[fields], expr, exprL, exprR,
-          vertexRules, incomingScalar, outgoingScalar},
+          vertexRules, incomingScalar, outgoingScalar, incomingGhost,
+					lIndex1, lIndex2, lIndex3, lIndex4, expr1, expr2, expr3},
     sortedFields = Vertices`SortFieldsInCp[fields];
     
     vertex = Select[vertexList, StripFieldIndices[#[[1]]] === sortedFields &, 1];
@@ -326,7 +327,7 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
          "return vertex_type(0);",
          
          TripleVectorVertex,
-         "return vertex_type(0, vertex_type::even_permutation);",
+         "return vertex_type(0);",
          
          QuadrupleVectorVertex,
          "return vertex_type(0, 0, 0);",
@@ -396,7 +397,7 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
       "return vertex_type(left, right);",
       
       MomentumVertex,
-      incomingGhost = Replace[vertex[[2,2]], SARAH`Mom[ig_,_] :> {is, os}];
+      incomingGhost = Replace[vertex[[2,2]], SARAH`Mom[ig_,_] :> ig];
       vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
       
       expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
@@ -411,11 +412,86 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
       "return vertex_type(result);",
          
-         TripleVectorVertex,
-         "return vertex_type(0, vertex_type::even_permutation);",
+			TripleVectorVertex,
+			{lIndex1, lIndex2, lIndex3} = LorentzIndexOfField /@ 
+				sortedIndexedFields;
+			
+      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
+      
+      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
+        sortedFields, sortedIndexedFields] /. vertexRules;
+      
+      expr = Switch[Thread[Expand /@ {vertex[[2,2]], - vertex[[2,2]]} == Expand[
+				SARAH`g[lIndex1, lIndex2] * (SARAH`Mom[sortedIndexedFields[[1]], lIndex3] -
+					SARAH`Mom[sortedIndexedFields[[2]], lIndex3]) +
+				SARAH`g[lIndex2, lIndex3] * (SARAH`Mom[sortedIndexedFields[[2]], lIndex1] -
+					SARAH`Mom[sortedIndexedFields[[3]], lIndex1]) + 
+				SARAH`g[lIndex1, lIndex3] * (SARAH`Mom[sortedIndexedFields[[3]], lIndex2] -
+					SARAH`Mom[sortedIndexedFields[[1]], lIndex2])]],
+				
+				{True, _}, expr,
+				{_, True}, - expr,
+				_, Print["CXXDiagrams`VertexFunctionBodyForFieldsImpl[]: Unknown Lorentz \
+structure in vertex: " <> ToString[vertex]]; Quit[1]];
+      
+      expr = Vertices`SarahToFSVertexConventions[sortedFields, expr,
+				StripColorStructure -> OptionValue[StripColorStructure]];
+      expr = TreeMasses`ReplaceDependenciesReverse[expr];
+      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
+      Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+      "const " <> GetComplexScalarCType[] <> " result = " <>
+      Parameters`ExpressionToString[expr] <> ";\n\n" <>
+      "return vertex_type(result);",
          
-         QuadrupleVectorVertex,
-         "return vertex_type(0, 0, 0);",
+			QuadrupleVectorVertex,
+			{lIndex1, lIndex2, lIndex3, lIndex4} = LorentzIndexOfField /@ 
+				sortedIndexedFields;
+      
+      vertexRules = {
+				(SARAH`Cp @@ sortedIndexedFields)[
+					SARAH`g[lIndex1, lIndex2] * SARAH`g[lIndex3, lIndex4]] ->
+        Vertices`FindVertexWithLorentzStructure[Rest[vertex],
+					SARAH`g[lIndex1, lIndex2] * SARAH`g[lIndex3, lIndex4]][[1]],
+				(SARAH`Cp @@ sortedIndexedFields)[
+					SARAH`g[lIndex1, lIndex3] * SARAH`g[lIndex2, lIndex4]] ->
+        Vertices`FindVertexWithLorentzStructure[Rest[vertex],
+					SARAH`g[lIndex1, lIndex3] * SARAH`g[lIndex2, lIndex4]][[1]],
+				(SARAH`Cp @@ sortedIndexedFields)[
+					SARAH`g[lIndex1, lIndex4] * SARAH`g[lIndex2, lIndex3]] ->
+        Vertices`FindVertexWithLorentzStructure[Rest[vertex],
+					SARAH`g[lIndex1, lIndex4] * SARAH`g[lIndex2, lIndex3]][[1]]
+			};
+      
+      expr1 = CanonicalizeCoupling[(SARAH`Cp @@ fields)[
+					SARAH`g[lIndex1, lIndex2] * SARAH`g[lIndex3, lIndex4]],
+        sortedFields, sortedIndexedFields] /. vertexRules;
+      expr2 = CanonicalizeCoupling[(SARAH`Cp @@ fields)[
+					SARAH`g[lIndex1, lIndex3] * SARAH`g[lIndex2, lIndex4]],
+        sortedFields, sortedIndexedFields] /. vertexRules;
+      expr3 = CanonicalizeCoupling[(SARAH`Cp @@ fields)[
+					SARAH`g[lIndex1, lIndex4] * SARAH`g[lIndex2, lIndex3]],
+        sortedFields, sortedIndexedFields] /. vertexRules;
+
+      expr1 = Vertices`SarahToFSVertexConventions[sortedFields, expr1,
+				StripColorStructure -> OptionValue[StripColorStructure]];
+      expr2 = Vertices`SarahToFSVertexConventions[sortedFields, expr2,
+				StripColorStructure -> OptionValue[StripColorStructure]];
+      expr3 = Vertices`SarahToFSVertexConventions[sortedFields, expr3,
+				StripColorStructure -> OptionValue[StripColorStructure]];
+			
+      expr1 = TreeMasses`ReplaceDependenciesReverse[expr1];
+      expr2 = TreeMasses`ReplaceDependenciesReverse[expr2];
+      expr3 = TreeMasses`ReplaceDependenciesReverse[expr3];
+      
+      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
+      Parameters`CreateLocalConstRefs[{expr1, expr2, expr3}] <> "\n" <>
+      "const " <> GetComplexScalarCType[] <> " part1 = " <>
+      Parameters`ExpressionToString[expr1] <> ";\n\n" <>
+      "const " <> GetComplexScalarCType[] <> " part2 = " <>
+      Parameters`ExpressionToString[expr2] <> ";\n\n" <>
+      "const " <> GetComplexScalarCType[] <> " part3 = " <>
+      Parameters`ExpressionToString[expr3] <> ";\n\n" <>
+      "return vertex_type(part1, part2, part3);",
 
       MomentumDifferenceVertex,
       {incomingScalar, outgoingScalar} = Replace[vertex[[2,2]],
