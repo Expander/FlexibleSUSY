@@ -29,6 +29,9 @@ BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Verti
 (* Vertex types *)
 ScalarVertex::usage="";
 ChiralVertex::usage="";
+MomentumVertex::usage="";
+TripleVectorVertex::usage="";
+QuadrupleVectorVertex::usage="";
 MomentumDifferenceVertex::usage="";
 InverseMetricVertex::usage="";
 
@@ -56,6 +59,9 @@ Begin["`Private`"];
 VertexTypes[] := {
     ScalarVertex,
     ChiralVertex,
+    MomentumVertex,
+    TripleVectorVertex,
+    QuadrupleVectorVertex,
     MomentumDifferenceVertex,
     InverseMetricVertex
 };
@@ -302,6 +308,15 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
          ChiralVertex,
          "return vertex_type(0, 0);",
          
+         MomentumVertex,
+         "return vertex_type(0);",
+         
+         TripleVectorVertex,
+         "return vertex_type(0, vertex_type::even_permutation);",
+         
+         QuadrupleVectorVertex,
+         "return vertex_type(0, 0, 0);",
+         
          MomentumDifferenceVertex,
          "return vertex_type(0, " <> StringJoin[Riffle[
             ToString /@ Flatten[Position[fields,
@@ -365,6 +380,28 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
       "const " <> GetComplexScalarCType[] <> " right = " <>
       Parameters`ExpressionToString[exprR] <> ";\n\n" <>
       "return vertex_type(left, right);",
+      
+      MomentumVertex,
+      incomingGhost = Replace[vertex[[2,2]], SARAH`Mom[ig_,_] :> {is, os}];
+      vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> vertex[[2,1]]};
+      
+      expr = CanonicalizeCoupling[SARAH`Cp @@ fields,
+        sortedFields, sortedIndexedFields] /. vertexRules;
+      
+      expr = Vertices`SarahToFSVertexConventions[sortedFields, expr,
+				StripColorStructure -> OptionValue[StripColorStructure]];
+      expr = TreeMasses`ReplaceDependenciesReverse[expr];
+      DeclareIndices[StripLorentzIndices /@ indexedFields, "indices"] <>
+      Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+      "const " <> GetComplexScalarCType[] <> " result = " <>
+      Parameters`ExpressionToString[expr] <> ";\n\n" <>
+      "return vertex_type(result);",
+         
+         TripleVectorVertex,
+         "return vertex_type(0, vertex_type::even_permutation);",
+         
+         QuadrupleVectorVertex,
+         "return vertex_type(0, 0, 0);",
 
       MomentumDifferenceVertex,
       {incomingScalar, outgoingScalar} = Replace[vertex[[2,2]],
@@ -532,6 +569,9 @@ VertexTypeForFields[fields_List] :=
     Switch[{fermionCount, scalarCount, vectorCount, ghostCount},
       {0, 3, 0, 0}, ScalarVertex,
       {0, 1, 0, 2}, ScalarVertex,
+      {0, 0, 1, 2}, MomentumVertex,
+      {0, 0, 3, 0}, TripleVectorVertex,
+      {0, 0, 4, 0}, QuadrupleVectorVertex,
       {0, 4, 0, 0}, ScalarVertex,
       {2, 1, 0, 0}, ChiralVertex,
       {2, 0, 1, 0}, ChiralVertex,
