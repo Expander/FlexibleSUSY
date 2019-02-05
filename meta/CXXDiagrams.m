@@ -304,7 +304,7 @@ VertexFunctionBodyForFields[fields_List, OptionsPattern[{StripColorStructure -> 
 
 VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
 		OptionsPattern[{StripColorStructure -> False}]] :=
-  Module[{sortedFields, sortedIndexedFields, indexedFields,
+  Module[{sortedFields, sortedIndexedFields, indexedFields, ghosts,
           fieldsOrdering, sortedFieldsOrdering, inverseFOrdering,
           fOrderingWRTSortedF, vertex, vExpression, vertexIsZero = False,
           vertexType = VertexTypeForFields[fields], expr, exprL, exprR,
@@ -324,10 +324,20 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
          "return vertex_type(0, 0);",
          
          MomentumVertex,
-         "return vertex_type(0);",
+         ghosts = Select[fields, TreeMasses`IsGhost];
+         ghosts = Select[ghosts, RemoveLorentzConjugation[#] =!= 
+           LorentzConjugate[#] &];
+         
+         Utils`AssertWithMessage[Length[ghosts] === 1,
+				   "CXXDiagrams`VertexFunctionBodyForFieldsImpl[]: \
+Invalid ghosts in vertex: " <> ToString[fields]];
+				   
+         "return vertex_type(0, " <>
+           ToString[Position[fields, ghosts[[1]], {1}][[1,1]] - 1] <>
+         ");",
          
          TripleVectorVertex,
-         "return vertex_type(0);",
+         "return vertex_type(0, vertex_type::even_permutation{});",
          
          QuadrupleVectorVertex,
          "return vertex_type(0, 0, 0);",
@@ -410,7 +420,9 @@ VertexFunctionBodyForFieldsImpl[fields_List, vertexList_List,
       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
-      "return vertex_type(result);",
+      "return vertex_type(result, " <> 
+				ToString[Position[indexedFields, incomingGhost][[1,1]] - 1] <>
+			");",
          
 			TripleVectorVertex,
 			{lIndex1, lIndex2, lIndex3} = LorentzIndexOfField /@ 
