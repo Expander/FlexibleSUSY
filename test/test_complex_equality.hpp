@@ -16,6 +16,16 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#define TEST_COMPLEX_EQUALITY( a, b ) \
-	BOOST_TEST( std::real( a ) == std::real( b ) );\
-	BOOST_TEST( std::imag( a ) == std::imag( b ) )
+#ifndef TEST_COMPLEX_EQUALITY_H
+#define TEST_COMPLEX_EQUALITY_H
+
+#include <complex>
+
+void TEST_COMPLEX_EQUALITY( std::complex<double> a,
+	std::complex<double> b )
+{
+	BOOST_TEST( std::real( a ) == std::real( b ) );
+	BOOST_TEST( std::imag( a ) == std::imag( b ) );
+}
+
+#endif
