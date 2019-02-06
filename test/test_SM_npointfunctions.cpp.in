@@ -26,8 +26,7 @@
 @NPointFunctions_Headers@
 
 using namespace flexiblesusy;
-using namespace boost_test_tools; 
-namespace bdata = boost::unit_test::data;
+using namespace boost_test_tools;
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
