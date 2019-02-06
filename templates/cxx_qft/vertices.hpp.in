@@ -111,14 +111,21 @@ namespace @ModelName@_cxx_diagrams
    {
    private:
       std::complex<double> val;
-      int index;
+      int ind;
    public:
       /** \brief Contruct a MomentumVertex from a
        * complex number representing and a field index.
        **/ 
       MomentumVertex(const std::complex<double>& v, int i)
-      : val(v), index(i)
+      : val(v), ind(i)
       {}
+
+      /** \brief Retrieve the index of the field to whose
+       * momentum the vertex is proportional.
+       * \returns the appropriate index
+       **/
+      int index( void ) const
+      { return ind; }
 
       /** \brief Retrieve the numerical value of the vertex
        * \param i The index of the field to whose momentum
@@ -127,7 +134,7 @@ namespace @ModelName@_cxx_diagrams
        **/
       std::complex<double> value( int i ) const
       {
-			   if( i != index )
+			   if( i != ind )
 			      throw std::invalid_argument(
                "MomentumVertex: Wrong index specified");
          
@@ -178,6 +185,13 @@ namespace @ModelName@_cxx_diagrams
       TripleVectorVertex(const std::complex<double>& v,
 			  odd_permutation ) : val(v), even( false )
       {}
+
+      /** \brief Check whether the value in the vertex is stored
+       * as proportional to the even permutation.
+       * \returns true if yes and false otherwise
+       **/
+      bool is_even( void ) const
+      { return even; }
 
       /** \brief Retrieve the coefficient of the even permutation
        * \returns the coefficient of the even permutation
@@ -269,6 +283,18 @@ namespace @ModelName@_cxx_diagrams
             "MomentumDifferenceVertex: Wrong index combination");
          return 0.0;
       }
+
+      /** \brief Retrieve the index of the incoming field
+       * \returns the index of the incoming field
+       **/
+      bool incoming_index( void ) const
+      { return minuendIndex; }
+
+      /** \brief Retrieve the index of the outgoing field
+       * \returns the index of the outgoing field
+       **/
+      bool outgoing_index( void ) const
+      { return subtrahendIndex; }
 
       bool isZero() const
       {
