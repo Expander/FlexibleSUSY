@@ -457,7 +457,7 @@ structure in vertex: " <> ToString[vertex]]; Quit[1]];
       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
-      "return vertex_type(result);",
+      "return vertex_type(result, vertex_type::even_permutation{});",
          
 			QuadrupleVectorVertex,
 			{lIndex1, lIndex2, lIndex3, lIndex4} = LorentzIndexOfField /@ 
