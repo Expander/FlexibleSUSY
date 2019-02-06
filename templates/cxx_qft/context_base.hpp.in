@@ -28,6 +28,8 @@
 #ifndef @ModelName@_CXXQFT_CONTEXT_BASE_H
 #define @ModelName@_CXXQFT_CONTEXT_BASE_H
 
+#include "@ModelName@_mass_eigenstates.hpp"
+
 #include "@ModelName@_fields.hpp"
 
 namespace flexiblesusy
