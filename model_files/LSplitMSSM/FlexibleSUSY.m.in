@@ -197,6 +197,8 @@ MediumPoleMassPrecision  = {};
 LowPoleMassPrecision     = {};
 
 UseHiggs2LoopSM = True;
+UseHiggs3LoopSM = True;
+UseHiggs4LoopSM = True;
 
 ExtraSLHAOutputBlocks = {
    {FlexibleSUSYLowEnergy,
