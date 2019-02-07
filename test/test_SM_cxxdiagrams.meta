@@ -51,6 +51,32 @@ templateCode = StringJoin @ Riffle[Utils`ReadLinesInFile[
 VectorToGhost[field_ ? TreeMasses`IsVector] :=
 	Symbol[StringReplace[SymbolName[field], "V" ~~ name_ :> "g" <> name]];
 
+CXXVertexFromFSVertexCalls[ScalarVertex, {fsCall_String}] :=
+	"return ScalarVertex{ " <> fsCall <> "( model_and_indices ) };"
+
+CXXVertexFromFSVertexCalls[ChiralVertex,
+		{fsCallPL_String, fsCallPR_String}] :=
+	"return ChiralVertex{ " <> fsCallPL <> "( model_and_indices ), " <>
+		fsCallPR <> "( model_and_indices ) };"
+
+(* FIXME: The momentum index is hardcoded *)
+CXXVertexFromFSVertexCalls[MomentumVertex, {fsCall_String}] :=
+	"return MomentumVertex{ " <> fsCall <> "( model_and_indices ), 1 };"
+
+(* FIXME: The permutation is hardcoded *)
+CXXVertexFromFSVertexCalls[TripleVectorVertex, {fsCall_String}] :=
+	"return TripleVectorVertex{ " <> fsCall <> "( model_and_indices ), "<>
+		"TripleVectorVertex::odd_permutation };"
+
+CXXVertexFromFSVertexCalls[QuadrupleVectorVertex,
+		{fsCall1_String, fsCall2_String, fsCall3_String}] :=
+	"return QuadrupleVectorVertex{ " <> fsCall1 <> "( model_and_indices ), " <>
+		fsCall2 <> "( model_and_indices ), " <>
+		fsCall3 <> "( model_and_indices ) };"
+
+CXXVertexFromFSVertexCalls[InverseMetricVertex, {fsCall_String}] :=
+	"return InverseMetricVertex{ " <> fsCall <> "( model_and_indices ) };"
+
 (* Zero vertices are handled differently by CXXDiagrams. Hence we test
  * them separately.
  *)
@@ -76,32 +102,90 @@ zeroVertices = {
 		TreeMasses`GetGluon[], TreeMasses`GetGluon[]}
 };
 
-nonzeroVertices = {
-	{TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[]},
-	{CXXDiagrams`LorentzConjugate[VectorToGhost[TreeMasses`GetWBoson[]]],
-		VectorToGhost[TreeMasses`GetWBoson[]], TreeMasses`GetHiggsBoson[]},
-	{CXXDiagrams`LorentzConjugate[VectorToGhost[TreeMasses`GetWBoson[]]],
-		VectorToGhost[TreeMasses`GetWBoson[]], TreeMasses`GetZBoson[]},
-	{TreeMasses`GetWBoson[], CXXDiagrams`LorentzConjugate[TreeMasses`GetWBoson[]],
-		TreeMasses`GetZBoson[]},
-	{TreeMasses`GetWBoson[], CXXDiagrams`LorentzConjugate[TreeMasses`GetWBoson[]],
-		TreeMasses`GetZBoson[], TreeMasses`GetZBoson[]},
-	{TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[],
-		TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[]},
-	{CXXDiagrams`LorentzConjugate[CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]]],
-		CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]],
-		TreeMasses`GetHiggsBoson[]},
-	{CXXDiagrams`LorentzConjugate[CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]]],
-		CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]],
-		TreeMasses`GetPhoton[]},
-	(* The SM has no nonzer SSV vertices *)
-	{TreeMasses`GetHiggsBoson[], TreeMasses`GetZBoson[], TreeMasses`GetZBoson[]},
-	{TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[],
-		TreeMasses`GetZBoson[], TreeMasses`GetZBoson[]}
+nonzeroVertexPairs = {
+	{
+		{TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[]},
+		{"Cphhhhhh"}
+	},
+	{
+		{CXXDiagrams`LorentzConjugate[VectorToGhost[TreeMasses`GetWBoson[]]],
+			VectorToGhost[TreeMasses`GetWBoson[]], TreeMasses`GetHiggsBoson[]},
+		{"CpbargWpgWphh"}
+	},
+	{
+		{CXXDiagrams`LorentzConjugate[VectorToGhost[TreeMasses`GetWBoson[]]],
+			VectorToGhost[TreeMasses`GetWBoson[]], TreeMasses`GetZBoson[]},
+		{"CpbargWpgWpVZ"}
+	},
+	{
+		{TreeMasses`GetWBoson[], CXXDiagrams`LorentzConjugate[TreeMasses`GetWBoson[]],
+			TreeMasses`GetZBoson[]},
+		{"CpconjVWpVWpVZ"}
+	},
+	{
+		{TreeMasses`GetWBoson[], CXXDiagrams`LorentzConjugate[TreeMasses`GetWBoson[]],
+			TreeMasses`GetZBoson[], TreeMasses`GetZBoson[]},
+		{"CpconjVWpVWpVZVZ1", "CpconjVWpVWpVZVZ2", "CpconjVWpVWpVZVZ3"}
+	},
+	{
+		{TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[],
+			TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[]},
+		{"Cphhhhhhhh"}
+	},
+	{
+		{CXXDiagrams`LorentzConjugate[CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]]],
+			CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]],
+			TreeMasses`GetHiggsBoson[]},
+		{"CpbarFeFehhPL", "CpbarFeFehhPR"}
+	},
+	{
+		{CXXDiagrams`LorentzConjugate[CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]]],
+			CXXDiagrams`AtomHead[TreeMasses`GetSMTauLepton[]],
+			TreeMasses`GetPhoton[]},
+		{"CpbarFeFeVPPL", "CpbarFeFeVPPR"}
+	},
+	(* The SM has no nonzero SSV vertices *)
+	{
+		{TreeMasses`GetHiggsBoson[], TreeMasses`GetZBoson[], TreeMasses`GetZBoson[]},
+		{"CphhVZVZ"}
+	},
+	{
+		{TreeMasses`GetHiggsBoson[], TreeMasses`GetHiggsBoson[],
+			TreeMasses`GetZBoson[], TreeMasses`GetZBoson[]},
+		{"CphhhhVZVZ"}
+	}
 };
 
 cxxZeroVertices = "boost::mpl::vector<" <>
-	StringJoin[Riffle[CXXNameOfVertex /@ zeroVertices, ", "]] <> ">";
+	StringJoin[Riffle[CXXDiagrams`CXXNameOfVertex /@ zeroVertices, ", "]] <> ">";
+
+cxxVertexWrappers = StringJoin[Riffle[
+	Module[{fields = #[[1]], fsVertexCalls = #[[2]], cxxFieldSequence},
+		cxxFieldSequence = StringJoin[Riffle[
+			CXXDiagrams`CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
+			", "]];
+		
+		"template<class Sequence> FSVertexWrapper<" <> cxxFieldSequence <> ">" <>
+			"::vertex_type\n"
+		"FSVertexWrapper<" <> cxxFieldSequence <> ">" <>
+			"::evaluate_impl( Sequence &&model_and_indices )\n" <>
+		"{\n" <> TextFormatting`IndentText[
+			StringJoin[Riffle[
+				# <> " = boost::fusion::make_fused( &model_type::" <> # <> " );" & /@
+				fsVertexCalls, "\n"]] <> "\n\n" <>
+			CXXVertexFromFSVertexCalls[
+				CXXDiagrams`VertexTypeForFields[fields], fsVertexCalls]
+		] <> "}"
+	] & /@ nonzeroVertexPairs, "\n\n"]];
+
+cxxNonzeroVertexPairs = StringJoin[Riffle[
+	"boost::mpl::pair<" <> #[[1]] <> ", " <> #[[2]] <> ">" & /@
+		Transpose[{
+			CXXDiagrams`CXXNameOfVertex /@ nonzeroVertexPairs[[All, 1]],
+			StringReplace[#, "Vertex" -> "FSVertexWrapper"] & /@
+				(CXXDiagrams`CXXNameOfVertex /@ nonzeroVertexPairs[[All, 1]])
+		}],
+	", "]];
 
 cxxDiagramsDir = FileNameJoin[{SARAH`SARAH[OutputDirectory],
 	ToString[FlexibleSUSY`FSEigenstates], "CXXDiagrams"}];
@@ -110,14 +194,17 @@ createdVerticesFile = FileNameJoin[{cxxDiagramsDir, "CreatedVertices.m"}];
 createdVertices = If[FileExistsQ[cxxDiagramsDir] === True,
 	Get[cxxDiagramsDir], {}];
 
-remainingVertices = Complement[Join[zeroVertices, nonzeroVertices], createdVertices];
+remainingVertices = Complement[
+	Join[zeroVertices, nonzeroVertexPairs[[All, 1]]], createdVertices];
 
 vertexDataCode = StringJoin @ Riffle[
 	CXXDiagrams`CreateVertexData /@ remainingVertices, "\n\n"];
 verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
 
 code = StringReplace[templateCode, {
-	"@ZERO_VERTICES@" -> cxxZeroVertices,
+	"@VertexWrappers@" -> cxxVertexWrappers,
+	"@ZeroVertices@" -> cxxZeroVertices,
+	"@NonzeroVertexPairs@" -> cxxNonzeroVertexPairs,
 	"@CXXDiagrams_VertexData@" -> vertexDataCode,
 	"@CXXDiagrams_Vertices@" -> verticesCode
 }];

@@ -19,6 +19,9 @@
 #define BOOST_TEST_MODULE Test CXXDiagrams
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
+#include <boost/fusion/include/copy.hpp>
+#include <boost/fusion/include/adapted.hpp>
+#include <boost/fusion/functional/invocation/invoke.hpp>
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
 
@@ -44,6 +47,47 @@ namespace SM_cxx_diagrams
 @CXXDiagrams_VertexData@
 
 @CXXDiagrams_Vertices@
+
+template<class ...Fields> class FSVertexWrapper
+{
+public:
+	using index_bounds = typename Vertex<Fields...>::index_bounds;
+	using indices_type = typename Vertex<Fields...>::indices_type;
+	using vertex_type = typename Vertex<Fields...>::vertex_type;
+private:
+	using boost_indices_type = boost::array<int,
+		std::tuple_size<indices_type>::value
+	>;
+	using model_type = SM_mass_eigenstates;
+	
+	template<class Sequence>
+	static vertex_type evaluate_impl( Sequence &&model_and_indices );
+public:
+	template<int FieldIndex>
+	static typename field_indices<typename boost::mpl::at_c<
+		boost::mpl::vector<Fields...>, FieldIndex>::type>::type
+	indices_of_field(const indices_type& indices)
+	{
+		return Vertex<Fields...>::template
+			indices_of_field<FieldIndex>( indices );
+	}
+	
+	static vertex_type evaluate( const indices_type& indices,
+		const context_base& context )
+	{
+		boost_indices_type boost_indices;
+		boost::fusion::copy( indices, boost_indices );
+		
+		return evaluate_impl(
+			boost::fusion::push_back(
+				std::move( boost_indices ),
+				context.model
+			)
+		);
+	}
+};
+
+@VertexWrappers@
 }
 }
 
@@ -71,9 +115,32 @@ BOOST_DATA_TEST_CASE( test_zero_vertices,
 	if( problems.have_problem() == false )
 	{
 		using namespace SM_cxx_diagrams;
-		using vertices = @ZERO_VERTICES@;
+		using vertices = @ZeroVertices@;
 		boost::mpl::for_each<vertices>(
 			boost_test_tools::test_zero_vertex{ model } );
+	} else
+		BOOST_TEST( true );
+}
+
+BOOST_DATA_TEST_CASE( test_nonzero_vertices,
+	random_SM_dataset( number_of_random_samples ),
+  index, FS_TEST_SM_PARAMETER_SEQUENCE )
+{
+	auto input_parameters = wrap_SM_parameters(
+		FS_TEST_SM_PARAMETER_SEQUENCE );
+	auto model = calculate_spectrum( input_parameters );
+	
+	auto problems = model.get_problems();
+	BOOST_WARN_MESSAGE( !problems.have_problem(),
+		"There was an error calculating the spectrum: " <<
+		problems << "Skipping data point..." );
+	
+	if( problems.have_problem() == false )
+	{
+		using namespace SM_cxx_diagrams;
+		using vertex_pairs = @NonzeroVertexPairs@;
+		boost::mpl::for_each<vertex_pairs>(
+			boost_test_tools::test_vertex_equality{ model } );
 	} else
 		BOOST_TEST( true );
 }
