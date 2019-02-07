@@ -36,6 +36,7 @@ MomentumDifferenceVertex::usage="";
 InverseMetricVertex::usage="";
 
 VertexTypes::usage="";
+VertexTypeForFields::usage="";
 CXXNameOfField::usage="";
 CXXNameOfVertex::usage="";
 LorentzConjugateOperation::usage="";
@@ -83,8 +84,8 @@ CXXNameOfField[Susyno`LieGroups`conj[p_],
   ">::type";
 
 CXXNameOfVertex[fields_List] := "Vertex<" <> StringJoin[Riffle[
-    CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
-    ", "]] <> ">"
+		CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
+	", "]] <> ">"
 
 CXXBoolValue[True] = "true"
 CXXBoolValue[False] = "false"
