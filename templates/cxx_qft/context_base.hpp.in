@@ -29,6 +29,7 @@
 #define @ModelName@_CXXQFT_CONTEXT_BASE_H
 
 #include "@ModelName@_fields.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 
 namespace flexiblesusy
 {
