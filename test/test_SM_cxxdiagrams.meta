@@ -66,7 +66,7 @@ CXXVertexFromFSVertexCalls[MomentumVertex, {fsCall_String}] :=
 (* FIXME: The permutation is hardcoded *)
 CXXVertexFromFSVertexCalls[TripleVectorVertex, {fsCall_String}] :=
 	"return TripleVectorVertex{ " <> fsCall <> "( model_and_indices ), "<>
-		"TripleVectorVertex::odd_permutation };"
+		"TripleVectorVertex::odd_permutation{} };"
 
 CXXVertexFromFSVertexCalls[QuadrupleVectorVertex,
 		{fsCall1_String, fsCall2_String, fsCall3_String}] :=
@@ -165,27 +165,29 @@ cxxVertexWrappers = StringJoin[Riffle[
 			CXXDiagrams`CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
 			", "]];
 		
-		"template<class Sequence> FSVertexWrapper<" <> cxxFieldSequence <> ">" <>
-			"::vertex_type\n"
+		"template<> template<class Sequence>\n" <>
+		"FSVertexWrapper<" <> cxxFieldSequence <> ">" <>
+			"::vertex_type\n" <>
 		"FSVertexWrapper<" <> cxxFieldSequence <> ">" <>
 			"::evaluate_impl( Sequence &&model_and_indices )\n" <>
 		"{\n" <> TextFormatting`IndentText[
 			StringJoin[Riffle[
-				# <> " = boost::fusion::make_fused( &model_type::" <> # <> " );" & /@
+				"auto " <> # <> " = boost::fusion::make_fused(\n" <>
+					TextFormatting`IndentText["&model_type::" <> # <> " );"] & /@
 				fsVertexCalls, "\n"]] <> "\n\n" <>
 			CXXVertexFromFSVertexCalls[
 				CXXDiagrams`VertexTypeForFields[fields], fsVertexCalls]
-		] <> "}"
+		] <> "\n}"
 	] & /@ nonzeroVertexPairs, "\n\n"]];
 
-cxxNonzeroVertexPairs = StringJoin[Riffle[
+cxxNonzeroVertexPairs = "boost::mpl::vector<" <> StringJoin[Riffle[
 	"boost::mpl::pair<" <> #[[1]] <> ", " <> #[[2]] <> ">" & /@
 		Transpose[{
 			CXXDiagrams`CXXNameOfVertex /@ nonzeroVertexPairs[[All, 1]],
 			StringReplace[#, "Vertex" -> "FSVertexWrapper"] & /@
 				(CXXDiagrams`CXXNameOfVertex /@ nonzeroVertexPairs[[All, 1]])
 		}],
-	", "]];
+	", "]] <> ">";
 
 cxxDiagramsDir = FileNameJoin[{SARAH`SARAH[OutputDirectory],
 	ToString[FlexibleSUSY`FSEigenstates], "CXXDiagrams"}];

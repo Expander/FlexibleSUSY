@@ -19,9 +19,8 @@
 #define BOOST_TEST_MODULE Test CXXDiagrams
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <boost/fusion/include/copy.hpp>
-#include <boost/fusion/include/adapted.hpp>
-#include <boost/fusion/functional/invocation/invoke.hpp>
+#include <boost/fusion/include/boost_array.hpp>
+#include <boost/fusion/include/make_fused.hpp>
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
 
@@ -76,10 +75,10 @@ public:
 		const context_base& context )
 	{
 		boost_indices_type boost_indices;
-		boost::fusion::copy( indices, boost_indices );
+		std::copy( indices.begin(), indices.end(), boost_indices.begin() );
 		
 		return evaluate_impl(
-			boost::fusion::push_back(
+			boost::fusion::push_front(
 				std::move( boost_indices ),
 				context.model
 			)
