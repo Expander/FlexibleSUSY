@@ -426,7 +426,7 @@ Invalid ghosts in vertex: " <> ToString[fields]];
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
       "return vertex_type(result, " <> 
-				ToString[Position[indexedFields, incomingGhost][[1,1]] - 1] <>
+				ToString[Position[indexedFields, incomingGhost,{1}][[1,1]] - 1] <>
 			");",
          
 			TripleVectorVertex,
