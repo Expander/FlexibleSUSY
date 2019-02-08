@@ -35,6 +35,7 @@ Regularize::usage="";
 DimensionalReduction::usage="";
 DimensionalRegularization::usage="";
 ZeroExternalMomenta::usage="";
+ExcludedTopologies::usage="Option to exclude specific topologies in FeynArts";
 NPointFunctionFAFC::usage="";
 
 GenericS::usage="";
@@ -74,13 +75,18 @@ SetFAFCPaths[feynArtsDirS_String, formCalcDirS_String, feynArtsModelS_String,
 NPointFunctionFAFC[inFields_List,outFields_List,
     OptionsPattern[{LoopLevel -> 1,
                     Regularize -> DimensionalReduction,
-                    ZeroExternalMomenta -> False}]]:=
+                    ZeroExternalMomenta -> False,
+                    ExcludedTopologies -> {}}]]:=
   Module[{loopLevel = OptionValue[LoopLevel],
           regularizationScheme = OptionValue[Regularize],
           zeroExternalMomenta = OptionValue[ZeroExternalMomenta],
+          excludedTopologies,
+          toFeynArtsTopologies,
           topologies,diagrams,amplitudes,genericInsertions,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
+    toFeynArtsTopologies = {
+            NPointFunctions`OneParticleReducible -> FeynArts`Internal};
     Utils`AssertWithMessage[loopLevel === 1,
 			"NPointFunctions`NPointFunctionFAFC[]: Only loop level 1 is supported"];
     Utils`AssertWithMessage[
@@ -92,13 +98,20 @@ NPointFunctionFAFC[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunctionFAFC[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
+    Utils`AssertWithMessage[If[Head[OptionValue[ExcludedTopologies]] === List,
+            And @@ (MemberQ[toFeynArtsTopologies[[All,1]], #] & /@ OptionValue[ExcludedTopologies]),
+            MemberQ[toFeynArtsTopologies[[All,1]], OptionValue[ExcludedTopologies]]],
+        "NPointFunctions`NPointFunctionFAFC[]: Option ExcludedTopologies: "
+        <> ToString[OptionValue[ExcludedTopologies]] <> " is not valid."];
+    excludedTopologies = OptionValue[ExcludedTopologies] /. toFeynArtsTopologies;
+
     If[DirectoryQ[formCalcDir] === False,
        CreateDirectory[formCalcDir]];
     SetDirectory[formCalcDir];
 
     topologies = FeynArts`CreateTopologies[loopLevel,
       Length[inFields] -> Length[outFields],
-      ExcludeTopologies -> Internal];
+      ExcludeTopologies -> excludedTopologies];
       
     diagrams = FeynArts`InsertFields[topologies,
       inFields -> outFields,
@@ -357,6 +370,3 @@ sumOverRules = {
 
 End[];
 EndPackage[];
-
-
-
