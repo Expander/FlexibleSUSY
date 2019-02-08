@@ -164,21 +164,16 @@ struct test_vertex_equality
 		if( v1.incoming_index() == v2.incoming_index() )
 		{
 			BOOST_TEST( v1.outgoing_index() == v2.outgoing_index() );
-			
-			TEST_COMPLEX_EQUALITY(
-				v1.value( v1.incoming_index(), v1.outgoing_index() ),
-				v2.value( v1.incoming_index(), v1.outgoing_index() )
-			);
 		} else
 		{
 			BOOST_TEST( v1.incoming_index() == v2.outgoing_index() );
 			BOOST_TEST( v1.outgoing_index() == v2.incoming_index() );
-			
-			TEST_COMPLEX_EQUALITY(
-				v1.value( v1.incoming_index(), v1.outgoing_index() ),
-				v2.value( v1.outgoing_index(), v1.incoming_index() )
-			);
 		}
+			
+		TEST_COMPLEX_EQUALITY(
+			v1.value( v1.incoming_index(), v1.outgoing_index() ),
+			v2.value( v1.incoming_index(), v1.outgoing_index() )
+		);
 	}
 	
 	void test( const SM_cxx_diagrams::InverseMetricVertex &v1,
@@ -196,12 +191,7 @@ struct test_vertex_equality
 		const SM_cxx_diagrams::TripleVectorVertex &v2 )
 	{
 		using even = SM_cxx_diagrams::TripleVectorVertex::even_permutation;
-		using odd = SM_cxx_diagrams::TripleVectorVertex::odd_permutation;
-		
-		if( v1.is_even() == v2.is_even() )
-			TEST_COMPLEX_EQUALITY( v1.value( even{} ), v2.value( even{} ) );
-		else
-			TEST_COMPLEX_EQUALITY( v1.value( even{} ), v2.value( odd{} ) );
+		TEST_COMPLEX_EQUALITY( v1.value( even{} ), v2.value( even{} ) );
 	}
 	
 	void test( const SM_cxx_diagrams::QuadrupleVectorVertex &v1,
