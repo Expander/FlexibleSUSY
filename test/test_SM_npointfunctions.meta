@@ -51,7 +51,8 @@ templateCode = StringJoin @ Riffle[Utils`ReadLinesInFile[
 hhSelfenergy = NPointFunctions`NPointFunction[
 	{SARAH`HiggsBoson}, {SARAH`HiggsBoson},
     NPointFunctions`UseCache -> False,
-	NPointFunctions`ZeroExternalMomenta -> True];
+	NPointFunctions`ZeroExternalMomenta -> True,
+    NPointFunctions`ExcludedTopologies -> NPointFunctions`OneParticleReducible];
 
 hhSelfenergyCode = NPointFunctions`CreateCXXFunctions[
 	{hhSelfenergy}, {"selfenergy_hh_1loop"}][[2]];

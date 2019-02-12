@@ -31,6 +31,7 @@
 #include "@ModelName@_mass_eigenstates.hpp"
 
 #include "@ModelName@_fields.hpp"
+#include "@ModelName@_mass_eigenstates.hpp"
 
 namespace flexiblesusy
 {

@@ -35,6 +35,7 @@ Regularize::usage="";
 DimensionalReduction::usage="";
 DimensionalRegularization::usage="";
 ZeroExternalMomenta::usage="";
+ExcludedTopologies::usage="Option to exclude specific topologies in FeynArts";
 NPointFunctionFAFC::usage="";
 
 GenericS::usage="";
@@ -74,13 +75,18 @@ SetFAFCPaths[feynArtsDirS_String, formCalcDirS_String, feynArtsModelS_String,
 NPointFunctionFAFC[inFields_List,outFields_List,
     OptionsPattern[{LoopLevel -> 1,
                     Regularize -> DimensionalReduction,
-                    ZeroExternalMomenta -> False}]]:=
+                    ZeroExternalMomenta -> False,
+                    ExcludedTopologies -> {}}]]:=
   Module[{loopLevel = OptionValue[LoopLevel],
           regularizationScheme = OptionValue[Regularize],
           zeroExternalMomenta = OptionValue[ZeroExternalMomenta],
+          excludedTopologies,
+          toFeynArtsTopologies,
           topologies,diagrams,amplitudes,genericInsertions,
           symmetryFactors,fsFields, fsInFields,fsOutFields,
           externalMomentumRules, nPointFunction},
+    toFeynArtsTopologies = {
+            NPointFunctions`OneParticleReducible -> FeynArts`Internal};
     Utils`AssertWithMessage[loopLevel === 1,
 			"NPointFunctions`NPointFunctionFAFC[]: Only loop level 1 is supported"];
     Utils`AssertWithMessage[
@@ -92,13 +98,20 @@ NPointFunctionFAFC[inFields_List,outFields_List,
 			"NPointFunctions`NPointFunctionFAFC[]: Option ZeroExternalMomenta must \
 be either True or False"];
 
+    Utils`AssertWithMessage[If[Head[OptionValue[ExcludedTopologies]] === List,
+            And @@ (MemberQ[toFeynArtsTopologies[[All,1]], #] & /@ OptionValue[ExcludedTopologies]),
+            MemberQ[toFeynArtsTopologies[[All,1]], OptionValue[ExcludedTopologies]]],
+        "NPointFunctions`NPointFunctionFAFC[]: Option ExcludedTopologies: "
+        <> ToString[OptionValue[ExcludedTopologies]] <> " is not valid."];
+    excludedTopologies = OptionValue[ExcludedTopologies] /. toFeynArtsTopologies;
+
     If[DirectoryQ[formCalcDir] === False,
        CreateDirectory[formCalcDir]];
     SetDirectory[formCalcDir];
 
     topologies = FeynArts`CreateTopologies[loopLevel,
       Length[inFields] -> Length[outFields],
-      ExcludeTopologies -> Internal];
+      ExcludeTopologies -> excludedTopologies];
       
     diagrams = FeynArts`InsertFields[topologies,
       inFields -> outFields,
@@ -281,11 +294,21 @@ SetFSConventionRules[] :=
             FeynArts`NonCommutative[Global`ChiralityProjector[1]]] :>
           SARAH`Cp[fields][SARAH`PR],
         FeynArts`G[_][0][fields__][
+            FeynArts`NonCommutative[Global`DiracMatrix[FeynArts`KI1[3]],Global`ChiralityProjector[-1]]] :>
+          SARAH`Cp[fields][SARAH`PL],
+        FeynArts`G[_][0][fields__][
+            FeynArts`NonCommutative[Global`DiracMatrix[FeynArts`KI1[3]],Global`ChiralityProjector[1]]] :>
+          SARAH`Cp[fields][SARAH`PR],
+        FeynArts`G[_][0][fields__][
             Global`MetricTensor[KI1[i1_Integer],KI1[i2_Integer]]] :>
           SARAH`Cp[fields][SARAH`g[LorentzIndex[{fields}[[i1]]],
                                    LorentzIndex[{fields}[[i2]]]]],
         FeynArts`G[_][0][fields__][
             FeynArts`Mom[i1_Integer] - FeynArts`Mom[i2_Integer]] :>
+          SARAH`Cp[fields][SARAH`Mom[{fields}[[i1]]] - SARAH`Mom[{fields}[[i2]]]],
+        (*Since FormCalc-9.7*)
+        FeynArts`G[_][0][fields__][Global`FourVector[
+            FeynArts`Mom[i1_Integer] - FeynArts`Mom[i2_Integer], FeynArts`KI1[3]]] :>
           SARAH`Cp[fields][SARAH`Mom[{fields}[[i1]]] - SARAH`Mom[{fields}[[i2]]]]
 
     };
@@ -357,6 +380,3 @@ sumOverRules = {
 
 End[];
 EndPackage[];
-
-
-
