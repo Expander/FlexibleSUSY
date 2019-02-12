@@ -199,16 +199,14 @@ createdVertices = If[FileExistsQ[cxxDiagramsDir] === True,
 remainingVertices = Complement[
 	Join[zeroVertices, nonzeroVertexPairs[[All, 1]]], createdVertices];
 
-vertexDataCode = StringJoin @ Riffle[
-	CXXDiagrams`CreateVertexData /@ remainingVertices, "\n\n"];
 verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
 
 code = StringReplace[templateCode, {
 	"@VertexWrappers@" -> cxxVertexWrappers,
 	"@ZeroVertices@" -> cxxZeroVertices,
 	"@NonzeroVertexPairs@" -> cxxNonzeroVertexPairs,
-	"@CXXDiagrams_VertexData@" -> vertexDataCode,
-	"@CXXDiagrams_Vertices@" -> verticesCode
+	"@CXXDiagrams_VertexPrototypes@" -> verticesCode[[1]],
+	"@CXXDiagrams_VertexDefinitions@" -> verticesCode[[2]]
 }];
 
 fileHandle = OpenWrite[FileNameJoin[{workingDirectory, "test", "test_SM_cxxdiagrams.cpp"}]];

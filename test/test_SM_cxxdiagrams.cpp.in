@@ -43,9 +43,12 @@ namespace flexiblesusy
 {
 namespace SM_cxx_diagrams
 {
-@CXXDiagrams_VertexData@
+namespace detail
+{
+@CXXDiagrams_VertexPrototypes@
 
-@CXXDiagrams_Vertices@
+@CXXDiagrams_VertexDefinitions@
+}
 
 template<class ...Fields> class FSVertexWrapper
 {

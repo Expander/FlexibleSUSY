@@ -28,35 +28,18 @@
 #ifndef @ModelName@_CXXQFT_VERTICES_H
 #define @ModelName@_CXXQFT_VERTICES_H
 
-#include "concatenate.hpp"
 #include "multiindex.hpp"
 #include "numerics2.hpp"
-#include "wrappers.hpp"
+
+#include "SM_fields.hpp"
 
 #include <array>
-
-#include <boost/array.hpp>
-#include <boost/range/join.hpp>
-#include <boost/version.hpp>
+#include <algorithm>
 
 #include <boost/mpl/erase.hpp>
+#include <boost/mpl/fold.hpp>
 #include <boost/mpl/joint_view.hpp>
-#include <boost/mpl/vector_c.hpp>
-
-#include <boost/fusion/adapted/boost_array.hpp>
-#include <boost/fusion/adapted/mpl.hpp>
-#include <boost/fusion/include/vector.hpp>
-
-#if BOOST_VERSION >= 105800
-#include <boost/fusion/include/move.hpp>
-#else
-#include <boost/fusion/include/copy.hpp>
-#endif
-
-#define INPUTPARAMETER(p) context.model.get_input().p
-#define MODELPARAMETER(p) context.model.get_##p()
-#define DERIVEDPARAMETER(p) context.model.p()
-#define PHASE(p) context.model.get_##p()
+#include <boost/mpl/vector.hpp>
 
 namespace flexiblesusy
 {
@@ -318,21 +301,16 @@ namespace @ModelName@_cxx_diagrams
       }
    };
 
-   /**
-    * @class VertexData<F...>
-    * @brief VertexData data for a vertex with the fields specified by F....
-    */
-   template <class... Fields>
-   struct VertexData;
+namespace detail
+{
+   template <class... Fields> struct VertexImpl;
+}
 
    struct context_base;
 
    template <class... Fields>
-   class Vertex
+   struct Vertex
    {
-      using Data = VertexData<Fields...>;
-
-   public:
       using index_bounds = typename boost::mpl::fold<
          boost::mpl::vector<Fields...>,
          boost::mpl::pair<boost::mpl::vector<>, boost::mpl::vector<>>,
@@ -346,7 +324,12 @@ namespace @ModelName@_cxx_diagrams
       using indices_type =
          std::array<int, detail::total_number_of_field_indices<
                             boost::mpl::vector<Fields...>>::value>;
-      using vertex_type = typename Data::vertex_type;
+      using vertex_type = decltype(
+				detail::VertexImpl<Fields...>::evaluate(
+					std::declval<indices_type>(),
+					std::declval<context_base>()
+				)
+			);
 
       template <int FieldIndex>
       static typename field_indices<typename boost::mpl::at_c<
@@ -376,30 +359,25 @@ namespace @ModelName@_cxx_diagrams
       }
 
       static vertex_type evaluate(const indices_type& indices,
-                                  const context_base& context);
+                                  const context_base& context)
+      {
+				 return detail::VertexImpl<Fields...>::evaluate( indices, context );
+			}
    };
 
-   @CXXDiagrams_VertexData@
+namespace detail
+{
+@CXXDiagrams_VertexPrototypes@
 
-   @CXXDiagrams_Vertices@
-
-   namespace detail
-   {
-      @CXXDiagrams_UnitCharge@
-   }
+ChiralVertex unit_charge(const context_base& context);
+}
 
    static double unit_charge(const context_base& context)
    {
       return -(detail::unit_charge(context).left().real() /
                fields::Electron::electric_charge);
    }
-
 } // namespace @ModelName@_cxx_diagrams
 } // namespace flexiblesusy
-
-#undef INPUTPARAMETER
-#undef MODELPARAMETER
-#undef DERIVEDPARAMETER
-#undef PHASE
 
 #endif
