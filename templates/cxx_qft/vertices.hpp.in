@@ -31,7 +31,7 @@
 #include "multiindex.hpp"
 #include "numerics2.hpp"
 
-#include "SM_fields.hpp"
+#include "@ModelName@_fields.hpp"
 
 #include <array>
 #include <algorithm>
