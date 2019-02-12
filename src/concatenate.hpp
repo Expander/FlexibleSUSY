@@ -19,6 +19,7 @@
 #ifndef H_FS_CONCATENATE
 #define H_FS_CONCATENATE
 
+#include <array>
 #include <type_traits>
 
 namespace flexiblesusy
