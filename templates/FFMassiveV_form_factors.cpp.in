@@ -306,46 +306,6 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
    return res;
 }
 
-double MyC0(double m1, double m2, double m3) {
-   if(is_zero(m1 - m2)) {
-      return (-Power(m2,2) + Power(m3,2) + Power(m3,2)*Log(Power(m2,2)/Power(m3,2)))/Power(Power(m2,2) - Power(m3,2),2);
-   }
-  return (Power(m2,2)*Log(Power(m1,2)/Power(m2,2)))/((-Power(m1,2) + Power(m2,2))*(Power(m2,2) - Power(m3,2))) + 
-   (Power(m3,2)*Log(Power(m1,2)/Power(m3,2)))/((-Power(m1,2) + Power(m3,2))*(-Power(m2,2) + Power(m3,2)));
-}
-
-double MyC2(double m1, double m2, double m3) {
-   if(is_zero(m1-m2)) {
-      return (Power(m2,4) - Power(m3,4) - 2*Power(m2,2)*Power(m3,2)*Log(Power(m2,2)/Power(m3,2)))/
-   (2.*Power(Power(m2,2) - Power(m3,2),3));
-   }
-   return Power(m3,2)/(2.*(-Power(m1,2) + Power(m3,2))*(-Power(m2,2) + Power(m3,2))) + 
-   (Power(m1,4)*Log(Power(m1,2)/Power(m3,2)))/
-    (2.*(Power(m1,2) - Power(m2,2))*Power(Power(m1,2) - Power(m3,2),2)) + 
-   (Power(m2,4)*Log(Power(m2,2)/Power(m3,2)))/(2.*(-Power(m1,2) + Power(m2,2))*Power(Power(m2,2) - Power(m3,2),2));
-}
-
-double MyC00(double m1, double m2, double m3) {
-   const auto Mu = sqrt(getmudim());
-   // std::cout << Mu << '\n'
-   if(is_zero(m1-m2)) {
-      return
-      (-2*(Power(m1,4) - 2*Power(m1,2)*Power(m3,2))*Log(Power(m1,2)/Power(m3,2)) + 
-     (Power(m1,2) - Power(m3,2))*(Power(m1,2) - 3*Power(m3,2) + 
-        2*(Power(m1,2) - Power(m3,2))*Log(Power(Mu,2)/Power(m3,2))))/(8.*Power(Power(m1,2) - Power(m3,2),2));
-   }
-   if(is_zero(m2-m3)) {
-      return 
-      (-2*Power(m1,4)*Log(Power(m1,2)/Power(m2,2)) + 
-     (Power(m1,2) - Power(m2,2))*(3*Power(m1,2) - Power(m2,2) + 
-        2*(Power(m1,2) - Power(m2,2))*Log(Power(Mu,2)/Power(m2,2))))/(8.*Power(Power(m1,2) - Power(m2,2),2));
-   }
-   return
-   0.375 - (Power(m1,4)*Log(Power(m1,2)/Power(m3,2)))/(4.*(Power(m1,2) - Power(m2,2))*(Power(m1,2) - Power(m3,2))) - 
-   (Power(m2,4)*Log(Power(m2,2)/Power(m3,2)))/(4.*(-Power(m1,2) + Power(m2,2))*(Power(m2,2) - Power(m3,2))) + 
-   Log(Power(Mu,2)/Power(m3,2))/4.;
-}
-
 // emit V from the fermion in the loop
 template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
@@ -555,4 +515,44 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
    }
    return res;
 }
+double MyC0(double m1, double m2, double m3) {
+   if(is_zero(m1 - m2)) {
+      return (-Power(m2,2) + Power(m3,2) + Power(m3,2)*Log(Power(m2,2)/Power(m3,2)))/Power(Power(m2,2) - Power(m3,2),2);
+   }
+  return (Power(m2,2)*Log(Power(m1,2)/Power(m2,2)))/((-Power(m1,2) + Power(m2,2))*(Power(m2,2) - Power(m3,2))) + 
+   (Power(m3,2)*Log(Power(m1,2)/Power(m3,2)))/((-Power(m1,2) + Power(m3,2))*(-Power(m2,2) + Power(m3,2)));
+}
+
+double MyC2(double m1, double m2, double m3) {
+   if(is_zero(m1-m2)) {
+      return (Power(m2,4) - Power(m3,4) - 2*Power(m2,2)*Power(m3,2)*Log(Power(m2,2)/Power(m3,2)))/
+   (2.*Power(Power(m2,2) - Power(m3,2),3));
+   }
+   return Power(m3,2)/(2.*(-Power(m1,2) + Power(m3,2))*(-Power(m2,2) + Power(m3,2))) + 
+   (Power(m1,4)*Log(Power(m1,2)/Power(m3,2)))/
+    (2.*(Power(m1,2) - Power(m2,2))*Power(Power(m1,2) - Power(m3,2),2)) + 
+   (Power(m2,4)*Log(Power(m2,2)/Power(m3,2)))/(2.*(-Power(m1,2) + Power(m2,2))*Power(Power(m2,2) - Power(m3,2),2));
+}
+
+double MyC00(double m1, double m2, double m3) {
+   const auto Mu = sqrt(getmudim());
+   // std::cout << Mu << '\n'
+   if(is_zero(m1-m2)) {
+      return
+      (-2*(Power(m1,4) - 2*Power(m1,2)*Power(m3,2))*Log(Power(m1,2)/Power(m3,2)) + 
+     (Power(m1,2) - Power(m3,2))*(Power(m1,2) - 3*Power(m3,2) + 
+        2*(Power(m1,2) - Power(m3,2))*Log(Power(Mu,2)/Power(m3,2))))/(8.*Power(Power(m1,2) - Power(m3,2),2));
+   }
+   if(is_zero(m2-m3)) {
+      return 
+      (-2*Power(m1,4)*Log(Power(m1,2)/Power(m2,2)) + 
+     (Power(m1,2) - Power(m2,2))*(3*Power(m1,2) - Power(m2,2) + 
+        2*(Power(m1,2) - Power(m2,2))*Log(Power(Mu,2)/Power(m2,2))))/(8.*Power(Power(m1,2) - Power(m2,2),2));
+   }
+   return
+   0.375 - (Power(m1,4)*Log(Power(m1,2)/Power(m3,2)))/(4.*(Power(m1,2) - Power(m2,2))*(Power(m1,2) - Power(m3,2))) - 
+   (Power(m2,4)*Log(Power(m2,2)/Power(m3,2)))/(4.*(-Power(m1,2) + Power(m2,2))*(Power(m2,2) - Power(m3,2))) + 
+   Log(Power(Mu,2)/Power(m3,2))/4.;
+}
+
 } // anonymous namespace
