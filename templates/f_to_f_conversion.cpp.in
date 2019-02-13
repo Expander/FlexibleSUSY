@@ -73,8 +73,7 @@ overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd&
          res.Sn = 0.0163 * muon_pole_mass_5o2;
          return res;
       default:
-         std::cout << "Unknown nucleus\n";
-      break;
+         throw std::invalid_argument("Unknown nucleus");
    } 
 }
 
@@ -84,6 +83,8 @@ double get_capture_rate (const Nucleus N) {
          return 8.84868e-18;
       case Nucleus::Al:
          return 4.64079e-19;
+      default:
+         throw std::invalid_argument("Unknown nucleus");
    }
 }
 
