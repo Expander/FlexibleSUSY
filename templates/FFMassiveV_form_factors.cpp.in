@@ -152,11 +152,15 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
    using VertexFiBarFS     = Vertex<typename Fi::lorentz_conjugate, F, S>;
 
    // masses of external fermions
-   #include "/Users/Navir/masses.txt"
-   const auto mj = mFe[indices_in[0]];
+   const auto mj = context.mass<Fj>(indices_in);
    const auto mj2 = mj*mj;
-   const auto mi = mFe[indices_out[0]];
+   const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
+   //#include "/Users/Navir/masses.txt"
+   //const auto mj = mFe[indices_in[0]];
+   //const auto mj2 = mj*mj;
+   //const auto mi = mFe[indices_out[0]];
+   //const auto mi2 = mi*mi;
 
    std::valarray<std::complex<double>> res {0.0, 0.0};
    // loop over all possible particle "generations" attached to both vertices
@@ -232,11 +236,15 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
    using VertexFiBarFS     = Vertex<typename Fi::lorentz_conjugate, F, S>;
 
    // masses of external fermions
-   #include "/Users/Navir/masses.txt"
-   const auto mj = mFe[indices_in[0]];
+   const auto mj = context.mass<Fj>(indices_in);
    const auto mj2 = mj*mj;
-   const auto mi = mFe[indices_out[0]];
+   const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
+   //#include "/Users/Navir/masses.txt"
+   //const auto mj = mFe[indices_in[0]];
+   //const auto mj2 = mj*mj;
+   //const auto mi = mFe[indices_out[0]];
+   //const auto mi2 = mi*mi;
 
    std::valarray<std::complex<double>> res {0.0, 0.0};
    // loop over all possible particle "generations" attached to both vertices
@@ -357,7 +365,7 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
 
    auto spectator_indices = default_indices_for_spectator<V>();
 
-   #include "/Users/Navir/masses.txt"
+   //#include "/Users/Navir/masses.txt"
    std::valarray<std::complex<double>> res {0.0, 0.0};
    // loop over all possible particle "generations" attached to both vertices
    for (const auto& indexIn: index_range<VertexFBarFjSBar>()) {
@@ -457,7 +465,7 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
    const auto mi = context.mass<Fi>(indices_out);
    const auto mi2 = mi*mi;
 
-   #include "/Users/Navir/masses.txt"
+   //#include "/Users/Navir/masses.txt"
    std::valarray<std::complex<double>> res {0.0, 0.0};
    // loop over all possible particle "generations" attached to both vertices
    for (const auto& indexIn: index_range<VertexFBarFjSBar>()) {
