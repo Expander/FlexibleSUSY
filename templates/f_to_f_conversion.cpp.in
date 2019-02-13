@@ -54,8 +54,10 @@ struct overlap_integrals {
 
 overlap_integrals get_overlap_integrals(const Nucleus N, const softsusy::QedQcd& qedqcd) {
    overlap_integrals res; 
+
    // get muon pole mass from input slha file
    const auto muon_pole_mass_5o2 = pow(qedqcd.displayMass(softsusy::mMuon), 5./2.);
+
    // Tab. 2 of hep-ph/0203110
    switch (N) {
       case Nucleus::Au:

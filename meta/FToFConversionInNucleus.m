@@ -168,10 +168,10 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 "gnLV += 0.;\n" <>
                 "gnRV += 0.;\n" <>
 
-                "\n" <>
-                "const auto nuclear_form_factors =\n" <>
-                   IndentText["get_overlap_integrals(Nucleus::" <> SymbolName[nucleus] <>
-                    ", qedqcd" <> ");\n"] <>
+                "\nconst auto nuclear_form_factors =\n" <>
+                   IndentText[
+                      "get_overlap_integrals(Nucleus::" <> SymbolName[nucleus] <> ", qedqcd" <> ");\n"
+                   ] <>
 
                 "\nconst auto left =\n" <> IndentText[
                    "A2R*nuclear_form_factors.D\n" <>
@@ -189,12 +189,12 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
                 ] <> ";\n" <>
 
                 "\n// eq. 14 of Kitano, Koike and Okada\n" <>
-                "double res = 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n" <>
+                "const double conversion_rate = 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n" <>
 
                  "\n// normalize to capture\n" <>
-                 "double capture_rate = get_capture_rate(Nucleus::" <> SymbolName[nucleus] <> ");\n\n" <>
+                 "const double capture_rate = get_capture_rate(Nucleus::" <> SymbolName[nucleus] <> ");\n\n" <>
 
-                 "return res/capture_rate;\n"
+                 "return conversion_rate/capture_rate;\n"
             ] <>
             "}\n";
     

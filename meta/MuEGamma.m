@@ -110,7 +110,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                   "const double partial_width = pow(leptonInMassOS,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
 
                   (* TODO: return branching ration, not width *)
-                  "const double total_width {1.};\n" <>
+                  "const double total_width {3e-19};\n" <>
                   "return partial_width/total_width;\n"
                ], {SARAH`Fd, SARAH`VP},
                (* write routine for b -> s gamma *)
