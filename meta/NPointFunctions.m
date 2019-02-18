@@ -258,6 +258,7 @@ UniquelyInstantiateGenericFields[exprs_List, {fieldInsertions_List, next___}] :=
   ]
 
 CreateCXXFunctions[nPointFunctions_List, names_List,
+    colourFactorProjections_ : Identity,
     OptionsPattern[{LoopFunctions -> "FlexibleSUSY"}]] :=
   Module[{loopFunctionRules, hasExternalMomenta, prototypes,
           definitionHeads, definitionBodies,
@@ -292,7 +293,13 @@ CreateCXXFunctions[nPointFunctions_List, names_List,
       Transpose[{nPointFunctions, names}];
       
     definitionBodies = CXXBodyForNPointFunction /@ nPointFunctions;
-    auxilliaryClasses = CXXClassForNPointFunction /@ (nPointFunctions /. loopFunctionRules);
+    auxilliaryClasses = CXXClassForNPointFunction[Sequence @@ #] & /@
+      Transpose[{
+        nPointFunctions /. loopFunctionRules,
+        If[Head[colourFactorProjections] === List,
+          colourFactorProjections,
+          Table[colourFactorProjections, {Length[names]}]]
+      }];
 
     definitions = StringJoin[Riffle[auxilliaryClasses,"\n\n"]] <> "\n\n" <>
       StringJoin[Riffle[#[[1]] <> "\n{\n" <> #[[2]] <> "\n}" & /@
@@ -333,7 +340,7 @@ CXXBodyForNPointFunction[nPointFunction_] :=
     "return helper.calculate();"
   ]
 
-CXXClassForNPointFunction[nPointFunction_] :=
+CXXClassForNPointFunction[nPointFunction_, projectColourFactor_] :=
   Module[{className = CXXClassNameForNPointFunction[nPointFunction],
           externalIndices, cxxCorrelationContext,
           numberOfIndices, numberOfMomenta, genericSumPositions,
@@ -365,6 +372,8 @@ CXXClassForNPointFunction[nPointFunction_] :=
           Extract[nPointFunction[[2,1,1]], genericSumPositions],
           Extract[nPointFunction[[2,1,2]], genericSumPositions],
           Extract[nPointFunction[[2,1,3]], genericSumPositions],
+          projectColourFactor /@
+            Extract[nPointFunction[[2,1,4]], genericSumPositions],
           genericSumNames}],
       "\n\n"]];
 
@@ -547,11 +556,14 @@ CXXCodeForSubexpressions[subexpressions_List, preCXXRules_List] :=
   ]
 
 CXXCodeForGenericSum[sum_GenericSum, genericInsertions_List,
-    combinatorialFactors_List, functionName_String,
+    combinatorialFactors_List, colourFactors_List, functionName_String,
     subexpressions_List, preCXXRules_List] :=
   Module[{expr = sum[[1]], indices = sum[[2]],
           sortedGenericInsertions, genericFields, relevantSubexpressions,
           subexpr, needsContext, cxxExpr},
+    Utils`AssertWithMessage[NumberQ[#],
+      "CXXDiagrams`CXXCodeForGenericSum[]: Projected colour factor is
+not a number: " <> ToString[#]] & /@ colourFactors;
 
     relevantSubexpressions = DeleteDuplicates[Cases[expr,
       Pattern[subexpr, Alternatives @@ subexpressions[[All,1]]] :> subexpr,
@@ -619,13 +631,17 @@ CXXCodeForGenericSum[sum_GenericSum, genericInsertions_List,
         ">" & /@ sortedGenericInsertions[[All,All,2]],
       ",\n"]] <> "\n>;\n\n" <>
 
-    "using combinatorial_factor" <> " = boost::mpl::vector<\n" <>
+    "using combinatorial_factors" <> " = boost::mpl::vector<\n" <>
     StringJoin[Riffle[
       "boost::mpl::int_<" <> ToString[#] <> ">" & /@ combinatorialFactors,
+      ", "]] <> "\n>;\n" <>
+    "using colour_factors" <> " = boost::mpl::vector<\n" <>
+    StringJoin[Riffle[
+      "boost::mpl::int_<" <> ToString[#] <> ">" & /@ colourFactors,
       ", "]] <> "\n>;\n\n" <>
 
     "return accumulate_generic<GenericKeys, GenericInsertions,\n" <> 
-      "combinatorial_factor, " <> functionName <> 
+      "combinatorial_factors, colour_factors, " <> functionName <> 
     "_impl>( *this );\n}"
   ]
 

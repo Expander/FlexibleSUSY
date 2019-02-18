@@ -82,8 +82,8 @@ NPointFunctionFAFC[inFields_List,outFields_List,
           zeroExternalMomenta = OptionValue[ZeroExternalMomenta],
           excludedTopologies,
           toFeynArtsTopologies,
-          topologies,diagrams,amplitudes,genericInsertions,
-          symmetryFactors,fsFields, fsInFields,fsOutFields,
+          topologies, diagrams, amplitudes, genericInsertions,
+          colourFactors, fsFields, fsInFields, fsOutFields,
           externalMomentumRules, nPointFunction},
     toFeynArtsTopologies = {
             NPointFunctions`OneParticleReducible -> FeynArts`Internal};
@@ -112,7 +112,7 @@ be either True or False"];
     topologies = FeynArts`CreateTopologies[loopLevel,
       Length[inFields] -> Length[outFields],
       ExcludeTopologies -> excludedTopologies];
-      
+
     diagrams = FeynArts`InsertFields[topologies,
       inFields -> outFields,
       InsertionLevel -> Classes,
@@ -121,6 +121,9 @@ be either True or False"];
 
     genericInsertions = Flatten[
       GenericInsertionsForDiagram /@ (List @@ diagrams), 1];
+    colourFactors = Flatten[
+      ColourFactorForDiagram /@ (List @@ diagrams), 1] //.
+      fieldNameToFSRules;
 
     fsInFields = (List @@ Head[amplitudes][[1,2,1,All,1]]) //.
       fieldNameToFSRules;
@@ -136,8 +139,12 @@ be either True or False"];
     };
     
     nPointFunction = {{fsInFields, fsOutFields},
-      CalculateAmplitudes[amplitudes, genericInsertions,
-        regularizationScheme, zeroExternalMomenta] /. externalMomentumRules};
+      Insert[
+        CalculateAmplitudes[amplitudes, genericInsertions,
+          regularizationScheme, zeroExternalMomenta] /. externalMomentumRules,
+        colourFactors,
+        {1, -1}
+      ]};
     
     ResetDirectory[];
     nPointFunction
@@ -146,7 +153,8 @@ be either True or False"];
 StripParticleIndices[Times[-1,field_]] := Times[-1, StripParticleIndices[field]]
 StripParticleIndices[genericType_[classIndex_, ___]] := genericType[classIndex]
 
-FindGenericInsertions[insertions_List]:=
+FindGenericInsertions[insertions_List,
+    OptionsPattern[{KeepFieldNames -> False}]]:=
   Module[{toGenericIndexConventionRules, genericFields, genericInsertions},
     toGenericIndexConventionRules =
       Cases[insertions[[1]], Rule[FeynArts`Field[index_Integer],type_Symbol] :>
@@ -158,11 +166,78 @@ FindGenericInsertions[insertions_List]:=
       Rule[genericField, StripParticleIndices[classesField]]] &
       /@ insertions[[2]];
 
-    (List @@ genericInsertions) /. toGenericIndexConventionRules
+    If[OptionValue[KeepFieldNames],
+      List @@ genericInsertions,
+      (List @@ genericInsertions) /. toGenericIndexConventionRules
+    ]
   ]
 
-GenericInsertionsForDiagram[diagram_Rule]:=
-  List @@ (FindGenericInsertions /@ (List @@@ diagram[[2]]))
+GenericInsertionsForDiagram[diagram_Rule,
+    OptionsPattern[{KeepFieldNames -> False}]]:=
+  List @@ (FindGenericInsertions[#,
+    KeepFieldNames -> OptionValue[KeepFieldNames]] & /@ (List @@@ diagram[[2]]))
+
+ColourFactorForDiagram[diagram_Rule]:=
+  Module[{numberOfVertices, n, externalRules, externalFields, type,
+      adjacencyMatrix, genericInsertions, field},
+	  numberOfVertices = Max[Cases[diagram[[1]],
+	    FeynArts`Vertex[_][n_Integer] :> n, Infinity]];
+	  
+	  adjacencyMatrix = Module[{vIndex1 = #},
+	    Module[{vIndex2 = #, numberOfConnections},
+	      numberOfConnections = Length[Cases[diagram[[1]],
+	        FeynArts`Propagator[_][FeynArts`Vertex[_][vIndex1],
+	          FeynArts`Vertex[_][vIndex2], _]
+	      ]];
+	      
+	      numberOfConnections + If[vIndex1 === vIndex2,
+	        0,
+	         Length[Cases[diagram[[1]],
+	          FeynArts`Propagator[_][FeynArts`Vertex[_][vIndex2],
+	            FeynArts`Vertex[_][vIndex1], _]
+	        ]]
+	      ]
+	    ] & /@ Table[k, {k, numberOfVertices}]
+	  ] & /@ Table[k, {k, numberOfVertices}];
+	  
+    externalRules = Cases[List @@ diagram[[2, 1, 1]],
+			Except[Rule[FeynArts`Field[n_Integer], type_Symbol]]];
+		externalFields = externalRules[[All, 1]];
+	  
+	  genericDiagram = Module[{vIndex1 = #, vertex},
+	    vertex = Module[{vIndex2 = #, propagators},
+	      propagators = Cases[diagram[[1]],
+	        FeynArts`Propagator[_][FeynArts`Vertex[_][vIndex1],
+	          FeynArts`Vertex[_][vIndex2], _] |
+	        FeynArts`Propagator[_][FeynArts`Vertex[_][vIndex2],
+	          FeynArts`Vertex[_][vIndex1], _]
+	      ];
+	      
+	      Module[{propagator = #, fieldFactor = 1},
+	        If[Head[propagator][[1]] === FeynArts`Outgoing,
+	          fieldFactor = fieldFactor * -1];
+	        If[Position[propagator, FeynArts`Vertex[_][vIndex1], {1}] === {{2}},
+	          fieldFactor = fieldFactor * -1];
+	        If[vIndex1 =!= vIndex2,
+	          fieldFactor * propagator[[3]],
+	          {-fieldFactor * propagator[[3]], propagator[[3]]}]
+	      ] & /@ propagators
+      ] & /@ Table[k, {k, numberOfVertices}];
+      
+      Cases[Flatten[vertex], Except[{}]]
+	  ] & /@ Table[k, {k, numberOfVertices}] /. Join[
+	    {#} -> # & /@ externalFields,
+	    {-#} -> -# & /@ externalFields
+	  ];
+    
+    genericInsertions = GenericInsertionsForDiagram[diagram,
+      KeepFieldNames -> True];
+    
+    Map[CXXDiagrams`ColourFactorForIndexedDiagramFromGraph[
+      CXXDiagrams`IndexDiagramFromGraph[
+        genericDiagram /. externalRules /. #, adjacencyMatrix],
+      adjacencyMatrix] &, genericInsertions, {2}]
+  ]
 
 CombinatorialFactorsForAmplitudeInsertions[amplitude_FeynAmp]:=
   Module[{combinatorialPosition},
