@@ -103,8 +103,9 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
 				"using namespace " <> FlexibleSUSY`FSModelName <> "_cxx_diagrams::fields;\n\n" <>
 
 				StringJoin @ Riffle[Module[{graph = #[[1]], diagrams = #[[2]]},
-					StringJoin @ Riffle[Module[{diagram = #,
-							indexedDiagram = CXXDiagrams`IndexDiagramFromGraph[diagram, graph]},
+					StringJoin @ Riffle[Module[{diagram = #, indexedDiagram},
+						indexedDiagram = CXXDiagrams`IndexDiagramFromGraph[diagram, graph];
+						
 						"val += " <> 
 						ToString @ ProjectColourFactor[field,
 							CXXDiagrams`ColourFactorForIndexedDiagramFromGraph[indexedDiagram, graph]] <>

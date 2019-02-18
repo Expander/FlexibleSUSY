@@ -28,16 +28,20 @@ BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Verti
 
 (*** Debug only ***)
 SortedVertex::usage="";
+LabelLorentzPart::usage="";
 GaugeStructureOfVertexLorentzPart::usage="";
 FullGaugeStructureFromParts::usage="";
 GaugeStructureOfVertex::usage="";
 IsLorentzIndex::usage="";
 IsColourIndex::usage="";
 IndexFields::usage="";
+CombineChiralParts::usage="";
+LorentzIndexOfField::usage="";
 
 (*** Public interfaces that model fields ***)
 CreateFields::usage="";
 CXXNameOfField::usage="";
+CXXNameOfVertex::usage="";
 LorentzConjugateOperation::usage="";
 LorentzConjugate::usage="";
 RemoveLorentzConjugation::usage="";
@@ -52,6 +56,9 @@ includeLorentzIndices::usage="";
 (* A basis for the currently implemented Lorentz structures of vertices *)
 ScalarVertex::usage="A Lorentz scalar (invariant) vertex";
 ChiralVertex::usage="A vertex decomposing into left/right projectors";
+MomentumVertex::usage="A vertex proportional to a single momentum term";
+TripleVectorVertex::usage="A vertex with the Lorentz structure of a tree-level VVV vertex";
+QuadrupleVectorVertex::usage="A vertex with the Lorentz structure of a tree-level VVVV vertex";
 MomentumDifferenceVertex::usage="A vertex with a momentum difference (p^\\mu - q^\\nv)";
 InverseMetricVertex::usage="A vertex proportional to g^{\\mu \\nu}";
 
@@ -63,7 +70,7 @@ GellMannVertex::usage="A vertex proportional to \\Lambda^t_{a b}";
 AdjointlyColouredVertex::usage="A vertex proportional to f^{a b c}";
 
 CreateVertices::usage="";
-VertexRulesForVertices::usage="";
+VertexTypeForFields::usage="";
 
 (*** Public interfaces that model diagrams ***)
 FeynmanDiagramsOfType::usage="";
@@ -78,10 +85,9 @@ CreateUnitCharge::usage="";
 
 Begin["`Private`"];
 
-(* Internally, we need to represent left chiral and right chiral
- vertices separately. *)
 LeftChiralVertex::usage="A left projector part of a vertex";
 RightChiralVertex::usage="A right projector part of a vertex";
+TwoMetricVertex::usage="A g[l1,l2] * g[l3,l4] part of a vertex";
 
 (* Return a string corresponding to the c++ class name of the field.
  Note that "bar" and "conj" get turned into "typename bar<...>::type" and
@@ -98,8 +104,12 @@ CXXNameOfField[Susyno`LieGroups`conj[p_],
   "typename conj<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
   ">::type";
 
-CXXBoolValue[True] = "true"
-CXXBoolValue[False] = "false"
+CXXNameOfVertex[fields_List] := "Vertex<" <> StringJoin[Riffle[
+		CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
+	", "]] <> ">"
+
+CXXBoolValue[True] = "true";
+CXXBoolValue[False] = "false";
 
 (* TODO: Better name than LorentzConjugate *)
 (* FIXME: We decide this on our own which is bad, but 
@@ -175,6 +185,20 @@ CreateFields[] :=
          StringJoin[Riffle[CXXNameOfField /@ vectors, ", "]] <> ">;\n" <>
        "using ghosts = boost::mpl::vector<" <>
          StringJoin[Riffle[CXXNameOfField /@ ghosts, ", "]] <> ">;"
+  ]
+
+(** \brief Get the lorentz index of a given field
+ * \param[in] field The indexed field
+ * \returns The lorentz index of \a field
+ * For any given indexed field or antifield that has a lorentz index,
+ * return it.
+ *)
+LorentzIndexOfField[field_]:=
+	Module[{lorentzIndices = Select[Vertices`FieldIndexList[field], IsLorentzIndex]},
+		Utils`AssertWithMessage[Length[lorentzIndices] === 1,
+			"CXXDiagrams`LorentzIndexOfField[]: Argument " <>
+			ToString[field] <> " does not have exactly one color index."];
+    lorentzIndices[[1]]
   ]
 
 (* adjacencyMatrix must be undirected (i.e symmetric) *)
@@ -456,9 +480,10 @@ IndexFields[fields_List] :=
 		}
 	]
 
-SortedVertex[fields_List] :=
+SortedVertex[fields_List, OptionsPattern[{ApplyGUTNormalization -> False}]] :=
 	Module[{sortedFields, indexedSortedFields, vertexList, vertex, types,
-			similarVertexList, similarVertex, fieldReplacementRules},
+			similarVertexList, similarVertex, fieldReplacementRules,
+			indexReplacementRules},
     LoadVerticesIfNecessary[];
 		sortedFields = Vertices`SortFieldsInCp[fields];
     
@@ -479,15 +504,24 @@ SortedVertex[fields_List] :=
 			
 			indexedSortedFields = IndexFields[sortedFields];
 			fieldReplacementRules = Rule @@@ Transpose[{similarVertex[[1]], indexedSortedFields}];
+			indexReplacementRules = Rule @@@ Transpose[{
+				LorentzIndexOfField /@ Select[similarVertex[[1]], TreeMasses`IsVector],
+				LorentzIndexOfField /@ Select[indexedSortedFields, TreeMasses`IsVector]
+			}];
 			
 			{indexedSortedFields, Sequence @@ Transpose[{
 				Table[0, {Length[similarVertex] - 1}],
-					Rest[similarVertex][[All,2]] /. fieldReplacementRules}]}
+					Rest[similarVertex][[All,2]] /.fieldReplacementRules /.
+						indexReplacementRules}]}
 		];
 		
 		(* Be consistent with the conventions in Vertices.m *)
-		{vertex[[1]], Sequence @@ Transpose[
-			{-I * Rest[vertex][[All,1]], Rest[vertex][[All,2]]}]}
+		vertex = {vertex[[1]], Sequence @@ Transpose[
+			{-I * Rest[vertex][[All,1]], Rest[vertex][[All,2]]}]};
+		
+		If[OptionValue[ApplyGUTNormalization],
+			vertex /. Parameters`ApplyGUTNormalization[],
+			vertex]
 	]
 
 LabelLorentzPart[{scalar_, 1}] := {scalar, ScalarVertex}
@@ -501,7 +535,46 @@ LabelLorentzPart[{scalar_,
 		SARAH`PR | SARAH`LorentzProduct[
 			SARAH`gamma[lIndex_] /; IsLorentzIndex[lIndex], SARAH`PR]}] :=
 	{scalar, RightChiralVertex}
-	
+
+LabelLorentzPart[{scalar_, SARAH`Mom[in_, lIndex_]}] :=
+	{scalar, MomentumVertex[in]} /; IsLorentzIndex[lIndex]
+
+LabelLorentzPart[{scalar_,
+	SARAH`g[lIndex1_, lIndex2_] *
+		(SARAH`Mom[field1_, lIndex3_] - SARAH`Mom[field2_, lIndex3_])
+	+ SARAH`g[lIndex2_, lIndex3_] *
+		(SARAH`Mom[field2_, lIndex1_] - SARAH`Mom[field3_, lIndex1_])
+	+ SARAH`g[lIndex1_, lIndex3_] *
+		(SARAH`Mom[field3_, lIndex2_] - SARAH`Mom[field1_, lIndex2_])}] :=
+	{scalar, TripleVectorVertex[field1, field2, field3]} /;
+	SARAH`g[lIndex1, lIndex2] ===
+		SARAH`g[LorentzIndexOfField[field1], LorentzIndexOfField[field2]] && 
+	SARAH`g[lIndex2, lIndex3] === 
+		SARAH`g[LorentzIndexOfField[field2], LorentzIndexOfField[field3]] &&
+	SARAH`g[lIndex1, lIndex3] === 
+		SARAH`g[LorentzIndexOfField[field1], LorentzIndexOfField[field3]]
+
+LabelLorentzPart[{scalar_,
+	- SARAH`g[lIndex1_, lIndex2_] *
+		(SARAH`Mom[field1_, lIndex3_] - SARAH`Mom[field2_, lIndex3_])
+	- SARAH`g[lIndex2_, lIndex3_] *
+		(SARAH`Mom[field2_, lIndex1_] - SARAH`Mom[field3_, lIndex1_])
+	- SARAH`g[lIndex1_, lIndex3_] *
+		(SARAH`Mom[field3_, lIndex2_] - SARAH`Mom[field1_, lIndex2_])}] :=
+	{scalar, TripleVectorVertex[field3, field2, field1]} /;
+	SARAH`g[lIndex1, lIndex2] ===
+		SARAH`g[LorentzIndexOfField[field1], LorentzIndexOfField[field2]] && 
+	SARAH`g[lIndex2, lIndex3] === 
+		SARAH`g[LorentzIndexOfField[field2], LorentzIndexOfField[field3]] &&
+	SARAH`g[lIndex1, lIndex3] === 
+		SARAH`g[LorentzIndexOfField[field1], LorentzIndexOfField[field3]]
+
+LabelLorentzPart[{scalar_,
+		SARAH`g[lIndex1_, lIndex2_] * SARAH`g[lIndex3_, lIndex4_]}] :=
+	{scalar, TwoMetricVertex[lIndex1, lIndex2, lIndex3, lIndex4]} /;
+	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2] &&
+	IsLorentzIndex[lIndex3] && IsLorentzIndex[lIndex4]
+
 LabelLorentzPart[{scalar_, SARAH`Mom[in_, lIndex1_] - SARAH`Mom[out_, lIndex2_]}] :=
 	{scalar, MomentumDifferenceVertex[in, out]} /;
 	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2]
@@ -512,7 +585,6 @@ LabelLorentzPart[{scalar_, SARAH`g[lIndex1_, lIndex2_]}] :=
 
 LabelLorentzPart[vertexPart_] := 
 	(Print["Unknown Lorentz structure in vertex ", vertexPart]; Quit[1])
-
 
 GaugeStructureOfVertexLorentzPart[{0, lorentzStructure_}] :=
 	{0, ZeroColouredVertex, lorentzStructure}
@@ -539,72 +611,129 @@ GaugeStructureOfVertexLorentzPart[
 GaugeStructureOfVertexLorentzPart[vertexPart_] := 
 	(Print["Unknown colour structure in vertex ", vertexPart]; Quit[1])
 
-(* Assuming all Gauge structure combinations are different *)
-FullGaugeStructureFromParts[gaugeParts_List] :=
-	Module[{nonzeroLeftChiralParts, nonzeroRightChiralParts,\
-			zeroLeftChiralParts, zeroRightChiralParts,
-			nonChiralParts, chiralParts, gaugeStructures},
-		zeroLeftChiralParts = Cases[gaugeParts,
-			{_, ZeroColouredVertex, LeftChiralVertex}];
-		zeroRightChiralParts = Cases[gaugeParts,
-			{_, ZeroColouredVertex, RightChiralVertex}];
-		
-		nonzeroLeftChiralParts = Cases[gaugeParts,
+(* We assume all parts to have different gauge structures *)
+CombineChiralParts[gaugeParts_List] :=
+	Module[{leftChiralParts, rightChiralParts, chiralParts, allParts},
+		leftChiralParts = Cases[gaugeParts,
 			{_, Except[ZeroColouredVertex], LeftChiralVertex}];
-		nonzeroRightChiralParts = Cases[gaugeParts,
+		rightChiralParts = Cases[gaugeParts,
 			{_, Except[ZeroColouredVertex], RightChiralVertex}];
 		
-		nonChiralParts = Complement[gaugeParts,
-			zeroLeftChiralParts, zeroRightChiralParts,
-			nonzeroLeftChiralParts, nonzeroRightChiralParts];
-		
-		(* First we pair up the nonzero chiral parts with matchin
+		(* First we pair up the nonzero chiral parts with matching
 		 * colour structures *)
-		chiralParts = Flatten[Cases[nonzeroRightChiralParts,
+		chiralParts = Flatten[Cases[rightChiralParts,
 			{rightScalar_, #[[2]], RightChiralVertex} :>
 			{{#[[1]], rightScalar}, #[[2]], ChiralVertex}] &
-			/@ nonzeroLeftChiralParts, 1];
+			/@ leftChiralParts, 1];
 		
-		nonzeroLeftChiralParts = Complement[nonzeroLeftChiralParts,
+		leftChiralParts = Complement[leftChiralParts,
 			chiralParts, SameTest -> (#1[[2]] == #2[[2]] &)];
-		nonzeroRightChiralParts = Complement[nonzeroRightChiralParts,
+		rightChiralParts = Complement[rightChiralParts,
 			chiralParts, SameTest -> (#1[[2]] == #2[[2]] &)];
 		
-		(* The remaining parts (if any) could be paired up
-		 * in an arbitrary way.
-		 * i.e we cannot do it consistently unless there is exactly one
-		 * left and one right part remaining. *)
-		If[Length[nonzeroLeftChiralParts] +
-			Length[zeroLeftChiralParts] === 1 && 
-			Length[nonzeroRightChiralParts] +
-			Length[zeroRightChiralParts] === 1,
-		
-			AppendTo[chiralParts, Switch[
-				{Length[zeroLeftChiralParts], Length[zeroRightChiralParts]},
-				{1, 1}, {{0, 0}, ZeroColouredVertex, ChiralVertex},
-				{1, 0}, {{0, nonzeroRightChiralParts[[1,1]]},
-					nonzeroRightChiralParts[[1,2]], ChiralVertex},
-				{0, 1}, {{nonzeroLefttChiralParts[[1,1]], 0},
-					nonzeroLeftChiralParts[[1,2]], ChiralVertex},
-				{0, 0},
-				Print["Incompatible chiral structures: " <>
-					ToString[nonzeroLeftChiralParts[[1]]] <> ", " <>
-					ToString[nonzeroRightChiralParts[[1]]]];
-				Quit[1];
-			]];
-			
-			nonzeroLeftChiralParts = zeroLeftChiralParts = {};
-			nonzeroRightChiralParts = zeroRightChiralParts = {};
+		(* The rest is paired up with zeros *)
+		chiralParts = Join[chiralParts,
+			{{#[[1]], 0}, #[[2]], ChiralVertex} & /@ leftChiralParts,
+			{{0, #[[1]]}, #[[2]], ChiralVertex} & /@ rightChiralParts
 		];
 		
-		gaugeStructures = Sequence @@@
-			{nonChiralParts, chiralParts,
-			nonzeroLeftChiralParts, nonzeroRightChiralParts,
-			zeroLeftChiralParts, zeroRightChiralParts};
+		allParts = Join[
+			Cases[gaugeParts,
+				Except[{_, _, LeftChiralVertex | RightChiralVertex}]],
+			chiralParts
+		];
+		
+		If[Length[allParts] === 0 && Length[gaugeParts] =!= 0,
+			allParts = {{{0, 0}, ZeroColouredVertex, ChiralVertex}}];
+		allParts
+	]
+
+(* We assume all parts to have different gauge structures *)
+CombineQuadrupleVectorPartsInGroup[gaugeParts_List] :=
+	Module[{g12g34Parts, g13g24Parts, g14g23Parts,
+			parts1And2, parts1And3, parts2And3, vvvvParts},
+		g12g34Parts = Cases[gaugeParts,
+			{_, _, TwoMetricVertex[lIndex1_, lIndex2_, lIndex3_, lIndex4_]} /;
+			OrderedQ[{lIndex1, lIndex2, lIndex3, lIndex4}]
+		];
+		g13g24Parts = Cases[gaugeParts,
+			{_, _, TwoMetricVertex[lIndex1_, lIndex3_, lIndex2_, lIndex4_]} /;
+			OrderedQ[{lIndex1, lIndex2, lIndex3, lIndex4}]
+		];
+		g14g23Parts = Cases[gaugeParts,
+			{_, _, TwoMetricVertex[lIndex1_, lIndex4_, lIndex2_, lIndex3_]} /;
+			OrderedQ[{lIndex1, lIndex2, lIndex3, lIndex4}]
+		];
+		
+		Utils`AssertWithMessage[
+			Length[g12g34Parts] + Length[g13g24Parts] +
+			Length[g14g23Parts] === Length[gaugeParts],
+			"CXXDiagrams`CombineQuadrupleVectorPartsInGroup[]: Incompatible \
+indices encountered:" <> ToString[gaugeParts]
+		];
+		
+		parts1And2 = Flatten[Cases[g13g24Parts,
+			{part2Scalar_, #[[2]], #[[3]][[{1, 3, 2, 4}]]} :>
+			{{#[[1]], part2Scalar}, #[[2]], #[[3]]}] & /@ g12g34Parts, 1];
+		
+		vvvvParts = Flatten[Cases[g14g23Parts,
+			{part3Scalar_, #[[2]], #[[3]][[{1, 4, 2, 3}]]} :>
+			{{#[[1, 1]], #[[1, 2]], part3Scalar}, #[[2]],
+				QuadrupleVectorVertex @@ #[[3]]}] & /@
+			parts1And2, 1];
+		
+		{g12g34Parts, g13g24Parts, g14g23Parts, parts1And2} = Complement[#,
+			vvvvParts, SameTest -> (#1[[2]] == #2[[2]] &)] & /@
+			{g12g34Parts, g13g24Parts, g14g23Parts, parts1And2};
+		
+		parts1And3 = Flatten[Cases[g13g24Parts,
+			{part3Scalar_, #[[2]], #[[3]][[{1, 4, 2, 3}]]} :>
+			{{#[[1]], part3Scalar}, #[[2]], #[[3]]}] & /@ g14g23Parts, 1];
+		
+		parts2And3 = Flatten[Cases[g13g24Parts,
+			{part3Scalar_, #[[2]], #[[3]][[{1, 4, 2, 3}]]} :>
+			{{#[[1]], part3Scalar}, #[[2]], #[[3]]}] & /@ g13g24Parts, 1];
+		
+		Join[vvvvParts,
+			{{#[[1, 1]], #[[1, 2]], 0}, #[[2]],
+				QuadrupleVectorVertex @@ #[[3]]} & /@ parts1And2,
+			{{#[[1, 1]], 0, #[[1, 2]]}, #[[2]],
+				QuadrupleVectorVertex @@ #[[3]]} & /@ parts1And3,
+			{{0, #[[1, 1]], #[[1, 2]]}, #[[2]],
+				QuadrupleVectorVertex @@ #[[3]]} & /@ parts2And3
+		]
+	]
+
+(* We assume all parts to have different gauge structures *)
+CombineQuadrupleVectorParts[gaugeParts_List] :=
+	Module[{ggParts, ggGroups, allParts},
+		ggParts = Cases[gaugeParts,
+			{_, Except[ZeroColouredVertex], _TwoMetricVertex}];
+		ggGroups = GatherBy[ggParts, Sort[List @@ #[[3]]] &];
+		
+		allParts = Join[
+			Cases[gaugeParts, Except[{_, _, _TwoMetricVertex}]],
+			Flatten[CombineQuadrupleVectorPartsInGroup /@ ggGroups, 1]
+		];
+		
+		If[Length[allParts] === 0 && Length[gaugeParts] =!= 0,
+			allParts = Cases[gaugeParts,
+				{_, ZeroColouredVertex, gg_TwoMetricVertex} :>
+				{{0, 0, 0}, ZeroColouredVertex,
+					QuadrupleVectorVertex @@ gg}][[1;;1]]
+		];
+		allParts
+	]
+
+(* Assuming all Gauge structure combinations are different *)
+FullGaugeStructureFromParts[gaugeParts_List] :=
+	Module[{gaugeStructures},
+		gaugeStructures = CombineChiralParts[gaugeParts];
+		gaugeStructures = CombineQuadrupleVectorParts[gaugeStructures];
 		
 		Utils`AssertWithMessage[Length[gaugeStructures] === 1,
-			"Vertex with composite gauge structure encountered:" <>
-			ToString[gaugeParts]];
+			"CXXDiagrams`FullGaugeStructureFromParts[]: Vertex with \
+composite gauge structure encountered:" <> ToString[gaugeStructures]];
 		
 		gaugeStructures[[1]]
 	]
@@ -612,92 +741,188 @@ FullGaugeStructureFromParts[gaugeParts_List] :=
 GaugeStructureOfVertex[vertex_] :=
 	Module[{lorentzParts, gaugeStructures},
 		(* This is arguably a bug in SARAH causing e.g {hh, hh, VZ} to be mapped to {0, 0} *)
-		lorentzParts = If[MatchQ[sortedVertex, {_, {_, 0}}],
-			Utils`AssertWithMessage[sortedVertex[[2,1]] === 0,
-				"CXXDiagrams`SortedVertex[]: ill-formed SARAH vertex: " <> ToString[sortedVertex]];
-			{{0, MomentumDifferenceVertex[sortedVertex[[1,1]], sortedVertex[[1,2]]]}},
+		lorentzParts = If[MatchQ[vertex, {_, {_, 0}}],
+			Utils`AssertWithMessage[vertex[[2,1]] === 0,
+				"CXXDiagrams`SortedVertex[]: ill-formed vertex: " <> ToString[vertex]];
+			{{0, MomentumDifferenceVertex[vertex[[1,1]], vertex[[1,2]]]}},
 			LabelLorentzPart /@ Rest[vertex]];
 		
 		gaugeStructures = GaugeStructureOfVertexLorentzPart /@ lorentzParts;
 		FullGaugeStructureFromParts[gaugeStructures]
 	]
 
+(** \brief Generates the c++ code for numerical evaluation of a given
+ * list of vertices.
+ * \param vertices A list of vertices
+ * \returns a list {prototypes, definitions} containing the
+ * corresponding c++ code.
+ **)
 CreateVertices[vertices_List] :=
-  StringJoin @ Riffle[CreateVertex /@ DeleteDuplicates[vertices], "\n\n"]
+	Module[{prototypes, definitions},
+		{prototypes, definitions} = Transpose[
+			CreateVertex /@ DeleteDuplicates[vertices]
+		];
+		
+		StringJoin[Riffle[#, "\n\n"]] & /@ {prototypes, definitions}
+	]
 
 CreateVertex[fields_List] :=
   Module[{fieldSequence},
 		fieldSequence = StringJoin @ Riffle[
 			CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields, ", "];
 
-    "template<> struct VertexImpl<" <> fieldSequence <> ">" <> "\n" <>
-    "{\n" <> TextFormatting`IndentText[
-			"using vertex_type = " <> SymbolName[VertexTypeForFields[fields]] <> ";\n\n" <>
-			"static vertex_type evaluate(const typename Vertex<" <> fieldSequence <> 
-				">::indices_type& indices, \n" <>
-				TextFormatting`IndentText["const context_base& context)\n"] <>
-			"{\n" <> TextFormatting`IndentText[
-				VertexFunctionBodyForFields[fields] <> "\n"] <>
-			"}" <> "\n"] <>
+		{
+		"template<> struct VertexImpl<" <> fieldSequence <> ">" <> "\n" <>
+		"{\n" <> TextFormatting`IndentText[
+			"static " <> SymbolName[VertexTypeForFields[fields]] <>
+				" evaluate(const std::array<int, " <>
+				ToString[Total[NumberOfFieldIndices /@ fields]] <>
+			">& indices, const context_base& context);"] <> "\n" <>
 		"};"
+		,
+		SymbolName[VertexTypeForFields[fields]] <>
+			" VertexImpl<" <> fieldSequence <> ">::evaluate(\n" <>
+				TextFormatting`IndentText["const std::array<int, " <>
+					ToString[Total[NumberOfFieldIndices /@ fields]] <> ">& indices, " <>
+				"const context_base& context)"] <> "\n" <>
+		"{\n" <> TextFormatting`IndentText[
+				VertexFunctionBodyForFields[fields] <> "\n"] <>
+		"};"
+		}
   ]
 
 VertexTypeForFields[fields_List] :=
 	AtomHead[GaugeStructureOfVertex[SortedVertex[fields]][[3]]]
 
 VertexFunctionBodyForFields[fields_List] := 
-	Module[{sortedFields, sortedIndexedFields, indexedFields, indexFields,
-          fieldsOrdering, sortedFieldsOrdering, inverseFOrdering,
-          fOrderingWRTSortedF, expr, exprL, exprR,
-          vertexRules, incomingScalar, outgoingScalar},
-    sortedVertex = SortedVertex[fields];
-    sortedIndexedFields = sortedVertex[[1]];
-    sortedFields = Vertices`StripFieldIndices /@ sortedIndexedFields;
+	Module[{sortedVertex, sortedFields, sortedIndexedFields, indexedFields,
+			indexFields, gaugeStructure,
+			fieldsOrdering, sortedFieldsOrdering, inverseFOrdering,
+			fOrderingWRTSortedF, expr, exprL, exprR, expr1, expr2, expr3,
+			vertexRules, incomingScalar, outgoingScalar, incomingGhost,
+			lIndex1, lIndex2, lIndex3, lIndex4},
+		sortedVertex = SortedVertex[fields, ApplyGUTNormalization -> True];
+		sortedIndexedFields = sortedVertex[[1]];
+		sortedFields = Vertices`StripFieldIndices /@ sortedIndexedFields;
     
 		indexFields = {SARAH`Cp @@ sortedFields -> SARAH`Cp @@ sortedIndexedFields};
-    
-    (* Mathematica 7 does not know about permutations... :'-( *)
-    fieldsOrdering = Ordering[fields];
-    sortedFieldsOrdering = Ordering[sortedFields];
+		
+		(* Mathematica 7 does not know about permutations... :'-( *)
+		fieldsOrdering = Ordering[fields];
+		sortedFieldsOrdering = Ordering[sortedFields];
 
-    inverseFOrdering = Ordering[fieldsOrdering];
-    fOrderingWRTSortedF = sortedFieldsOrdering[[inverseFOrdering]];
+		inverseFOrdering = Ordering[fieldsOrdering];
+		fOrderingWRTSortedF = sortedFieldsOrdering[[inverseFOrdering]];
 
-    indexedFields = sortedIndexedFields[[fOrderingWRTSortedF]];
-    
-    gaugeStructure = GaugeStructureOfVertex[sortedVertex];
-    Switch[gaugeStructure[[3]],
-      ScalarVertex | InverseMetricVertex,
+		indexedFields = sortedIndexedFields[[fOrderingWRTSortedF]];
+		
+		gaugeStructure = GaugeStructureOfVertex[sortedVertex];
+		Switch[gaugeStructure[[3]],
+			ScalarVertex | InverseMetricVertex,
+			vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> gaugeStructure[[1]]};
+			
+			expr = Vertices`SortCp[SARAH`Cp @@ fields] /. indexFields /. vertexRules;
+			
+			DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
+			Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+			"const " <> GetComplexScalarCType[] <> " result = " <>
+			Parameters`ExpressionToString[expr] <> ";\n\n" <>
+			"return {result};",
+			
+			ChiralVertex,
+			vertexRules = {
+				(SARAH`Cp @@ sortedIndexedFields)[SARAH`PL] -> gaugeStructure[[1,1]],
+				(SARAH`Cp @@ sortedIndexedFields)[SARAH`PR] -> gaugeStructure[[1,2]]
+			};
+
+			exprL = Vertices`SortCp[(SARAH`Cp @@ fields)[SARAH`PL]] /.
+				indexFields /. vertexRules;
+			exprR = Vertices`SortCp[(SARAH`Cp @@ fields)[SARAH`PR]] /.
+				indexFields /. vertexRules;
+
+			DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
+			Parameters`CreateLocalConstRefs[{exprL, exprR}] <> "\n" <>
+			"const " <> GetComplexScalarCType[] <> " left = " <>
+				Parameters`ExpressionToString[exprL] <> ";\n\n" <>
+			"const " <> GetComplexScalarCType[] <> " right = " <>
+			Parameters`ExpressionToString[exprR] <> ";\n\n" <>
+			"return {left, right};",
+			
+			_MomentumVertex,
+			incomingGhost = gaugeStructure[[3,1]];
+			vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> gaugeStructure[[1]]};
+			
+			expr = Vertices`SortCp[SARAH`Cp @@ fields] /. indexFields /. vertexRules;
+			
+			DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
+			Parameters`CreateLocalConstRefs[expr] <> "\n" <>
+			"const " <> GetComplexScalarCType[] <> " result = " <>
+			Parameters`ExpressionToString[expr] <> ";\n\n" <>
+			"return {result, " <> 
+				ToString[Position[indexedFields, incomingGhost, {1}][[1,1]] - 1] <>
+			"};",
+			
+			_TripleVectorVertex,
+			{lIndex1, lIndex2, lIndex3} = LorentzIndexOfField /@ 
+				sortedIndexedFields;
+			
       vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> gaugeStructure[[1]]};
       
-      expr = Vertices`SortCp[SARAH`Cp @@ fields] /. indexFields /. vertexRules;
+			expr = Vertices`SortCp[SARAH`Cp @@ fields] /. indexFields /. vertexRules;
       
-      DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
+			DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
-      "return vertex_type(result);",
+      "return {result, " <>
+				If[Or @@ ((And @@
+						(RotateLeft[{lIndex1, lIndex2, lIndex3}, #] ===
+							LorentzIndexOfField /@ gaugeStructure[[3]])) & /@
+						{0, 1, 2}),
+					"TripleVectorVertex::even_permutation{}",
+					"TripleVectorVertex::odd_permutation{}"] <>
+			"};",
+         
+			_QuadrupleVectorVertex,
+			{lIndex1, lIndex2, lIndex3, lIndex4} = LorentzIndexOfField /@ 
+				sortedIndexedFields;
       
-      ChiralVertex,
       vertexRules = {
-        (SARAH`Cp @@ sortedIndexedFields)[SARAH`PL] -> gaugeStructure[[1,2]],
-        (SARAH`Cp @@ sortedIndexedFields)[SARAH`PR] -> gaugeStructure[[1,2]]
-      };
+				(SARAH`Cp @@ sortedIndexedFields)[
+					SARAH`g[lIndex1, lIndex2] * SARAH`g[lIndex3, lIndex4]] ->
+        gaugeStructure[[1, QuadrupleVectorVertexPartForLorentzIndices[
+					lIndex1, lIndex2, lIndex3, lIndex4]]],
+				(SARAH`Cp @@ sortedIndexedFields)[
+					SARAH`g[lIndex1, lIndex3] * SARAH`g[lIndex2, lIndex4]] ->
+        gaugeStructure[[1, QuadrupleVectorVertexPartForLorentzIndices[
+					lIndex1, lIndex3, lIndex2, lIndex4]]],
+				(SARAH`Cp @@ sortedIndexedFields)[
+					SARAH`g[lIndex1, lIndex4] * SARAH`g[lIndex2, lIndex3]] ->
+        gaugeStructure[[1, QuadrupleVectorVertexPartForLorentzIndices[
+					lIndex1, lIndex4, lIndex2, lIndex3]]]
+			};
+			
+      expr1 = Vertices`SortCp[(SARAH`Cp @@ fields)[
+					SARAH`g[lIndex1, lIndex2] * SARAH`g[lIndex3, lIndex4]]] /.
+						indexFields /. vertexRules;
+      expr2 = Vertices`SortCp[(SARAH`Cp @@ fields)[
+					SARAH`g[lIndex1, lIndex3] * SARAH`g[lIndex2, lIndex4]]] /.
+						indexFields /. vertexRules;
+      expr3 = Vertices`SortCp[(SARAH`Cp @@ fields)[
+					SARAH`g[lIndex1, lIndex4] * SARAH`g[lIndex2, lIndex3]]] /. indexFields
+						/. vertexRules;
+      
+			DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
+      Parameters`CreateLocalConstRefs[{expr1, expr2, expr3}] <> "\n" <>
+      "const " <> GetComplexScalarCType[] <> " part1 = " <>
+      Parameters`ExpressionToString[expr1] <> ";\n\n" <>
+      "const " <> GetComplexScalarCType[] <> " part2 = " <>
+      Parameters`ExpressionToString[expr2] <> ";\n\n" <>
+      "const " <> GetComplexScalarCType[] <> " part3 = " <>
+      Parameters`ExpressionToString[expr3] <> ";\n\n" <>
+      "return {part1, part2, part3};",
 
-      exprL = Vertices`SortCp[(SARAH`Cp @@ fields)[SARAH`PL]] /.
-				indexFields /. vertexRules;
-      exprR = Vertices`SortCp[(SARAH`Cp @@ fields)[SARAH`PR]] /.
-				indexFields /. vertexRules;
-
-      DeclareIndices[StripUnbrokenGaugeIndices /@ indexedFields, "indices"] <>
-      Parameters`CreateLocalConstRefs[{exprL, exprR}] <> "\n" <>
-      "const " <> GetComplexScalarCType[] <> " left = " <>
-				Parameters`ExpressionToString[exprL] <> ";\n\n" <>
-      "const " <> GetComplexScalarCType[] <> " right = " <>
-				Parameters`ExpressionToString[exprR] <> ";\n\n" <>
-      "return vertex_type(left, right);",
-
-      MomentumDifferenceVertex[__],
+      _MomentumDifferenceVertex,
       {incomingScalar, outgoingScalar} = List @@ gaugeStructure[[3]];
       vertexRules = {(SARAH`Cp @@ sortedIndexedFields) -> gaugeStructure[[1]]};
       
@@ -711,13 +936,28 @@ VertexFunctionBodyForFields[fields_List] :=
       Parameters`CreateLocalConstRefs[expr] <> "\n" <>
       "const " <> GetComplexScalarCType[] <> " result = " <>
       Parameters`ExpressionToString[expr] <> ";\n\n" <>
-      "return vertex_type(result, minuend_index, subtrahend_index);",
+      "return {result, minuend_index, subtrahend_index};",
       
       _,
       Print["Unrecognized gauge structure: " <> ToString[gaugeStructure[[3]]]];
       Quit[1]
     ]
   ]
+
+QuadrupleVectorVertexPartForLorentzIndices[
+		lIndex1_, lIndex2_, lIndex3_, lIndex4_] :=
+	Module[{properlyOrderedindices},
+		properlyOrderedindices = Flatten[List @@@ (List @@
+			(SARAH`g[lIndex1, lIndex2] * SARAH`g[lIndex3, lIndex4]))];
+		
+		Switch[Ordering[properlyOrderedindices],
+			{1, 2, 3, 4}, 1,
+			{1, 3, 2, 4}, 2,
+			{1, 3, 4, 2}, 3,
+			_, Print["CXXDiagrams`QuadrupleVectorVertexPartForLorentzIndices[]: \
+Cannot properly order Lorentz indices: " <>
+ToString[{lIndex1, lIndex2, lIndex3, lIndex4}]]; Quit[1]]
+	]
 
 DeclareIndices[indexedFields_List, arrayName_String] :=
     Module[{p, total = 0, fieldIndexList, decl = ""},
@@ -764,9 +1004,8 @@ CreateUnitCharge[] :=
          numberOfElectronIndices = NumberOfFieldIndices[electron];
          numberOfPhotonIndices = NumberOfFieldIndices[photon];
 
-         "static ChiralVertex unit_charge(const context_base& context)\n" <>
+         "ChiralVertex unit_charge(const context_base& context)\n" <>
          "{\n" <>
-         TextFormatting`IndentText["using vertex_type = ChiralVertex;"] <> "\n\n" <>
          TextFormatting`IndentText @ 
            ("std::array<int, " <> ToString @ numberOfElectronIndices <> "> electron_indices = {" <>
               If[TreeMasses`GetDimension[electron] =!= 1,

@@ -51,7 +51,8 @@ templateCode = StringJoin @ Riffle[Utils`ReadLinesInFile[
 hhSelfenergy = NPointFunctions`NPointFunction[
 	{SARAH`HiggsBoson}, {SARAH`HiggsBoson},
     NPointFunctions`UseCache -> False,
-	NPointFunctions`ZeroExternalMomenta -> True];
+	NPointFunctions`ZeroExternalMomenta -> True,
+    NPointFunctions`ExcludedTopologies -> NPointFunctions`OneParticleReducible];
 
 hhSelfenergyCode = NPointFunctions`CreateCXXFunctions[
 	{hhSelfenergy}, {"selfenergy_hh_1loop"}][[2]];
@@ -74,7 +75,8 @@ verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
 code = StringReplace[templateCode, {
 	"@NPointFunctions_Selfenergy_hh_1loop@" -> hhSelfenergyCode,
 	"@NPointFunctions_Headers@" -> nPointFunctionHeaders,
-	"@CXXDiagrams_Vertices@" -> verticesCode
+	"@CXXDiagrams_VertexPrototypes@" -> verticesCode[[1]],
+	"@CXXDiagrams_VertexDefinitions@" -> verticesCode[[2]]
 }];
 
 fileHandle = OpenWrite[FileNameJoin[{workingDirectory, "test", "test_MSSM_npointfunctions.cpp"}]];

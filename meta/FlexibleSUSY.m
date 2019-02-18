@@ -1993,7 +1993,6 @@ WriteCXXDiagramClass[vertices_List, files_List] :=
           sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           outputDir, cxxDiagramsDir, createdVerticesFile, fileHandle},
     fields = CXXDiagrams`CreateFields[];
-    
     cxxVertices = CXXDiagrams`CreateVertices[vertices];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
     unitCharge = CXXDiagrams`CreateUnitCharge[];
@@ -2014,10 +2013,11 @@ WriteCXXDiagramClass[vertices_List, files_List] :=
     Close[fileHandle];
     
     WriteOut`ReplaceInFiles[files,
-                            {"@CXXDiagrams_Fields@"          -> fields,
-                             "@CXXDiagrams_Vertices@"        -> cxxVertices,
-                             "@CXXDiagrams_MassFunctions@"   -> massFunctions,
-                             "@CXXDiagrams_UnitCharge@"      -> TextFormatting`IndentText[unitCharge],
+                            {"@CXXDiagrams_Fields@"            -> fields,
+                             "@CXXDiagrams_VertexPrototypes@"  -> cxxVertices[[1]],
+                             "@CXXDiagrams_VertexDefinitions@" -> cxxVertices[[2]],
+                             "@CXXDiagrams_MassFunctions@"     -> massFunctions,
+                             "@CXXDiagrams_UnitCharge@"        -> unitCharge,
                              Sequence @@ GeneralReplacementRules[]
                             }];
  ]
@@ -4182,6 +4182,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                            FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_fields.hpp"}]},
                           {FileNameJoin[{cxxQFTTemplateDir, "vertices.hpp.in"}],
                            FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.hpp"}]},
+                          {FileNameJoin[{cxxQFTTemplateDir, "vertices.cpp.in"}],
+                           FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_vertices.cpp"}]},
                           {FileNameJoin[{cxxQFTTemplateDir, "context_base.hpp.in"}],
                            FileNameJoin[{cxxQFTOutputDir, FlexibleSUSY`FSModelName <> "_context_base.hpp"}]},
                           {FileNameJoin[{cxxQFTTemplateDir, "npointfunctions.hpp.in"}],
