@@ -1,3 +1,42 @@
+FlexibleSUSY 2.3.1 [not released yet]
+=====================================
+
+New features
+------------
+
+* Implementation of the 4-loop O(αs^4) contributions to the running
+  MS-bar top mass of the Standard Model from [`1604.01134
+  <https://arxiv.org/abs/1604.01134>`_].  The contributions can be
+  enabled in SM-like models by setting the flag::
+
+      UseYukawa4LoopQCD = True
+
+  or::
+
+      UseYukawa4LoopQCD = Automatic
+
+  The 4-loop threshold correction is taken into account at run-time if
+  both the global threshold correction loop order flag
+  (``FlexibleSUSY[7]`` or ``thresholdCorrectionsLoopOrder``) and the
+  individual top Yukawa coupling threshold correction flag
+  (``FlexibleSUSY[24]`` or ``thresholdCorrections``) are set to a
+  value > 3.
+
+  Example (SLHA input file)::
+
+      Block FlexibleSUSY
+          7   4          # global threshold corrections loop order flag
+         24   124111321  # individual threshold correction loop orders
+
+  Example (Mathematica interface)::
+
+      fsSettings = {
+          thresholdCorrectionsLoopOrder -> 4,
+          thresholdCorrections -> 124111321,
+          ...
+      }
+
+
 FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
 

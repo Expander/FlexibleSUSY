@@ -4420,6 +4420,17 @@ void Standard_model::calculate_MFu_pole()
          currentScale,2)/Sqr(MFu(2)))));
    }
 
+   double qcd_4l = 0.;
+
+   if (pole_mass_loop_order > 3 && TOP_POLE_QCD_CORRECTION > 2) {
+      const double currentScale = get_scale();
+      qcd_4l = -1.6081297554549208e-9*Power8(g3)*(211681.74421123447 - 5638.*
+         Cube(Log(Sqr(MFu(2))/Sqr(currentScale))) - 104673.38261571848*Log(Sqr(
+         MFu(2))/Sqr(currentScale)) + 825.*Quad(Log(Sqr(MFu(2))/Sqr(
+         currentScale))) + 22162.91142653778*Sqr(Log(Sqr(MFu(2))/Sqr(
+         currentScale))));
+   }
+
    Eigen::Matrix<double,3,3> self_energy_1;
    Eigen::Matrix<double,3,3> self_energy_PL;
    Eigen::Matrix<double,3,3> self_energy_PR;
@@ -4447,7 +4458,7 @@ void Standard_model::calculate_MFu_pole()
       }
       Eigen::Matrix<double,3,3> delta_M(- self_energy_PR * M_tree -
          M_tree * self_energy_PL - self_energy_1);
-      delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l + qcd_3l);
+      delta_M(2,2) -= M_tree(2,2) * (qcd_1l + qcd_2l + qcd_3l + qcd_4l);
       const Eigen::Matrix<double,3,3> M_loop(M_tree + delta_M);
       Eigen::Array<double,3,1> eigen_values;
       decltype(Vu) mix_Vu;
@@ -4581,25 +4592,33 @@ double Standard_model::calculate_MFu_DRbar(double m_pole, int idx) const
    const double currentScale = get_scale();
    const double qcd_1l = -0.008443431970194815*(4. - 3.*Log(Sqr(MFu(idx))
       /Sqr(currentScale)))*Sqr(g3);
-   double qcd_2l = 0., qcd_3l = 0.;
+   double qcd_2l = 0., qcd_3l = 0., qcd_4l = 0.;
 
    if (get_thresholds() > 1 && threshold_corrections.mt > 1) {
-      qcd_2l = -0.0041441100714622115*Quad(g3) - 0.0015238567409297061
-         *Log(Sqr(currentScale)/Sqr(MFu(idx)))*Quad(g3) -
-         0.00024060895909416413*Quad(g3)*Sqr(Log(Power(currentScale,2)/Sqr(MFu(
-         idx))));
+      const double q_2l = 2.2278607323533713e-6*Quad(g3)*(2372.129769909197 -
+         1452.*Log(Sqr(MFu(idx))/Sqr(currentScale)) + 396.*Sqr(Log(Sqr(MFu(idx)
+         )/Sqr(currentScale))));
+
+      qcd_2l = -q_2l + qcd_1l * qcd_1l;
    }
 
    if (get_thresholds() > 2 && threshold_corrections.mt > 2) {
-      qcd_3l = -0.0008783313853540776*Power6(g3) -
-         5.078913443827405e-6*Cube(Log(Sqr(currentScale)/Sqr(MFu(idx))))*Power6
-         (g3) - 0.00011624292515063117*Log(Sqr(currentScale)/Sqr(MFu(idx)))*
-         Power6(g3) - 0.00002183932780845784*Power6(g3)*Sqr(Log(Sqr(
-         currentScale)/Sqr(MFu(idx))));
+      qcd_3l = 1.0450439184830051e-10*Power6(g3)*(-8.404731799492894e6 + 48600.
+         *Cube(Log(Sqr(MFu(idx))/Sqr(currentScale))) + 1.112325741480515e6*Log(
+         Sqr(MFu(idx))/Sqr(currentScale)) - 208980.*Sqr(Log(Sqr(MFu(idx))/Sqr(
+         currentScale))));
+   }
+
+   if (get_thresholds() > 3 && threshold_corrections.mt > 3) {
+      qcd_4l = 1.6544544809207004e-13*Power8(g3)*(-1.5015630809970136e9 +
+         3.1428e6*Cube(Log(Sqr(MFu(idx))/Sqr(currentScale))) +
+         4.409910543513119e8*Log(Sqr(MFu(idx))/Sqr(currentScale)) - 826200.*
+         Quad(Log(Sqr(MFu(idx))/Sqr(currentScale))) - 1.7811910793512717e7*Sqr(
+         Log(Sqr(MFu(idx))/Sqr(currentScale))));
    }
 
    const double m_susy_drbar = m_pole + self_energy_1 + m_pole * (
-      self_energy_PL + self_energy_PR + qcd_1l + qcd_2l + qcd_3l);
+      self_energy_PL + self_energy_PR + qcd_1l + qcd_2l + qcd_3l + qcd_4l);
 
    return m_susy_drbar;
 }
