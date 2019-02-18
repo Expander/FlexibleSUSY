@@ -187,7 +187,7 @@ Get[FileNameJoin[{"meta", "SM", "mf_3loop_qcd.m"}]];
 
 Get3LQCDMtRelations[particle_, scale_] :=
     Module[{},
-           k^3 { Coefficient[MtOvermt, k, 3], Coefficient[mtOverMt, k, 3] } //. {
+           k^3 { Coefficient[MfOvermf, k, 3], Coefficient[mfOverMf, k, 3] } //. {
                L -> Log[mf^2/scale^2],
                mf -> FlexibleSUSY`M[particle],
                Log[m_/scale^2] :> -Log[scale^2/m],
@@ -196,7 +196,7 @@ Get3LQCDMtRelations[particle_, scale_] :=
                NH -> 1,
                g3 -> SARAH`strongCoupling
            }
-          ];
+    ];
 
 Get3LQCDMtOvermt[particle_, scale_] := Get3LQCDMtRelations[particle, scale][[1]];
 Get3LQCDmtOverMt[particle_, scale_] := Get3LQCDMtRelations[particle, scale][[2]];

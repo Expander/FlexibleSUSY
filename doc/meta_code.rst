@@ -164,12 +164,12 @@ Example::
 
     h = k (4 Pi)^2;
 
-    MtOvermt = GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. {
+    MfOvermf = GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. {
         Log[Q^2/mt^2] -> -Lbar[t],
         Log[mt^2/Q^2] -> Lbar[t]
     };
 
-    Mt = mt N[Collect[MtOvermt, {k, g3, Lbar[__]}, Simplify]]
+    Mt = mt N[Collect[MfOvermf, {k, g3, Lbar[__]}, Simplify]]
 
 Output::
 
@@ -212,7 +212,7 @@ Example::
     NL = 5;
     NH = 1;
 
-    Mt = mt N[Collect[MtOvermt, {k, g3, Lbar[__]}, Simplify]]
+    Mt = mt N[Collect[MfOvermf, {k, g3, Lbar[__]}, Simplify]]
 
 Output::
 
