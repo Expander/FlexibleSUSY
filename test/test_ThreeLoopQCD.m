@@ -131,7 +131,7 @@ Get[FileNameJoin[{FlexibleSUSY`$flexiblesusyMetaDir, "SM", "mf_3loop_qcd.m"}]];
 
 TestEquality[
     FullSimplify[
-        (MtOvermt /. { L -> Log[mf^2/Q^2] }) -
+        (MfOvermf /. { L -> Log[mf^2/Q^2] }) -
         (GetMTopPoleOverMTopMSbar[{1,h^1,h^2,h^3}, TopQuark, Q, NH, NL] //. {
             h -> k (4Pi)^2, FlexibleSUSY`M[Fu] -> mf,
             Log[Q^2/mf^2] -> -Log[mf^2/Q^2]
@@ -144,7 +144,7 @@ Print["Testing cached 3-loop expression mt/Mt ..."];
 
 TestEquality[
     FullSimplify[
-        (mtOverMt /. { L -> Log[mf^2/Q^2] }) -
+        (mfOverMf /. { L -> Log[mf^2/Q^2] }) -
         (GetMTopMSbarOverMTopPole[{1,h^1,h^2,h^3}, TopQuark, Q, NH, NL] //. {
             h -> k (4Pi)^2, FlexibleSUSY`M[Fu] -> mf,
             Log[Q^2/mf^2] -> -Log[mf^2/Q^2]
