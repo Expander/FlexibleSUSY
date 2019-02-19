@@ -34,7 +34,7 @@ FullGaugeStructureFromParts::usage="";
 GaugeStructureOfVertex::usage="";
 IsLorentzIndex::usage="";
 IsColourIndex::usage="";
-IndexFields::usage="";
+IndexField::usage="";
 CombineChiralParts::usage="";
 LorentzIndexOfField::usage="";
 
@@ -369,7 +369,7 @@ ColorMathToSARAHConvention[expr_] :=
 IndexDiagramFromGraph[diagram_, graph_] :=
 	Module[{diagramWithUIDs, indexedFields, indexedDiagram,
 		vIndex1, vIndex2, contractIndices},
-		indexedFields = IndexFields[Flatten[diagram]];
+		indexedFields = IndexField /@ Flatten[diagram];
 		
 		diagramWithUIDs = If[Head[#] === List,
 			(#[Unique[]] &) /@ #, #[Unique[]]] & /@ diagram;
@@ -459,24 +459,23 @@ IndexPrefixForType[SARAH`color] := "ct"
 IndexPrefixForType[indexType_] := 
 	(Print["Unknown index type: " <> ToString[indexType] <> " encountered."]; Quit[1])
 
-IndexFields[fields_List] :=
-	Module[{indexSpecifications, indexTypes, indexNames,
-		field, conjugation},
-		indexSpecifications =
-			TreeMasses`GetParticleIndices[SARAH`getParticleName[#]] & /@ fields;
-		indexSpecifications =
-			Cases[#, Except[{SARAH`generation, 1}]] & /@ indexSpecifications;
+IndexField[field_] :=
+	Module[{indexSpecification, indexTypes, indexNames,
+		conjugation, uniqueNumberString},
+		indexSpecification =
+			TreeMasses`GetParticleIndices[SARAH`getParticleName[field]];
+		indexSpecification =
+			Cases[indexSpecification, Except[{SARAH`generation, 1}]];
 		
-		indexTypes = Map[First, indexSpecifications, {2}];
+		indexTypes = First /@ indexSpecification;
 		
-		(* FIXME: We really should start at index 1 and not 43! *)
-		indexNames = MapIndexed[
-			"SARAH`" <> #1 <> ToString[#2[[1]] + 42] &,
-			Map[IndexPrefixForType, indexTypes, {2}], {2}];
+		uniqueNumberString = StringDrop[SymbolName[Unique[]], 1];
+		indexNames = "SARAH`" <> ToString[#] <> uniqueNumberString & /@
+			(IndexPrefixForType /@ indexTypes);
 		
-		(#[[1]][Symbol /@ #[[2]]] & /@ Transpose[{fields, indexNames}]) /. {
-			field_[{}] :> field,
-			conjugation_[field_][indices_List] :> conjugation[field[indices]]
+		field[indexNames] /. {
+			field[{}] -> field,
+			conjugation_[field][indices_List] :> conjugation[field[indices]]
 		}
 	]
 
@@ -502,7 +501,7 @@ SortedVertex[fields_List, OptionsPattern[{ApplyGUTNormalization -> False}]] :=
 				"CXXDiagrams`SortedVertex[]: Cannot determine Lorentz structure of " <> ToString[fields] <> " vertex."];
 			similarVertex = similarVertexList[[1]];
 			
-			indexedSortedFields = IndexFields[sortedFields];
+			indexedSortedFields = IndexField /@ sortedFields;
 			fieldReplacementRules = Rule @@@ Transpose[{similarVertex[[1]], indexedSortedFields}];
 			indexReplacementRules = Rule @@@ Transpose[{
 				LorentzIndexOfField /@ Select[similarVertex[[1]], TreeMasses`IsVector],
