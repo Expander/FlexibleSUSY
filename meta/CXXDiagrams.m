@@ -367,9 +367,20 @@ ColorMathToSARAHConvention[expr_] :=
  * contracted fields share the same indices.
  *)
 IndexDiagramFromGraph[diagram_, graph_] :=
-	Module[{diagramWithUIDs, indexedFields, indexedDiagram,
-		vIndex1, vIndex2, contractIndices},
-		indexedFields = IndexField /@ Flatten[diagram];
+	Module[{diagramWithUIDs, fields, indexedFields, indexedDiagram,
+		applyUserIndices, vIndex1, vIndex2, contractIndices},
+		fields = Vertices`StripFieldIndices /@ Flatten[diagram];
+		indexedFields = IndexField /@ fields;
+		
+		applyUserIndices = Join[
+			Sequence @@ (Rule @@@ Transpose[{
+				Take[#[[1]], Length[#[[2]]]],
+				#[[2]]
+			}] & /@ Transpose[{
+				Vertices`FieldIndexList /@ indexedFields,
+				Vertices`FieldIndexList /@ Flatten[diagram]
+			}])
+		];
 		
 		diagramWithUIDs = If[Head[#] === List,
 			(#[Unique[]] &) /@ #, #[Unique[]]] & /@ diagram;
@@ -397,7 +408,8 @@ IndexDiagramFromGraph[diagram_, graph_] :=
 			Table[{v1, v2}, {v1, Length[diagram]}, {v2, v1, Length[diagram]}],
 		1];
 		
-		indexedDiagram /. Flatten[contractIndices]
+		indexedDiagram /. Flatten[contractIndices] /. applyUserIndices /.
+			(Reverse /@ Flatten[contractIndices]) /. applyUserIndices
 	]
 
 (** \brief Calculate the colour factor of a given diagram with a given
