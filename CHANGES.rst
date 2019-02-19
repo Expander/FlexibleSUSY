@@ -36,6 +36,10 @@ New features
           ...
       }
 
+* Implementation of 3-loop contributions O(αb,ατ) to the Standard
+  Model beta functions from [`1604.00853
+  <https://arxiv.org/abs/1604.00853>`_].
+
 
 FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
