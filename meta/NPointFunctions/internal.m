@@ -178,7 +178,7 @@ GenericInsertionsForDiagram[diagram_Rule,
     KeepFieldNames -> OptionValue[KeepFieldNames]] & /@ (List @@@ diagram[[2]]))
 
 ColourFactorForDiagram[diagram_Rule]:=
-  Module[{numberOfVertices, n, externalRules, externalFields, type,
+  Module[{numberOfVertices, n, k, externalRules, externalFields,
       adjacencyMatrix, genericInsertions, field},
 	  numberOfVertices = Max[Cases[diagram[[1]],
 	    FeynArts`Vertex[_][n_Integer] :> n, Infinity]];
@@ -201,7 +201,7 @@ ColourFactorForDiagram[diagram_Rule]:=
 	  ] & /@ Table[k, {k, numberOfVertices}];
 	  
     externalRules = Cases[List @@ diagram[[2, 1, 1]],
-			Except[Rule[FeynArts`Field[n_Integer], type_Symbol]]];
+			HoldPattern[Rule[FeynArts`Field[_Integer], _Symbol[__]]]];
 		externalFields = externalRules[[All, 1]];
 	  
 	  genericDiagram = Module[{vIndex1 = #, vertex},
