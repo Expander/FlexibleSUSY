@@ -197,7 +197,7 @@ LorentzIndexOfField[field_]:=
 	Module[{lorentzIndices = Select[Vertices`FieldIndexList[field], IsLorentzIndex]},
 		Utils`AssertWithMessage[Length[lorentzIndices] === 1,
 			"CXXDiagrams`LorentzIndexOfField[]: Argument " <>
-			ToString[field] <> " does not have exactly one color index."];
+			ToString[field] <> " does not have exactly one Lorentz index."];
     lorentzIndices[[1]]
   ]
 
