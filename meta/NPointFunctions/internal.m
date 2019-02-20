@@ -400,11 +400,15 @@ SetFSConventionRules[] :=
         FormCalc`k[i_Integer, index___] :> SARAH`Mom[i, index]
     };
 
+    (* These index rules are specific to SARAH generated FeynArts
+     * model files.
+     *)
     indexRules = {
-      FeynArts`Index[name_,index_Integer] :> 
-        Symbol[If[StringTake[ToString[name],1] === "I",
-                  ToString[name],
-                  "I" <> ToString[name]] <> ToString[index]]
+      FeynArts`Index[generationName_, index_Integer] :> 
+				Symbol["SARAH`gt" <> ToString[index]] /;
+				StringMatchQ[SymbolName[generationName], "I"~~___~~"Gen"],
+      FeynArts`Index[Global`Colour, index_Integer] :> 
+				Symbol["SARAH`ct" <> ToString[index]]
     };
 
     fieldNameToFSRules = Join[
