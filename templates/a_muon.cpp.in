@@ -257,7 +257,7 @@ void run_to_MSUSY(@ModelName@_mass_eigenstates& model)
    }
 }
 
-double calculate_a_muon_impl(@ModelName@_mass_eigenstates& model)
+double calculate_a_muon_impl(const @ModelName@_mass_eigenstates& model)
 {
    VERBOSE_MSG("@ModelName@_a_muon: calculating a_mu at Q = " << model.get_scale());
 
