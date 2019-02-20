@@ -485,7 +485,7 @@ IndexField[field_] :=
 		indexNames = "SARAH`" <> ToString[#] <> uniqueNumberString & /@
 			(IndexPrefixForType /@ indexTypes);
 		
-		field[indexNames] /. {
+		field[Symbol /@ indexNames] /. {
 			field[{}] -> field,
 			conjugation_[field][indices_List] :> conjugation[field[indices]]
 		}
