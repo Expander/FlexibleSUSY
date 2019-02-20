@@ -215,6 +215,7 @@ UseSM3LoopRGEs = True;
 UseSM4LoopRGEs = True;
 UseSM5LoopRGEs = True;
 UseYukawa3LoopQCD = True;
+UseYukawa4LoopQCD = True;
 UseSMAlphaS3Loop = True;
 
 ExtraSLHAOutputBlocks = {

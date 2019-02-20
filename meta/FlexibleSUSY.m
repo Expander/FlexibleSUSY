@@ -197,6 +197,7 @@ UseHiggs3LoopSM = False;
 UseHiggs4LoopSM = False;
 UseHiggs3LoopSplit = False;
 UseYukawa3LoopQCD = Automatic;
+UseYukawa4LoopQCD = Automatic;
 FSRGELoopOrder = 2; (* RGE loop order (0, 1 or 2) *)
 PotentialLSPParticles = {};
 ExtraSLHAOutputBlocks = {
@@ -2749,6 +2750,13 @@ FSCheckFlags[] :=
               FlexibleSUSY`UseSM4LoopRGEs = True;
              ];
 
+           If[FlexibleSUSY`UseYukawa4LoopQCD === True,
+              FlexibleSUSY`UseYukawa3LoopQCD = True;
+              FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseSM3LoopRGEs = True;
+              FlexibleSUSY`UseSM4LoopRGEs = True;
+             ];
+
            If[FlexibleSUSY`FlexibleEFTHiggs,
               References`AddReference["Athron:2016fuq"];
              ];
@@ -2758,6 +2766,12 @@ FSCheckFlags[] :=
                     "[arxiv:hep-ph/9911434, arxiv:hep-ph/9912391]"];
               References`AddReference["Chetyrkin:1999qi"];
               References`AddReference["Melnikov:2000qh"];
+             ];
+
+           If[FlexibleSUSY`UseYukawa4LoopQCD || FlexibleSUSY`FlexibleEFTHiggs,
+              Print["Adding 4-loop SM QCD corrections to yt from ",
+                    "[arxiv:1604.01134]"];
+              References`AddReference["Martin:2016xsp"];
              ];
 
            If[FlexibleSUSY`UseSMAlphaS3Loop || FlexibleSUSY`FlexibleEFTHiggs,
