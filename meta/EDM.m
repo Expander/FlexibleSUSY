@@ -85,8 +85,7 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
 				" "] <>
 			"const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
 			"{\n" <> IndentText[
-				FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-				"context_base context{ model_ };\n" <>
+				"context_base context{ model };\n" <>
 				"std::array<int, " <> ToString @ numberOfIndices <> "> indices = {" <>
 					If[TreeMasses`GetDimension[field] =!= 1,
 						" generationIndex" <>

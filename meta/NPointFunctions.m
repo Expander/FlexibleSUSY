@@ -314,7 +314,7 @@ CXXArgStringForNPointFunctionPrototype[nPointFunction_] :=
     numberOfMomenta = If[FreeQ[nPointFunction, SARAH`Mom[_Integer, ___]],
       0, Length[nPointFunction[[1,1]]] + Length[nPointFunction[[1,2]]]];
 
-    "( " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates model, " <>
+    "( const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates &model, " <>
        "const std::array<int, " <>
       ToString[numberOfIndices] <> "> &indices, const std::array<Eigen::Vector4d, " <>
       ToString[numberOfMomenta] <> "> &momenta = { " <>
@@ -328,7 +328,7 @@ CXXArgStringForNPointFunctionDefinition[nPointFunction_] :=
     numberOfMomenta = If[FreeQ[nPointFunction, SARAH`Mom[_Integer, ___]],
       0, Length[nPointFunction[[1,1]]] + Length[nPointFunction[[1,2]]]];
 
-    "( " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates model, const std::array<int, " <>
+    "( const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates &model, const std::array<int, " <>
       ToString[numberOfIndices] <> "> &indices, const std::array<Eigen::Vector4d, " <>
       ToString[numberOfMomenta] <> "> &momenta )"
   ]

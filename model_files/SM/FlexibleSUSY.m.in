@@ -52,6 +52,8 @@ UseSM5LoopRGEs = True;
 UseHiggs2LoopSM = True;
 UseHiggs3LoopSM = True;
 UseHiggs4LoopSM = True;
+UseYukawa3LoopQCD = True;
+UseYukawa4LoopQCD = True;
 UseSMAlphaS3Loop = True;
 
 DefaultPoleMassPrecision = MediumPrecision;
