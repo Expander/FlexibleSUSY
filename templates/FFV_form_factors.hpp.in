@@ -28,8 +28,9 @@
 
 #include <valarray>
 
+#include "cxx_qft/@ModelName@_qft.hpp"
+
 using namespace flexiblesusy;
-using namespace cxx_qft;
 
 namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;

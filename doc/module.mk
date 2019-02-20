@@ -5,21 +5,15 @@ DOC_MK       := \
 		$(DIR)/module.mk
 
 DOC_TMPL     := \
-		$(DIR)/addons.dox \
-		$(DIR)/building.dox \
-		$(DIR)/documentation.dox \
-		$(DIR)/FlexibleEFTHiggs.dox \
-		$(DIR)/hssusy.dox \
-		$(DIR)/install.dox \
-		$(DIR)/librarylink.dox \
+		$(DIR)/FlexibleEFTHiggs.rst \
+		$(DIR)/HSSUSY.rst \
+		$(DIR)/librarylink.rst \
+		$(DIR)/meta_code.rst \
 		$(DIR)/mainpage.dox.in \
-		$(DIR)/meta_code.dox \
-		$(DIR)/model_file.dox \
-		$(DIR)/mssmefthiggs.dox \
-		$(DIR)/nuhmssmnofvhimalaya.dox \
-		$(DIR)/package.dox \
-		$(DIR)/slha_input.dox \
-		$(DIR)/utilities.dox
+		$(DIR)/model_file.rst \
+		$(DIR)/MSSMEFTHiggs.rst \
+		$(DIR)/NUHMSSMNoFVHimalaya.rst \
+		$(DIR)/slha_input.rst
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
@@ -27,7 +21,8 @@ HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
 PDF_OUTPUT_DIR  := $(DIR)
 IMAGE_DIR       := $(DIR)/images
-IMAGES          := $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
+IMAGES          := $(IMAGE_DIR)/FS-logo.png \
+		   $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
 		   $(IMAGE_DIR)/HSSUSY_Mh_Xt.png \
 		   $(IMAGE_DIR)/HSSUSY_tower.svg \
 		   $(IMAGE_DIR)/MSSMEFTHiggs_Mh_MS.png \

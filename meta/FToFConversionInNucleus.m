@@ -57,7 +57,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_, outFermion_, nucleus_}] :=
             IndentText[
                 "\n" <>
                 FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                "EvaluationContext context{ model_ };\n" <>
+                "context_base context{ model_ };\n" <>
 
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF = qedqcd.displayFermiConstant();\n" <>

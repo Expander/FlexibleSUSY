@@ -7,7 +7,12 @@ MOD@CLASSNAME@_DEP := $(patsubst %,model_specific/%,$(MOD@CLASSNAME@_MOD))
 MOD@CLASSNAME@_INC := $(patsubst %,-Imodel_specific/%,$(MOD@CLASSNAME@_MOD))
 MOD@CLASSNAME@_LIB := $(foreach M,$(MOD@CLASSNAME@_MOD),model_specific/$M/libmodel_specific_$M$(MODULE_LIBEXT))
 
+MOD@CLASSNAME@_SUBMOD  := $(DIR)/cxx_qft
+MOD@CLASSNAME@_SUBMOD_INC := $(patsubst %,-I%,$(MOD@CLASSNAME@_SUBMOD))
+
 @CLASSNAME@_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
+@CLASSNAME@_INSTALL_CXXQFT_DIR := \
+		$(@CLASSNAME@_INSTALL_DIR)/cxx_qft
 
 @CLASSNAME@_MK     := \
 		$(DIR)/module.mk
@@ -72,9 +77,6 @@ LL@CLASSNAME@_MMA  := \
 		$(DIR)/run_@CLASSNAME@.m
 
 LIB@CLASSNAME@_HDR := \
-		$(DIR)/cxx_qft/@CLASSNAME@_qft.hpp \
-		$(DIR)/cxx_qft/@CLASSNAME@_vertices.hpp \
-		$(DIR)/cxx_qft/@CLASSNAME@_fields.hpp \
 		$(DIR)/@CLASSNAME@_a_muon.hpp \
 		$(DIR)/@CLASSNAME@_convergence_tester.hpp \
 		$(DIR)/@CLASSNAME@_edm.hpp \
@@ -103,6 +105,13 @@ LIB@CLASSNAME@_HDR := \
 		$(DIR)/@CLASSNAME@_susy_scale_constraint.hpp \
 		$(DIR)/@CLASSNAME@_utilities.hpp \
 		$(DIR)/@CLASSNAME@_weinberg_angle.hpp
+
+LIB@CLASSNAME@_CXXQFT_HDR := \
+		$(DIR)/cxx_qft/@CLASSNAME@_qft.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_fields.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_vertices.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_context_base.hpp \
+		$(DIR)/cxx_qft/@CLASSNAME@_npointfunctions.hpp
 
 ifneq ($(findstring two_scale,$(SOLVERS)),)
 -include $(DIR)/two_scale.mk
@@ -192,8 +201,10 @@ all-$(MODNAME): $(LIB@CLASSNAME@) $(EXE@CLASSNAME@_EXE)
 ifneq ($(INSTALL_DIR),)
 install-src::
 		install -d $(@CLASSNAME@_INSTALL_DIR)
+		install -d $(@CLASSNAME@_INSTALL_CXXQFT_DIR)
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_HDR) $(@CLASSNAME@_INSTALL_DIR)
+		install -m u=rw,g=r,o=r $(LIB@CLASSNAME@_CXXQFT_HDR) $(@CLASSNAME@_INSTALL_CXXQFT_DIR)
 		install -m u=rw,g=r,o=r $(EXE@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_SRC) $(@CLASSNAME@_INSTALL_DIR)
 		install -m u=rw,g=r,o=r $(LL@CLASSNAME@_MMA) $(@CLASSNAME@_INSTALL_DIR)
@@ -224,6 +235,7 @@ clean-$(MODNAME)-obj:
 clean-$(MODNAME)-src:
 		-rm -f $(LIB@CLASSNAME@_SRC)
 		-rm -f $(LIB@CLASSNAME@_HDR)
+		-rm -f $(LIB@CLASSNAME@_CXXQFT_HDR)
 		-rm -f $(EXE@CLASSNAME@_SRC)
 		-rm -f $(LL@CLASSNAME@_SRC)
 		-rm -f $(LL@CLASSNAME@_MMA)
@@ -252,14 +264,14 @@ distclean::     distclean-$(MODNAME)
 
 pack-$(MODNAME)-src:
 		tar -czf $(@CLASSNAME@_TARBALL) \
-		$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) \
+		$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(LIB@CLASSNAME@_CXXQFT_HDR) \
 		$(EXE@CLASSNAME@_SRC) \
 		$(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 		$(@CLASSNAME@_MK) $(@CLASSNAME@_INCLUDE_MK) \
 		$(@CLASSNAME@_SLHA_INPUT) $(@CLASSNAME@_REFERENCES) \
 		$(@CLASSNAME@_GNUPLOT)
 
-$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
+$(LIB@CLASSNAME@_SRC) $(LIB@CLASSNAME@_HDR) $(LIB@CLASSNAME@_CXXQFT_HDR) $(EXE@CLASSNAME@_SRC) $(LL@CLASSNAME@_SRC) $(LL@CLASSNAME@_MMA) \
 : run-metacode-$(MODNAME)
 		@true
 
@@ -268,7 +280,7 @@ run-metacode-$(MODNAME): $(METACODE_STAMP_@CLASSNAME@)
 
 ifeq ($(ENABLE_META),yes)
 $(METACODE_STAMP_@CLASSNAME@): $(DIR)/start.m $(DIR)/FlexibleSUSY.m $(META_SRC) $(TEMPLATES) $(SARAH_MODEL_FILES_@CLASSNAME@)
-		"$(MATH)" -run "Get[\"$<\"]; Quit[]" || (echo "The metacode phase failed"; exit 1)
+		"$(MATH)" -run "Get[\"$<\"]; Quit[]" || (echo "Error: The code generation failed!"; exit 1)
 		@touch "$(METACODE_STAMP_@CLASSNAME@)"
 		@echo "Note: to regenerate @CLASSNAME@ source files," \
 		      "please remove the file "
@@ -280,7 +292,7 @@ $(METACODE_STAMP_@CLASSNAME@):
 endif
 
 $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ) $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \
-	CPPFLAGS += $(MOD@CLASSNAME@_INC) $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS) $(HIMALAYAFLAGS)
+	CPPFLAGS += $(MOD@CLASSNAME@_SUBMOD_INC) $(MOD@CLASSNAME@_INC) $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS) $(TSILFLAGS) $(HIMALAYAFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIB@CLASSNAME@_DEP) $(EXE@CLASSNAME@_DEP) $(LL@CLASSNAME@_DEP) $(LIB@CLASSNAME@_OBJ) $(EXE@CLASSNAME@_OBJ) $(LL@CLASSNAME@_OBJ) $(LL@CLASSNAME@_LIB): \

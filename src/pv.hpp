@@ -96,6 +96,27 @@ std::complex<double> H0(T p2, T m2a, T m2b, double scl2) noexcept
     return 4.0*B00(p2, m2a, m2b, scl2) + G0(p2, m2a, m2b, scl2);
 }
 
+/// Derivative of B0(p^2,m1^2,m2^2,Q^2) w.r.t. p^2
+std::complex<double> D1B0(double p2, double m2a, double m2b) PVATTR;
+std::complex<double> D1B0(std::complex<double> p2, std::complex<double> m2a,
+                          std::complex<double> m2b) PVATTR;
+
+/// Derivative of F0(p^2,m1^2,m2^2,Q^2) w.r.t. p^2
+template<class T> std::complex<double> D1F0(T, T, T, double) PVATTR;
+template<class T> std::complex<double> D1F0(T p2, T m2a, T m2b, double scl2) noexcept
+{
+    return - (2.0*p2 + 2.0*m2a - m2b) * D1B0(p2, m2a, m2b)
+       - 2.0 * B0(p2, m2a, m2b, scl2);
+}
+
+/// Derivative of G0(p^2,m1^2,m2^2,Q^2) w.r.t. p^2
+template<class T> std::complex<double> D1G0(T, T, T, double) PVATTR;
+template<class T> std::complex<double> D1G0(T p2, T m2a, T m2b, double scl2) noexcept
+{
+    return (p2 - m2a - m2b) * D1B0(p2, m2a, m2b)
+       + B0(p2, m2a, m2b, scl2);
+}
+
 #endif
 
 // the following are mainly for interfacing with loop function
@@ -110,6 +131,13 @@ double ReB22(double p2, double m2a, double m2b, double scl2) PVATTR;
 double ReH0 (double p2, double m2a, double m2b, double scl2) PVATTR;
 double ReF0 (double p2, double m2a, double m2b, double scl2) PVATTR;
 double ReG0 (double p2, double m2a, double m2b, double scl2) PVATTR;
+
+/// Real part of derivative of B0(p^2,m1^2,m2^2,Q^2) w.r.t. p^2
+double ReD1B0(double p2, double m2a, double m2b) PVATTR;
+/// Real part of derivative of F0(p^2,m1^2,m2^2,Q^2) w.r.t. p^2
+double ReD1F0(double p2, double m2a, double m2b, double scl2) PVATTR;
+/// Real part of derivative of G0(p^2,m1^2,m2^2,Q^2) w.r.t. p^2
+double ReD1G0(double p2, double m2a, double m2b, double scl2) PVATTR;
 
 } // namespace passarino_veltman
 

@@ -23,6 +23,8 @@ ENABLE_SQLITE      := @ENABLE_SQLITE@
 ENABLE_STATIC      := @ENABLE_STATIC@
 ENABLE_THREADS     := @ENABLE_THREADS@
 ENABLE_TSIL        := @ENABLE_TSIL@
+ENABLE_FEYNARTS    := @ENABLE_FEYNARTS@
+ENABLE_FORMCALC    := @ENABLE_FORMCALC@
 
 # C/C++ preprocessor defines
 ENABLE_COLORS         := @ENABLE_COLORS@
@@ -128,10 +130,10 @@ CONVERT_DOS_PATHS := config/convert_dos_paths.sh
 MATH_INC_PATHS := config/mathematica_include_paths.sh
 
 # package information files
-README_FILE    := README
+README_FILE    := README.rst
 AUTHORS_FILE   := AUTHORS
 COPYING_FILE   := COPYING
-ChangeLog_FILE := ChangeLog
+ChangeLog_FILE := CHANGES.rst
 
 .PHONY:  all allsrc allexec alllib allll alltest clean clean-dep \
 	 clean-executables clean-generated clean-lib clean-obj \
@@ -300,6 +302,8 @@ showbuild:
 	@echo "ENABLE_LAPACK      = $(ENABLE_LAPACK)"
 	@echo "ENABLE_LIBRARYLINK = $(ENABLE_LIBRARYLINK)"
 	@echo "ENABLE_ILP64MKL_WORKAROUND = $(ENABLE_ILP64MKL_WORKAROUND)"
+	@echo "ENABLE_FEYNARTS   = $(ENABLE_FEYNARTS)"
+	@echo "ENABLE_FORMCALC   = $(ENABLE_FORMCALC)"
 	@echo "ENABLE_LOOPTOOLS   = $(ENABLE_LOOPTOOLS)"
 	@echo "ENABLE_META        = $(ENABLE_META)"
 	@echo "ENABLE_SHARED_LIBS = $(ENABLE_SHARED_LIBS)"

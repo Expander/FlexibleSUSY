@@ -41,6 +41,7 @@ TEST_SRC := \
 		$(DIR)/test_mssm_twoloop_mt.cpp \
 		$(DIR)/test_MSSM_2L_limits.cpp \
 		$(DIR)/test_numerics.cpp \
+		$(DIR)/test_pmns.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_pv.cpp \
 		$(DIR)/test_raii.cpp \
@@ -127,10 +128,13 @@ TEST_SRC += \
 		$(DIR)/test_CMSSM_initial_guesser.cpp \
 		$(DIR)/test_CMSSM_low_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_model.cpp \
+		$(DIR)/test_CMSSM_slha_output.cpp \
 		$(DIR)/test_CMSSM_spectrum.cpp \
 		$(DIR)/test_CMSSM_susy_scale_constraint.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle.cpp \
 		$(DIR)/test_CMSSM_weinberg_angle_meta.cpp
+TEST_SH += \
+		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMMassWInput),yes yes)
@@ -141,12 +145,6 @@ endif
 ifeq ($(WITH_CMSSMLowPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_CMSSMLowPrecision.cpp
-endif
-ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSM),yes yes)
-TEST_SRC += \
-		$(DIR)/test_CMSSM_slha_output.cpp
-TEST_SH += \
-		$(DIR)/test_CMSSM_gluino.sh
 endif
 
 ifeq ($(WITH_SOFTSUSY) $(WITH_CMSSMCKM),yes yes)
@@ -426,6 +424,17 @@ TEST_SRC += \
 		$(DIR)/test_SM_two_loop_spectrum.cpp
 endif
 
+ifeq ($(ENABLE_FEYNARTS) $(ENABLE_FORMCALC),yes yes)
+ifeq ($(WITH_SM),yes)
+TEST_SRC += \
+		$(DIR)/test_SM_npointfunctions.cpp
+endif
+ifeq ($(WITH_MSSM),yes)
+TEST_SRC += \
+		$(DIR)/test_MSSM_npointfunctions.cpp
+endif
+endif
+
 ifeq ($(WITH_SMHighPrecision),yes)
 TEST_SRC += \
 		$(DIR)/test_SMHighPrecision_two_loop_spectrum.cpp
@@ -434,6 +443,8 @@ endif
 ifeq ($(WITH_SMSU3),yes)
 TEST_SRC += \
 		$(DIR)/test_SMSU3_low_scale_constraint.cpp
+TEST_META += \
+		$(DIR)/test_SMSU3_TreeMasses.m
 endif
 
 ifeq ($(WITH_NSM),yes)
@@ -547,6 +558,11 @@ endif
 ifeq ($(WITH_SMHighPrecision) $(WITH_SMEFTHiggs),yes yes)
 TEST_SH += \
 		$(DIR)/test_SMEFTHiggs.sh
+endif
+
+ifeq ($(WITH_SplitMSSMEFTHiggs),yes)
+TEST_SH += \
+		$(DIR)/test_SplitMSSMEFTHiggs.sh
 endif
 
 ifeq ($(WITH_SM) $(WITH_SMEFTHiggs),yes yes)
@@ -745,11 +761,20 @@ $(DIR)/test_CMSSMNoFV_benchmark.x.xml: $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE)
 
 $(DIR)/test_compare_ewsb_solvers.x: \
 	$(LIBCMSSMGSLHybrid) $(LIBCMSSMGSLHybridS) $(LIBCMSSMGSLBroyden) \
-	$(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute)
+	$(LIBCMSSMGSLNewton) $(LIBCMSSMFPIRelative) $(LIBCMSSMFPIAbsolute) \
+	$(LIBCMSSMFPITadpole)
 
 $(DIR)/test_loopfunctions.x: $(LIBCMSSM)
 
 $(DIR)/test_sfermions.x: $(LIBCMSSM)
+
+$(DIR)/test_SM_npointfunctions.cpp : $(DIR)/test_SM_npointfunctions.meta $(DIR)/test_SM_npointfunctions.cpp.in $(META_SRC) $(METACODE_STAMP_SM)
+		"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[0];"
+$(DIR)/test_SM_npointfunctions.x: $(LIBSM)
+
+$(DIR)/test_MSSM_npointfunctions.cpp : $(DIR)/test_MSSM_npointfunctions.meta $(DIR)/test_MSSM_npointfunctions.cpp.in $(META_SRC) $(METACODE_STAMP_MSSM)
+		"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[0];"
+$(DIR)/test_MSSM_npointfunctions.x: $(LIBMSSM)
 
 $(DIR)/test_CMSSM_database.x: $(LIBCMSSM)
 
@@ -944,11 +969,12 @@ $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_semi_analytic_solutions.x: $(LIBTHDMIIEWS
 
 $(DIR)/test_THDMIIEWSBAtMZSemiAnalytic_consistent_solutions.x: $(LIBTHDMIIEWSBAtMZSemiAnalytic) $(LIBTHDMII)
 
+# adding libraries to the end of the list of dependencies
+$(TEST_EXE): $(LIBSOFTSUSY) $(MODtest_LIB) $(LIBTEST) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
+
 # general test rule
-$(DIR)/test_%.x: $(DIR)/test_%.o \
-	$(LIBSOFTSUSY) \
-	$(MODtest_LIB) $(LIBFLEXI) $(LIBTEST) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ -Wl,--start-group $(call abspathx,$^) -Wl,--end-group \
+$(DIR)/test_%.x: $(DIR)/test_%.o
+		$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
 		$(THREADLIBS) $(GSLLIBS) $(LAPACKLIBS) $(BLASLIBS) $(FLIBS) $(SQLITELIBS)
 

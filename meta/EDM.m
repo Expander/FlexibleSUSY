@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* :Copyright:
 
    ====================================================================
@@ -49,7 +51,7 @@ EDMContributingGraphs[] := contributingGraphs
 EDMContributingDiagramsForFieldAndGraph[field_,graph_] :=
   Module[{diagrams},
     diagrams = CXXDiagrams`FeynmanDiagramsOfType[graph,
-         {1 -> field, 2 -> SARAH`AntiField[field], 3 -> TreeMasses`GetPhoton[]}];
+         {1 -> field, 2 -> CXXDiagrams`LorentzConjugate[field], 3 -> TreeMasses`GetPhoton[]}];
 
     Select[diagrams,IsDiagramSupported[field,graph,#] &]
  ]
@@ -85,7 +87,7 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                  "{\n" <>
                  IndentText[
                    FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                   "EvaluationContext context{ model_ };\n" <>
+                   "context_base context{ model_ };\n" <>
                    "std::array<int, " <> ToString @ numberOfIndices <>
                      "> indices = {" <>
                        If[TreeMasses`GetDimension[field] =!= 1,
@@ -99,7 +101,8 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
                          ] <> "};\n\n" <>
                                  
                    "double val = 0.0;\n\n" <>
-                   "using namespace cxx_qft::fields;\n\n" <>
+                   
+                   "using namespace " <> FlexibleSUSY`FSModelName <> "_cxx_diagrams::fields;\n\n" <>
                    
                    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
                      Flatten[CXXEvaluatorsForFieldAndDiagramsFromGraph[field,#[[2]],#[[1]]] & /@ gTaggedDiagrams],

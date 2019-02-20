@@ -293,14 +293,13 @@ B22zero[m1_, m2_, mu_] :=
     Which[PossibleZeroQ[m1] && PossibleZeroQ[m2],
           0,
           PossibleZeroQ[m1],
-          (m2^2*(5 + 3*Delta + 3*Log[mu^2/m2^2]))/12,
+          (m2^2*(9/2 + 3*Delta + 3*Log[mu^2/m2^2]))/12,
           PossibleZeroQ[m2],
-          (m1^2*(5 + 3*Delta + 3*Log[mu^2/m1^2]))/12,
+          (m1^2*(9/2 + 3*Delta + 3*Log[mu^2/m1^2]))/12,
           PossibleZeroQ[m1 - m2],
           (m2^2*(1 + Delta + Log[mu^2/m2^2]))/2,
           True,
-          ((5 + 3*Delta)*(m1^4 - m2^4) + m1^2*(3*m1^2 + m2^2)*Log[mu^2/m1^2] -
-           m2^2*(m1^2 + 3*m2^2)*Log[mu^2/m2^2])/(12*(m1^2 - m2^2))
+          (A0impl[m2,mu] + m1^2 B0zero[m1, m2, mu] + (m1^2 + m2^2)/2)/4
       ];
 
 DivB22[p_, m1_, m2_, _] := Delta (3*m1^2 + 3*m2^2 - p^2)/12;

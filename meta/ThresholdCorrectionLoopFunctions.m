@@ -75,3 +75,51 @@ f8[r1_, r2_] := (3/2) (
     + ((r1)^4 Log[r1^2])/((r1^2 - 1)^2 (r1 - r2))
     - ((r2)^4 Log[r2^2])/((r1 - r2) (r2^2 - 1)^2)
 );
+
+(* Delta and Phi function for 2-loop threshold corrections *)
+
+Cl2[x_] := Im[Li2[Exp[I x]]];
+
+Li2[x_] := PolyLog[2, x];
+
+Delta[x_, y_, z_] := x^2 + y^2 + z^2 - 2 (x y + x z + y z);
+
+Lambda2[u_, v_] := (1 - u - v)^2 - 4 u v;
+
+PhiPos[u_, v_] :=
+    Module[{lam = Sqrt[Lambda2[u, v]]},
+           1/lam (
+               - Log[u] Log[v]
+               + 2 Log[(1 - lam + u - v)/2] Log[(1 - lam - u + v)/2]
+               - 2 Li2[(1 - lam + u - v)/2]
+               - 2 Li2[(1 - lam - u + v)/2]
+               + Pi^2/3
+           )
+          ];
+
+PhiNeg[u_, v_] :=
+    Module[{lam = Sqrt[-Lambda2[u, v]]},
+           2/lam (
+               + Cl2[2 ArcCos[(1 + u - v)/(2 Sqrt[u])]]
+               + Cl2[2 ArcCos[(1 - u + v)/(2 Sqrt[v])]]
+               + Cl2[2 ArcCos[(-1 + u + v)/(2 Sqrt[u v])]]
+           )
+          ];
+
+PhiUV[u_, v_] :=
+    Module[{lam = Lambda2[u, v]},
+           If[lam > 0,
+              Which[
+                  u <= 1 && v <= 1, PhiPos[u, v],
+                  u >= 1 && v/u <= 1, PhiPos[1/u, v/u]/u,
+                  True, PhiPos[1/v, u/v]/v
+                   ],
+              PhiNeg[u, v]
+             ]
+          ];
+
+(* Phi[x,y,z] function from
+ * Davydychev and Tausk, Nucl. Phys. B397 (1993) 23.
+ * Arguments are interpreted as squared mass parameters.
+ *)
+Phi[x_, y_, z_] := PhiUV[x/z, y/z];

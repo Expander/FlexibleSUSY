@@ -36,12 +36,12 @@
 #include "@ModelName@_FFMassiveV_form_factors.hpp"
 
 using namespace flexiblesusy;
-using namespace cxx_qft;
+using namespace @ModelName@_cxx_diagrams;
 using namespace @ModelName@_FFV_form_factors;
 using namespace @ModelName@_FFMassiveV_form_factors;
 
 namespace flexiblesusy {
-   using namespace cxx_qft::fields;
+using namespace @ModelName@_cxx_diagrams::fields;
 namespace @ModelName@_f_to_f_conversion {
 
 struct overlap_integrals {
@@ -93,7 +93,7 @@ double get_capture_rate (const Nucleus N) {
 template <class FOutBar, class FIn, class VBar>
 std::complex<double> vectorCurrent(const @ModelName@_mass_eigenstates& model) {
     @ModelName@_mass_eigenstates model_ = model;
-    EvaluationContext context{ model_ };
+    context_base context{ model_ };
     using vertex = Vertex<FOutBar, FIn, VBar>;
     std::array<int, 4> indices {0, 0, 0, 0};
     const auto value =  vertex::evaluate(indices, context);
@@ -107,7 +107,7 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
       const softsusy::QedQcd& qedqcd) {
 
    @ModelName@_mass_eigenstates model_ = model;
-   EvaluationContext context {model_};
+   context_base context {model_};
 
    const auto uVectorCurrent = 
       vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>(model);

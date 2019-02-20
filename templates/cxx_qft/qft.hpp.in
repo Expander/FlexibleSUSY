@@ -1,38 +1,37 @@
-#ifndef FS_CXX_QFT_H
-#define FS_CXX_QFT_H
+// ====================================================================
+// This file is part of FlexibleSUSY.
+//
+// FlexibleSUSY is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+//
+// FlexibleSUSY is distributed in the hope that it will be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with FlexibleSUSY.  If not, see
+// <http://www.gnu.org/licenses/>.
+// ====================================================================
 
-#include "../@ModelName@_mass_eigenstates.hpp"
+// File generated at @DateAndTime@
 
+/**
+ * @file cxx_qft/@ModelName@_qft.hpp
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ */
+
+#ifndef @ModelName@_CXXQFT_QFT_H
+#define @ModelName@_CXXQFT_QFT_H
+
+#include "multiindex.hpp"
+
+#include "@ModelName@_context_base.hpp"
 #include "@ModelName@_fields.hpp"
-
-namespace flexiblesusy {
-namespace cxx_qft
-{
-using mass_eigenstates = @ModelName@_mass_eigenstates;
-
-struct EvaluationContext {
-  const mass_eigenstates& model;
-
-  EvaluationContext( const mass_eigenstates &m )
-  : model( m ) {}
-
-  template<class Field>
-  double mass(const typename field_indices<Field>::type& indices) const
-  {
-    using CleanField = typename remove_lorentz_conjugation<Field>::type;
-    return mass_impl<CleanField>(indices);
-  }
-
-private:
-  template<class Field>
-  double mass_impl(const typename field_indices<Field>::type& indices) const;
-};
-
-@CXXDiagrams_MassFunctions@
-}
-}
-
 #include "@ModelName@_vertices.hpp"
 
 #endif
-

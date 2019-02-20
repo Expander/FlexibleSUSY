@@ -68,6 +68,9 @@ META_SRC     := \
 		$(DIR)/Constraint.m \
 		$(DIR)/ConvergenceTester.m \
 		$(DIR)/CXXDiagrams.m \
+		$(DIR)/NPointFunctions.m \
+		$(DIR)/NPointFunctions/internal.m \
+		$(DIR)/NPointFunctions/createFAModelFile.m \
 		$(DIR)/EDM.m \
 		$(DIR)/FFVFormFactors.m \
 		$(DIR)/FFMassiveVFormFactors.m \

@@ -651,12 +651,14 @@ BOOST_AUTO_TEST_CASE(test_MatrixProjector)
 
 BOOST_AUTO_TEST_CASE(test_Print_functions)
 {
-   PrintDEBUG("A debug message");
-   PrintERROR("An error message");
-   PrintINFO("An info message");
-   PrintWARNING("A warning message");
+   const int num = 5;
 
-   BOOST_CHECK_THROW(PrintFATAL("A fatal message"), flexiblesusy::FatalError);
+   BOOST_CHECK_EQUAL(PrintVERBOSE("A verbose message: num = ", num), 0.);
+   BOOST_CHECK_EQUAL(PrintDEBUG("A debug message: num = ", num), 0.);
+   BOOST_CHECK_EQUAL(PrintINFO("An info message: num = ", num), 0.);
+   BOOST_CHECK_EQUAL(PrintWARNING("A warning message: num = ", num), 0.);
+   BOOST_CHECK_EQUAL(PrintERROR("An error message: num = ", num), 0.);
+   BOOST_CHECK_THROW(PrintFATAL("A fatal message: num = ", num), flexiblesusy::FatalError);
 }
 
 BOOST_AUTO_TEST_CASE(test_FSThrow)

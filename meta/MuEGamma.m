@@ -62,7 +62,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                (* write routine for mu to e gamma *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                  "EvaluationContext context{ model_ };\n" <>
+                  "context_base context{ model_ };\n" <>
                   "std::array<int, " <> ToString @ numberOfIndices1 <>
                      "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
@@ -116,7 +116,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                (* write routine for b -> s gamma *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                  "EvaluationContext context{ model_ };\n" <>
+                  "context_base context{ model_ };\n" <>
                   "std::array<int, " <> ToString @ numberOfIndices1 <>
                      "> indices1 = {" <>
                        If[TreeMasses`GetDimension[inFermion] =!= 1,
@@ -156,7 +156,7 @@ MuEGammaCreateInterfaceFunctionForLeptonPair[{inFermion_, outFermion_, spectator
                (* write routine for b -> s gluon *)
                IndentText[
                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                  "EvaluationContext context{ model_ };\n" <>
+                  "context_base context{ model_ };\n" <>
                   "std::array<int, " <> ToString @ numberOfIndices1 <>
                      "> indices1 = {" <>
                        If[TreeMasses`GetDimension[inFermion] =!= 1,

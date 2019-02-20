@@ -32,7 +32,6 @@
 #include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "problems.hpp"
-#include "config.h"
 #include "physical_input.hpp"
 
 #include <array>
@@ -578,6 +577,7 @@ private:
    double calc_beta_g3_two_loop(const Beta_traces&) const;
    double calc_beta_g3_three_loop(const Beta_traces&) const;
    double calc_beta_g3_four_loop(const Beta_traces&) const;
+   double calc_beta_g3_five_loop(const Beta_traces&) const;
    double calc_beta_Lambdax_one_loop(const Beta_traces&) const;
    double calc_beta_Lambdax_two_loop(const Beta_traces&) const;
    double calc_beta_Lambdax_three_loop(const Beta_traces&) const;

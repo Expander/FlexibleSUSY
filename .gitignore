@@ -15,6 +15,8 @@ config.log
 config.boost
 config.math
 config.sarah
+config.feynarts
+config.formcalc
 createmodel.log
 flexiblesusy-config
 Makefile
@@ -75,3 +77,6 @@ test/*.spc.*
 test/*.xml
 test/LesHouches.out.*
 test/test_*.callgrind.out*
+test/test_SM_npointfunctions.cpp
+test/test_MSSM_npointfunctions.cpp
+

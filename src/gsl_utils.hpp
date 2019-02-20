@@ -27,8 +27,6 @@
 
 namespace flexiblesusy {
 
-class GSL_vector;
-
 /// Returns true if GSL_vector contains only finite elements, false otherwise
 bool is_finite(const GSL_vector&);
 /// Returns true if GSL vector contains only finite elements, false otherwise

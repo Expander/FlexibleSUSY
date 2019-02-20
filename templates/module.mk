@@ -3,8 +3,10 @@ MODNAME      := templates
 
 BASE_TEMPLATES := \
 		$(DIR)/cxx_qft/qft.hpp.in \
-		$(DIR)/cxx_qft/vertices.hpp.in \
 		$(DIR)/cxx_qft/fields.hpp.in \
+		$(DIR)/cxx_qft/vertices.hpp.in \
+		$(DIR)/cxx_qft/context_base.hpp.in \
+		$(DIR)/cxx_qft/npointfunctions.hpp.in \
 		$(DIR)/a_muon.hpp.in \
 		$(DIR)/a_muon.cpp.in \
 		$(DIR)/edm.hpp.in \

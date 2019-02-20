@@ -5,12 +5,12 @@
 
 PROGRAM_NAME=FlexibleSUSY
 FLEXIBLESUSY_MAJOR=2
-FLEXIBLESUSY_MINOR=1
+FLEXIBLESUSY_MINOR=3
 FLEXIBLESUSY_PATCH=0
 FLEXIBLESUSY_EXTRA=""
 FLEXIBLESUSY_VERSION="${FLEXIBLESUSY_MAJOR}.${FLEXIBLESUSY_MINOR}.${FLEXIBLESUSY_PATCH}${FLEXIBLESUSY_EXTRA}"
 GIT_COMMIT=$(git rev-parse HEAD 2> /dev/null || echo unknown)
-GM2CALC_VERSION="1.3.3"
+GM2CALC_VERSION="1.4.3"
 HIMALAYA_VERSION="unknown"
 
 # directory of this script
@@ -36,6 +36,8 @@ default_inc_paths="$CPATH:$CPLUS_INCLUDE_PATH:/usr/include:/usr/local/include"
 logfile="$BASEDIR/config.log"
 statusfile="$BASEDIR/config.status"
 sarahconfig="$BASEDIR/config.sarah"
+feynartsconfig="$BASEDIR/config.feynarts"
+formcalcconfig="$BASEDIR/config.formcalc"
 mathconfig="$BASEDIR/config.math"
 
 # whether we are in 32-bit or 64-bit environment
@@ -104,6 +106,8 @@ options="                    \
    enable_threads            \
    enable_tsil               \
    enable_verbose            \
+   enable_feynarts           \
+   enable_formcalc           \
 "
 
 # BEGIN: NOT EXPORTED ##########################################
@@ -134,6 +138,8 @@ enable_static="no"
 enable_threads="automatic"
 enable_tsil="automatic"
 enable_verbose="no"
+enable_feynarts="automatic"
+enable_formcalc="automatic"
 
 # corresponding preprocessor define statements
 DEFINE_ENABLE_COLORS="#undef ENABLE_COLORS"
@@ -250,6 +256,14 @@ SARAH_VERSION="unknown"
 SARAH_MAJOR="0"
 SARAH_MINOR="0"
 SARAH_PATCH="0"
+
+# required FeynArts version
+required_feynarts_version="3.9.0"
+FEYNARTS_VERSION="unknown"
+
+# required FormCalc version
+required_formcalc_version="9.5.0"
+FORMCALC_VERSION="unknown"
 
 # Mathematica version (0 = unknown)
 MATH_VERSION="0"
@@ -1972,7 +1986,7 @@ check_himalaya_libs() {
             # assume that the linker will look in the default paths
             HIMALAYALIBS="$HIMALAYALIBS_"
         else
-            HIMALAYALIBS="-L$himalaya_lib_dir $HIMALAYALIBS_"
+            HIMALAYALIBS="-L$himalaya_lib_dir -Wl,-rpath,$himalaya_lib_dir $HIMALAYALIBS_"
         fi
     fi
     return 0
@@ -2485,6 +2499,152 @@ EOF
 }
 
 #_____________________________________________________________________
+check_feynarts() {
+    if test "x$enable_feynarts" = "xno"; then return; fi
+    
+    checking_msg "FeynArts installation"
+    rm -f ${feynartsconfig}
+    "$MATH" <<EOF > /dev/null
+Needs["FeynArts\`"];
+If[!MemberQ[\$Packages, "FeynArts\`"], Quit[1]];
+If[Head[FeynArts\`\$FeynArts] === List,
+    Export["${feynartsconfig}", StringJoin @@ Riffle[ToString /@ FeynArts\`\$FeynArts, "."], "String"],
+    Export["${feynartsconfig}", FeynArts\`\$FeynArts, "String"]
+  ];
+Quit[0];
+EOF
+    local _feynarts_is_available="$?"
+    if test "x${_feynarts_is_available}" = "x0" ; then
+        if test -r "${feynartsconfig}" ; then
+            FEYNARTS_VERSION=$(cat "${feynartsconfig}")
+            
+            if version_at_least $FEYNARTS_VERSION "${required_feynarts_version}"; then
+                enable_feynarts="yes"
+                result "ok (version ${FEYNARTS_VERSION})"
+            elif test "x$enable_feynarts" = "xautomatic"; then
+                enable_feynarts="no"
+                result "ok (version ${FEYNARTS_VERSION} too old -- support disabled)"
+            else
+                result "not ok"
+                message "Error: FeynArts version ${FEYNARTS_VERSION} no longer supported!"
+                message "   Please use version ${required_feynarts_version} or higher."
+                exit 1
+            fi
+        elif test "x$enable_feynarts" = "xautomatic"; then
+            result "ok (unknown version -- support disabled)"
+            enable_feynarts="no"
+        else
+            result "not ok"
+            message "Error: Cannot not check FeynArts version."
+            exit 1
+        fi
+    elif test "x$enable_feynarts" = "xautomatic"; then
+        result "ok (not installed)"
+        enable_feynarts="no"
+    else
+		    result "not ok"
+        message "Error: FeynArts is not installed correctly."
+        message "   Please make sure Needs[\"FeynArts\`\"] works correctly."
+        exit 1
+    fi
+}
+
+#_____________________________________________________________________
+check_formcalc() {
+    if test "x$enable_formcalc" = "xno"; then return; fi
+    
+    checking_msg "FormCalc installation"
+    rm -f ${formcalcconfig}
+    "$MATH" <<EOF > /dev/null
+Needs["FormCalc\`"];
+If[!MemberQ[\$Packages, "FormCalc\`"], Quit[1]];
+If[Head[FormCalc\`\$FormCalc] === List,
+    Export["${formcalcconfig}", StringJoin @@ Riffle[ToString /@ FormCalc\`\$FormCalc, "."], "String"],
+    Export["${formcalcconfig}", FormCalc\`\$FormCalc, "String"]
+  ];
+Quit[0];
+EOF
+    local _formcalc_is_available="$?"
+    if test "x${_formcalc_is_available}" = "x0" ; then
+        if test -r "${formcalcconfig}" ; then
+            FORMCALC_VERSION=$(cat "${formcalcconfig}")
+            
+            if version_at_least $FORMCALC_VERSION "${required_formcalc_version}"; then
+                result "ok (version ${FORMCALC_VERSION})"
+            elif test "x$enable_formcalc" = "xautomatic"; then
+                enable_formcalc="no"
+                result "ok (version ${FORMCALC_VERSION} too old -- support disabled)"
+            else
+                result "not ok"
+                message "Error: FormCalc version ${FORMCALC_VERSION} no longer supported!"
+                message "   Please use version ${required_formcalc_version} or higher."
+                exit 1
+            fi
+        elif test "x$enable_formcalc" = "xautomatic"; then
+            result "ok (unknown version -- support disabled)"
+            enable_formcalc="no"
+        else
+            result "not ok"
+            message "Error: Cannot check FormCalc version."
+            exit 1
+        fi
+    elif test "x$enable_formcalc" = "xautomatic"; then
+        result "ok (not installed)"
+        enable_formcalc="no"
+    else
+		    result "not ok"
+        message "Error: FormCalc is not installed correctly."
+        message "   Please make sure Needs[\"FormCalc\`\"] works correctly."
+        exit 1
+    fi
+    
+    if test "x$enable_formcalc" != "xno"; then
+        checking_msg "working FormCalc"
+        
+        if test "x$enable_feynarts" != "xyes"; then
+            if test "x$enable_formcalc" = "xautomatic"; then
+                enable_formcalc="no"
+                result "no (disabled because FeynArts support is disabled)"
+            else
+                enable_formcalc="yes"
+                result "yes (cannot perform test calculation because FeynArts support is disabled)"
+            fi
+        else
+            "$MATH" <<EOF > /dev/null
+Needs["FeynArts\`"];
+Needs["FormCalc\`"];
+SetDirectory[CreateDirectory[]];
+    
+topologies = FeynArts\`CreateTopologies[1, 1 -> 1];
+diagrams = FeynArts\`InsertFields[topologies,
+  {FeynArts\`S[1]} -> {FeynArts\`S[1]},
+  FeynArts\`InsertionLevel -> FeynArts\`Particles,
+  FeynArts\`Model -> "SM"
+];
+faFeynAmp = FeynArts\`CreateFeynAmp[diagrams];
+fcFeynAmp = FormCalc\`CalcFeynAmp[faFeynAmp];
+
+If[MatchQ[Head[fcFeynAmp], Amp[{{FeynArts\`S[1], __}} -> {{FeynArts\`S[1], __}}]],
+  Quit[0]];
+Quit[1];
+EOF
+            local _formcalc_is_working="$?"
+            if test "x${_formcalc_is_working}" = "x0" ; then
+                enable_formcalc="yes"
+                result "yes (performed test calculation of S[1] -> S[1] in the SM)"
+            elif test "x$enable_formcalc" = "xautomatic"; then
+                enable_formcalc="no"
+                result "no (test calculation of S[1] -> S[1] failed -- support disabled)"
+            else
+                result "no (unable to calculate S[1] -> S[1] in the SM)"
+                message "Error: FormCalc is not working properly."
+                exit 1
+            fi
+        fi
+		fi
+}
+
+#_____________________________________________________________________
 check_cygpath() {
     checking_msg "cygpath.exe"
     exists_in_path "cygpath.exe"
@@ -2795,7 +2955,7 @@ enable_defines() {
 
     for a in ${ADDONS}; do
         local addon_name="$(basename ${a})"
-        DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}\n#define ENABLE_${addon_name} 1"
+        DEFINE_ENABLE_ADDONS="${DEFINE_ENABLE_ADDONS}@n@#define ENABLE_${addon_name} 1"
     done
 }
 
@@ -2842,6 +3002,8 @@ replace_markers() {
 	-e "s|@ENABLE_ILP64MKL_WORKAROUND@|$enable_ilp64mkl_workaround|" \
 	-e "s|@ENABLE_LAPACK@|$enable_lapack|" \
 	-e "s|@ENABLE_LIBRARYLINK@|$enable_librarylink|" \
+	-e "s|@ENABLE_FEYNARTS@|$enable_feynarts|"        \
+	-e "s|@ENABLE_FORMCALC@|$enable_formcalc|"        \
 	-e "s|@ENABLE_LOOPTOOLS@|$enable_looptools|" \
 	-e "s|@ENABLE_META@|$enable_meta|" \
 	-e "s|@ENABLE_SILENT@|$enable_silent|"    \
@@ -2909,6 +3071,8 @@ cat <<EOF
   threads           Enable multi-threading (default: $enable_threads)
   tsil              Enable TSIL (default: $enable_tsil)
   verbose           Verbose messages (default: $enable_verbose)
+  feynarts          Enable usage of FeynArts (default: automatic)
+  formcalc          Enable usage of FormCalc (default: automatic)
 
 Package directories, compilation settings and model selection
 
@@ -3086,7 +3250,10 @@ check_solvers
 check_install
 check_install_dir
 
-if [ "$enable_meta" = yes -o "$enable_librarylink" != no ]; then
+# check for Mathematic if meta code generation is enabled or we
+# compile with LibraryLink
+if [ "$enable_meta" = yes -o \( "$enable_compile" = yes -a "$enable_librarylink" != no \) ]; then
+    echo "enable_meta = $enable_meta"
     check_math_cmd
     check_mathematica_info
 else
@@ -3098,6 +3265,11 @@ if test "x${enable_meta}" = "xyes"; then
     case "$operating_system" in
 	CYGWIN_NT*) check_cygpath ;;
     esac
+    check_feynarts
+    check_formcalc
+else
+    enable_feynarts=no
+    enable_formcalc=no
 fi
 
 if test "x${enable_compile}" = "xyes"; then
@@ -3234,6 +3406,8 @@ sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \
     -e "s|@DEFINE_ENABLE_LATTICE_SOLVER@|$DEFINE_ENABLE_LATTICE_SOLVER|" \
     -e "s|@DEFINE_ENABLE_SEMI_ANALYTIC_SOLVER@|$DEFINE_ENABLE_SEMI_ANALYTIC_SOLVER|" \
     -e "s|@DEFINE_ENABLE_ADDONS@|$DEFINE_ENABLE_ADDONS|"       \
+    -e 's|@n@|\
+|g' \
     < $CONFIGHDR_TMPL > $CONFIGHDR
 
 sed -e "s|@FLEXIBLESUSY_VERSION@|$FLEXIBLESUSY_VERSION|" \

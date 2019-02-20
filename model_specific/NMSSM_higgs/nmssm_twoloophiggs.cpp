@@ -19,7 +19,6 @@
 #include "nmssm_twoloophiggs.hpp"
 #include "mssm_twoloophiggs.hpp"
 #include "nmssm2loop.h"
-#include "config.h"
 #include <cmath>
 #include <utility>
 

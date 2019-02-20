@@ -36,10 +36,10 @@
 #include "@ModelName@_FFMassiveV_form_factors.hpp"
 
 using namespace flexiblesusy;
-using namespace cxx_qft;
+using namespace @ModelName@_cxx_diagrams;
+using namespace @ModelName@_cxx_diagrams::fields;
 
 namespace {
-using namespace cxx_qft::fields;
 
 #include "clooptools.h"
 
@@ -65,7 +65,7 @@ struct FFMassiveVVertexCorrectionFS {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+                       context_base const& context);
 };
 
 template<class Fj, class Fi, class V, class F, class S>
@@ -73,7 +73,7 @@ struct FFVEmitterFj {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+                       context_base const& context);
 };
 
 template<class Fj, class Fi, class V, class F, class S>
@@ -81,14 +81,14 @@ struct FFVEmitterFi {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+                       context_base const& context);
 };
 template<class Fj, class Fi, class V, class F, class S>
 struct FFVEmitterS {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+                       context_base const& context);
 };
 
 template<class Fj, class Fi, class V, class F, class S>
@@ -96,7 +96,7 @@ struct FFVEmitterF {
    static std::valarray<std::complex<double>> value(
          const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
-                       EvaluationContext& context);
+                       context_base const& context);
 };
 } // anonymous namespace
 
@@ -118,7 +118,7 @@ template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFMassiveVVertexCorrectionFS<Fj, Fi, V, F, S>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out, 
-      EvaluationContext& context) {
+      context_base const& context) {
 
    // using VertexFiBarFjVBar = Vertex<typename Fi::lorentz_conjugate, Fj, typename V::lorentz_conjugate>;
    
@@ -145,7 +145,7 @@ template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out, 
-      EvaluationContext& context) {
+      context_base const& context) {
 
    using VertexFjBarFjVBar = Vertex<typename Fj::lorentz_conjugate, Fj, typename V::lorentz_conjugate>;
    using VertexFBarFjSBar  = Vertex<typename F::lorentz_conjugate, Fj, typename S::lorentz_conjugate>;
@@ -168,20 +168,20 @@ std::valarray<std::complex<double>> FFVEmitterFj<Fj, Fi, V, F, S>::value(
       for (const auto& indexOut: index_range<VertexFiBarFS>()) {
 
          // cycle if generations of external fermions  are different then requested   
-         const auto jFieldIndices = VertexFBarFjSBar::template field_indices<1>(indexIn);
-         const auto iFieldIndices = VertexFiBarFS::template field_indices<0>(indexOut);
+         const auto jFieldIndices = VertexFBarFjSBar::template indices_of_field<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFS::template indices_of_field<0>(indexOut);
          if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
          // match indices of the scalar field in the loop
-         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
-         const auto scalarFieldIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
+         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<2>(indexIn);
+         const auto scalarFieldIndicesOut = VertexFiBarFS::template indices_of_field<2>(indexOut);
          if (scalarFieldIndicesIn != scalarFieldIndicesOut)
             continue;
 
          // match indices of the fermion field in the loop
-         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
-         const auto fermionFieldIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
+         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<0>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFS::template indices_of_field<1>(indexOut);
          if (fermionFieldIndicesIn != fermionFieldIndicesOut)
             continue;
 
@@ -229,7 +229,7 @@ template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out, 
-      EvaluationContext& context) {
+      context_base const& context) {
 
    using VertexFiBarFiVBar = Vertex<typename Fi::lorentz_conjugate, Fi, typename V::lorentz_conjugate>;
    using VertexFBarFjSBar  = Vertex<typename F::lorentz_conjugate, Fj, typename S::lorentz_conjugate>;
@@ -251,20 +251,20 @@ std::valarray<std::complex<double>> FFVEmitterFi<Fj, Fi, V, F, S>::value(
    for (const auto& indexIn: index_range<VertexFBarFjSBar>()) {
       for (const auto& indexOut: index_range<VertexFiBarFS>()) {
          // cycle if generations of external fermions  are different then requested   
-         const auto jFieldIndices = VertexFBarFjSBar::template field_indices<1>(indexIn);
-         const auto iFieldIndices = VertexFiBarFS::template field_indices<0>(indexOut);
+         const auto jFieldIndices = VertexFBarFjSBar::template indices_of_field<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFS::template indices_of_field<0>(indexOut);
          if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
          // match indices of the scalar field in the loop
-         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
-         const auto scalarFieldIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
+         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<2>(indexIn);
+         const auto scalarFieldIndicesOut = VertexFiBarFS::template indices_of_field<2>(indexOut);
          if (scalarFieldIndicesIn != scalarFieldIndicesOut)
             continue;
 
          // match indices of the fermion field in the loop
-         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
-         const auto fermionFieldIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
+         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<0>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFS::template indices_of_field<1>(indexOut);
          if (fermionFieldIndicesIn != fermionFieldIndicesOut)
             continue;
 
@@ -311,7 +311,7 @@ template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out, 
-      EvaluationContext& context) {
+      context_base const& context) {
 
    using VertexFBarFVBar  = Vertex<typename F::lorentz_conjugate, F, typename V::lorentz_conjugate>;
    using VertexFBarFjSBar = Vertex<typename F::lorentz_conjugate, Fj, typename S::lorentz_conjugate>;
@@ -332,20 +332,20 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
       for (const auto& indexOut: index_range<VertexFiBarFS>()) {
 
          // cycle if generations of external fermions  are different then requested   
-         const auto jFieldIndices = VertexFBarFjSBar::template field_indices<1>(indexIn);
-         const auto iFieldIndices = VertexFiBarFS::template field_indices<0>(indexOut);
+         const auto jFieldIndices = VertexFBarFjSBar::template indices_of_field<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFS::template indices_of_field<0>(indexOut);
          if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
          // match indices of the scalar field in the loop
-         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
-         const auto scalarFieldIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
+         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<2>(indexIn);
+         const auto scalarFieldIndicesOut = VertexFiBarFS::template indices_of_field<2>(indexOut);
          if (scalarFieldIndicesIn != scalarFieldIndicesOut)
             continue;
 
          // get FBarFVBar vertex
-         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
-         const auto fermionFieldIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
+         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<0>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFS::template indices_of_field<1>(indexOut);
          const auto indexFBarFVBar = concatenate(
             fermionFieldIndicesOut, fermionFieldIndicesIn,
             spectator_indices
@@ -411,7 +411,7 @@ template<class Fj, class Fi, class V, class F, class S>
 std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
    const typename field_indices<Fj>::type& indices_in, 
    const typename field_indices<Fi>::type& indices_out, 
-   EvaluationContext& context) {
+   context_base const& context) {
 
    using VertexSBarSVBar  = Vertex<typename S::lorentz_conjugate, S, typename V::lorentz_conjugate>;
    using VertexFBarFjSBar    = Vertex<typename F::lorentz_conjugate, Fj, typename S::lorentz_conjugate>;
@@ -432,20 +432,20 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
       for (const auto& indexOut: index_range<VertexFiBarFS>()) {
 
          // cycle if generations of external fermions  are different then requested   
-         const auto jFieldIndices = VertexFBarFjSBar::template field_indices<1>(indexIn);
-         const auto iFieldIndices = VertexFiBarFS::template field_indices<0>(indexOut);
+         const auto jFieldIndices = VertexFBarFjSBar::template indices_of_field<1>(indexIn);
+         const auto iFieldIndices = VertexFiBarFS::template indices_of_field<0>(indexOut);
          if (jFieldIndices != indices_in || iFieldIndices != indices_out)
             continue;
 
          // match indices of the fermion field in the loop
-         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template field_indices<0>(indexIn);
-         const auto fermionFieldIndicesOut = VertexFiBarFS::template field_indices<1>(indexOut);
+         const auto fermionFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<0>(indexIn);
+         const auto fermionFieldIndicesOut = VertexFiBarFS::template indices_of_field<1>(indexOut);
          if (fermionFieldIndicesIn != fermionFieldIndicesOut)
             continue;
 
          // get SBarSVBar vertex 
-         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template field_indices<2>(indexIn);
-         const auto scalarFieldIndicesOut = VertexFiBarFS::template field_indices<2>(indexOut);
+         const auto scalarFieldIndicesIn = VertexFBarFjSBar::template indices_of_field<2>(indexIn);
+         const auto scalarFieldIndicesOut = VertexFiBarFS::template indices_of_field<2>(indexOut);
          const auto indexSBarSVBar = concatenate(
             scalarFieldIndicesOut, scalarFieldIndicesIn, 
             spectator_indices

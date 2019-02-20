@@ -35,7 +35,7 @@
 #include "@ModelName@_FFV_form_factors.hpp"
 
 using namespace flexiblesusy;
-using namespace cxx_qft;
+using namespace @ModelName@_cxx_diagrams;
 using namespace @ModelName@_FFV_form_factors;
 
 namespace flexiblesusy {
