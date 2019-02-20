@@ -219,7 +219,7 @@ class correlation_function_context
 
 public:
   correlation_function_context(
-    @ModelName@_mass_eigenstates &m,
+    const @ModelName@_mass_eigenstates &m,
     const std::array<int, NumberOfExternalIndices> &ei,
     const std::array<Eigen::Vector4d, NumberOfExternalMomenta> &em
   ) : context_with_vertices( m ),
