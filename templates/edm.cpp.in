@@ -30,6 +30,7 @@
 
 #include "cxx_qft/@ModelName@_qft.hpp"
 
+#include "wrappers.hpp"
 #include "numerics2.hpp"
 
 #define INPUTPARAMETER(p) context.model.get_input().p
