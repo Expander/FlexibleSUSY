@@ -401,13 +401,15 @@ SetFSConventionRules[] :=
     };
 
     (* These index rules are specific to SARAH generated FeynArts
-     * model files.
+     * model files. Are these index rules always injective?
      *)
     indexRules = {
       FeynArts`Index[generationName_, index_Integer] :> 
 				Symbol["SARAH`gt" <> ToString[index]] /;
 				StringMatchQ[SymbolName[generationName], "I"~~___~~"Gen"],
       FeynArts`Index[Global`Colour, index_Integer] :> 
+				Symbol["SARAH`ct" <> ToString[index]],
+      FeynArts`Index[Global`Gluon, index_Integer] :> 
 				Symbol["SARAH`ct" <> ToString[index]]
     };
 
