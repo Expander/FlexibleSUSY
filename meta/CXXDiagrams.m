@@ -25,19 +25,6 @@
 (*** This module generates c++ code capable of representing fields, vertices and diagrams. ***)
 BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`", "CConversion`", "ColorMath`"}];
 
-
-(*** Debug only ***)
-SortedVertex::usage="";
-LabelLorentzPart::usage="";
-GaugeStructureOfVertexLorentzPart::usage="";
-FullGaugeStructureFromParts::usage="";
-GaugeStructureOfVertex::usage="";
-IsLorentzIndex::usage="";
-IsColourIndex::usage="";
-IndexField::usage="";
-CombineChiralParts::usage="";
-LorentzIndexOfField::usage="";
-
 (*** Public interfaces that model fields ***)
 CreateFields::usage="";
 CXXNameOfField::usage="";
@@ -47,7 +34,8 @@ LorentzConjugate::usage="";
 RemoveLorentzConjugation::usage="";
 NumberOfFieldIndices::usage="";
 CreateMassFunctions::usage="";
-includeLorentzIndices::usage="";
+IsLorentzIndex::usage="";
+IsColourIndex::usage="";
 
 (*** Public interfaces that model vertices ***)
 (** We need to encode the vertex structure for every unbroken gauge group:
@@ -70,6 +58,7 @@ GellMannVertex::usage="A vertex proportional to \\Lambda^t_{a b}";
 AdjointlyColouredVertex::usage="A vertex proportional to f^{a b c}";
 
 CreateVertices::usage="";
+VertexTypes::usage="";
 VertexTypeForFields::usage="";
 
 (*** Public interfaces that model diagrams ***)
@@ -88,6 +77,16 @@ Begin["`Private`"];
 LeftChiralVertex::usage="A left projector part of a vertex";
 RightChiralVertex::usage="A right projector part of a vertex";
 TwoMetricVertex::usage="A g[l1,l2] * g[l3,l4] part of a vertex";
+
+VertexTypes[] := {
+	ScalarVertex,
+	ChiralVertex,
+	MomentumVertex,
+	TripleVectorVertex,
+	QuadrupleVectorVertex,
+	MomentumDifferenceVertex,
+	InverseMetricVertex
+};
 
 (* Return a string corresponding to the c++ class name of the field.
  Note that "bar" and "conj" get turned into "typename bar<...>::type" and
