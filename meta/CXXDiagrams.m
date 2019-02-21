@@ -302,6 +302,9 @@ ConvertColourStructureToColorMathConvention[fields_List,
 	ZeroColouredVertex] := 0
 
 ConvertColourStructureToColorMathConvention[fields_List,
+	UncolouredVertex] := 1
+
+ConvertColourStructureToColorMathConvention[fields_List,
 	GellMannVertex[cIndex1_, cIndex2_, cIndex3_]] :=
 (* FIXME: Factor of two? *)
 	2 ColorMath`CMt[{cIndex1}, cIndex2, cIndex3] 
@@ -421,12 +424,17 @@ IndexDiagramFromGraph[diagram_, graph_] :=
  *)
 ColourFactorForIndexedDiagramFromGraph[indexedDiagram_, graph_] :=
 	Module[{indexedVertexFields = Cases[indexedDiagram, {__}],
-			vertexFields, sortedVertices, vertices,
+			vertexFields, sortedVertices, sortedColourStructures,
 			verticesOrderings, inverseVOrderings, sortedVerticesOrderings,
 			fOrderingWRTSortedVs, defaultIndexedVertexFields,
-			colourStructures, colorMathExpression},
+			defaultIndexedColorMathExpressions, colorMathExpressions},
 		vertexFields = Vertices`StripFieldIndices /@ indexedVertexFields;
 		sortedVertices = SortedVertex /@ vertexFields;
+		
+		sortedColourStructures = Transpose[{
+			sortedVertices[[All,1]],
+			(GaugeStructureOfVertex /@ sortedVertices)[[All,2]]
+		}];
 		
     (* Mathematica 7 does not know about permutations... :'-( *)
     verticesOrderings = Ordering /@ vertexFields;
@@ -440,29 +448,19 @@ ColourFactorForIndexedDiagramFromGraph[indexedDiagram_, graph_] :=
 
     defaultIndexedVertexFields = Part @@@ Transpose[
 			{sortedVertices[[All,1]], fOrderingWRTSortedVs}];
+		defaultIndexedColorMathExpressions = 
+			ConvertColourStructureToColorMathConvention @@@ sortedColourStructures;
 		
-		vertices = ({#[[3]], Sequence @@ Rest[#[[1]]]} /. 
-			Flatten[Thread /@ Rule @@@
-				Map[Vertices`FieldIndexList,
-					Transpose[{#[[2]], #[[3]]}], {2}]
-				] &) /@
-			Transpose[{sortedVertices,
+		colorMathExpressions = (#[[1]] /. (Flatten[Thread /@ Rule @@@
+			Map[Vertices`FieldIndexList,
+				Transpose[{#[[2]], #[[3]]}], {2}]]) &) /@
+			Transpose[{defaultIndexedColorMathExpressions,
 				defaultIndexedVertexFields, indexedVertexFields}];
 		
-		colourStructures = Cases[
-			Transpose[{
-				vertices[[All,1]],
-				(GaugeStructureOfVertex /@ vertices)[[All,2]]
-			}],
-			Except[{_, UncolouredVertex}]];
-		
-		colorMathExpression = Times @@
-			(ConvertColourStructureToColorMathConvention @@@ colourStructures);
-		
-		If[colorMathExpression === 1, 1,
+		If[(Times @@ colorMathExpressions) === 1, 1,
 			ColorMathToSARAHConvention[
-				ColorMath`CSimplify[colorMathExpression]]
-			]
+				ColorMath`CSimplify[Times @@ colorMathExpressions]]
+		]
 	]
 
 IndexPrefixForType[SARAH`generation] := "gt"
