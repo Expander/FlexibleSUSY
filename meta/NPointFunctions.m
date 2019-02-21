@@ -564,6 +564,13 @@ CXXCodeForGenericSum[sum_GenericSum, genericInsertions_List,
     Utils`AssertWithMessage[NumberQ[#],
       "CXXDiagrams`CXXCodeForGenericSum[]: Projected colour factor is
 not a number: " <> ToString[#]] & /@ colourFactors;
+    
+    (* Non-integer colour factors need to be wrapped useing other
+     * types than boost::mpl::int_<>.
+     *)
+    Utils`AssertWithMessage[IntegerQ[#],
+      "CXXDiagrams`CXXCodeForGenericSum[]: non-integer projected colour
+factors are not implemented yet: " <> ToString[#]] & /@ colourFactors;
 
     relevantSubexpressions = DeleteDuplicates[Cases[expr,
       Pattern[subexpr, Alternatives @@ subexpressions[[All,1]]] :> subexpr,
