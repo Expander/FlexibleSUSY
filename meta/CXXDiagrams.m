@@ -166,8 +166,8 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	LoadVerticesIfNecessary[];
 	
 	internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
-	externalRules = Flatten @ ({{_,#,_} :> SARAH`AntiField[# /. externalFields],
-		{#,_,_} :> SARAH`AntiField[# /. externalFields]} & /@ externalVertices);
+	externalRules = Flatten @ ({{_,#,_} :> (# /. externalFields)} & /@
+		externalVertices);
 
 	internalFieldCouplings = (Flatten[(Flatten @ Position[adjacencyMatrix[[#]],Except[0],{1},Heads -> False]
 		/. {i_Integer :> Table[{#,i,k},{k,adjacencyMatrix[[#,i]]}]}),1] &

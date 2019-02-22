@@ -391,7 +391,7 @@ PhotonEmitter, ExchangeField
    double res = 0.0;
 
    using MuonVertex = Vertex<
-                      typename Muon::lorentz_conjugate,
+                      Muon,
                       ExchangeField,
                       PhotonEmitter
                       >;
@@ -449,7 +449,7 @@ PhotonEmitter, ExchangeField
    double res = 0.0;
 
    using MuonVertex = Vertex<
-                      typename Muon::lorentz_conjugate,
+                      Muon,
                       ExchangeField,
                       PhotonEmitter
                       >;
