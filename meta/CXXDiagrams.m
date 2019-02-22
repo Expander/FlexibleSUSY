@@ -36,6 +36,8 @@ NumberOfFieldIndices::usage="";
 CreateMassFunctions::usage="";
 IsLorentzIndex::usage="";
 IsColourIndex::usage="";
+LorentzIndexOfField::usage="";
+ColourIndexOfField::usage="";
 
 (*** Public interfaces that model vertices ***)
 (** We need to encode the vertex structure for every unbroken gauge group:
@@ -200,6 +202,20 @@ LorentzIndexOfField[field_]:=
     lorentzIndices[[1]]
   ]
 
+(** \brief Get the color index of a given field
+ * \param[in] field The indexed field
+ * \returns The color index of \a field
+ * For any given indexed field or antifield that has a color charge,
+ * return the color index.
+ *)
+ColourIndexOfField[field_ /; TreeMasses`ColorChargedQ[field]]:=
+	Module[{colorIndices = Select[Vertices`FieldIndexList[field], IsColourIndex]},
+		Utils`AssertWithMessage[Length[colorIndices] === 1,
+			"ColorMathInterface`ColourIndexOfField[]: Argument " <>
+			ToString[field] <> " does not have exactly one color index."];
+    colorIndices[[1]]
+  ]
+
 (* adjacencyMatrix must be undirected (i.e symmetric) *)
 FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	Module[{externalVertices = externalFields[[All,1]],
@@ -281,20 +297,6 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
-
-(** \brief Get the color index of a given field
- * \param[in] field The indexed field
- * \returns The color index of \a field
- * For any given indexed field or antifield that has a color charge,
- * return the color index.
- *)
-GetFieldColorIndex[field_ /; TreeMasses`ColorChargedQ[field]]:=
-	Module[{colorIndices = Select[Vertices`FieldIndexList[field], IsColourIndex]},
-		Utils`AssertWithMessage[Length[colorIndices] === 1,
-			"ColorMathInterface`GetFieldColorIndex[]: Argument " <>
-			ToString[field] <> " does not have exactly one color index."];
-    colorIndices[[1]]
-  ]
 
 (* Convert color structures to the ColorMath convention *)
 ConvertColourStructureToColorMathConvention[fields_List,
