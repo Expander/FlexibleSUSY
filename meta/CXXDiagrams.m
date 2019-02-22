@@ -26,18 +26,27 @@
 BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`", "CConversion`", "ColorMath`"}];
 
 (*** Public interfaces that model fields ***)
-CreateFields::usage="";
-CXXNameOfField::usage="";
-CXXNameOfVertex::usage="";
-LorentzConjugateOperation::usage="";
-LorentzConjugate::usage="";
-RemoveLorentzConjugation::usage="";
-NumberOfFieldIndices::usage="";
-CreateMassFunctions::usage="";
-IsLorentzIndex::usage="";
-IsColourIndex::usage="";
-LorentzIndexOfField::usage="";
-ColourIndexOfField::usage="";
+CreateFields::usage="Creates c++ code that makes all fields and their properties \
+available as c++ types.";
+CXXNameOfField::usage="Returns the name of the c++ type corresponding to a \
+(possibly conjugate) field.";
+CXXNameOfVertex::usage="Returns the name of the c++ type corresponding to a \
+given vertex.";
+LorentzConjugateOperation::usage="Returns the appropriate c++ typename \
+to conjugate a given field as it would be used by SARAH`AntiField[].";
+LorentzConjugate::usage="Conjugate a given field as it would be by SARAH`AntiField[].";
+RemoveLorentzConjugation::usage="Unconjugate a field if it is conjugate. \
+Leave it untouched otherwise.";
+NumberOfFieldIndices::usage="Return the number of indices a field has as would be \
+determined by inspecting the result of TreeMasses`FieldInfo[].";
+CreateMassFunctions::usage="Creates c++ code that makes functions available that \
+return tree-level masses of given fields.";
+IsLorentzIndex::usage="Returns True if a given index is a Lorentz index and \
+False otherwise.";
+IsColourIndex::usage="Returns True if a given index is a colour index and \
+False otherwise.";
+LorentzIndexOfField::usage="Returns the Lorentz index of a given indexed field.";
+ColourIndexOfField::usage="Returns the colour index of a given indexed field.";
 
 (*** Public interfaces that model vertices ***)
 (** We need to encode the vertex structure for every unbroken gauge group:
@@ -59,20 +68,28 @@ KroneckerDeltaColourVertex::usage="A vertex proportional to \\delta( ct1, ct2 )"
 GellMannVertex::usage="A vertex proportional to \\Lambda^t_{a b}";
 AdjointlyColouredVertex::usage="A vertex proportional to f^{a b c}";
 
-CreateVertices::usage="";
-VertexTypes::usage="";
-VertexTypeForFields::usage="";
+CreateVertices::usage="Creates c++ code that makes functions available that \
+numerically evaluates any of the given vertices.";
+VertexTypes::usage="Returns a list of the different Lorentz structures that \
+are currently implemented by CXXDiagrams.";
+VertexTypeForFields::usage="Returns the Lorentz structure of a given vertex.";
 
 (*** Public interfaces that model diagrams ***)
-FeynmanDiagramsOfType::usage="";
-VerticesForDiagram::usage="";
-IndexDiagramFromGraph::usage="";
-ColourFactorForIndexedDiagramFromGraph::usage="";
-ContractionsBetweenVerticesForDiagramFromGraph::usage="";
+FeynmanDiagramsOfType::usage="Returns all instantiations of Feynman diagrams \
+of a given topology and with given external fields.";
+VerticesForDiagram::usage="Returns a list of all vertices present in a diagram.";
+IndexDiagramFromGraph::usage="Fully index all fields in a given diagram such that \
+contracted fields share the same indices.";
+ColourFactorForIndexedDiagramFromGraph::usage="Calculate the colour factor of \
+a given diagram with a given topology.";
+ContractionsBetweenVerticesForDiagramFromGraph::usage="Returns a list of the positions \
+of the contracted fields in a given diagram in the given vertices.";
 
 (*** Public utility functions ***)
-AtomHead::usage="";
-CreateUnitCharge::usage="";
+AtomHead::usage="Repeatedly evaluate Head[] on the argument until it satisfies \
+AtomQ[] and return the result.";
+CreateUnitCharge::usage="Creates the c++ code for a function that returns the \
+numerical value of the electrical charge of the electron.";
 
 Begin["`Private`"];
 
@@ -80,6 +97,11 @@ LeftChiralVertex::usage="A left projector part of a vertex";
 RightChiralVertex::usage="A right projector part of a vertex";
 TwoMetricVertex::usage="A g[l1,l2] * g[l3,l4] part of a vertex";
 
+(** \brief Returns a list of the different Lorentz structures that
+ * are currently implemented by CXXDiagrams.
+ * \returns a list of the different Lorentz structures that
+ * are currently implemented by CXXDiagrams.
+ **)
 VertexTypes[] := {
 	ScalarVertex,
 	ChiralVertex,
@@ -90,9 +112,17 @@ VertexTypes[] := {
 	InverseMetricVertex
 };
 
-(* Return a string corresponding to the c++ class name of the field.
- Note that "bar" and "conj" get turned into "typename bar<...>::type" and
- "typename conj<...>::type" respectively! *)
+(** \brief Returns the name of the c++ type corresponding to a
+ * (possibly conjugate) field.
+ * Note that `bar` and `conj` get turned into `typename bar<...>::type`
+ * and `typename conj<...>::type` respectively.
+ * \param p the given (possibly conjugate) field
+ * \param prefixNamespace Either `False` to apply no prefix namespace.
+ * Otherwise the string `OptionValue[prefixNamespace]` is prepended to
+ * the field name.
+ * \returns the name of the c++ type corresponding to a
+ * (possibly conjugate) field.
+ **)
 CXXNameOfField[p_, OptionsPattern[{prefixNamespace -> False}]] :=
   If[StringQ[OptionValue[prefixNamespace]],
      OptionValue[prefixNamespace] <> "::",
@@ -105,32 +135,72 @@ CXXNameOfField[Susyno`LieGroups`conj[p_],
   "typename conj<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
   ">::type";
 
+(** \brief Returns the name of the c++ type corresponding to a
+ * given vertex. The c++ field names will automatically have `fields`
+ * prepended to them as determined by `CXXNameOfField[]`.
+ * \param fields the list of fields in the given vertex
+ * \returns the name of the c++ type corresponding to a
+ * given vertex.
+ **)
 CXXNameOfVertex[fields_List] := "Vertex<" <> StringJoin[Riffle[
 		CXXNameOfField[#, prefixNamespace -> "fields"] & /@ fields,
 	", "]] <> ">"
 
+(** \brief Returns the c++ keyword corresponding to a boolean value. **)
 CXXBoolValue[True] = "true";
 CXXBoolValue[False] = "false";
 
-(* TODO: Better name than LorentzConjugate *)
-(* FIXME: We decide this on our own which is bad, but 
-	SARAH`AntiField[] only works after one has called some
-	SARAH routines like in LoadVerticesIfNecessary[].
-	But CXXDiagrams should be stateless, hence we avoid relying
-	SARAH here. *)
+(** \brief Returns the appropriate c++ typename to conjugate a
+ * given field as it would be used by ``SARAH`AntiField[]``.
+ * \param field the given field
+ * \returns the appropriate c++ typename to conjugate a
+ * given field as it would be used by ``SARAH`AntiField[]``.
+ **)
 LorentzConjugateOperation[field_] :=
 	If[TreeMasses`IsFermion[field] || TreeMasses`IsGhost[field],
 		"bar", "conj"]
+
+(** \brief Conjugate a given field as it would be by
+ * ``SARAH`AntiField[]``.
+ * \param field the given field
+ * \returns the conjugate a given field as it would be by 
+ * ``SARAH`AntiField[]``.
+ **)
 LorentzConjugate[field_] :=
 	If[TreeMasses`IsFermion[field] || TreeMasses`IsGhost[field],
 		SARAH`bar[field], Susyno`LieGroups`conj[field]]
 
+(** \brief Unconjugate a field if it is conjugate. Leave it untouched
+ * otherwise.
+ * \param p the given field
+ * \returns the unconjugated field.
+ **)
 RemoveLorentzConjugation[p_] := p
 RemoveLorentzConjugation[SARAH`bar[p_]] := p
 RemoveLorentzConjugation[Susyno`LieGroups`conj[p_]] := p
 
+(** \brief Repeatedly evaluate `Head[]` on the argument until it
+ * satisfies `AtomQ[]` and return the result.
+ * \param x the given argument
+ * \returns the result of repeatedly evaluating `Head[]` on the
+ * argument until it satisfies `AtomQ[]` and return the result.
+ **)
 AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
 
+(** \brief Creates c++ code that makes all fields and their properties
+ * available as c++ types. Also creates two using declarations for
+ * the following fields:
+ * - Photon
+ * - Electron
+ * Furthermore create the necessary boilerplate code to conjugate any
+ * given c++ field as well as convenience `boost::mpl::vector<>`
+ * containers for the following field types:
+ * - scalars
+ * - fermions
+ * - vectors
+ * - ghosts
+ * \returns the corresponding c++ code.
+ **)
 CreateFields[] :=
   Module[{fields, scalars, fermions, vectors, ghosts},
        fields = TreeMasses`GetParticles[];
@@ -188,12 +258,10 @@ CreateFields[] :=
          StringJoin[Riffle[CXXNameOfField /@ ghosts, ", "]] <> ">;"
   ]
 
-(** \brief Get the lorentz index of a given field
- * \param[in] field The indexed field
- * \returns The lorentz index of \a field
- * For any given indexed field or antifield that has a lorentz index,
- * return it.
- *)
+(** \brief Get the lorentz index of a given indexed field
+ * \param field The indexed field
+ * \returns the Lorentz index of a given indexed field.
+ **)
 LorentzIndexOfField[field_]:=
 	Module[{lorentzIndices = Select[Vertices`FieldIndexList[field], IsLorentzIndex]},
 		Utils`AssertWithMessage[Length[lorentzIndices] === 1,
@@ -202,12 +270,10 @@ LorentzIndexOfField[field_]:=
     lorentzIndices[[1]]
   ]
 
-(** \brief Get the color index of a given field
- * \param[in] field The indexed field
- * \returns The color index of \a field
- * For any given indexed field or antifield that has a color charge,
- * return the color index.
- *)
+(** \brief Get the lorentz index of a given indexed field
+ * \param field The indexed field
+ * \returns the Lorentz index of a given indexed field.
+ **)
 ColourIndexOfField[field_ /; TreeMasses`ColorChargedQ[field]]:=
 	Module[{colorIndices = Select[Vertices`FieldIndexList[field], IsColourIndex]},
 		Utils`AssertWithMessage[Length[colorIndices] === 1,
@@ -216,7 +282,15 @@ ColourIndexOfField[field_ /; TreeMasses`ColorChargedQ[field]]:=
     colorIndices[[1]]
   ]
 
-(* adjacencyMatrix must be undirected (i.e symmetric) *)
+(** \brief Returns all instantiations of Feynman diagrams of a given
+ * topology and with given external fields.
+ * \param adjacencyMatrix the symmetric adjacency matrix determining the
+ * topology of the diagrams
+ * \param externalFields a list of rules of the form
+ * `{index1 -> externalField1, ... }`
+ * \returns all instantiations of Feynman diagrams of a given
+ * topology and with given external fields.
+ **)
 FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	Module[{externalVertices = externalFields[[All,1]],
 			internalVertices,externalRules, internalFieldCouplings,
@@ -225,6 +299,9 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 			fieldsToInsert,
 			unresolvedFieldCouplings,resolvedFields,resolvedFieldCouplings,
 			diagrams},
+	Utils`AssertWithMessage[adjacencyMatrix === Transpose[adjacencyMatrix],
+		"CXXDiagrams`FeynmanDiagramsOfType[]: The given adjacency matrix is \
+not symmetric"];
 	LoadVerticesIfNecessary[];
 	
 	internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
@@ -272,8 +349,21 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 		) &)]
   ]
 
+(** \brief Returns a list of all vertices present in a diagram.
+ * \param diagram The given Feynman diagram
+ * \returns a list of all vertices present in a diagram.
+ **)
 VerticesForDiagram[diagram_] := Select[diagram,Length[#] > 1 &]
 
+(** \brief Returns a list of the positions of the contracted fields in
+ * a given diagram in the given vertices.
+ * \param v1 the index of the first vertex in question
+ * \param v2 the index of the second vertex in question
+ * \param diagram the given Feynman diagram
+ * \param graph the topology given as an adjacency matrix
+ * \returns a list of the positions of the contracted fields in
+ * a given diagram in the given vertices.
+ **)
 ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		diagram_List, graph_List] :=
 	Module[{fields1 = diagram[[v1]], fields2 = diagram[[v2]],
@@ -298,7 +388,7 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
 
-(* Convert color structures to the ColorMath convention *)
+(** \brief Convert color structures to the ColorMath convention **)
 ConvertColourStructureToColorMathConvention[fields_List,
 	ZeroColouredVertex] := 0
 
@@ -365,11 +455,11 @@ ColorMathToSARAHConvention[expr_] :=
 
 (** \brief Fully index all fields in a given diagram such that
  * contracted fields share the same indices.
- * \param[in] diagram The diagram to index
- * \param[in] graph The graph giving the topology of \a diagram
+ * \param diagram The diagram to index
+ * \param graph The graph giving the topology of \a diagram
  * \returns An indexed version of \a diagram in which
  * contracted fields share the same indices.
- *)
+ **)
 IndexDiagramFromGraph[diagram_, graph_] :=
 	Module[{diagramWithUIDs, fields, indexedFields, indexedDiagram,
 		applyUserIndices, vIndex1, vIndex2, contractIndices},
@@ -418,11 +508,11 @@ IndexDiagramFromGraph[diagram_, graph_] :=
 
 (** \brief Calculate the colour factor of a given diagram with a given
  * topology.
- * \param[in] diagram The indexed diagram specifiying all occurring
+ * \param diagram The indexed diagram specifiying all occurring
  * fields. All indices need to be properly connected!
- * \param[in] graph The topology of the diagram as adjacency matrix.
+ * \param graph The topology of the diagram as adjacency matrix.
  * \returns The color factor for \a diagram.
- *)
+ **)
 ColourFactorForIndexedDiagramFromGraph[indexedDiagram_, graph_] :=
 	Module[{indexedVertexFields = Cases[indexedDiagram, {__}],
 			vertexFields, sortedVertices, sortedColourStructures,
@@ -464,12 +554,18 @@ ColourFactorForIndexedDiagramFromGraph[indexedDiagram_, graph_] :=
 		]
 	]
 
+(** \brief Returns the index prefix string for an index of a given type **)
 IndexPrefixForType[SARAH`generation] := "gt"
 IndexPrefixForType[SARAH`lorentz] := "lt"
 IndexPrefixForType[SARAH`color] := "ct"
 IndexPrefixForType[indexType_] := 
 	(Print["Unknown index type: " <> ToString[indexType] <> " encountered."]; Quit[1])
 
+(** \brief Fully index a given field
+ * \param field the given unindexed field
+ * \returns a fully indexed version of the field with indices determined
+ * by `Unique[]`.
+ **)
 IndexField[field_] :=
 	Module[{indexSpecification, indexTypes, indexNames,
 		conjugation, uniqueNumberString},
@@ -490,6 +586,17 @@ IndexField[field_] :=
 		}
 	]
 
+(** \brief Sort a set of fields into SARAH canonical order and return
+ * the corresponding vertex as determined by ``SARAH`Vertex[]`` with
+ * appropriate FlexibleSUSY conventions applied. These are:
+ * - GUT normalization
+ * - an extra factor of `-I`
+ * \param fields The given set of fields
+ * \param ApplyGUTNormalization True if GUT normalization should be
+ * applied and False otherwise.
+ * \returns the sorted vertex as determined by ``SARAH`Vertex[]`` with
+ * appropriate FlexibleSUSY conventions applied.
+ **)
 SortedVertex[fields_List, OptionsPattern[{ApplyGUTNormalization -> False}]] :=
 	Module[{sortedFields, indexedSortedFields, vertexList, vertex, types,
 			similarVertexList, similarVertex, fieldReplacementRules,
@@ -534,6 +641,7 @@ SortedVertex[fields_List, OptionsPattern[{ApplyGUTNormalization -> False}]] :=
 			vertex]
 	]
 
+(** \brief Turn SARAH-style Lorentz structures into CXXDiagrams ones. **)
 LabelLorentzPart[{scalar_, 1}] := {scalar, ScalarVertex}
 
 LabelLorentzPart[{scalar_,
@@ -596,6 +704,7 @@ LabelLorentzPart[{scalar_, SARAH`g[lIndex1_, lIndex2_]}] :=
 LabelLorentzPart[vertexPart_] := 
 	(Print["Unknown Lorentz structure in vertex ", vertexPart]; Quit[1])
 
+(** \brief Turn SARAH-style colour structures into CXXDiagrams ones. **)
 GaugeStructureOfVertexLorentzPart[{0, lorentzStructure_}] :=
 	{0, ZeroColouredVertex, lorentzStructure}
 
@@ -621,7 +730,16 @@ GaugeStructureOfVertexLorentzPart[
 GaugeStructureOfVertexLorentzPart[vertexPart_] := 
 	(Print["Unknown colour structure in vertex ", vertexPart]; Quit[1])
 
-(* We assume all parts to have different gauge structures *)
+(** \brief Given a list of gauge (colour and Lorentz) structures
+ * combine all left and right projector parts to chiral parts.
+ * Pad with zeros if necessary.
+ * \param gaugeParts a list of gauge structures of the format
+ * `{{scalar1, colourStructure1, LorentzStructure1}, ...}`
+ * \returns the list of gauge structures where all left and right
+ * projector parts are combined to chiral parts.
+ * \note There may be no two gauge parts with the same gauge structures
+ * in the given list.
+ **)
 CombineChiralParts[gaugeParts_List] :=
 	Module[{leftChiralParts, rightChiralParts, chiralParts, allParts},
 		leftChiralParts = Cases[gaugeParts,
@@ -658,7 +776,17 @@ CombineChiralParts[gaugeParts_List] :=
 		allParts
 	]
 
-(* We assume all parts to have different gauge structures *)
+(** \brief Given a list of gauge (colour and Lorentz) structures
+ * with `TwoMetricVertex[]` parts with the same set of Lorentz indices,
+ * combine them to `QuadrupleVectorVertex[]` parts.
+ * Pad with zeros if necessary.
+ * \param gaugeParts a list of gauge structures of the format
+ * `{{scalar1, colourStructure1, LorentzStructure1}, ...}`
+ * \returns the list of gauge structures where all `TwoMetricVertex[]`
+ * parts are combined to `QuadrupleVectorVertex[]` parts.
+ * \note There may be no two gauge parts with the same gauge structures
+ * in the given list.
+ **)
 CombineQuadrupleVectorPartsInGroup[gaugeParts_List] :=
 	Module[{g12g34Parts, g13g24Parts, g14g23Parts,
 			parts1And2, parts1And3, parts2And3, vvvvParts},
@@ -714,7 +842,16 @@ indices encountered:" <> ToString[gaugeParts]
 		]
 	]
 
-(* We assume all parts to have different gauge structures *)
+(** \brief Given a list of gauge (colour and Lorentz) structures
+ * combine all `TwoMetricVertex[]` parts to `QuadrupleVectorVertex[]`
+ * parts. Pad with zeros if necessary.
+ * \param gaugeParts a list of gauge structures of the format
+ * `{{scalar1, colourStructure1, LorentzStructure1}, ...}`
+ * \returns the list of gauge structures where all `TwoMetricVertex[]`
+ * parts are combined to `QuadrupleVectorVertex[]` parts.
+ * \note There may be no two gauge parts with the same gauge structures
+ * in the given list.
+ **)
 CombineQuadrupleVectorParts[gaugeParts_List] :=
 	Module[{ggParts, ggGroups, allParts},
 		ggParts = Cases[gaugeParts,
@@ -735,7 +872,24 @@ CombineQuadrupleVectorParts[gaugeParts_List] :=
 		allParts
 	]
 
-(* Assuming all Gauge structure combinations are different *)
+(** \brief Given a list of gauge (colour and Lorentz) structure
+ * combine all parts with gauge structures that are internal to
+ * CXXDiagrams to such that are exported by CXXDiagrams. These are:
+ * - LeftChiralVertex
+ * - RightChiralVertex
+ * - TwoMetricVertex
+ * Pad with zeros if necessary.
+ * \param gaugeParts a list of gauge structures of the format
+ * `{{scalar1, colourStructure1, LorentzStructure1}, ...}`
+ * \returns the resulting gauge structure where all gauge structures
+ * that are internal to CXXDiagrams are combined to such that are
+ * exported by CXXDiagrams.
+ * \note There may be no two gauge parts with the same gauge structures
+ * in the given list.
+ * \note The resulting gauge structure has to decompose as
+ * `{scalar1, ...} * ColourStructure * LorentzStructure`
+ * otherwise a fatal error is issued.
+ **)
 FullGaugeStructureFromParts[gaugeParts_List] :=
 	Module[{gaugeStructures},
 		gaugeStructures = CombineChiralParts[gaugeParts];
@@ -748,6 +902,14 @@ composite gauge structure encountered:" <> ToString[gaugeStructures]];
 		gaugeStructures[[1]]
 	]
 
+(** \brief Given a vertex return its gauge (colour and Lorentz)
+ * structure as determined by `FullGaugeStructureFromParts[]`
+ * when applied to the gauge parts of the vertex.
+ * \param vertex the given vertex as a list of fields
+ * \returns the gauge (colour and Lorentz) structure as determined
+ * by `FullGaugeStructureFromParts[]` when applied to the gauge parts
+ * of the vertex.
+ **)
 GaugeStructureOfVertex[vertex_] :=
 	Module[{lorentzParts, gaugeStructures},
 		(* This is arguably a bug in SARAH causing e.g {hh, hh, VZ} to be mapped to {0, 0} *)
@@ -761,9 +923,9 @@ GaugeStructureOfVertex[vertex_] :=
 		FullGaugeStructureFromParts[gaugeStructures]
 	]
 
-(** \brief Generates the c++ code for numerical evaluation of a given
- * list of vertices.
- * \param vertices A list of vertices
+(** \brief Creates c++ code that makes functions available that
+ * numerically evaluates any of the given vertices.
+ * \param vertices a list of vertices
  * \returns a list {prototypes, definitions} containing the
  * corresponding c++ code.
  **)
@@ -775,7 +937,13 @@ CreateVertices[vertices_List] :=
 		
 		StringJoin[Riffle[#, "\n\n"]] & /@ {prototypes, definitions}
 	]
-
+	
+(** \brief Creates c++ code that makes a function available that
+ * numerically evaluates the given vertex.
+ * \param fields a vertex given as a list of fields
+ * \returns a list {prototypes, definitions} containing the
+ * corresponding c++ code.
+ **)
 CreateVertex[fields_List] :=
   Module[{fieldSequence},
 		fieldSequence = StringJoin @ Riffle[
@@ -801,9 +969,19 @@ CreateVertex[fields_List] :=
 		}
   ]
 
+(** \brief Returns the Lorentz structure of a given vertex.
+ * param fields a vertex given as a list of fields
+ * \returns the Lorentz structure of a given vertex.
+ **)
 VertexTypeForFields[fields_List] :=
 	AtomHead[GaugeStructureOfVertex[SortedVertex[fields]][[3]]]
 
+(** \brief Creates the c++ code containing the actual numerical
+ * evaluation of a given vertex.
+ * \param fields a vertex given as a list of fields
+ * \returns the c++ code containing the actual numerical
+ * evaluation of a given vertex.
+ **)
 VertexFunctionBodyForFields[fields_List] := 
 	Module[{sortedVertex, sortedFields, sortedIndexedFields, indexedFields,
 			indexFields, gaugeStructure,
@@ -954,6 +1132,15 @@ VertexFunctionBodyForFields[fields_List] :=
     ]
   ]
 
+(** \brief Given a sequence of Lorentz indices determine which part of
+ * a `QuadrupleVectorVertex` is encoded by 
+ * `g[lIndex1, lIndex2] * g[lIndex3, lIndex4]`
+ * \param lIndex1 the first Lorentz index
+ * \param lIndex2 the second Lorentz index
+ * \param lIndex3 the third Lorentz index
+ * \param lIndex4 the fourth Lorentz index
+ * \returns the corresponding part of the `QuadrupleVectorVertex`
+ **)
 QuadrupleVectorVertexPartForLorentzIndices[
 		lIndex1_, lIndex2_, lIndex3_, lIndex4_] :=
 	Module[{properlyOrderedindices},
@@ -969,6 +1156,9 @@ Cannot properly order Lorentz indices: " <>
 ToString[{lIndex1, lIndex2, lIndex3, lIndex4}]]; Quit[1]]
 	]
 
+(** \brief a helper function that declares the local indices used
+ * by `VertexFunctionBodyForFields[]`
+ **)
 DeclareIndices[indexedFields_List, arrayName_String] :=
     Module[{p, total = 0, fieldIndexList, decl = ""},
            DeclareIndex[idx_, num_Integer, an_String] := (
@@ -981,10 +1171,17 @@ DeclareIndices[indexedFields_List, arrayName_String] :=
            Assert[total == Total[Length[Vertices`FieldIndexList[#]]& /@ indexedFields]];
            decl
           ]
-
+          
+(** \brief a helper function that returns a c++ type capable of storing
+ * a complex scalar.
+ **)
 GetComplexScalarCType[] :=
     CConversion`CreateCType[CConversion`ScalarType[CConversion`complexScalarCType]]
-  
+
+(** \brief Creates c++ code that makes functions available that
+ * return tree-level masses of given fields.
+ * \returns the corresponding c++ code as a string.
+ **)
 CreateMassFunctions[] :=
   Module[{massiveFields,
           ghostMappings = SelfEnergies`ReplaceGhosts[FlexibleSUSY`FSEigenstates]},
@@ -1004,6 +1201,10 @@ CreateMassFunctions[] :=
             ] & /@ massiveFields, "\n\n"]
         ]
 
+(** \brief Creates the c++ code for a function that returns the
+ * numerical value of the electrical charge of the electron.
+ * \returns the corresponding c++ code as a string.
+ **)
 CreateUnitCharge[] :=
   Module[{electron,photon,vertex,vertexBody,
           numberOfElectronIndices,numberOfPhotonIndices},
@@ -1050,8 +1251,21 @@ CreateUnitCharge[] :=
          "}"
   ]
 
+(** \brief Return the number of indices a field has as would be 
+ * determined by inspecting the result of ``TreeMasses`FieldInfo[]``.
+ * \param field the given field
+ * \returns the number of indices a field has as would be 
+ * determined by inspecting the result of ``TreeMasses`FieldInfo[]``.
+ **)
 NumberOfFieldIndices[field_] := Length @ TreeMasses`FieldInfo[field][[5]]
 
+(** \brief Return the index bounds a field has as would be 
+ * determined by inspecting the result of ``TreeMasses`FieldInfo[]``.
+ * The result is of the format `{{min1, ...}, {max1, ...}}`.
+ * \param field the given field
+ * \returns the number of indices a field has as would be 
+ * determined by inspecting the result of ``TreeMasses`FieldInfo[]``.
+ **)
 IndexBoundsForField[field_] :=
   Module[{fieldInfo = TreeMasses`FieldInfo[field]},
     If[NumberOfFieldIndices[field] === 0,
@@ -1062,6 +1276,9 @@ IndexBoundsForField[field_] :=
          {1,#[[2]]} & /@ DeleteCases[fieldInfo[[5]],{SARAH`generation,_}],
          {fieldInfo[[2]],fieldInfo[[3]]}]]]]
 
+(** \brief If the SARAH vertices are not yet available, force SARAH to
+ * reread its vertex files.
+ **)
 LoadVerticesIfNecessary[] :=
    If[Head[SARAH`VertexList3] === Symbol || Length[SARAH`VertexList3] === 0,
         SA`CurrentStates = FlexibleSUSY`FSEigenstates; 
@@ -1072,11 +1289,30 @@ LoadVerticesIfNecessary[] :=
         SARAH`MakeCouplingLists;
    ]
 
+(** \brief Returns `True` if a given index is a Lorentz index and `False`
+ * otherwise.
+ * \returns `True` if a given index is a Lorentz index and `False`
+ * otherwise.
+ **)
 IsColourIndex[index_] := StringMatchQ[ToString @ index, "ct" ~~ __]
+
+(** \brief Returns `True` if a given index is a colour index and `False`
+ * otherwise.
+ * \returns `True` if a given index is a colour index and `False`
+ * otherwise.
+ **)
 IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __]
 
+(** \brief Remove any Lorentz and colour indices of a given field
+ * \param p the given field
+ * \returns the field with any Lorentz and colour indices removed.
+ **)
 StripUnbrokenGaugeIndices[p_] := StripColourIndices[StripLorentzIndices[p]]
 
+(** \brief Remove any Lorentz indices of a given field
+ * \param p the given field
+ * \returns the field with any Lorentz indices removed.
+ **)
 StripLorentzIndices[p_Symbol] := p
 StripLorentzIndices[SARAH`bar[p_]] := SARAH`bar[StripLorentzIndices[p]]
 StripLorentzIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripLorentzIndices[p]]
@@ -1086,7 +1322,11 @@ StripLorentzIndices[p_] :=
 		If[Length[remainingIndices] === 0, Head[p],
 			Head[p][remainingIndices]]
 	]
-
+	
+(** \brief Remove any colour indices of a given field
+ * \param p the given field
+ * \returns the field with any colour indices removed.
+ **)
 StripColourIndices[p_Symbol] := p
 StripColourIndices[SARAH`bar[p_]] := SARAH`bar[StripColourIndices[p]]
 StripColourIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripColourIndices[p]]
