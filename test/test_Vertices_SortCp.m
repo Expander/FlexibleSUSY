@@ -100,4 +100,7 @@ TestEquality[RBOM[{bar[Cha[{gI1}]], UChi[{gO1}], VWm},
 
 DeleteDirectory[SARAH`SARAH[OutputDirectory], DeleteContents -> True];
 
+TestEquality[Vertices`SarahColorIndexQ[#], True]& /@ {ct4, ct69, ct666};
+TestEquality[Vertices`SarahColorIndexQ[#], False]& /@ {gt4, gt69, gt666, lt1, lt17, lt381};
+
 PrintTestSummary[];
