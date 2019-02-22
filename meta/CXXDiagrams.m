@@ -55,9 +55,7 @@ FieldInfo::usage="";
 includeLorentzIndices::usage="";
 LoadVerticesIfNecessary::usage="";
 IsLorentzIndex::usage = "";
-IsColorIndex::usage = "";
 IsGenerationIndex::usage = "";
-
 
 Begin["`Private`"];
 
@@ -550,7 +548,6 @@ VertexTypeForFields[fields_List] :=
   ]
 
 IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __];
-IsColorIndex[index_] := StringMatchQ[ToString @ index, "ct" ~~ __];
 IsGenerationIndex[index_] := StringMatchQ[ToString @ index, "gt" ~~ __];
 
 StripLorentzIndices[p_Symbol] := p;

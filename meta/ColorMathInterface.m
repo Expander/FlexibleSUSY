@@ -24,7 +24,7 @@ Limitations:
 *)
 
 BeginPackage["ColorMathInterface`",
-   {"SARAH`", "TreeMasses`", (*IsColorIndex is there*)"CXXDiagrams`", "ColorMath`"}
+   {"SARAH`", "TreeMasses`", "Vertices`", "ColorMath`"}
 ];
 
 CalculateColorFactor::usage = "";
@@ -51,7 +51,7 @@ DropFieldIndices[field_] :=
 GetFieldColorIndex[field_/;TreeMasses`ColorChargedQ[field]]:=
   Module[{res},
     res = GetFieldIndices[field];
-    res = Select[res, IsColorIndex];
+    res = Select[res, Vertices`SarahColorIndexQ];
     Assert[Length[res] === 1];
     res[[1]]
   ];
@@ -115,11 +115,11 @@ SARAHToColorMathSymbols[vertex_List] :=
       SARAH`fSU3[colSeq__] :> ColorMath`CMf[colSeq];
 
    (* if the result has Delta, we need to find out if it's adj. or fundamental *)
-    result = result /. SARAH`Delta[c1_?IsColorIndex, c2_?IsColorIndex] :>
+    result = result /. SARAH`Delta[c1_?Vertices`SarahColorIndexQ, c2_?Vertices`SarahColorIndexQ] :>
         If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === T,
            ColorMath`CMdelta[c1, c2]
         ];
-   result = result /. SARAH`Delta[c1_?IsColorIndex, c2_?IsColorIndex] :>
+   result = result /. SARAH`Delta[c1_?Vertices`SarahColorIndexQ, c2_?Vertices`SarahColorIndexQ] :>
        If[getColorRep[Select[vertex[[1]], ! FreeQ[#, c1] &][[1]]] === O,
           ColorMath`CMDelta[c1, c2]
        ];
