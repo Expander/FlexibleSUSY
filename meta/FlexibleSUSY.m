@@ -2059,7 +2059,7 @@ WriteEDMClass[edmFields_List,files_List] :=
 
 (* Write the FFV c++ files *)
 WriteFFVFormFactorsClass[extParticles_List, files_List] :=
-   Module[{interfacePrototypes = "", interfaceDefinitions = "", insertionsAndVertices, vertices = {}},
+   Module[{interfacePrototypes = "", interfaceDefinitions = "", insertionsAndVertices, vertices = {}, verticesOLD},
 
       If[extParticles =!= {},
 
@@ -2071,15 +2071,19 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
                {extParticles, ffff @@@  extParticles}
             ];
 
+      	graphs = FFVFormFactors`FFVGraphs[];
+	      diagrams = Outer[FFVFormFactors`FFVContributingDiagramsForGraph, graphs, extParticles, 1];
+      	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
+         verticesOLD = Flatten[Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1];
+         Print[vertices];
+         Print[verticesOLD];
+
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
                FFVFormFactors`FFVFormFactorsCreateInterfaceFunction @@@
                   insertionsAndVertices
             ]);
-         vertices = Flatten[
-            Flatten[insertionsAndVertices[[All, 4]], 1][[All, 2, 2]], 1
          ];
-      ];
 
       WriteOut`ReplaceInFiles[files,
          {"@FFVFormFactors_InterfacePrototypes@"   -> interfacePrototypes,

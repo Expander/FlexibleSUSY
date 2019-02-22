@@ -27,9 +27,46 @@ BeginPackage["FFVFormFactors`",
 ];
 
 FFVFormFactorsCreateInterfaceFunction::usage = "";
+FFVGraphs::usage = "";
+FFVContributingDiagramsForGraph::usage = "";
 ffff::usage = "";
 
 Begin["Private`"];
+
+vertexCorrectionGraph = {{0,0,0,1,0,0},
+                         {0,0,0,0,1,0},
+                         {0,0,0,0,0,1},
+                         {1,0,0,0,1,1},
+                         {0,1,0,1,0,1},
+                         {0,0,1,1,1,0}};
+contributingGraphs = {vertexCorrectionGraph};
+FFVGraphs[] := contributingGraphs;
+
+FFVContributingDiagramsForGraph[graph_, externalParticles_] :=
+   Module[{diagrams},
+      diagrams =
+         CXXDiagrams`FeynmanDiagramsOfType[
+            graph,
+            {1 -> externalParticles[[1]], 2 -> CXXDiagrams`LorentzConjugate[externalParticles[[2]]], 3 -> externalParticles[[3]]}
+         ];
+         
+      Select[diagrams, IsDiagramSupported[graph,#] &]
+   ];
+
+IsDiagramSupported[vertexCorrectionGraph, diagram_] :=
+  Module[{photonEmitter,exchangeParticle},
+    photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+    exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
+    
+    (*If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},*)
+       (*Return[False]];*)
+    If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
+       Return[True]];
+    If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
+       Return[True]];
+
+    Return[False];
+  ]
 
 MyReIm[z_] := If[$VersionNumber >= 10.1,
    ReIm[z],
