@@ -103,10 +103,6 @@ RemoveLorentzConjugation[p_] := p
 RemoveLorentzConjugation[SARAH`bar[p_]] := p
 RemoveLorentzConjugation[Susyno`LieGroups`conj[p_]] := p
 
-RemoveLorentzConjugation[p_] := p
-RemoveLorentzConjugation[SARAH`bar[p_]] := p
-RemoveLorentzConjugation[Susyno`LieGroups`conj[p_]] := p
-
 AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
 
 CreateFields[] :=
