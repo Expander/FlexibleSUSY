@@ -34,28 +34,36 @@
 #include "cxx_qft/@ModelName@_qft.hpp"
 #include "@ModelName@_FFV_form_factors.hpp"
 
-using namespace flexiblesusy;
 using namespace @ModelName@_cxx_diagrams;
+using namespace @ModelName@_cxx_diagrams::fields;
 using namespace @ModelName@_FFV_form_factors;
 
 namespace flexiblesusy {
 namespace @ModelName@_mu_to_egamma {
-   /*
-inline double sm_width(int generationIndex1,  int generationIndex2, const @ModelName@_mass_eigenstates& model ) {
-   @ModelName@_mass_eigenstates model_ = model;
-   EvaluationContext context{ model_ };
-   std::array<int, 1> indices1 = { generationIndex1 };
-   std::array<int, 1> indices2 = { generationIndex2 };
+
+template <typename T1, typename T2>
+double lepton_total_decay_width(
+      T1 const& indices1, T2 const& indices2, 
+      const @ModelName@_mass_eigenstates& model, const softsusy::QedQcd& qedqcd) {
+
+   context_base context {model};
 
    const auto leptonInMass = context.mass<Fe>(indices1);
    const auto leptonOutMass = context.mass<Fe>(indices2);
-   const auto ratio = pow(leptonOutMass/leptonInMass,2);
-   const auto GF {1.1667e-5};
+   const auto r = pow(leptonOutMass/leptonInMass, 2);
+   const auto GF2 = pow(qedqcd.displayFermiConstant(), 2);
    const double Alpha = Sqr(Fe::electric_charge * unit_charge(context))/(4*Pi);
 
-   return GF*GF * pow(leptonInMass,5) * (1.0 - 8.0*ratio) * (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)/(192.0*pow(Pi,3));
+   // eq. 10.6 of http://pdg.lbl.gov/2018/reviews/rpp2018-rev-standard-model.pdf
+   return 
+      // tree-level (with massless outgoing lepton)
+      GF2*pow(leptonInMass,5)/(192.0*pow(Pi,3)) 
+      // outgoing lepton mass correction
+      * (1 - 8*r + 8*pow(r,3) - pow(r,4) - 12*r*r*std::log(r));
+      // higher order correction
+      //* (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)
 }
-*/
+
 @MuEGamma_InterfaceDefinitions@
 }
 } // namespace flexiblesusy
