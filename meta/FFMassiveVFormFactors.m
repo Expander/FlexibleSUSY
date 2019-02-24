@@ -53,7 +53,7 @@ MassiveVIndices[V_] :=
       "}\n"
    ];
 
-FFMassiveVFormFactorsCreateInterface[inFermion_, outFermion_, spectator_, loopParticles_List] :=
+FFMassiveVFormFactorsCreateInterface[inFermion_ -> outFermion_, spectator_, loopParticles_List] :=
     Module[{prototype, definition,
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
@@ -189,7 +189,7 @@ singleMassiveDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermio
    ];
 
 
-ff[inFermion_, outFermion_, spectator_] :=
+ff[inFermion_ -> outFermion_, spectator_] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
 
       scalars = getParticlesOfType[TreeMasses`IsScalar];
