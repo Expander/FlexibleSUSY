@@ -63,7 +63,7 @@ LowPoleMassPrecision     = {};
 
 ExtraSLHAOutputBlocks = {
    {FlexibleSUSYLowEnergy,
-           {{21, FlexibleSUSYObservable`aMuon} } },
+           {{21, FlexibleSUSYObservable`aMuon}, {26, FlexibleSUSYObservable`BrLToLGamma[Fe[2] -> {Fe[1], VP}]} } },
    {EFFHIGGSCOUPLINGS, NoScale,
            {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
             {2, FlexibleSUSYObservable`CpHiggsGluonGluon} } }

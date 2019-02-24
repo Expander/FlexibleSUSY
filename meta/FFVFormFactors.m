@@ -42,15 +42,15 @@ vertexCorrectionGraph = {{0,0,0,1,0,0},
 contributingGraphs = {vertexCorrectionGraph};
 FFVGraphs[] := contributingGraphs;
 
-FFVContributingDiagramsForGraph[graph_, externalParticles_] :=
+FFVContributingDiagramsForGraph[graph_, {Fj_ -> {Fi_, V_}}] :=
    Module[{diagrams},
       diagrams =
          CXXDiagrams`FeynmanDiagramsOfType[
             graph,
-            {1 -> externalParticles[[1]], 2 -> CXXDiagrams`LorentzConjugate[externalParticles[[2]]], 3 -> externalParticles[[3]]}
+            {1 -> Fj, 2 -> CXXDiagrams`LorentzConjugate[Fi], 3 -> V}
          ];
          
-      Select[diagrams, IsDiagramSupported[graph,#] &]
+      Select[diagrams, IsDiagramSupported[graph, #]&]
    ];
 
 IsDiagramSupported[vertexCorrectionGraph, diagram_] :=
@@ -88,7 +88,7 @@ FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon
 }
 
 *)
-FFVFormFactorsCreateInterfaceFunction[Fj_, Fi_, V_, gTaggedDiagrams_List] :=
+FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, gTaggedDiagrams_List] :=
    Module[{prototype, definition,
            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[Fj],
            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[Fi],
@@ -184,7 +184,7 @@ CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
                      ">::value(indices1, indices2, context);\n";
 
 (* create a list of insertion that will get passed to the FFVCreateInterface *)
-ffff[inFermion_, outFermion_, spectator_] :=
+ffff[inFermion_ -> {outFermion_, spectator_}] :=
    Module[{scalars, fermions, internalParticles = {}, temp},
 
       scalars = getParticlesOfType[TreeMasses`IsScalar];

@@ -35,7 +35,7 @@ namespace flexiblesusy {
 class @ModelName@_mass_eigenstates;
 
 namespace @ModelName@_mu_to_egamma {
-@MuEGamma_InterfacePrototypes@
+@LToLGamma_InterfacePrototypes@
 }
 } // namespace flexiblesusy
 

@@ -64,6 +64,6 @@ double lepton_total_decay_width(
       //* (1.0 + 0.5 * Alpha * (6.25-Sqr(Pi))/Pi)
 }
 
-@MuEGamma_InterfaceDefinitions@
+@LToLGamma_InterfaceDefinitions@
 }
 } // namespace flexiblesusy
