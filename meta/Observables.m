@@ -101,8 +101,22 @@ GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarPh
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`CpPseudoScalarGluonGluon] := "effective A-Gluon-Gluon coupling";
 GetObservableDescription[FlexibleSUSYObservable`EDM[p_[idx_]]] := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> "(" <> ToString[idx] <> ") [1/GeV]";
 GetObservableDescription[FlexibleSUSYObservable`EDM[p_]]       := "electric dipole moment of " <> CConversion`ToValidCSymbolString[p] <> " [1/GeV]";
-GetObservableDescription[FlexibleSUSYObservable`BrLToLGamma[pIn_ -> {pOut_, _}]] := "";
-GetObservableDescription[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_] -> pOut_[idxOut_], _]] := "";
+GetObservableDescription[FlexibleSUSYObservable`BrLToLGamma[pIn_ -> {pOut_, _}]] :=
+   "BR(" <> CConversion`ToValidCSymbolString[pIn] <> " -> " <>
+   CConversion`ToValidCSymbolString[pOut] <> " " <>
+   CConversion`ToValidCSymbolString[V] <> ")"  ;
+GetObservableDescription[FlexibleSUSYObservable`BrLToLGamma[pIn_[idxIn_] -> {pOut_[idxOut_], V_}]] :=
+   "BR(" <> CConversion`ToValidCSymbolString[pIn] <> ToString[idxIn] <> " -> " <>
+      CConversion`ToValidCSymbolString[pOut] <> ToString[idxOut] <> " " <>
+       CConversion`ToValidCSymbolString[V] <> ")"  ;
+GetObservableDescription[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_ -> pOut_, nuc_]] :=
+   "CR(" <> CConversion`ToValidCSymbolString[pIn] <> " -> " <>
+      CConversion`ToValidCSymbolString[pOut] <> ", " <>
+      ToString[nuc] <> ")/capture rate";
+GetObservableDescription[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_] -> pOut_[idxOut_], nuc_]] :=
+   "CR(" <> CConversion`ToValidCSymbolString[pIn] <> ToString[idxIn] <> " -> " <>
+   CConversion`ToValidCSymbolString[pOut] <> ToString[idxOut] <> ", " <>
+      ToString[nuc] <> ")/capture rate";
 
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuon] := CConversion`ScalarType[CConversion`realScalarCType];
 GetObservableType[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := CConversion`ScalarType[CConversion`realScalarCType];
