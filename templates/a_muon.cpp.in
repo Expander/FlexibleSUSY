@@ -351,12 +351,19 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
    }
    m_muon_pole = muonPhysicalMass(context_base{model});
 
-   std::cout << "My: " << @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[2]
-   + @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[3] << '\n';
-   std::cout << "Jobst: " << calculate_a_muon_impl(model) << '\n';
-   std::cout << "Ratio: " << 1./(unit_charge(context_base{model})*m_muon_pole*(@ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[2]
-   + @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[3])/
-         (calculate_a_muon_impl(model))) << '\n';
+   /*
+   std::cout << "My: " << 
+      @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[2]
+      + @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[3] 
+      << '\n';
+   std::cout << "Jobst: " << 
+      calculate_a_muon_impl(model) << '\n';
+   std::cout << "Ratio: " << 
+      unit_charge(context_base{model}) * m_muon_pole * (
+            @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[2]
+            + @ModelName@_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[3]
+      )/calculate_a_muon_impl(model) << '\n';
+*/
    return calculate_a_muon_impl(model);
 }
 

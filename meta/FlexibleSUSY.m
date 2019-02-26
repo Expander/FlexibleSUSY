@@ -2021,7 +2021,7 @@ WriteCXXDiagramClass[vertices_List,files_List,
     fileHandle = OpenWrite[createdVerticesFile];
     Write[fileHandle, vertices];
     Close[fileHandle];
-    
+
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"          -> fields,
                              "@CXXDiagrams_VertexData@"      -> vertexData,
@@ -2060,10 +2060,10 @@ WriteEDMClass[edmFields_List,files_List] :=
 (* Write the FFV c++ files *)
 WriteFFVFormFactorsClass[extParticles_List, files_List] :=
    Module[{
-      interfacePrototypes = "", interfaceDefinitions = "",
-      graphs, diagrams,
-      insertionsAndVertices, vertices = {}, verticesOLD
-   },
+         interfacePrototypes = "", interfaceDefinitions = "",
+         graphs, diagrams,
+         insertionsAndVertices, vertices = {}, verticesOLD = {}
+      },
 
       If[extParticles =!= {},
 
@@ -2098,7 +2098,10 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
    ];
 
 WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=
-   Module[{interfacePrototypes = "", interfaceDefinitions = "", insertionsAndVertices, massiveVIndices = "", vertices = {}},
+   Module[{
+         interfacePrototypes = "", interfaceDefinitions = "",
+         insertionsAndVertices, massiveVIndices = "", vertices = {}
+      },
 
       If[extParticles =!= {},
 
@@ -3551,7 +3554,8 @@ Options[MakeFlexibleSUSY] :=
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             edmVertices, aMuonVertices, edmFields,
-            LToLGammaFields = {}, LToLConversionFields = {}, FFMasslessVVertices = {},
+            LToLGammaFields = {}, LToLConversionFields = {}, FFMasslessVVertices = {}, conversionVertices,
+       fieldsForFToFMassiveVFormFactors, fFFMassiveVFormFactorVertices,
             cxxQFTTemplateDir, cxxQFTOutputDir, cxxQFTFiles,
             susyBetaFunctions, susyBreakingBetaFunctions,
             anomDim,
@@ -4345,8 +4349,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                 ] :> {pIn -> pOut, nucleus}
               ];
 
-            conversionVertices =
-             WriteFToFConversionInNucleusClass[LToLConversionFields,
+           conversionVertices =
+              WriteFToFConversionInNucleusClass[LToLConversionFields,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],
@@ -4358,14 +4362,18 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                   (* collect external states from observables needing massless triangles *)
                   DeleteDuplicates @ Join[
                      LToLGammaFields,
-                     {#[[1, 1]] -> {#[[1, 2]], TreeMasses`GetPhoton[]}}& /@ Transpose[Drop[Transpose[LToLConversionFields],-1]]
+                     If[LToLConversionFields === {},
+                        {},
+                        {#[[1, 1]] -> {#[[1, 2]], TreeMasses`GetPhoton[]}}& /@ Transpose[Drop[Transpose[LToLConversionFields],-1]]
+                     ]
                   ],
-                           {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],
+                  {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.hpp"}]},
-                            {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}];
+                     {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.cpp"}]}}
+               ];
 
-           (* internally the F -> F conversion routines require form factors with massive vector bosons *)
+            (* internally the F -> F conversion routines require form factors with massive vector bosons *)
             fieldsForFToFMassiveVFormFactors = {};
             If[LToLConversionFields =!= {},
                fieldsForFToFMassiveVFormFactors =
@@ -4375,15 +4383,16 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                         Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]}]
                ]
             ];
-           Print[fieldsForFToFMassiveVFormFactors];
 
             Print["Creating FFMassiveV form factor class for other observables ..."];
-            fFFMassiveVFormFactorVertices = WriteFFMassiveVFormFactorsClass[
-             DeleteDuplicates @ Join[fieldsForFToFMassiveVFormFactors,{}],
+            fFFMassiveVFormFactorVertices =
+               WriteFFMassiveVFormFactorsClass[
+                  DeleteDuplicates @ fieldsForFToFMassiveVFormFactors,
                            {{FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}];
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}
+               ];
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 
@@ -4409,8 +4418,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
 
-           Print[conversionVertices];
-           Print[fFFMassiveVFormFactorVertices];
            WriteCXXDiagramClass[
              DeleteDuplicates @ Join[
                 edmVertices, aMuonVertices, FFMasslessVVertices, fFFMassiveVFormFactorVertices, conversionVertices
