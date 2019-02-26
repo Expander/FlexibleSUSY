@@ -3253,7 +3253,6 @@ check_install_dir
 # check for Mathematic if meta code generation is enabled or we
 # compile with LibraryLink
 if [ "$enable_meta" = yes -o \( "$enable_compile" = yes -a "$enable_librarylink" != no \) ]; then
-    echo "enable_meta = $enable_meta"
     check_math_cmd
     check_mathematica_info
 else

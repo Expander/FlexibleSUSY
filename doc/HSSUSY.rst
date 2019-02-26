@@ -52,16 +52,16 @@ as well as from the :math:`\overline{\text{MS}}` masses
 :math:`m_b^{\text{SM(5)}}(m_b)`, :math:`m_c^{\text{SM(4)}}(m_c)`,
 :math:`m_s(2\,\text{GeV})`, :math:`m_d(2\,\text{GeV})`,
 :math:`m_u(2\,\text{GeV})`.  In addition to these 1-loop corrections,
-the known 2-loop and 3-loop QCD threshold corrections for
+the known 2- and 3-loop QCD threshold corrections for
 :math:`\alpha_s(M_Z)` from [hep-ph:9305305]_, [hep-ph:9708255]_,
 [hep-ph:9707474]_, [hep-ph:0004189]_ can be taken into account in
 addition by setting the threshold corrections flag appropriately.  In
 the calculation of the Standard Model :math:`\overline{\text{MS}}` top
-Yukawa coupling, :math:`y_t(M_Z)`, the known 2-loop [hep-ph:9803493]_
-and 3-loop [hep-ph:9911434]_ QCD corrections can be taken into
-account.  See the documentation of the `SLHA input parameters`_ for a
-description of the individual flags to enable/disable 2- and 3-loop
-threshold corrections in FlexibleSUSY.
+Yukawa coupling, :math:`y_t(M_Z)`, the known 2-loop [hep-ph:9803493]_,
+3-loop [hep-ph:9911434]_ and 4-loop [1604.01134]_ QCD corrections can
+be taken into account.  See the documentation of the `SLHA input
+parameters`_ for a description of the individual flags to
+enable/disable 2- and 3-loop threshold corrections in FlexibleSUSY.
 
 EWSB scale
 ``````````
@@ -160,13 +160,13 @@ an SLHA input file we recommend to use::
         4   4            # pole mass loop order
         5   4            # EWSB loop order
         6   4            # beta-functions loop order
-        7   3            # threshold corrections loop order
+        7   4            # threshold corrections loop order
         8   1            # Higgs 2-loop corrections O(alpha_t alpha_s)
         9   1            # Higgs 2-loop corrections O(alpha_b alpha_s)
        10   1            # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
        11   1            # Higgs 2-loop corrections O(alpha_tau^2)
        12   0            # force output
-       13   1            # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
+       13   3            # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
        14   1.0e-11      # beta-function zero threshold
        15   0            # calculate observables (a_muon, ...)
        16   0            # force positive majorana masses
@@ -177,7 +177,7 @@ an SLHA input file we recommend to use::
        21   1            # EFT loop order for downwards matching
        22   0            # EFT index of SM-like Higgs in the BSM model
        23   1            # calculate BSM pole masses
-       24   123111321    # individual threshold correction loop orders
+       24   124111321    # individual threshold correction loop orders
        25   0            # ren. scheme for Higgs 3L corrections (0 = DR, 1 = MDR)
        26   1            # Higgs 3-loop corrections O(alpha_t alpha_s^2)
        27   1            # Higgs 3-loop corrections O(alpha_b alpha_s^2)
@@ -196,13 +196,13 @@ In the Mathematica interface we recommend to use::
             poleMassLoopOrder -> 4,            (* FlexibleSUSY[4] *)
             ewsbLoopOrder -> 4,                (* FlexibleSUSY[5] *)
             betaFunctionLoopOrder -> 4,        (* FlexibleSUSY[6] *)
-            thresholdCorrectionsLoopOrder -> 3,(* FlexibleSUSY[7] *)
+            thresholdCorrectionsLoopOrder -> 4,(* FlexibleSUSY[7] *)
             higgs2loopCorrectionAtAs -> 1,     (* FlexibleSUSY[8] *)
             higgs2loopCorrectionAbAs -> 1,     (* FlexibleSUSY[9] *)
             higgs2loopCorrectionAtAt -> 1,     (* FlexibleSUSY[10] *)
             higgs2loopCorrectionAtauAtau -> 1, (* FlexibleSUSY[11] *)
             forceOutput -> 0,                  (* FlexibleSUSY[12] *)
-            topPoleQCDCorrections -> 1,        (* FlexibleSUSY[13] *)
+            topPoleQCDCorrections -> 3,        (* FlexibleSUSY[13] *)
             betaZeroThreshold -> 1.*^-11,      (* FlexibleSUSY[14] *)
             forcePositiveMasses -> 0,          (* FlexibleSUSY[16] *)
             poleMassScale -> 0,                (* FlexibleSUSY[17] *)
@@ -212,7 +212,7 @@ In the Mathematica interface we recommend to use::
             eftMatchingLoopOrderDown -> 1,     (* FlexibleSUSY[21] *)
             eftHiggsIndex -> 0,                (* FlexibleSUSY[22] *)
             calculateBSMMasses -> 1,           (* FlexibleSUSY[23] *)
-            thresholdCorrections -> 123111321, (* FlexibleSUSY[24] *)
+            thresholdCorrections -> 124111321, (* FlexibleSUSY[24] *)
             higgs3loopCorrectionRenScheme -> 0,(* FlexibleSUSY[25] *)
             higgs3loopCorrectionAtAsAs -> 1,   (* FlexibleSUSY[26] *)
             higgs3loopCorrectionAbAsAs -> 1,   (* FlexibleSUSY[27] *)
@@ -308,5 +308,6 @@ References
 .. [1508.02680] `Phys.Lett. B762 (2016) 151-156 <https://inspirehep.net/record/1387530>`_ [`arXiv:1508.02680 <https://arxiv.org/abs/1508.02680>`_]
 .. [1604.00853] `JHEP 1606 (2016) 175 <https://inspirehep.net/record/1441223>`_ [`arXiv:1604.00853 <https://arxiv.org/abs/1604.00853>`_]
 .. [1606.08659] `Phys.Rev.Lett. 118 (2017) no.8, 082002 <https://inspirehep.net/record/1472834>`_ [`arXiv:1606.08659 <https://arxiv.org/abs/1606.08659>`_]
+.. [1604.01134] `Phys.Rev. D93 (2016) no.9, 094017 <https://inspirehep.net/record/1442368>`_ [`arXiv:1604.01134 <https://arxiv.org/abs/1604.01134>`_]
 .. [1703.08166] `Eur.Phys.J. C77 (2017) no.5, 334 <https://inspirehep.net/record/1518961>`_ [`arXiv:1703.08166 <https://arxiv.org/abs/1703.08166>`_]
 .. [1807.03509] `Eur.Phys.J. C78 (2018) no.10, 874 <https://inspirehep.net/record/1681658>`_ [`arXiv:1807.03509 <https://arxiv.org/abs/1807.03509>`_]

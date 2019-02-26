@@ -44,7 +44,8 @@ LorentzConjugate::usage="";
 RemoveLorentzConjugation::usage="";
 AtomHead::usage="";
 CreateFields::usage="";
-FeynmanDiagramsOfType::usage="";
+FeynmanDiagramsOfType::usage="Obtain all instantiations of Feynman \
+diagrams of a given topology with given external fields.";
 VerticesForDiagram::usage="";
 ContractionsBetweenVerticesForDiagramFromGraph::usage="";
 CreateVertices::usage="";
@@ -179,7 +180,57 @@ LorentzIndexOfField[field_]:=
     lorentzIndices[[1]]
   ]
 
-(* adjacencyMatrix must be undirected (i.e symmetric) *)
+(** \brief Obtain all instantiations of Feynman diagrams of a given
+ * topology with given external fields.
+ * \param adjacencyMatrix the symmetric adjacency matrix determining the
+ * topology of the diagrams
+ * \param externalFields a list of rules of the form
+ * `{index1 -> externalField1, ... }`
+ * where outgoing fields should be specified as conjugate fields and
+ * incoming fields should be specified as unconjugate fields.
+ * \returns a list of Feynman diagrams of the given topology with
+ * given external fields.
+ * All returned diagrams are of the form:
+ * `{v1, v2, ..., vn}`
+ * where `n` is the dimension of the given adjacency matrix and
+ * `vk` for \f$k \in \{ 1, ..., n \} \f$ corresponds to the vertex
+ * with index `k` as specified by the adjacency matrix.
+ * A vertex in the returned diagram is either external or internal,
+ * where external vertices are by definition taken to be those
+ * specified by `externalFields`. Thus an external vertex `vk` is simply
+ * represented as the external field `externalFieldk` as specified by
+ * `externalFields`.
+ * The internal vertices are given as lists of fields corresponding to 
+ * terms in the interaction Lagrangian. They are obtained in
+ * correspondence with the standard perturbative QFT approach when
+ * calculating
+ * \f[ \langle \left( \text{outgoing} \right)^* \vert
+ * 	\text{incoming} \rangle \f]
+ * where the asterisk denotes Lorentz conjugation. Of course only
+ * diagrams of the given topology are taken into account.
+ * The order of fields in the internal vertices is given by the 
+ * adjacency matrix as follows:
+ * Let `k` be the index of an internal vertex and `l` be a
+ * non-zero entry in `adjacencyMatrix[[k, l]]`. Then, if `k =!= l`
+ * `vk` will contain exactly `adjacencyMatrix[[k, l]]` entries of fields
+ * that get contracted with `adjacencyMatrix[[k, l]]` fields in the
+ * vertex `vl`. The order of those `adjacencyMatrix[[k, l]]` fields is
+ * unspecified. If `k === l` `vk` will contain exactly 
+ * `2 * adjacencyMatrix[[k, l]]` entries of fields where
+ * the first one gets contracted with the second one, the third one with
+ * the fourth one and so on. Otherwise the order of these
+ * `2 * adjacencyMatrix[[k, l]]` fields is unspecified.
+ * \note Here, 'contracted' means that contracted fields will be
+ * Lorentz conjugates to each other - unless one of the fields is
+ * external, then they will be the same.
+ * Finally, the vertex `vk` is given by concatenating the thusly
+ * constructed lists of fields for all `l` where 
+ * `adjacencyMatrix[[k, l]]` is non-zero in the order given by
+ * the index `l`.
+ * Furthermore, two diagrams are considered equal if they only differ by
+ * a reordering of fields in internal vertices and thus any appearing
+ * duplicate diagrams are removed.
+ **)
 FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	Module[{externalVertices = externalFields[[All,1]],
 			internalVertices,externalRules, internalFieldCouplings,
@@ -191,8 +242,8 @@ FeynmanDiagramsOfType[adjacencyMatrix_List,externalFields_List] :=
 	LoadVerticesIfNecessary[];
 	
 	internalVertices = Complement[Table[k,{k,Length[adjacencyMatrix]}],externalVertices];
-	externalRules = Flatten @ ({{_,#,_} :> SARAH`AntiField[# /. externalFields],
-		{#,_,_} :> SARAH`AntiField[# /. externalFields]} & /@ externalVertices);
+	externalRules = Flatten @ ({{_,#,_} :> (# /. externalFields)} & /@
+		externalVertices);
 
 	internalFieldCouplings = (Flatten[(Flatten @ Position[adjacencyMatrix[[#]],Except[0],{1},Heads -> False]
 		/. {i_Integer :> Table[{#,i,k},{k,adjacencyMatrix[[#,i]]}]}),1] &
