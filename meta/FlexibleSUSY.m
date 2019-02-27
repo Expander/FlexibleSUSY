@@ -2078,8 +2078,15 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
       	graphs = FFVFormFactors`FFVGraphs[];
 	      diagrams = Outer[FFVFormFactors`FFVContributingDiagramsForGraph, graphs, extParticles, 1];
       	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
+         vertices = List@@(Vertices`SortCp@(Cp@@#))& /@ vertices;
+         (*Print["Jobst: ", vertices];*)
+         (*Print["Jobst sorted: ", List@@(Vertices`SortCp@(Cp@@#))& /@ vertices];*)
          verticesOLD = Flatten[insertionsAndVertices[[All, 2]][[All, All, 2]][[All, All, 2]],2];
+         (*Print["My: ", verticesOLD];*)
+         (*Print["Difference", Complement[verticesOLD, vertices]];*)
 
+         (*Print[graphs,diagrams];*)
+         (*Print[insertionsAndVertices];Quit[1];*)
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
                FFVFormFactors`FFVFormFactorsCreateInterfaceFunction @@@
@@ -2094,7 +2101,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
           Sequence @@ GeneralReplacementRules[]}
       ];
 
-      verticesOLD
+      vertices
    ];
 
 WriteFFMassiveVFormFactorsClass[extParticles_List, files_List] :=

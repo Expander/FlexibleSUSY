@@ -122,7 +122,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, gTaggedDiagrams_List] :=
                              StringJoin @ Table[", 0", {numberOfIndices1-1}],
                              ""] <> " ",
                           If[numberOfIndices1 =!= 0,
-                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ","] <> " ",
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices1}], ", "],
                              ""]
                          ] <> "};\n" <>
                    "std::array<int, " <> ToString @ numberOfIndices2 <>
