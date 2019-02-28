@@ -2059,7 +2059,9 @@ WriteEDMClass[edmFields_List,files_List] :=
           interfacePrototypes,interfaceDefinitions},
     graphs = EDM`EDMContributingGraphs[];
     diagrams = Outer[EDM`EDMContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
-    
+    Print["Jobst Graphs ", graphs];
+    Print["Jobst Diagrams ", diagrams];
+
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     
     {interfacePrototypes,interfaceDefinitions} = 
@@ -2086,6 +2088,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          insertionsAndVertices, vertices = {}, verticesOLD = {}
       },
 
+      Print[extParticles];
       If[extParticles =!= {},
 
          (* list of following lists:
@@ -2093,16 +2096,23 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
                {{{
          *)
          insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
-               {extParticles, ffff @@@  extParticles}
+               {extParticles, ffff /@  extParticles}
             ];
 
       	graphs = FFVFormFactors`FFVGraphs[];
-	      diagrams = Outer[FFVFormFactors`FFVContributingDiagramsForGraph, graphs, extParticles, 1];
+	      diagrams =
+            Outer[FFVFormFactors`FFVContributingDiagramsForGraph, graphs, extParticles, 1];
+
+         (* group things not according to graphs but according to external states *)
+         diagrams = Transpose @ diagrams;
+
+         Print["Graphs ", graphs];
+         Print["Diagrams ", diagrams];
       	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
          vertices = List@@(Vertices`SortCp@(Cp@@#))& /@ vertices;
          (*Print["Jobst: ", vertices];*)
          (*Print["Jobst sorted: ", List@@(Vertices`SortCp@(Cp@@#))& /@ vertices];*)
-         verticesOLD = Flatten[insertionsAndVertices[[All, 2]][[All, All, 2]][[All, All, 2]],2];
+         (*verticesOLD = Flatten[insertionsAndVertices[[All, 2]][[All, All, 2]][[All, All, 2]],2];*)
          (*Print["My: ", verticesOLD];*)
          (*Print["Difference", Complement[verticesOLD, vertices]];*)
 
@@ -2110,8 +2120,8 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          (*Print[insertionsAndVertices];Quit[1];*)
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
-               FFVFormFactors`FFVFormFactorsCreateInterfaceFunction @@@
-                  insertionsAndVertices
+               FFVFormFactors`FFVFormFactorsCreateInterfaceFunction[extParticles[[1]], Sequence@@#]& /@
+                  Transpose[{graphs, diagrams}]
             ]);
          ];
 
@@ -2172,7 +2182,7 @@ WriteLToLGammaClass[decays_List, files_List] :=
          If[decays === {},
             {"",""},
             StringJoin @@@ 
-               (Riffle[#, "\n\n"]& /@ Transpose[BrLToLGamma`CreateInterfaceFunctionForBrLToLGamma @@@ decays])
+               (Riffle[#, "\n\n"]& /@ Transpose[BrLToLGamma`CreateInterfaceFunctionForBrLToLGamma /@ decays])
          ];
     
       WriteOut`ReplaceInFiles[files, {
@@ -4360,7 +4370,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                      FlexibleSUSYObservable`BrLToLGamma[
                         pIn_[_Integer]|pIn_?AtomQ -> {pOut_[_Integer]|pOut_?AtomQ, spectator_}
-                     ] :> {pIn -> {pOut, spectator}}
+                     ] :> (pIn -> {pOut, spectator})
                   ];
 
            Print["Creating l->l'A class ..."];
@@ -4393,7 +4403,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                      LToLGammaFields,
                      If[LToLConversionFields === {},
                         {},
-                        {#[[1, 1]] -> {#[[1, 2]], TreeMasses`GetPhoton[]}}& /@ Transpose[Drop[Transpose[LToLConversionFields],-1]]
+                        (#[[1, 1]] -> {#[[1, 2]], TreeMasses`GetPhoton[]})& /@ Transpose[Drop[Transpose[LToLConversionFields],-1]]
                      ]
                   ],
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],

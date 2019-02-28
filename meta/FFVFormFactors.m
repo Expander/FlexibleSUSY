@@ -42,13 +42,14 @@ vertexCorrectionGraph = {{0,0,0,1,0,0},
 contributingGraphs = {vertexCorrectionGraph};
 FFVGraphs[] := contributingGraphs;
 
-FFVContributingDiagramsForGraph[graph_, {Fj_ -> {Fi_, V_}}] :=
+FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
    Module[{diagrams},
       diagrams =
          CXXDiagrams`FeynmanDiagramsOfType[
             graph,
-            {1 -> Fj, 2 -> CXXDiagrams`LorentzConjugate[Fi], 3 -> V}
+            {1 -> Fj, 2 -> CXXDiagrams`LorentzConjugate[Fi], 3 -> CXXDiagrams`LorentzConjugate[V]}
          ];
+      Print["From FeynmanDiagramsOfType", diagrams];
          
       Select[diagrams, IsDiagramSupported[graph, #]&]
    ];
@@ -88,12 +89,14 @@ FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon
 }
 
 *)
-FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, gTaggedDiagrams_List] :=
+FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topology_, diagrams_] :=
    Module[{prototype, definition,
            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[Fj],
            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[Fi],
            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[V]},
 
+      Print["Topology ", topology];
+      Print["Diagrams ", diagrams];
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
             "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors (\n" <>
@@ -133,12 +136,13 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, gTaggedDiagrams_List] :=
                              StringJoin @ Table[", 0", {numberOfIndices2-1}],
                              ""] <> " ",
                           If[numberOfIndices2 =!= 0,
-                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ","] <> " ",
+                             StringJoin @ Riffle[Table[" 0", {numberOfIndices2}], ", "] <> " ",
                              ""]
                          ] <> "};\n\n" <>
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
 
+                  (*
                Switch[V,
                   SARAH`Photon,
                   StringJoin[(
@@ -171,6 +175,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, gTaggedDiagrams_List] :=
                   (* we assume that there are no unbroken gauge groups other than U(1)_em and SU(3)_C *)
                   _, Message[FFVFormFactorsCreateInterfaceFunction::field, V]; Abort[];
                ] <>
+                  *)
 
                "return val;"
             ] <> "\n}\n\n";
@@ -303,6 +308,8 @@ singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?T
       Return[{}];
    ];
 (* TODO: add other topologies? *)
+
+ColorFactorForDiagramFromGraph[graph_, diagram_] := 1;
 
 End[];
 EndPackage[];
