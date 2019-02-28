@@ -37,6 +37,7 @@ doc/*.bbl
 doc/*.blg
 doc/flexiblesusy-1.0.pdf
 doc/flexiblesusy-2.0.pdf
+doc/flexiblesusy-new_features.pdf
 doc/version.tex
 doc/mainpage.dox
 doc/html/
