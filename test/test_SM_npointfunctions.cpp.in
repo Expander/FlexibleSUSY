@@ -19,85 +19,14 @@
 #define BOOST_TEST_MODULE Test NPointFunctions
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <boost/version.hpp>
 
-#include "random_sign_dataset.hpp"
+#include "random_SM_dataset.hpp"
 #include "test_complex_equality.hpp"
-
-#include "lowe.h"
-
-#include "SM_two_scale_spectrum_generator.hpp"
-#include "SM_input_parameters.hpp"
-#include "SM_mass_eigenstates.hpp"
 
 @NPointFunctions_Headers@
 
 using namespace flexiblesusy;
-namespace bdata = boost::unit_test::data;
-
-namespace
-{
-constexpr int number_of_random_samples = 100;
-static_assert( number_of_random_samples >= 2,
-	"There must be at least two random samples." );
-
-auto random_data_points( void ) -> decltype(
-	bdata::random( 0.15, 0.3 ) ^
-	bdata::random( 200.0, 3000.0 ) ^
-	bdata::random( 100.0, 1000.0 )
-)
-{
-	auto LambdaIN_random = bdata::random( 0.15, 0.3 );
-	auto Qin_random = bdata::random( 200.0, 3000.0 );
-	auto QEWSB_random = bdata::random( 100.0, 1000.0 );
-	
-	return (
-		std::move(LambdaIN_random) ^ std::move(Qin_random) ^
-		std::move(QEWSB_random)
-	);
-}
-
-auto data_points( void ) -> decltype(
-	bdata::xrange( 1, number_of_random_samples + 1 ) ^
-	random_data_points()
-)
-{
-	auto random_datset =
-		bdata::xrange( 1, number_of_random_samples + 1 ) ^
-		random_data_points();
-	
-	return std::move(random_datset);
-}
-
-SM_input_parameters wrap_input_parameters(
-	double LambdaIN, int Qin, double QEWSB )
-{
-	SM_input_parameters input;
-	
-	input.LambdaIN = LambdaIN;
-	input.Qin = Qin;
-	input.QEWSB = QEWSB;
-	
-	return input;
-}
-
-SM_mass_eigenstates calculate_spectrum(
-	const SM_input_parameters &input )
-{
-	softsusy::QedQcd qedqcd;
-	
-	Spectrum_generator_settings spectrum_generator_settings;
-	spectrum_generator_settings.set(
-		Spectrum_generator_settings::calculate_sm_masses, 1.0 );
-	
-	SM_spectrum_generator<Two_scale> spectrum_generator;
-	spectrum_generator.set_settings( spectrum_generator_settings );
-	spectrum_generator.set_parameter_output_scale( qedqcd.get_scale() );
-
-	spectrum_generator.run( qedqcd, input );
-	return spectrum_generator.get_model();
-}
-}
+using namespace boost_test_tools;
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
@@ -108,9 +37,12 @@ namespace flexiblesusy
 {
 namespace SM_cxx_diagrams
 {
-@CXXDiagrams_VertexData@
+namespace detail
+{
+@CXXDiagrams_VertexPrototypes@
 
-@CXXDiagrams_Vertices@
+@CXXDiagrams_VertexDefinitions@
+}
 
 namespace npointfunctions
 {
@@ -119,15 +51,20 @@ namespace npointfunctions
 }
 }
 
+namespace
+{
+static constexpr int number_of_random_samples = 100;
+}
+
 BOOST_AUTO_TEST_SUITE(selfenergy_test_suite, 
 	* boost::unit_test::tolerance(1.0e-12) )
 
 BOOST_DATA_TEST_CASE( test_selfenergies,
-	data_points(),
-  index, LambdaIN, Qin, QEWSB )
+	random_SM_dataset( number_of_random_samples ),
+  index, FS_TEST_SM_PARAMETER_SEQUENCE )
 {
-	auto input_parameters = wrap_input_parameters(
-		LambdaIN, Qin, QEWSB );
+	auto input_parameters = wrap_SM_parameters(
+		FS_TEST_SM_PARAMETER_SEQUENCE );
 	auto model = calculate_spectrum( input_parameters );
 	
 	auto problems = model.get_problems();

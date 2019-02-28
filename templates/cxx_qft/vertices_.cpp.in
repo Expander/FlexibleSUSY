@@ -16,16 +16,33 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef TEST_COMPLEX_EQUALITY_H
-#define TEST_COMPLEX_EQUALITY_H
+// File generated at @DateAndTime@
 
-#include <complex>
+/**
+ * @file cxx_qft/@ModelName@_vertices.cpp
+ *
+ * This file was generated at @DateAndTime@ with FlexibleSUSY
+ * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
+ */
+ 
+#include "@ModelName@_context_base.hpp"
+#include "@ModelName@_vertices.hpp"
 
-void TEST_COMPLEX_EQUALITY( std::complex<double> a,
-	std::complex<double> b )
+#include "concatenate.hpp"
+#include "wrappers.hpp"
+
+#define INPUTPARAMETER(p) context.model.get_input().p
+#define MODELPARAMETER(p) context.model.get_##p()
+#define DERIVEDPARAMETER(p) context.model.p()
+#define PHASE(p) context.model.get_##p()
+
+namespace flexiblesusy
 {
-	BOOST_TEST( std::real( a ) == std::real( b ) );
-	BOOST_TEST( std::imag( a ) == std::imag( b ) );
+namespace @ModelName@_cxx_diagrams
+{
+namespace detail
+{
+@CXXDiagrams_VertexDefinitions@
 }
-
-#endif
+}
+}
