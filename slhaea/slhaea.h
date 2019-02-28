@@ -956,7 +956,7 @@ public:
     if (line != end()) return *line;
 
     throw std::out_of_range(
-      "SLHAea::Block::at(‘" + boost::join(key, ",") + "’)");
+      "SLHAea::Block::at(‘" + boost::algorithm::join(key, ",") + "’)");
   }
 
   /**
@@ -976,7 +976,7 @@ public:
     if (line != end()) return *line;
 
     throw std::out_of_range(
-      "SLHAea::Block::at(‘" + boost::join(key, ",") + "’)");
+      "SLHAea::Block::at(‘" + boost::algorithm::join(key, ",") + "’)");
   }
 
   /**
@@ -1787,7 +1787,7 @@ public:
     if (block != end()) return *block;
 
     throw std::out_of_range(
-      "SLHAea::Coll::at(‘" + boost::join(key, ",") + "’)");
+      "SLHAea::Coll::at(‘" + boost::algorithm::join(key, ",") + "’)");
   }
 
   /**
@@ -1810,7 +1810,7 @@ public:
     if (block != end()) return *block;
 
     throw std::out_of_range(
-      "SLHAea::Coll::at(‘" + boost::join(key, ",") + "’)");
+      "SLHAea::Coll::at(‘" + boost::algorithm::join(key, ",") + "’)");
   }
 
   /**
@@ -2502,7 +2502,7 @@ public:
   str() const
   {
     std::ostringstream output;
-    output << block << ";" << boost::join(line, ",") << ";" << field;
+    output << block << ";" << boost::algorithm::join(line, ",") << ";" << field;
     return output.str();
   }
 };

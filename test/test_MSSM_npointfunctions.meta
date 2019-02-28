@@ -70,15 +70,14 @@ createdVertices = If[FileExistsQ[cxxDiagramsDir] === True,
 nPointFunctionVertices = DeleteDuplicates[Join[hhSelfenergyVertices]];
 remainingVertices = Complement[nPointFunctionVertices, createdVertices];
 
-vertexDataCode = StringJoin @ Riffle[
-	CXXDiagrams`CreateVertexData /@ remainingVertices, "\n\n"];
-verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
+verticesCode = CXXDiagrams`CreateVertices[remainingVertices,
+	CXXdiagrams`MaximumVerticesLimit -> Length[remainingVertices]][[1]];
 
 code = StringReplace[templateCode, {
 	"@NPointFunctions_Selfenergy_hh_1loop@" -> hhSelfenergyCode,
 	"@NPointFunctions_Headers@" -> nPointFunctionHeaders,
-	"@CXXDiagrams_VertexData@" -> vertexDataCode,
-	"@CXXDiagrams_Vertices@" -> verticesCode
+	"@CXXDiagrams_VertexPrototypes@" -> verticesCode[[1]],
+	"@CXXDiagrams_VertexDefinitions@" -> verticesCode[[2]]
 }];
 
 fileHandle = OpenWrite[FileNameJoin[{workingDirectory, "test", "test_MSSM_npointfunctions.cpp"}]];
