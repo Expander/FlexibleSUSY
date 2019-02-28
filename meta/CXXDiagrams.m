@@ -48,7 +48,9 @@ FeynmanDiagramsOfType::usage="Obtain all instantiations of Feynman \
 diagrams of a given topology with given external fields.";
 VerticesForDiagram::usage="";
 ContractionsBetweenVerticesForDiagramFromGraph::usage="";
-CreateVertices::usage="";
+CreateVertices::usage="Creates c++ code that makes functions available that \
+numerically evaluate any of the given vertices.";
+MaximumVerticesLimit::usage"";
 VertexRulesForVertices::usage="";
 CreateMassFunctions::usage="";
 CreateUnitCharge::usage="";
@@ -312,16 +314,31 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 		Transpose[{contractedFieldIndices1, contractedFieldIndices2}]
 	]
 
-(* Returns the necessary c++ code corresponding to the vertices that need to be calculated.
- The returned value is a list {prototypes, definitions}. *)
-CreateVertices[vertices_List, OptionsPattern[{StripColorStructure -> False}]] :=
-	Module[{prototypes, definitions},
-		{prototypes, definitions} = Transpose[
-			CreateVertex[#, StripColorStructure -> OptionValue[StripColorStructure]] & /@
-			DeleteDuplicates[vertices]
-		];
+(** \brief Creates c++ code that makes functions available that
+ * numerically evaluate any of the given vertices.
+ * \param vertices a list of vertices
+ * \param StripColorStructure A boolean option to specify whether
+ * to strip away parts of vertices possessing colour structures other
+ * than a single ``SARAH`Delta[]``. The default value is `False`.
+ * \param MaximumVerticesLimit An integer option that specify an upper
+ * limit of vertices that shall go into a single block of code.
+ * \returns a list `{{prototypes1, definitions1}, ...}` containing the
+ * corresponding c++ code where no sublist contains more than
+ * `MaximumVerticesLimit` number of vertices.
+ **)
+CreateVertices[vertices_List,
+		OptionsPattern[{StripColorStructure -> False,
+			MaximumVerticesLimit -> 500}]] :=
+	Module[{cxxVertices, vertexPartition, },
+		cxxVertices = CreateVertex[#, StripColorStructure -> OptionValue[StripColorStructure]] & /@
+			DeleteDuplicates[vertices];
 		
-		StringJoin[Riffle[#, "\n\n"]] & /@ {prototypes, definitions}
+		(* Mathematica 7 does not support the `UpTo[n]` notation *)
+		vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
+		If[vertexPartition === {},
+			vertexPartition = {cxxVertices}];
+		
+		Map[StringJoin[Riffle[#, "\n\n"]] &, Transpose /@ vertexPartition, {2}]
 	]
 
 CreateVertex[fields_List, OptionsPattern[{StripColorStructure -> False}]] :=
