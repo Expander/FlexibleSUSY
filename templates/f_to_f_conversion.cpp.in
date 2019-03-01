@@ -35,6 +35,8 @@
 #include "@ModelName@_FFV_form_factors.hpp"
 #include "@ModelName@_FFMassiveV_form_factors.hpp"
 
+#include "wrappers.hpp"
+
 using namespace flexiblesusy;
 using namespace @ModelName@_cxx_diagrams;
 using namespace @ModelName@_FFV_form_factors;

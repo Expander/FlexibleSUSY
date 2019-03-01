@@ -2104,6 +2104,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
             Outer[FFVFormFactors`FFVContributingDiagramsForGraph, graphs, extParticles, 1];
 
          (* group things not according to graphs but according to external states *)
+         (* diagrams[[i,j]]: i is for a given external state, j for a topology *)
          diagrams = Transpose @ diagrams;
 
          Print["Graphs ", graphs];

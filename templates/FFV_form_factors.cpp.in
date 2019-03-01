@@ -31,6 +31,8 @@
 #include "concatenate.hpp"
 #include "cxx_qft/@ModelName@_qft.hpp"
 
+#include "wrappers.hpp"
+
 using namespace flexiblesusy;
 using namespace @ModelName@_cxx_diagrams;
 using namespace @ModelName@_cxx_diagrams::fields;
