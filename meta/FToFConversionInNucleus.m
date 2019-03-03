@@ -23,7 +23,7 @@
 *)
 
 BeginPackage["FToFConversionInNucleus`",
-    {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}
+    {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "Utils`"}
 ];
 
 FToFConversionInNucleusCreateInterface::usage = "";
@@ -33,10 +33,10 @@ Begin["Private`"];
 FToFConversionInNucleusCreateInterface[inFermion_ -> outFermion_, nucleus_] :=
     Module[{prototype, definition},
 
-       On[Assert];
-       (* we assume that there are only 2 massless vector bosons, i.e. photon and gluon *)
-       Assert[Count[GetVectorBosons[], el_ /; IsMassless[el]] === 2];
-       Off[Assert];
+       Utils`AssertWithMessage[
+          Count[GetVectorBosons[], el_ /; IsMassless[el]] === 2,
+          "We assume that there are only 2 massless vector bosons, i.e. photon and gluon"
+       ];
 
         prototype =
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
@@ -56,8 +56,7 @@ FToFConversionInNucleusCreateInterface[inFermion_ -> outFermion_, nucleus_] :=
             prototype <> " {\n" <>
             IndentText[
                 "\n" <>
-                FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                "context_base context {model_};\n" <>
+                "context_base context {model};\n" <>
 
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF = qedqcd.displayFermiConstant();\n" <>
@@ -170,7 +169,7 @@ FToFConversionInNucleusCreateInterface[inFermion_ -> outFermion_, nucleus_] :=
 
                 "\nconst auto nuclear_form_factors =\n" <>
                    IndentText[
-                      "get_overlap_integrals(nucleus, qedqcd" <> ");\n"
+                      "get_overlap_integrals(nucleus, qedqcd);\n"
                    ] <>
 
                 "\nconst auto left =\n" <> IndentText[

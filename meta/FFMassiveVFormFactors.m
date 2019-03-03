@@ -76,8 +76,7 @@ FFMassiveVFormFactorsCreateInterface[inFermion_ -> outFermion_, spectator_, loop
       definition =
           prototype <> "{\n" <>
             IndentText[
-               FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-               "context_base context{ model_ };\n" <>
+               "context_base context {model};\n" <>
                "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[inFermion] =!= 1,

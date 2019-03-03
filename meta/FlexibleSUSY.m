@@ -2101,7 +2101,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
             Outer[FFVFormFactors`FFVContributingDiagramsForGraph, graphs, extParticles, 1];
 
          (* group things not according to graphs but according to external states *)
-         (* diagrams[[i,j]]: i is for a given external state, j for a topology *)
+         (* diagrams[[i,j]] will be: i is for a given external state, j for a topology *)
          diagrams = Transpose @ diagrams;
 
       	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
@@ -2109,8 +2109,8 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
 
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
-               FFVFormFactors`FFVFormFactorsCreateInterfaceFunction[extParticles[[1]], Sequence@@#]& /@
-                  Transpose[{graphs, diagrams}]
+               FFVFormFactors`FFVFormFactorsCreateInterfaceFunction[#1, graphs, #2]& @@@
+                  Transpose[{extParticles, diagrams}]
             ]);
          ];
 

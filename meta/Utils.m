@@ -283,8 +283,8 @@ PrintHeadline[text__] :=
 
 PrintAndReturn[e___] := (Print[e]; e)
 
-AssertWithMessage[assertion_, message_String] :=
-	If[assertion =!= True, Print[message]; Quit[1]]
+AssertWithMessage[assertion_?BooleanQ, message_String] :=
+	If[assertion =!= True, Print[message]; Quit[1]];
 
 ReadLinesInFile[fileName_String] :=
 	Module[{fileHandle, lines = {}, line},

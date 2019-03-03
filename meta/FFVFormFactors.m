@@ -88,11 +88,14 @@ FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon
 }
 
 *)
-FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topology_, diagrams_] :=
+FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] :=
    Module[{prototype, definition,
            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[Fj],
            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[Fi],
            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[V]},
+
+      Utils`AssertWithMessage[Length[topologies] === Length[diagrams],
+         "Length of diagrams should be the same as length of topologies"];
 
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
@@ -112,8 +115,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topology_, diagrams_] :=
       definition =
          prototype <> " {\n\n" <>
             IndentText[
-               FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-               "context_base context {model_};\n" <>
+               "context_base context {model};\n" <>
                "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
                      (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[Fj] =!= 1,

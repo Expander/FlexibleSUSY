@@ -50,7 +50,7 @@ CreateInterfaceFunctionForBrLToLGamma[inFermion_ -> {outFermion_, spectator_}] :
             "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model, const softsusy::QedQcd& qedqcd, const Physical_input& physical_input);";
 
       definition =
-            (* calculate observable using formfactors *)
+            (* calculate observable using form factors *)
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <> CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> " (\n" <>
                IndentText[
                   If[TreeMasses`GetDimension[inFermion] =!= 1, "int generationIndex1, ", ""] <>
@@ -107,7 +107,7 @@ CreateInterfaceFunctionForBrLToLGamma[inFermion_ -> {outFermion_, spectator_}] :
                   "const double partial_width = pow(leptonInMassOS,5)/(16.0*Pi) * (std::norm(form_factors[2]) + std::norm(form_factors[3]));\n" <>
 
                   "const double total_width = lepton_total_decay_width(indices1, indices2, model, qedqcd);\n" <>
-                  "return partial_width/total_width;\n"
+                  "\nreturn partial_width/total_width;\n"
                ] <> "}";
 
         {prototype, definition}
