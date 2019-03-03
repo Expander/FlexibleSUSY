@@ -30,7 +30,7 @@ FToFConversionInNucleusCreateInterface::usage = "";
 
 Begin["Private`"];
 
-FToFConversionInNucleusCreateInterface[{inFermion_ -> outFermion_, nucleus_}] :=
+FToFConversionInNucleusCreateInterface[inFermion_ -> outFermion_, nucleus_] :=
     Module[{prototype, definition},
 
        On[Assert];
@@ -57,7 +57,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_ -> outFermion_, nucleus_}] :=
             IndentText[
                 "\n" <>
                 FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                "context_base context{ model_ };\n" <>
+                "context_base context {model_};\n" <>
 
                 "// get Fermi constant from Les Houches input file\n" <>
                 "const auto GF = qedqcd.displayFermiConstant();\n" <>
@@ -170,7 +170,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_ -> outFermion_, nucleus_}] :=
 
                 "\nconst auto nuclear_form_factors =\n" <>
                    IndentText[
-                      "get_overlap_integrals(Nucleus::" <> SymbolName[nucleus] <> ", qedqcd" <> ");\n"
+                      "get_overlap_integrals(nucleus, qedqcd" <> ");\n"
                    ] <>
 
                 "\nconst auto left =\n" <> IndentText[
@@ -192,7 +192,7 @@ FToFConversionInNucleusCreateInterface[{inFermion_ -> outFermion_, nucleus_}] :=
                 "const double conversion_rate = 2.*pow(GF,2)*(std::norm(left) + std::norm(right));\n" <>
 
                  "\n// normalize to capture\n" <>
-                 "const double capture_rate = get_capture_rate(Nucleus::" <> SymbolName[nucleus] <> ");\n\n" <>
+                 "const double capture_rate = get_capture_rate(nucleus);\n\n" <>
 
                  "return conversion_rate/capture_rate;\n"
             ] <>

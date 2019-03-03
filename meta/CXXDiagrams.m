@@ -333,7 +333,7 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 CreateVertices[vertices_List,
 		OptionsPattern[{StripColorStructure -> False,
 			MaximumVerticesLimit -> 500}]] :=
-	Module[{cxxVertices, vertexPartition, },
+	Module[{cxxVertices, vertexPartition},
 		cxxVertices = CreateVertex[#, StripColorStructure -> OptionValue[StripColorStructure]] & /@
 			DeleteDuplicates[vertices];
 		

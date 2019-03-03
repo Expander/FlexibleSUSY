@@ -49,8 +49,7 @@ FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
             graph,
             {1 -> Fj, 2 -> CXXDiagrams`LorentzConjugate[Fi], 3 -> CXXDiagrams`LorentzConjugate[V]}
          ];
-      Print["From FeynmanDiagramsOfType", diagrams];
-         
+
       Select[diagrams, IsDiagramSupported[graph, #]&]
    ];
 
@@ -95,8 +94,6 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topology_, diagrams_] :=
            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[Fi],
            numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[V]},
 
-      Print["Topology ", topology];
-      Print["Diagrams ", diagrams];
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
             "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors (\n" <>

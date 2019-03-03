@@ -2059,8 +2059,6 @@ WriteEDMClass[edmFields_List,files_List] :=
           interfacePrototypes,interfaceDefinitions},
     graphs = EDM`EDMContributingGraphs[];
     diagrams = Outer[EDM`EDMContributingDiagramsForFieldAndGraph,edmFields,graphs,1];
-    Print["Jobst Graphs ", graphs];
-    Print["Jobst Diagrams ", diagrams];
 
     vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2],1];
     
@@ -2088,7 +2086,6 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          insertionsAndVertices, vertices = {}, verticesOLD = {}
       },
 
-      Print[extParticles];
       If[extParticles =!= {},
 
          (* list of following lists:
@@ -2107,18 +2104,9 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          (* diagrams[[i,j]]: i is for a given external state, j for a topology *)
          diagrams = Transpose @ diagrams;
 
-         Print["Graphs ", graphs];
-         Print["Diagrams ", diagrams];
       	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
          vertices = List@@(Vertices`SortCp@(Cp@@#))& /@ vertices;
-         (*Print["Jobst: ", vertices];*)
-         (*Print["Jobst sorted: ", List@@(Vertices`SortCp@(Cp@@#))& /@ vertices];*)
-         (*verticesOLD = Flatten[insertionsAndVertices[[All, 2]][[All, All, 2]][[All, All, 2]],2];*)
-         (*Print["My: ", verticesOLD];*)
-         (*Print["Difference", Complement[verticesOLD, vertices]];*)
 
-         (*Print[graphs,diagrams];*)
-         (*Print[insertionsAndVertices];Quit[1];*)
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
                FFVFormFactors`FFVFormFactorsCreateInterfaceFunction[extParticles[[1]], Sequence@@#]& /@
@@ -2205,23 +2193,28 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
       If[leptonPairs =!= {},
 
          (* additional vertices needed for the calculation *)
-         (* coupling of vector bozons to quarks *)
+         (* coupling of vector bosons to quarks *)
          massiveNeutralVectorBosons = Select[GetVectorBosons[],
             !(TreeMasses`IsMassless[#] || TreeMasses`IsElectricallyCharged[#])&
          ];
-         masslessNeutralVectorBosons = {SARAH`Photon};
-         externalFermions = Flatten[{TreeMasses`GetSMQuarks[], Drop[leptonPairs[[1]],-1]/. Rule[a_, b_] :> Sequence[a, b]}];
-         Print[externalFermions];
+         (* @todo: should we include gluons or not? *)
+         masslessNeutralVectorBosons = Select[GetVectorBosons[],
+            (TreeMasses`IsMassless[#] && !TreeMasses`IsElectricallyCharged[#] && !TreeMasses`ColorChargedQ[#])&
+         ];
+         (* drop nucleon, convert rule to list (so {Fe -> Fe, Au} into {Fe,Fe} *)
+         externalFermions = DeleteDuplicates@Flatten[
+            {TreeMasses`GetSMQuarks[], Drop[leptonPairs, None, -1] /. Rule[a_, b_] :> Sequence[a, b]}
+         ];
          vertices = Flatten /@ Tuples[
             {{CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions,
             Join[masslessNeutralVectorBosons, massiveNeutralVectorBosons]}
          ];
-        (* @TODO: map over list of {F,F,Nucleus} instead of picking only the first 1 *)
-        (*vertices = Join[vertices, {SARAH`VP, CXXDiagrams`LorentzConjugate[#], #}& /@ externalFermions];*)
 
          {interfacePrototypes, interfaceDefinitions} =
               StringJoin @@@
-            (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface /@ leptonPairs])
+            (Riffle[#, "\n\n"] & /@ Transpose[FToFConversionInNucleus`FToFConversionInNucleusCreateInterface @@@
+               DeleteDuplicatesBy[leptonPairs, Drop[#, -1]&]
+            ] )
       ];
 
       WriteOut`ReplaceInFiles[files,
@@ -4419,7 +4412,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                fieldsForFToFMassiveVFormFactors =
                DeleteDuplicates @ Join[
                   fieldsForFToFMassiveVFormFactors,
-                      Flatten /@ Tuples[{Drop[Transpose[LToLConversionFields],-1],
+                      Flatten /@ Tuples[{Drop[LToLConversionFields,None, -1],
                         Select[GetVectorBosons[], !(IsMassless[#] || IsElectricallyCharged[#])&]}]
                ]
             ];

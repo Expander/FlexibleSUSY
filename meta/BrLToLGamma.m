@@ -23,7 +23,7 @@
 *)
 
 BeginPackage["BrLToLGamma`", 
-   {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`"}
+   {"SARAH`", "TextFormatting`", "TreeMasses`", "CXXDiagrams`"}
 ];
 
 CreateInterfaceFunctionForBrLToLGamma::usage = "";
@@ -35,6 +35,7 @@ CreateInterfaceFunctionForBrLToLGamma[inFermion_ -> {outFermion_, spectator_}] :
             numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[inFermion],
             numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[outFermion],
             numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[spectator]},
+
         prototype =
             "double calculate_" <> CXXNameOfField[inFermion] <> "_to_" <>
             CXXNameOfField[outFermion] <> "_" <> CXXNameOfField[spectator] <> "(\n" <>

@@ -89,7 +89,7 @@ GetObservableName[FlexibleSUSYObservable`EDM[p_[idx_]]] := GetObservableName[Fle
 GetObservableName[FlexibleSUSYObservable`EDM[p_]]       := "edm_" <> CConversion`ToValidCSymbolString[p];
 GetObservableName[FlexibleSUSYObservable`BrLToLGamma[pIn_[_] -> {pOut_[_], spectator_}]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_" <> CConversion`ToValidCSymbolString[spectator];
 GetObservableName[FlexibleSUSYObservable`BrLToLGamma[pIn_ -> {pOut_, spectator_}]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_" <> CConversion`ToValidCSymbolString[spectator];
-GetObservableName[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_] -> pOut_[idxOut_], _]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_in_nucleus";
+GetObservableName[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_] -> pOut_[idxOut_], nucleus_]] := CConversion`ToValidCSymbolString[pIn] <> "_to_" <> CConversion`ToValidCSymbolString[pOut] <> "_in_" <> ToString@nucleus;
 
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuon] := "a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
 GetObservableDescription[obs_ /; obs === FlexibleSUSYObservable`aMuonUncertainty] := "uncertainty of a_muon = (g-2)/2 of the muon (calculated with FlexibleSUSY)";
@@ -437,10 +437,10 @@ CalculateObservable[FlexibleSUSYObservable`FToFConversionInNucleus[pIn_[idxIn_] 
             pOutStr = CConversion`ToValidCSymbolString[pOut],
             idxInStr = ToString[idxIn],
             idxOutStr = ToString[idxOut],
-            nucleiStr = FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus::" <> ToString[nucleus]
+            nucleiStr = ToString[nucleus]
     },
            structName <> ".FToFConversion1(" <> pInStr <> ", " <> idxInStr <> ", " <> pOutStr <> ", " <> idxOutStr <> ", " <> nucleiStr <> ") = " <>
-           FlexibleSUSY`FSModelName <> "_f_to_f_conversion::calculate_" <> pInStr <> "_to_" <> pOutStr <> "_in_nucleus(" <> idxInStr <> ", " <> idxOutStr <> ", " <> nucleiStr <> ", MODEL, qedqcd);"
+           FlexibleSUSY`FSModelName <> "_f_to_f_conversion::calculate_" <> pInStr <> "_to_" <> pOutStr <> "_in_nucleus(" <> idxInStr <> ", " <> idxOutStr <> ", "<> FlexibleSUSY`FSModelName <> "_f_to_f_conversion::Nucleus::" <> nucleiStr <> ", MODEL, qedqcd);"
           ];
 
 FillGM2CalcInterfaceData[struct_String] :=
