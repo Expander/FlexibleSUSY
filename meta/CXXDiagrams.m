@@ -966,18 +966,24 @@ GaugeStructureOfVertex[vertex_] :=
 	]
 
 (** \brief Creates c++ code that makes functions available that
- * numerically evaluates any of the given vertices.
+ * numerically evaluate any of the given vertices.
  * \param vertices a list of vertices
- * \returns a list {prototypes, definitions} containing the
- * corresponding c++ code.
+ * \param MaximumVerticesLimit An integer option that specify an upper
+ * limit of vertices that shall go into a single block of code.
+ * \returns a list `{{prototypes1, definitions1}, ...}` containing the
+ * corresponding c++ code where no sublist contains more than
+ * `MaximumVerticesLimit` number of vertices.
  **)
-CreateVertices[vertices_List] :=
-	Module[{prototypes, definitions},
-		{prototypes, definitions} = Transpose[
-			CreateVertex /@ DeleteDuplicates[vertices]
-		];
+CreateVertices[vertices_List,
+		OptionsPattern[{MaximumVerticesLimit -> 500}]] :=
+	Module[{cxxVertices, vertexPartition, },
+		cxxVertices = CreateVertex /@ DeleteDuplicates[vertices];
+		(* Mathematica 7 does not support the `UpTo[n]` notation *)
+		vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
+		If[vertexPartition === {},
+			vertexPartition = {cxxVertices}];
 		
-		StringJoin[Riffle[#, "\n\n"]] & /@ {prototypes, definitions}
+		Map[StringJoin[Riffle[#, "\n\n"]] &, Transpose /@ vertexPartition, {2}]
 	]
 	
 (** \brief Creates c++ code that makes a function available that

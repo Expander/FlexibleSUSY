@@ -43,8 +43,6 @@ namespace @ModelName@_cxx_diagrams
 namespace detail
 {
 @CXXDiagrams_VertexDefinitions@
-
-@CXXDiagrams_UnitCharge@
 }
 }
 }
