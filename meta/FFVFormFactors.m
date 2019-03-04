@@ -33,12 +33,14 @@ ffff::usage = "";
 
 Begin["Private`"];
 
-vertexCorrectionGraph = {{0,0,0,1,0,0},
-                         {0,0,0,0,1,0},
-                         {0,0,0,0,0,1},
-                         {1,0,0,0,1,1},
-                         {0,1,0,1,0,1},
-                         {0,0,1,1,1,0}};
+vertexCorrectionGraph = {
+   {0, 1, 0, 0, 0, 0},
+   {1, 0, 1, 0, 1, 0},
+   {0, 1, 0, 0, 1, 1},
+   {0, 0, 0, 0, 1, 0},
+   {0, 1, 1, 1, 0, 0},
+   {0, 0, 1, 0, 0, 0}
+};
 contributingGraphs = {vertexCorrectionGraph};
 FFVGraphs[] := contributingGraphs;
 
@@ -47,7 +49,7 @@ FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
       diagrams =
          CXXDiagrams`FeynmanDiagramsOfType[
             graph,
-            {1 -> Fj, 2 -> CXXDiagrams`LorentzConjugate[Fi], 3 -> CXXDiagrams`LorentzConjugate[V]}
+            {4 -> Fj, 1 -> CXXDiagrams`LorentzConjugate[Fi], 6 -> CXXDiagrams`LorentzConjugate[V]}
          ];
 
       Select[diagrams, IsDiagramSupported[graph, #]&]
@@ -55,8 +57,8 @@ FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
 
 IsDiagramSupported[vertexCorrectionGraph, diagram_] :=
   Module[{photonEmitter,exchangeParticle},
-    photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
-    exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
+    photonEmitter = diagram[[3,2]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
+    exchangeParticle = diagram[[2,3]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     
     (*If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},*)
        (*Return[False]];*)

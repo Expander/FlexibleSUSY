@@ -2105,7 +2105,7 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          diagrams = Transpose @ diagrams;
 
       	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
-         vertices = List@@(Vertices`SortCp@(Cp@@#))& /@ vertices;
+         (*vertices = List@@(Vertices`SortCp@(Cp@@#))& /@ vertices;*)
 
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[
@@ -4360,12 +4360,29 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{$flexiblesusyTemplateDir, "edm.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_edm.cpp"}]}}];
 
+           (* OBSERVABLE: l -> l gamma *)
+
            LToLGammaFields =
-               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
+              DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
                      FlexibleSUSYObservable`BrLToLGamma[
                         pIn_[_Integer]|pIn_?AtomQ -> {pOut_[_Integer]|pOut_?AtomQ, spectator_}
                      ] :> (pIn -> {pOut, spectator})
                   ];
+           Print[LToLGammaFields];
+           Block[{properStates, wrongFields},
+              properStates = Cases[LToLGammaFields,
+                 Rule[a_?IsLepton, {b_?IsLepton, c_ /; c === GetPhoton[]}] -> (a -> {b, c})
+              ];
+              wrongFields = Complement[LToLGammaFields, properStates];
+              If[wrongFields =!= {},
+                 Print[
+                    "Warning: BrLToLGamma function works only for leptons and a photon. Removing requested process(es): " <>
+                     StringJoin@Riffle[ToString /@ wrongFields, ", "]
+                 ];
+                 LToLGammaFields = properStates;
+              ];
+           ];
+           Print[LToLGammaFields];
 
            Print["Creating l->l'A class ..."];
            WriteLToLGammaClass[LToLGammaFields,
@@ -4373,6 +4390,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.cpp"}]}}];
+
+           (* OBSERVABLE: l -> l conversion *)
 
            Print["Creating FToFConversionInNucleus class ..."];
            LToLConversionFields =

@@ -49,7 +49,7 @@ IsObservable[sym_] :=
     (Or @@ (MatchQ[sym, #[__]]& /@ FlexibleSUSYObservable`FSObservables));
 
 GetRequestedObservables[blocks_] :=
-    Module[{observables, dim},
+    Module[{observables, dim, test},
            observables = DeleteDuplicates[Cases[blocks, a_?IsObservable :> a, {0, Infinity}]];
            If[MemberQ[observables, FlexibleSUSYObservable`CpHiggsPhotonPhoton] ||
               MemberQ[observables, FlexibleSUSYObservable`CpHiggsGluonGluon],
@@ -74,6 +74,18 @@ GetRequestedObservables[blocks_] :=
                                                                a === FlexibleSUSYObservable`CpPseudoScalarGluonGluon)];
                 ];
              ];
+           Print[observables];
+test =       Complement[
+              Cases[observables, _FlexibleSUSYObservable`BrLToLGamma],
+              Cases[observables, FlexibleSUSYObservable`BrLToLGamma[fin_?IsLepton -> {fout_?IsLepton, vout_ /; vout === GetPhoton[]}]]
+                 ];
+           If[test =!= {},
+              Print["Warning: BrLToLGamma function works only for leptons and a photon."];
+              Print["         Removing requested process(es):"];
+              Print["        " <> ToString@test];
+              observables = Complement[observables, test];
+           ];
+           Print[observables];
            observables
           ];
 
