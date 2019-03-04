@@ -70,7 +70,8 @@ createdVertices = If[FileExistsQ[cxxDiagramsDir] === True,
 nPointFunctionVertices = DeleteDuplicates[Join[hhSelfenergyVertices]];
 remainingVertices = Complement[nPointFunctionVertices, createdVertices];
 
-verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
+verticesCode = CXXDiagrams`CreateVertices[remainingVertices,
+	CXXdiagrams`MaximumVerticesLimit -> Length[remainingVertices]][[1]];
 
 code = StringReplace[templateCode, {
 	"@NPointFunctions_Selfenergy_hh_1loop@" -> hhSelfenergyCode,

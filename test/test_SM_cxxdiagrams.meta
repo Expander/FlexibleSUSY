@@ -201,7 +201,8 @@ createdVertices = If[FileExistsQ[cxxDiagramsDir] === True,
 remainingVertices = Complement[
 	Join[zeroVertices, nonzeroVertexPairs[[All, 1]]], createdVertices];
 
-verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
+verticesCode = CXXDiagrams`CreateVertices[remainingVertices,
+	CXXdiagrams`MaximumVerticesLimit -> Length[remainingVertices]][[1]];
 
 code = StringReplace[templateCode, {
 	"@VertexWrappers@" -> cxxVertexWrappers,

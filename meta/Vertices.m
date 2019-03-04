@@ -45,6 +45,7 @@ ToRotatedField::usage;
 ReplaceUnrotatedFields::usage;
 StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 StripFieldIndices::usage;
+SarahColorIndexQ::usage="Checks if an index is a color index. Returns True for indices starting with ct and followed by a number."
 
 SortFieldsInCp::usage="";
 
