@@ -491,6 +491,8 @@ ColorMathToSARAHConvention[expr_] :=
 		Subscript[Superscript[CM\[Delta], cIndex1_], cIndex2_] :>
 			SARAH`Delta[cIndex1, cIndex2],
 		Superscript[CM\[Delta], {indices__}] :> SARAH`Delta[indices],
+		Subscript[Superscript[Superscript[ColorMath`CMt, {cIndex1_}], cIndex2_], cIndex3_] :>
+			1 / 2 * SARAH`Lam[cIndex1, cIndex2, cIndex3],
 		ColorMath`Nc -> 3,
 		ColorMath`TR -> 1/2
 	}
@@ -976,8 +978,9 @@ GaugeStructureOfVertex[vertex_] :=
  **)
 CreateVertices[vertices_List,
 		OptionsPattern[{MaximumVerticesLimit -> 500}]] :=
-	Module[{cxxVertices, vertexPartition, },
+	Module[{cxxVertices, vertexPartition},
 		cxxVertices = CreateVertex /@ DeleteDuplicates[vertices];
+		
 		(* Mathematica 7 does not support the `UpTo[n]` notation *)
 		vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
 		If[vertexPartition === {},
