@@ -21,7 +21,7 @@
 #include <boost/test/data/test_case.hpp>
 #include <boost/fusion/include/boost_array.hpp>
 #include <boost/fusion/include/make_fused.hpp>
-#include <boost/core/demangle.hpp>
+#include <functional>
 #include <typeinfo>
 
 #include "test_cxxdiagrams_vertices.hpp"
@@ -83,7 +83,7 @@ public:
 		return evaluate_impl(
 			boost::fusion::push_front(
 				std::move( boost_indices ),
-				context.model
+				std::cref( context.model )
 			)
 		);
 	}

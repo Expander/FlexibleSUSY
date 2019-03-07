@@ -106,15 +106,27 @@ AMuonCreateCalculation[gTaggedDiagrams_List] :=
             ""]
         ] <> "};\n\n" <>
                                  
-    StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
-      Flatten[CXXEvaluatorsForDiagramsFromGraph[#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"]
+    StringJoin @ Riffle[Module[{graph = #[[1]], diagrams = #[[2]]},
+			StringJoin @ Riffle[Module[{diagram = #, indexedDiagram},
+				indexedDiagram = CXXDiagrams`IndexDiagramFromGraph[diagram, graph];
+				
+				"val += " <> 
+				ToString @ ProjectColourFactor[
+					CXXDiagrams`ColourFactorForIndexedDiagramFromGraph[indexedDiagram, graph]] <>
+				" * " <> 
+				CXXEvaluatorForDiagramFromGraph[diagram, graph] <>
+				"::value(indices, context);"
+			] & /@ diagrams, "\n"]
+		] & /@ gTaggedDiagrams, "\n"]
   ];
 
-CXXEvaluatorsForDiagramsFromGraph[diagrams_,graph_] :=
-  CXXEvaluatorForDiagramFromGraph[#,graph] & /@ diagrams
-CXXEvaluatorForDiagramFromGraph[diagram_,vertexCorrectionGraph] := 
-  Module[{photonEmitter,exchangeParticle},
+ProjectColourFactor[colourFactor_] := (
+	Utils`AssertWithMessage[!TreeMasses`ColorChargedQ[AMuonGetMuon[]],
+		"AMuon::ProjectColourFactor[]: The muon has a colour charge (unsupported)"];
+	colourFactor)
+
+CXXEvaluatorForDiagramFromGraph[diagram_, vertexCorrectionGraph] := 
+  Module[{photonEmitter, exchangeParticle},
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
     exchangeParticle = diagram[[4,2]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
     

@@ -57,10 +57,10 @@ std::string sequence_to_string( const Sequence &s )
 
 struct test_zero_vertex
 {
-	const SM_cxx_diagrams::context_base &context;
+	SM_cxx_diagrams::context_base context;
 	
-	test_zero_vertex( const SM_cxx_diagrams::context_base &c )
-	: context( c ) {}
+	test_zero_vertex( const SM_mass_eigenstates &model )
+	: context( model ) {}
 	
 	template<class Vertex> void operator()( Vertex )
 	{
@@ -114,10 +114,10 @@ struct test_zero_vertex
 
 struct test_vertex_equality
 {
-	const SM_cxx_diagrams::context_base &context;
+	SM_cxx_diagrams::context_base context;
 	
-	test_vertex_equality( const SM_cxx_diagrams::context_base &c )
-	: context( c ) {}
+	test_vertex_equality( const SM_mass_eigenstates &model )
+	: context( model ) {}
 	
 	template<class VertexPair> void operator()( VertexPair )
 	{

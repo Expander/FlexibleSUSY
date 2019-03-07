@@ -94,8 +94,7 @@ double get_capture_rate (const Nucleus N) {
 
 template <class FOutBar, class FIn, class VBar>
 std::complex<double> vectorCurrent(const @ModelName@_mass_eigenstates& model) {
-    @ModelName@_mass_eigenstates model_ = model;
-    context_base context{ model_ };
+    context_base context {model};
     using vertex = Vertex<FOutBar, FIn, VBar>;
     std::array<int, 4> indices {0, 0, 0, 0};
     const auto value =  vertex::evaluate(indices, context);
@@ -108,8 +107,7 @@ std::valarray<std::complex<double>> create_massive_penguin_amp(
       const @ModelName@_mass_eigenstates& model, 
       const softsusy::QedQcd& qedqcd) {
 
-   @ModelName@_mass_eigenstates model_ = model;
-   context_base context {model_};
+   context_base context {model};
 
    const auto uVectorCurrent = 
       vectorCurrent<typename Fu::lorentz_conjugate, Fu, typename V::lorentz_conjugate>(model);

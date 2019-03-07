@@ -23,13 +23,12 @@
 *)
 
 BeginPackage["FFVFormFactors`",
-  {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "ColorMathInterface`"}
+   {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "ColorMathInterface`", "Utils`"}
 ];
 
 FFVFormFactorsCreateInterfaceFunction::usage = "";
 FFVGraphs::usage = "";
 FFVContributingDiagramsForGraph::usage = "";
-ffff::usage = "";
 
 Begin["Private`"];
 
@@ -52,53 +51,73 @@ FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
             {4 -> Fj, 1 -> CXXDiagrams`LorentzConjugate[Fi], 6 -> CXXDiagrams`LorentzConjugate[V]}
          ];
 
+      (* for now we only support selected classes of diagrams *)
       Select[diagrams, IsDiagramSupported[graph, #]&]
    ];
 
 IsDiagramSupported[vertexCorrectionGraph, diagram_] :=
-  Module[{photonEmitter,exchangeParticle},
-    photonEmitter = diagram[[3,2]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)
-    exchangeParticle = diagram[[2,3]]; (* Edge between vertices 4 and 5 (2nd edge of vertex 4) *)
+   Module[{photonEmitter, exchangeParticle},
+
+      photonEmitter = diagram[[3,2]]; (* Edge between vertices ? and ? (3rd edge of vertex 4) *)
+      exchangeParticle = diagram[[2,3]]; (* Edge between vertices ? and ? (2nd edge of vertex 4) *)
+
+      Print["emit: ", photonEmitter, ", exchange: ", exchangeParticle];
     
-    (*If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},*)
+      (*If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},*)
        (*Return[False]];*)
-    If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
-       Return[True]];
-    If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
-       Return[True]];
+      If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
+         Return[True]];
+      If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter], Return[True]];
 
-    Return[False];
-  ]
-
-MyReIm[z_] := If[$VersionNumber >= 10.1,
-   ReIm[z],
-   {Re[z], Im[z]}
-];
+      Return[False];
+   ];
 
 FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon.";
 
-(* given external particles Fj, Fi & V and a list of lists like
-{
-   particles in the loop
-   {Fv, Hpm},
-   {
-      color factors
-      {1, 1},
-      vertices
-      {{bar[Fv], Fe, conj[Hpm]}, {bar[Fe], Fv, Hpm},  {conj[Hpm], Hpm, VP}, {bar[Fv], Fv, VP}}
-   }
-}
-
-*)
 FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] :=
    Module[{prototype, definition,
            numberOfIndices1 = CXXDiagrams`NumberOfFieldIndices[Fj],
            numberOfIndices2 = CXXDiagrams`NumberOfFieldIndices[Fi],
-           numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[V]},
+           numberOfIndices3 = CXXDiagrams`NumberOfFieldIndices[V], temp = {}},
 
       Utils`AssertWithMessage[Length[topologies] === Length[diagrams],
          "Length of diagrams should be the same as length of topologies"];
 
+      Print[CXXDiagrams`IndexDiagramFromGraph[diagrams[[1,1]], topologies[[1]]]];
+      Print[topologies];
+      Print[diagrams];
+      For[i = 1, i <= Length[topologies], i++,
+         For[j = 1, j <= Length[diagrams[[i]]], j++,
+         Print[
+            ColourFactorForIndexedDiagramFromGraph[
+               CXXDiagrams`IndexDiagramFromGraph[diagrams[[i,j]], topologies[[i]]], topologies[[i]]
+            ]
+         ];
+               If[TreeMasses`IsScalar[diagrams[[i,j,3,2]]],
+                 temp = temp <> "val += std::complex<double> " <> (ToString @ N[FSReIm@
+               ColourFactorForIndexedDiagramFromGraph[
+               CXXDiagrams`IndexDiagramFromGraph[diagrams[[i,j]], topologies[[i]]], topologies[[i]]
+                  ]
+                     ]) <> " * FFVEmitterS<" <>
+                        StringJoin@Riffle[CXXDiagrams`CXXNameOfField /@ {Fi, Fj, V, diagrams[[i,j,2,3]], diagrams[[i,j,3,2]]}, ", "] <>
+">::value(indices1, indices2, context);\n",
+                  ""
+               ] <>
+                  If[TreeMasses`IsFermion[diagrams[[i,j,3,2]]],
+                     temp = temp <> "val += std::complex<double> " <> (ToString @ N[FSReIm@
+                        ColourFactorForIndexedDiagramFromGraph[
+                           CXXDiagrams`IndexDiagramFromGraph[diagrams[[i,j]], topologies[[i]]], topologies[[i]]
+                        ]
+                     ]) <> " * FFVEmitterF<" <>
+                        StringJoin@Riffle[CXXDiagrams`CXXNameOfField /@ {Fi, Fj, V, diagrams[[i,j,3,2]], diagrams[[i,j,2,3]]},
+                           ", "]
+                     <> ">::value(indices1, indices2, context);\n",
+                     ""
+                  ]
+
+            ];
+         ];
+      Print[temp];
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
             "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors (\n" <>
@@ -143,6 +162,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
 
+               temp <>
                   (*
                Switch[V,
                   SARAH`Photon,
@@ -185,132 +205,9 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
    ];
 
 CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
-   "val += std::complex<double> " <> (ToString @ N[MyReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
+   "val += std::complex<double> " <> (ToString @ N[FSReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
                      StringJoin @ Riffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, F, S}, ","]  <>
                      ">::value(indices1, indices2, context);\n";
-
-(* create a list of insertion that will get passed to the FFVCreateInterface *)
-ffff[inFermion_ -> {outFermion_, spectator_}] :=
-   Module[{scalars, fermions, internalParticles = {}, temp},
-
-      scalars = getParticlesOfType[TreeMasses`IsScalar];
-      fermions = getParticlesOfType[TreeMasses`IsFermion];
-
-      Map[
-         (temp = singleDiagram[inFermion, outFermion, spectator, #[[1]], #[[2]]];
-         If[temp =!= {},
-            AppendTo[internalParticles, {#, temp}]
-         ])&,
-         Tuples[{fermions, scalars}]
-      ];
-
-      internalParticles
-   ];
-
-(* if a diagram exists, return a color factor and a list of particles in vertices,
-   otherwise return an empty list *)
-singleDiagram[inFermion_, outFermion_, spectator_, F_?TreeMasses`IsFermion, S_?TreeMasses`IsScalar] :=
-   Module[{FBarFjSBar, FiBarFS, SBarSVBar, FBarFVBar, v1, v2, v3, v4,colorIndexAssociation, p, sortColorFacRep,
-   colorFacwithSEmit, colorFacWithFEmit},
-
-      On[Assert];
-      Assert[IsMassless[spectator]];
-
-      (* if the electric charge of an incoming particle doesn't equal to the sum of charges of outgoing ones,
-         return an {} *)
-      If[TreeMasses`GetElectricCharge[inFermion] =!= Plus @@ (TreeMasses`GetElectricCharge /@ {S,F}),
-         Return[{}]
-      ];
-      (* if an incoming fermion is color charged, at least on of the particles in the loop has to be colored *)
-      If[TreeMasses`ColorChargedQ[inFermion] && !(TreeMasses`ColorChargedQ[F] || TreeMasses`ColorChargedQ[S]),
-         Return[{}]
-      ];
-
-      colorIndexAssociation =
-         If[TreeMasses`ColorChargedQ[#],
-            If[TreeMasses`GetDimension[#] === 1,
-               #[{Unique["ct"]}],
-               #[{Unique["gt"], Unique["ct"]}]
-            ], #
-         ]& /@ {outFermion, S, F, F, S, inFermion, spectator};
-
-      p = colorIndexAssociation;
-      p = {p[[6]], p[[1]], p[[7]], p[[4]], p[[3]], p[[5]], p[[2]]};
-
-      (* ColorMath package distinquishes between first and second index in the delta function *)
-      v1 = {CXXDiagrams`LorentzConjugate[F], inFermion, CXXDiagrams`LorentzConjugate[S]};
-      FBarFjSBar = SARAHToColorMathSymbols @ SARAH`Vertex[
-         {CXXDiagrams`LorentzConjugate[p[[6]]], CXXDiagrams`LorentzConjugate[p[[4]]], p[[1]]}
-      ];
-
-      v2 = {CXXDiagrams`LorentzConjugate[outFermion], F, S};
-      FiBarFS = SARAHToColorMathSymbols @ SARAH`Vertex[
-         {p[[7]], CXXDiagrams`LorentzConjugate[p[[2]]], p[[5]]}
-      ];
-
-      v3 = {CXXDiagrams`LorentzConjugate[S], S, CXXDiagrams`LorentzConjugate[spectator]};
-      SBarSVBar = SARAHToColorMathSymbols @ SARAH`Vertex[
-         {CXXDiagrams`LorentzConjugate[p[[6]]], p[[7]], CXXDiagrams`LorentzConjugate[p[[3]]]}
-      ];
-
-      v4 = {CXXDiagrams`LorentzConjugate[F], F, CXXDiagrams`LorentzConjugate[spectator]};
-      FBarFVBar = SARAHToColorMathSymbols @ SARAH`Vertex[
-         {CXXDiagrams`LorentzConjugate[p[[5]]], p[[4]], CXXDiagrams`LorentzConjugate[p[[3]]]}
-      ];
-      sortColorFacRep = SortColorDeltas @@ p;
-
-      If[vertexNonZero[FBarFjSBar] && vertexNonZero[FiBarFS],
-         If[vertexNonZeroS[SBarSVBar] && !vertexNonZero[FBarFVBar],
-            Return[{
-               {StripSU3Generators[p[[1]], p[[2]], p[[3]],
-                  ColorMath`CSimplify[
-                     CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]
-                     ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep
-                  ]
-                  ],
-                  0},
-               (*{v1, v2, v3}*){v1, v2, v3, v4}}
-            ]
-         ];
-         If[vertexNonZero[FBarFVBar] && !vertexNonZeroS[SBarSVBar],
-            Return[{
-                  {0,
-                     StripSU3Generators[p[[1]], p[[2]], p[[3]],
-                        ColorMath`CSimplify[
-                           CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep]
-                           ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep
-                        ]
-                     ]
-                  },
-                  (*{v1,v2, v4}*){v1, v2, v3, v4}
-               }
-            ]
-         ];
-         If[vertexNonZero[FBarFVBar] && vertexNonZeroS[SBarSVBar],
-            Return[
-               {
-                  StripSU3Generators[p[[1]], p[[2]], p[[3]], #]& /@ {
-                     ColorMath`CSimplify[
-                        CalculateColorFactor[{FBarFjSBar, FiBarFS, SBarSVBar}//.sortColorFacRep]
-                        ConnectColorLines[p[[5]], p[[4]]]//.sortColorFacRep
-                     ],
-                     ColorMath`CSimplify[
-                        CalculateColorFactor[{FBarFjSBar, FiBarFS, FBarFVBar}//.sortColorFacRep]
-                        ConnectColorLines[p[[7]], p[[6]]]//.sortColorFacRep
-                     ]
-                  },
-                  {v1, v2, v3, v4}
-               }
-            ]
-         ],
-         Return[{}]
-      ];
-
-      Return[{}];
-   ];
-(* TODO: add other topologies? *)
-
-ColorFactorForDiagramFromGraph[graph_, diagram_] := 1;
 
 End[];
 EndPackage[];

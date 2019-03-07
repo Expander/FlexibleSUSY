@@ -1995,16 +1995,13 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 (* Write the CXXDiagrams c++ files *)
 WriteCXXDiagramClass[vertices_List, files_List,
     cxxQFTVerticesTemplate_, cxxQFTVerticesOutputDirectory_,
-    cxxQFTVerticesMakefileTemplates_,
-		OptionsPattern[{StripColorStructure -> False}]] :=
+    cxxQFTVerticesMakefileTemplates_] :=
   Module[{fields, cxxVerticesParts, massFunctions, unitCharge,
           sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           outputDir, cxxDiagramsDir, createdVerticesFile, fileHandle,
           cxxQFTVerticesFiles},
     fields = CXXDiagrams`CreateFields[];
-    cxxVerticesParts = CXXDiagrams`CreateVertices[vertices,
-			StripColorStructure -> OptionValue[StripColorStructure]];
-		
+    cxxVerticesParts = CXXDiagrams`CreateVertices[vertices];
     massFunctions = CXXDiagrams`CreateMassFunctions[];
     unitCharge = CXXDiagrams`CreateUnitCharge[];
     
@@ -2082,19 +2079,10 @@ WriteEDMClass[edmFields_List,files_List] :=
 WriteFFVFormFactorsClass[extParticles_List, files_List] :=
    Module[{
          interfacePrototypes = "", interfaceDefinitions = "",
-         graphs, diagrams,
-         insertionsAndVertices, vertices = {}, verticesOLD = {}
+         graphs, diagrams, vertices = {}
       },
 
       If[extParticles =!= {},
-
-         (* list of following lists:
-            {extF1, extF2, extF3,
-               {{{
-         *)
-         insertionsAndVertices = FlattenAt[#, 1]& /@ Transpose[
-               {extParticles, ffff /@  extParticles}
-            ];
 
       	graphs = FFVFormFactors`FFVGraphs[];
 	      diagrams =
@@ -2118,9 +2106,12 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          {"@FFVFormFactors_InterfacePrototypes@"   -> interfacePrototypes,
           "@FFVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
           "@FFVFormFactors_ChargedHiggsMultiplet@" -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
+          "@FFVFormFactors_GluonName@" -> CXXDiagrams`CXXNameOfField[TreeMasses`GetGluon[]],
+          "@FFVFormFactors_PhotonName@" -> CXXDiagrams`CXXNameOfField[TreeMasses`GetPhoton[]],
           Sequence @@ GeneralReplacementRules[]}
       ];
 
+      Print[vertices];
       vertices
    ];
 
@@ -4476,8 +4467,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            WriteCXXDiagramClass[Join[edmVertices,aMuonVertices, FFMasslessVVertices, fFFMassiveVFormFactorVertices, conversionVertices
 ], cxxQFTFiles,
              cxxQFTVerticesTemplate, cxxQFTOutputDir,
-             cxxQFTVerticesMakefileTemplates,
-					   StripColorStructure -> True];
+             cxxQFTVerticesMakefileTemplates];
 
            Utils`PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
@@ -4514,6 +4504,3 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 End[];
 
 EndPackage[];
-
-
-
