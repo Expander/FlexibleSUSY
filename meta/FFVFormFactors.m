@@ -61,13 +61,13 @@ IsDiagramSupported[vertexCorrectionGraph, diagram_] :=
       photonEmitter = diagram[[3,2]]; (* Edge between vertices ? and ? (3rd edge of vertex 4) *)
       exchangeParticle = diagram[[2,3]]; (* Edge between vertices ? and ? (2nd edge of vertex 4) *)
 
-      Print["emit: ", photonEmitter, ", exchange: ", exchangeParticle];
-    
-      (*If[diagram[[6]] =!= {TreeMasses`GetPhoton[],CXXDiagrams`LorentzConjugate[photonEmitter],photonEmitter},*)
-       (*Return[False]];*)
       If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
-         Return[True]];
-      If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter], Return[True]];
+         Return[True]
+      ];
+
+      If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
+         Return[True]
+      ];
 
       Return[False];
    ];
@@ -83,16 +83,8 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
       Utils`AssertWithMessage[Length[topologies] === Length[diagrams],
          "Length of diagrams should be the same as length of topologies"];
 
-      Print[CXXDiagrams`IndexDiagramFromGraph[diagrams[[1,1]], topologies[[1]]]];
-      Print[topologies];
-      Print[diagrams];
       For[i = 1, i <= Length[topologies], i++,
          For[j = 1, j <= Length[diagrams[[i]]], j++,
-         Print[
-            ColourFactorForIndexedDiagramFromGraph[
-               CXXDiagrams`IndexDiagramFromGraph[diagrams[[i,j]], topologies[[i]]], topologies[[i]]
-            ]
-         ];
                If[TreeMasses`IsScalar[diagrams[[i,j,3,2]]],
                  temp = temp <> "val += std::complex<double> " <> (ToString @ N[FSReIm@
                ColourFactorForIndexedDiagramFromGraph[
@@ -117,7 +109,6 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
 
             ];
          ];
-      Print[temp];
       prototype =
          "std::valarray<std::complex<double>> calculate_" <> CXXNameOfField[Fj] <>
             "_" <> CXXNameOfField[Fi] <> "_" <> CXXNameOfField[V] <> "_form_factors (\n" <>
@@ -163,40 +154,6 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
                "std::valarray<std::complex<double>> val {0.0, 0.0, 0.0, 0.0};\n\n" <>
 
                temp <>
-                  (*
-               Switch[V,
-                  SARAH`Photon,
-                  StringJoin[(
-                     (* emit photon from the scalar *)
-                     If[IsElectricallyCharged[#[[1,2]]],
-                        CreateCall[#[[2,1,1]], "FFVEmitterS", Fj, Fi, V, #[[1,1]], #[[1,2]]],
-                        ""
-                     ] <>
-                     (* emit photon from the fermion *)
-                     If[IsElectricallyCharged[#[[1,1]]],
-                        CreateCall[#[[2,1,2]], "FFVEmitterF", Fj, Fi, V, #[[1,1]], #[[1,2]]],
-                        ""
-                     ]
-                  )& /@ gTaggedDiagrams
-                  ],
-                  SARAH`Gluon,
-                  StringJoin[(
-                     (* emit gluon from the scalar *)
-                     If[ColorChargedQ[#[[1,2]]],
-                        CreateCall[#[[2,1,1]], "FFVEmitterS", Fj, Fi, V, #[[1,1]], #[[1,2]]],
-                        ""
-                     ] <>
-                     (* emit gluon from the fermion *)
-                     If[ColorChargedQ[#[[1,1]]],
-                        CreateCall[#[[2,1,2]], "FFVEmitterF", Fj, Fi, V, #[[1,1]], #[[1,2]]],
-                        ""
-                     ]
-                  )& /@ gTaggedDiagrams
-                  ],
-                  (* we assume that there are no unbroken gauge groups other than U(1)_em and SU(3)_C *)
-                  _, Message[FFVFormFactorsCreateInterfaceFunction::field, V]; Abort[];
-               ] <>
-                  *)
 
                "return val;"
             ] <> "\n}\n\n";

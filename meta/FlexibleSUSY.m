@@ -2111,7 +2111,6 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
           Sequence @@ GeneralReplacementRules[]}
       ];
 
-      Print[vertices];
       vertices
    ];
 
@@ -4359,7 +4358,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                         pIn_[_Integer]|pIn_?AtomQ -> {pOut_[_Integer]|pOut_?AtomQ, spectator_}
                      ] :> (pIn -> {pOut, spectator})
                   ];
-           Print[LToLGammaFields];
            Block[{properStates, wrongFields},
               properStates = Cases[LToLGammaFields,
                  Rule[a_?IsLepton, {b_?IsLepton, c_ /; c === GetPhoton[]}] -> (a -> {b, c})
@@ -4373,7 +4371,6 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                  LToLGammaFields = properStates;
               ];
            ];
-           Print[LToLGammaFields];
 
            Print["Creating l->l'A class ..."];
            WriteLToLGammaClass[LToLGammaFields,
