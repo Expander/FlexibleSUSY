@@ -31,6 +31,7 @@ settings = {
     betaZeroThreshold -> 1.*10^-11,
     forcePositiveMasses -> 0,
     poleMassScale -> 0.,
+    thresholdCorrections -> 123111321,
     parameterOutputScale -> 1000
 };
 
