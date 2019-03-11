@@ -258,8 +258,6 @@ ColourFactorForDiagram[diagram_Rule]:=
 	      ];
 	      
 	      Module[{propagator = #, fieldFactor = 1},
-	        If[Head[propagator][[1]] === FeynArts`Outgoing,
-	          fieldFactor = fieldFactor * -1];
 	        If[Position[propagator, FeynArts`Vertex[_][vIndex1], {1}] === {{2}},
 	          fieldFactor = fieldFactor * -1];
 	        If[vIndex1 =!= vIndex2,
