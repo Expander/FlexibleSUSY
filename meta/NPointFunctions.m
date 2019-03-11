@@ -341,7 +341,7 @@ UniquelyInstantiateGenericFields[exprs_List, {fieldInsertions_List, next___}] :=
  * the corresponding c++ code.
  **)
 CreateCXXFunctions[nPointFunctions_List, names_List,
-    colourFactorProjections_ : Identity,
+    colourFactorProjections_,
     OptionsPattern[{LoopFunctions -> "FlexibleSUSY"}]] :=
   Module[{loopFunctionRules, hasExternalMomenta, prototypes,
           definitionHeads, definitionBodies,
