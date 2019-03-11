@@ -120,13 +120,17 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
     {prototype, definition}
   ];
 
+(* Because of colour conservation, we know that the resulting colour
+ * structure is either trivial or a ``SARAH`Delta[]``.
+ * A more general approach should use Coefficient[] instead.
+ *)
 ProjectColourFactor[field_, colourFactor_] := colourFactor /;
 	!TreeMasses`ColorChargedQ[field]
 	
 ProjectColourFactor[field_, colourFactor_ * SARAH`Delta[cIndex1, cIndex2]] := 
 	colourFactor /;
 	TreeMasses`ColorChargedQ[field] && 
-		CXXDiagrams`IsColourIndex[cIndex1] && CXXDiagrams`IsColourIndex[cIndex2]
+		Vertices`SarahColorIndexQ[cIndex1] && Vertices`SarahColorIndexQ[cIndex2]
 
 CXXEvaluatorForFieldAndDiagramFromGraph[field_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},

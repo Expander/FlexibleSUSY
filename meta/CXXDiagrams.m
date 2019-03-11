@@ -41,10 +41,6 @@ NumberOfFieldIndices::usage="Return the number of indices a field has as would b
 determined by inspecting the result of TreeMasses`FieldInfo[].";
 CreateMassFunctions::usage="Creates c++ code that makes functions available that \
 return tree-level masses of given fields.";
-IsLorentzIndex::usage="Returns True if a given index is a Lorentz index and \
-False otherwise.";
-IsColourIndex::usage="Returns True if a given index is a colour index and \
-False otherwise.";
 LorentzIndexOfField::usage="Returns the Lorentz index of a given indexed field.";
 ColourIndexOfField::usage="Returns the colour index of a given indexed field.";
 
@@ -263,7 +259,7 @@ CreateFields[] :=
  * \returns the Lorentz index of a given indexed field.
  **)
 LorentzIndexOfField[field_]:=
-	Module[{lorentzIndices = Select[Vertices`FieldIndexList[field], IsLorentzIndex]},
+	Module[{lorentzIndices = Select[Vertices`FieldIndexList[field], Vertices`SarahLorentzIndexQ]},
 		Utils`AssertWithMessage[Length[lorentzIndices] === 1,
 			"CXXDiagrams`LorentzIndexOfField[]: Argument " <>
 			ToString[field] <> " does not have exactly one Lorentz index."];
@@ -275,7 +271,7 @@ LorentzIndexOfField[field_]:=
  * \returns the Lorentz index of a given indexed field.
  **)
 ColourIndexOfField[field_ /; TreeMasses`ColorChargedQ[field]]:=
-	Module[{colorIndices = Select[Vertices`FieldIndexList[field], IsColourIndex]},
+	Module[{colorIndices = Select[Vertices`FieldIndexList[field], Vertices`SarahColorIndexQ]},
 		Utils`AssertWithMessage[Length[colorIndices] === 1,
 			"ColorMathInterface`ColourIndexOfField[]: Argument " <>
 			ToString[field] <> " does not have exactly one color index."];
@@ -690,16 +686,16 @@ LabelLorentzPart[{scalar_, 1}] := {scalar, ScalarVertex}
 
 LabelLorentzPart[{scalar_,
 		SARAH`PL | SARAH`LorentzProduct[
-			SARAH`gamma[lIndex_] /; IsLorentzIndex[lIndex], SARAH`PL]}] :=
+			SARAH`gamma[lIndex_] /; Vertices`SarahLorentzIndexQ[lIndex], SARAH`PL]}] :=
 	{scalar, LeftChiralVertex}
 	
 LabelLorentzPart[{scalar_,
 		SARAH`PR | SARAH`LorentzProduct[
-			SARAH`gamma[lIndex_] /; IsLorentzIndex[lIndex], SARAH`PR]}] :=
+			SARAH`gamma[lIndex_] /; Vertices`SarahLorentzIndexQ[lIndex], SARAH`PR]}] :=
 	{scalar, RightChiralVertex}
 
 LabelLorentzPart[{scalar_, SARAH`Mom[in_, lIndex_]}] :=
-	{scalar, MomentumVertex[in]} /; IsLorentzIndex[lIndex]
+	{scalar, MomentumVertex[in]} /; Vertices`SarahLorentzIndexQ[lIndex]
 
 LabelLorentzPart[{scalar_,
 	SARAH`g[lIndex1_, lIndex2_] *
@@ -734,16 +730,16 @@ LabelLorentzPart[{scalar_,
 LabelLorentzPart[{scalar_,
 		SARAH`g[lIndex1_, lIndex2_] * SARAH`g[lIndex3_, lIndex4_]}] :=
 	{scalar, TwoMetricVertex[lIndex1, lIndex2, lIndex3, lIndex4]} /;
-	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2] &&
-	IsLorentzIndex[lIndex3] && IsLorentzIndex[lIndex4]
+	Vertices`SarahLorentzIndexQ[lIndex1] && Vertices`SarahLorentzIndexQ[lIndex2] &&
+	Vertices`SarahLorentzIndexQ[lIndex3] && Vertices`SarahLorentzIndexQ[lIndex4]
 
 LabelLorentzPart[{scalar_, SARAH`Mom[in_, lIndex1_] - SARAH`Mom[out_, lIndex2_]}] :=
 	{scalar, MomentumDifferenceVertex[in, out]} /;
-	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2]
+	Vertices`SarahLorentzIndexQ[lIndex1] && Vertices`SarahLorentzIndexQ[lIndex2]
 
 LabelLorentzPart[{scalar_, SARAH`g[lIndex1_, lIndex2_]}] :=
 	{scalar, InverseMetricVertex} /;
-	IsLorentzIndex[lIndex1] && IsLorentzIndex[lIndex2]
+	Vertices`SarahLorentzIndexQ[lIndex1] && Vertices`SarahLorentzIndexQ[lIndex2]
 
 LabelLorentzPart[vertexPart_] := 
 	(Print["Unknown Lorentz structure in vertex ", vertexPart]; Quit[1])
@@ -754,22 +750,22 @@ GaugeStructureOfVertexLorentzPart[{0, lorentzStructure_}] :=
 
 GaugeStructureOfVertexLorentzPart[{scalar_, lorentzStructure_}] :=
 	{scalar, UncolouredVertex, lorentzStructure} /;
-	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+	FreeQ[scalar, atom_ /; Vertices`SarahColorIndexQ[atom], -1]
 
 GaugeStructureOfVertexLorentzPart[
 	{scalar_ * SARAH`Delta[cIndex1_, cIndex2_], lorentzStructure_}] :=
 	{scalar, KroneckerDeltaColourVertex[cIndex1, cIndex2], lorentzStructure} /;
-	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+	FreeQ[scalar, atom_ /; Vertices`SarahColorIndexQ[atom], -1]
 	
 GaugeStructureOfVertexLorentzPart[
 	{scalar_ * SARAH`Lam[cIndex1_, cIndex2_, cIndex3_], lorentzStructure_}] :=
 	{scalar, GellMannVertex[cIndex1, cIndex2, cIndex3], lorentzStructure} /;
-	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+	FreeQ[scalar, atom_ /; Vertices`SarahColorIndexQ[atom], -1]
 	
 GaugeStructureOfVertexLorentzPart[
 	{scalar_ * SARAH`fSU3[cIndex1_, cIndex2_, cIndex3_], lorentzStructure_}] :=
 	{scalar, AdjointlyColouredVertex[cIndex1, cIndex2, cIndex3], lorentzStructure} /;
-	FreeQ[scalar, atom_ /; IsColourIndex[atom], -1]
+	FreeQ[scalar, atom_ /; Vertices`SarahColorIndexQ[atom], -1]
 
 GaugeStructureOfVertexLorentzPart[vertexPart_] := 
 	(Print["Unknown colour structure in vertex ", vertexPart]; Quit[1])
@@ -1340,20 +1336,6 @@ LoadVerticesIfNecessary[] :=
         SARAH`MakeCouplingLists;
    ]
 
-(** \brief Returns `True` if a given index is a Lorentz index and `False`
- * otherwise.
- * \returns `True` if a given index is a Lorentz index and `False`
- * otherwise.
- **)
-IsColourIndex[index_] := StringMatchQ[ToString @ index, "ct" ~~ __]
-
-(** \brief Returns `True` if a given index is a colour index and `False`
- * otherwise.
- * \returns `True` if a given index is a colour index and `False`
- * otherwise.
- **)
-IsLorentzIndex[index_] := StringMatchQ[ToString @ index, "lt" ~~ __]
-
 (** \brief Remove any Lorentz and colour indices of a given field
  * \param p the given field
  * \returns the field with any Lorentz and colour indices removed.
@@ -1369,7 +1351,7 @@ StripLorentzIndices[SARAH`bar[p_]] := SARAH`bar[StripLorentzIndices[p]]
 StripLorentzIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripLorentzIndices[p]]
 StripLorentzIndices[p_] := 
 	Module[{remainingIndices},
-		remainingIndices = Select[p[[1]], (!IsLorentzIndex[#] &)];
+		remainingIndices = Select[p[[1]], (!Vertices`SarahLorentzIndexQ[#] &)];
 		If[Length[remainingIndices] === 0, Head[p],
 			Head[p][remainingIndices]]
 	]
@@ -1383,7 +1365,7 @@ StripColourIndices[SARAH`bar[p_]] := SARAH`bar[StripColourIndices[p]]
 StripColourIndices[Susyno`LieGroups`conj[p_]] := Susyno`LieGroups`conj[StripColourIndices[p]]
 StripColourIndices[p_] := 
 	Module[{remainingIndices},
-		remainingIndices = Select[p[[1]], (!IsColourIndex[#] &)];
+		remainingIndices = Select[p[[1]], (!Vertices`SarahColorIndexQ[#] &)];
 		If[Length[remainingIndices] === 0, Head[p],
 			Head[p][remainingIndices]]
 	]
