@@ -57,9 +57,9 @@ static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template <class Fj, class Fi, class Spectator, class ExchangeParticle,
-          class Emitter>
-struct FFVEmitterS {
+template <class Fj, class Fi, class V, class S1, class S2,
+          class F>
+struct FFV_SSF {
    static std::valarray<std::complex<double>>
    value(const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
@@ -82,22 +82,15 @@ struct FFVEmitterS {
 * \a Args.
 */
 
-template <class FermionIn, class Fi, class Spectator, class Emitter,
+template <class FermionIn, class Fi, class Spectator, class Emitter1, class Emitter2,
           class ExchangeParticle>
-struct FFVEmitterF {
+struct FFV_FFS {
    static std::valarray<std::complex<double>>
    value(const typename field_indices<FermionIn>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
          context_base const& context);
 };
 
-template <class Fj, class Fi, class V, class F, class S>
-struct FFV {
-   static std::valarray<std::complex<double>>
-   value(const typename field_indices<Fj>::type& indices_in,
-         const typename field_indices<Fi>::type& indices_out,
-         context_base const& context);
-};
 } // anonymous namespace
 
 namespace flexiblesusy {
@@ -181,7 +174,7 @@ double OneLoopFunctionF(double r)
    if (is_zero(1.0 - r)) {
       return 2.0 / 3.0;
    } else {
-      return (-3.0 + 4.0 * r - r * r - 2.0 * std::log(r)) / pow(1.0 - r, 3);
+      return (-3.0 + 4.0*r - r*r - 2.0*std::log(r)) / pow(1.0 - r, 3);
    }
 }
 
@@ -189,30 +182,33 @@ template <class Spectator>
 typename field_indices<Spectator>::type default_indices_for_spectator(void);
 
 template <>
-typename field_indices<VP>::type default_indices_for_spectator<VP>(void)
+typename field_indices<@FFVFormFactors_PhotonName@>::type 
+default_indices_for_spectator<@FFVFormFactors_PhotonName@>(void)
 {
    return {};
 }
 
 template <>
-typename field_indices<VG>::type default_indices_for_spectator<VG>(void)
+typename field_indices<@FFVFormFactors_GluonName@>::type 
+default_indices_for_spectator<@FFVFormFactors_GluonName@>(void)
 {
    return {};
 }
 
 // emit V from the internal scalar line
-template<class Fj, class Fi, class V, class F, class S>
-std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
+template<class Fj, class Fi, class V, class SA, class SB, class F>
+std::valarray<std::complex<double>> FFV_SSF<Fj, Fi, V, SA, SB, F>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out, 
       context_base const& context) {
 
-   using VertexFBarFjSBar = Vertex<typename F::lorentz_conjugate, typename S::lorentz_conjugate, Fj>;
-   using VertexFiBarFS    = Vertex<typename Fi::lorentz_conjugate, S, F>;
-   using VertexSBarSVBar  = Vertex<typename S::lorentz_conjugate, S, typename V::lorentz_conjugate>;
+   using VertexFBarFjSBar = Vertex<typename F::lorentz_conjugate, typename SA::lorentz_conjugate, Fj>;
+   using VertexFiBarFS    = Vertex<typename Fi::lorentz_conjugate, SB, F>;
+   using VertexSBarSVBar  = Vertex<typename SB::lorentz_conjugate, SA, typename V::lorentz_conjugate>;
 
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
+   const auto mi = context.mass<Fi>(indices_out);
 
    auto spectator_indices = default_indices_for_spectator<V>();
 
@@ -253,7 +249,7 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
          const auto indexEmit = concatenate(scalarFieldIndicesIn, scalarFieldIndicesIn, spectator_indices);
          const auto vertexEmit = VertexSBarSVBar::evaluate(indexEmit, context);
 
-         const auto mS = context.mass<S>(scalarFieldIndicesIn);
+         const auto mS = context.mass<SA>(scalarFieldIndicesIn);
          const auto mF = context.mass<F>(fermionFieldIndicesIn);
          const auto x = pow(mF/mS, 2);
 
@@ -266,14 +262,16 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
          // eq. 16 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A2L = 
             - vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x) 
-            - vertexOut.left()* vertexIn.left() * mF/mj * OneLoopFunctionC(x);
+            - vertexOut.left()* vertexIn.left() * mF/mj * OneLoopFunctionC(x)
+            - mi/mj * vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x); 
 
          // eq. 15 & 16 of hep-ph/9510309 after replacement L <-> R (possibly with different sign)
          const std::complex<double> A1R = 
             - 1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionA(x);
          const std::complex<double> A2R = 
             - vertexOut.right() * vertexIn.left() * OneLoopFunctionB(x) 
-            - vertexOut.right()* vertexIn.right() * mF/mj * OneLoopFunctionC(x);
+            - vertexOut.right()* vertexIn.right() * mF/mj * OneLoopFunctionC(x)
+            - mi/mj * vertexOut.left() * vertexIn.right() * OneLoopFunctionB(x); 
 
          const std::complex<double> massFactor = pow(mS,-2);
 
@@ -286,18 +284,19 @@ std::valarray<std::complex<double>> FFVEmitterS<Fj, Fi, V, F, S>::value(
 }
 
 // emit spectator from the internal fermion line
-template<class Fj, class Fi, class V, class F, class S>
-std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
+template<class Fj, class Fi, class V, class FA, class FB, class S>
+std::valarray<std::complex<double>> FFV_FFS<Fj, Fi, V, FA, FB, S>::value(
       const typename field_indices<Fj>::type& indices_in, 
       const typename field_indices<Fi>::type& indices_out,
       context_base const& context) {
 
-   using VertexFBarFjSBar = Vertex<typename S::lorentz_conjugate, typename F::lorentz_conjugate, Fj>;
-   using VertexFiBarFS    = Vertex<typename Fi::lorentz_conjugate, F, S>;
-   using VertexFBarFVBar  = Vertex<typename F::lorentz_conjugate, F, typename V::lorentz_conjugate>;
+   using VertexFBarFjSBar = Vertex<typename S::lorentz_conjugate, typename FA::lorentz_conjugate, Fj>;
+   using VertexFiBarFS    = Vertex<typename Fi::lorentz_conjugate, FB, S>;
+   using VertexFBarFVBar  = Vertex<typename FB::lorentz_conjugate, FA, typename V::lorentz_conjugate>;
    
    // masses of external fermions
    const auto mj = context.mass<Fj>(indices_in);
+   const auto mi = context.mass<Fi>(indices_out);
 
    // loop over all possible particle "generations" attached to both vertices
    std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
@@ -335,7 +334,7 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
          const auto indexEmit = concatenate(fermionFieldIndicesIn, fermionFieldIndicesIn, spectator_indices);
          const auto vertexEmit = VertexFBarFVBar::evaluate(indexEmit, context);
 
-         const auto mF = context.mass<F>(fermionFieldIndicesIn);
+         const auto mF = context.mass<FA>(fermionFieldIndicesIn);
          const auto mS = context.mass<S>(scalarFieldIndicesIn);
          const auto x = pow(mF/mS, 2);
 
@@ -347,14 +346,17 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
          // eq. 19 of hep-ph/9510309 (possibly with different sign)
          const std::complex<double> A2L = 
             - vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x) 
-            - vertexOut.left()* vertexIn.left() * mF/mj * OneLoopFunctionF(x);
+            - vertexOut.left()* vertexIn.left() * mF/mj * OneLoopFunctionF(x)
+            - mi/mj * vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x);
 
          // eq. 18 & 18 of hep-ph/9510309 after replacement L <-> R (possibly with different sign)
          const std::complex<double> A1R = 
             - 1./18. * vertexOut.left() * vertexIn.right() * OneLoopFunctionD(x);
          const std::complex<double> A2R = 
             - vertexOut.right() * vertexIn.left() * OneLoopFunctionE(x) 
-            - vertexOut.right()* vertexIn.right() * mF/mj * OneLoopFunctionF(x);
+            - vertexOut.right()* vertexIn.right() * mF/mj * OneLoopFunctionF(x)
+            - mi/mj * vertexOut.left() * vertexIn.right() * OneLoopFunctionE(x); 
+
          const std::complex<double> massFactor = pow(mS,-2);
 
          res += oneOver32PiSquared * vector_boson_coupling * massFactor 
@@ -364,104 +366,5 @@ std::valarray<std::complex<double>> FFVEmitterF<Fj, Fi, V, F, S>::value(
 
    return res;
 }
-
-/*
-template<class Fj, class Fi, class V, class F, class S>
-std::valarray<std::complex<double>> FFV<Fj, Fi, V, F, S>::value(
-   const typename field_indices<Fj>::type& indices_in, 
-   const typename field_indices<Fi>::type& indices_out, 
-   context_base& context) {
-
-   auto spectator_indices = default_indices_for_spectator<V>();
-   using VertexFjBarFjVBar = Vertex<typename Fj::lorentz_conjugate, Fj, typename V::lorentz_conjugate>;
-         const auto kuwa = concatenate(
-            indices_in, indices_in, 
-            spectator_indices
-         );
-   const auto FjBarFjVBar = VertexFjBarFjVBar::evaluate(kuwa, context).left();
-   using VertexFBarFjS     = Vertex<typename F::lorentz_conjugate, Fj, typename S::lorentz_conjugate>;
-   using VertexSBarSVBar  = Vertex<typename S::lorentz_conjugate, S, typename V::lorentz_conjugate>;
-   using VertexFBarFVBar  = Vertex<typename F::lorentz_conjugate, F, typename V::lorentz_conjugate>;
-   using VertexFiBarFSBar  = Vertex<typename Fi::lorentz_conjugate, F, S>;
-
-   // masses of external fermions
-   const auto mj = context.mass<Fj>(indices_in);
-   const auto mj2 = mj*mj;
-
-   std::valarray<std::complex<double>> res {0.0, 0.0, 0.0, 0.0};
-   // loop over all possible particle "generations" attached to both vertices
-   for (const auto& indexIn: index_range<VertexFBarFjS>()) {
-      for (const auto& indexOut: index_range<VertexFiBarFSBar>()) {
-
-         // cycle if generations of external fermions  are different then requested   
-         const auto jFieldIndices = VertexFBarFjS::template indices_of_field<1>(indexIn);
-         const auto iFieldIndices = VertexFiBarFSBar::template indices_of_field<0>(indexOut);
-         if (jFieldIndices != indices_in || iFieldIndices != indices_out)
-            continue;
-
-         // match indices of the fermion field in the loop
-         const auto fermionFieldIndicesIn = VertexFBarFjS::template indices_of_field<0>(indexIn);
-         const auto fermionFieldIndicesOut = VertexFiBarFSBar::template indices_of_field<1>(indexOut);
-         if (fermionFieldIndicesIn != fermionFieldIndicesOut)
-            continue;
-
-         // get SBarSVBar vertex 
-         const auto scalarFieldIndicesIn = VertexFBarFjS::template indices_of_field<2>(indexIn);
-         const auto scalarFieldIndicesOut = VertexFiBarFSBar::template indices_of_field<2>(indexOut);
-         if (scalarFieldIndicesIn != scalarFieldIndicesOut)
-            continue;
-
-         const auto indexSBarSVBar = concatenate(
-            scalarFieldIndicesOut, scalarFieldIndicesIn, 
-            spectator_indices
-         );
-         // not clear what the sign
-         const auto SBarSVBar = -VertexSBarSVBar::evaluate(indexSBarSVBar, context).value(1,0);
-         // const auto SBarSVBar = VertexSBarSVBar::evaluate(indexSBarSVBar, context).value(positive momentum index, negative momentum index);
-
-         // get FBarFVBar vertex
-         const auto indexFBarFVBar = concatenate(
-            fermionFieldIndicesOut, fermionFieldIndicesIn,
-            spectator_indices
-         );
-         const auto FBarFVBar = VertexFBarFVBar::evaluate(indexFBarFVBar, context).left();
-
-         const auto mF = context.mass<F>(fermionFieldIndicesIn);
-         const auto mS = context.mass<S>(scalarFieldIndicesOut);
-         const auto x = pow(mF/mS, 2);
-
-
-         const auto FBarFjSBar = VertexFBarFjS::evaluate(indexIn, context);
-         const auto FBarFjSBarL = FBarFjSBar.left();
-         const auto FBarFjSBarR = FBarFjSBar.right();
-
-         const auto FiBarFSBar = VertexFiBarFSBar::evaluate(indexOut, context);
-         const auto FiBarFSL = FiBarFSBar.left();
-         const auto FiBarFSR = FiBarFSBar.right();
-
-         const auto A1L = (FBarFjSBarL*FiBarFSR*((-1 + x)*(18*FBarFVBar*Power(-1 + x,2) + FjBarFjVBar*(-2 + 7*x - 11*Power(x,2))) - 
-       6*(-(FjBarFjVBar*Power(x,3)) + FBarFVBar*(2 - 3*x + Power(x,3)))*Log(x)))/(576.*Power(mS,2)*Power(Pi,2)*Power(-1 + x,4));
-
-       const auto A1R = (FBarFjSBarR*FiBarFSL*((-1 + x)*(18*FBarFVBar*Power(-1 + x,2) + FjBarFjVBar*(-2 + 7*x - 11*Power(x,2))) - 
-       6*(-(FjBarFjVBar*Power(x,3)) + FBarFVBar*(2 - 3*x + Power(x,3)))*Log(x)))/(576.*Power(mS,2)*Power(Pi,2)*Power(-1 + x,4));
-          
-      const auto A2L = 
-         -(FBarFjSBarL*FiBarFSL*Sqrt(x)*((-1 + x)*(2*FBarFVBar*(-1 + x) - FjBarFjVBar*(1 + x)) + 2*(FBarFVBar - FBarFVBar*x + FjBarFjVBar*x)*Log(x)))/
-    (32.*mj*mS*Power(Pi,2)*Power(-1 + x,3)) - (FBarFjSBarR*FiBarFSL*
-      ((-1 + x)*(FjBarFjVBar - 5*FjBarFjVBar*x - 2*FjBarFjVBar*Power(x,2) + 3*FBarFVBar*(-1 + Power(x,2))) +
-        6*x*(FBarFVBar - FBarFVBar*x + FjBarFjVBar*x)*Log(x)))/(192.*Power(mS,2)*Power(Pi,2)*Power(-1 + x,4));
-         
-         const auto A2R =
-            -(FBarFjSBarR*FiBarFSR*Sqrt(x)*((-1 + x)*(2*FBarFVBar*(-1 + x) - FjBarFjVBar*(1 + x)) + 2*(FBarFVBar - FBarFVBar*x + FjBarFjVBar*x)*Log(x)))/
-    (32.*mj*mS*Power(Pi,2)*Power(-1 + x,3)) - (FBarFjSBarL*FiBarFSR*
-      ((-1 + x)*(FjBarFjVBar - 5*FjBarFjVBar*x - 2*FjBarFjVBar*Power(x,2) + 3*FBarFVBar*(-1 + Power(x,2))) +
-        6*x*(FBarFVBar - FBarFVBar*x + FjBarFjVBar*x)*Log(x)))/(192.*Power(mS,2)*Power(Pi,2)*Power(-1 + x,4));
-            
-         res += std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
-      }
-   }
-   return res;
-}
-*/
 
 } // anonymous namespace

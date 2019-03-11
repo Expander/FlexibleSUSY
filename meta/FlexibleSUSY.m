@@ -2093,7 +2093,6 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          diagrams = Transpose @ diagrams;
 
       	vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,2], 1];
-         (*vertices = List@@(Vertices`SortCp@(Cp@@#))& /@ vertices;*)
 
          {interfacePrototypes, interfaceDefinitions} =
             StringJoin /@ (Riffle[#, "\n\n"]& /@ Transpose[

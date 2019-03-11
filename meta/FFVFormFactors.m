@@ -43,6 +43,10 @@ vertexCorrectionGraph = {
 contributingGraphs = {vertexCorrectionGraph};
 FFVGraphs[] := contributingGraphs;
 
+EmitterL[diagram_] := diagram[[3,2]];
+EmitterR[diagram_] := diagram[[2,2]];
+Spectator[diagram_] := diagram[[2,3]];
+
 FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
    Module[{diagrams},
       diagrams =
@@ -55,24 +59,30 @@ FFVContributingDiagramsForGraph[graph_, Fj_ -> {Fi_, V_}] :=
       Select[diagrams, IsDiagramSupported[graph, #]&]
    ];
 
-IsDiagramSupported[vertexCorrectionGraph, diagram_] :=
-   Module[{photonEmitter, exchangeParticle},
+IsDiagramSupported[graph_, diagram_] :=
+   Module[{photonEmitter, exchangeParticle, photonEmitterAfter},
 
       photonEmitter = diagram[[3,2]]; (* Edge between vertices ? and ? (3rd edge of vertex 4) *)
+      photonEmitterAfter = diagram[[2,2]];
       exchangeParticle = diagram[[2,3]]; (* Edge between vertices ? and ? (2nd edge of vertex 4) *)
 
-      If[TreeMasses`IsFermion[photonEmitter] && TreeMasses`IsScalar[exchangeParticle],
+      If[TreeMasses`IsFermion[photonEmitter] &&
+         TreeMasses`IsFermion[photonEmitterAfter]
+         && TreeMasses`IsScalar[exchangeParticle],
          Return[True]
       ];
 
-      If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter],
+      If[TreeMasses`IsFermion[exchangeParticle] && TreeMasses`IsScalar[photonEmitter] &&TreeMasses`IsScalar[photonEmitterAfter],
          Return[True]
       ];
 
+      Print["Warning: Diagram with internal particles of type ",
+         StringJoin @@ (ToString /@ SARAH`getType /@ {EmitterL[diagram], EmitterR[diagram], Spectator[diagram]})];
+      Print["         is currently not supported."];
+      Print["         Discarding diagram with particles ",
+         {EmitterL[diagram], EmitterR[diagram], Spectator[diagram]}, "."];
       Return[False];
    ];
-
-FFVFormFactorsCreateInterfaceFunction::field = "Field `1` is not Gluon or Photon.";
 
 FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] :=
    Module[{prototype, definition,
@@ -85,28 +95,7 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
 
       For[i = 1, i <= Length[topologies], i++,
          For[j = 1, j <= Length[diagrams[[i]]], j++,
-               If[TreeMasses`IsScalar[diagrams[[i,j,3,2]]],
-                 temp = temp <> "val += std::complex<double> " <> (ToString @ N[FSReIm@
-               ColourFactorForIndexedDiagramFromGraph[
-               CXXDiagrams`IndexDiagramFromGraph[diagrams[[i,j]], topologies[[i]]], topologies[[i]]
-                  ]
-                     ]) <> " * FFVEmitterS<" <>
-                        StringJoin@Riffle[CXXDiagrams`CXXNameOfField /@ {Fi, Fj, V, diagrams[[i,j,2,3]], diagrams[[i,j,3,2]]}, ", "] <>
-">::value(indices1, indices2, context);\n",
-                  ""
-               ] <>
-                  If[TreeMasses`IsFermion[diagrams[[i,j,3,2]]],
-                     temp = temp <> "val += std::complex<double> " <> (ToString @ N[FSReIm@
-                        ColourFactorForIndexedDiagramFromGraph[
-                           CXXDiagrams`IndexDiagramFromGraph[diagrams[[i,j]], topologies[[i]]], topologies[[i]]
-                        ]
-                     ]) <> " * FFVEmitterF<" <>
-                        StringJoin@Riffle[CXXDiagrams`CXXNameOfField /@ {Fi, Fj, V, diagrams[[i,j,3,2]], diagrams[[i,j,2,3]]},
-                           ", "]
-                     <> ">::value(indices1, indices2, context);\n",
-                     ""
-                  ]
-
+                 temp = temp <> CreateCall[Fj, Fi, V, topologies[[i]], diagrams[[i,j]]];
             ];
          ];
       prototype =
@@ -129,7 +118,6 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
             IndentText[
                "context_base context {model};\n" <>
                "std::array<int, " <> ToString @ numberOfIndices1 <> "> indices1 = {" <>
-                     (* TODO: Specify indices correctly *)
                        If[TreeMasses`GetDimension[Fj] =!= 1,
                           "generationIndex1" <>
                           If[numberOfIndices1 =!= 1,
@@ -161,9 +149,16 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
       {prototype <> ";", definition}
    ];
 
-CreateCall[color_, type_, Fj_, Fi_, V_, F_, S_] :=
-   "val += std::complex<double> " <> (ToString @ N[FSReIm@ColorN[color], 16]) <> " * " <> type <> "<" <>
-                     StringJoin @ Riffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, F, S}, ","]  <>
+(* convenient abbreviation *)
+ColorFactorForDiagram[topology_, diagram_] :=
+   N @ FSReIm @ ColourFactorForIndexedDiagramFromGraph[
+      CXXDiagrams`IndexDiagramFromGraph[diagram, topology], topology
+   ];
+
+CreateCall[Fj_, Fi_, V_, topology_, diagram_] :=
+   "val += std::complex<double> " <> ToString @ ColorFactorForDiagram[topology, diagram] <> " * FFV_" <>
+      StringJoin @@ (ToString /@ SARAH`getType /@ {EmitterL[diagram], EmitterR[diagram], Spectator[diagram]}) <> "<" <>
+         StringJoin @ Riffle[CXXDiagrams`CXXNameOfField /@ {Fj, Fi, V, EmitterL[diagram], EmitterR[diagram], Spectator[diagram]}, ","]  <>
                      ">::value(indices1, indices2, context);\n";
 
 End[];
