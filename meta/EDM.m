@@ -126,7 +126,7 @@ ProjectColourFactor[field_, colourFactor_] := colourFactor /;
 ProjectColourFactor[field_, colourFactor_ * SARAH`Delta[cIndex1, cIndex2]] := 
 	colourFactor /;
 	TreeMasses`ColorChargedQ[field] && 
-		CXXDiagrams`IsColourIndex[cIndex1] && CXXDiagrams`IsColourIndex[cIndex2]
+		Vertices`SarahColorIndexQ[cIndex1] && Vertices`SarahColorIndexQ[cIndex2]
 
 CXXEvaluatorForFieldAndDiagramFromGraph[field_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},
