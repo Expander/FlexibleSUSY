@@ -120,6 +120,10 @@ EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
     {prototype, definition}
   ];
 
+(* Because of colour conservation, we know that the resulting colour
+ * structure is either trivial or a ``SARAH`Delta[]``.
+ * A more general approach should use Coefficient[] instead.
+ *)
 ProjectColourFactor[field_, colourFactor_] := colourFactor /;
 	!TreeMasses`ColorChargedQ[field]
 	
