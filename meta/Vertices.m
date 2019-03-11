@@ -46,6 +46,7 @@ ReplaceUnrotatedFields::usage;
 StripGroupStructure::usage="Removes group generators and Kronecker deltas.";
 StripFieldIndices::usage;
 SarahColorIndexQ::usage="Checks if an index is a color index. Returns True for indices starting with ct and followed by a number."
+SarahLorentzIndexQ::usage="Checks if an index is a Lorentz index. Returns True for indices starting with lt and followed by a number."
 
 SortFieldsInCp::usage="";
 
@@ -647,6 +648,9 @@ SarahInternalGenerationIndexQ[index_Symbol] :=
 
 SarahColorIndexQ[index_Symbol] :=
     StringMatchQ[ToString[index], RegularExpression["ct[[:digit:]]+"]];
+
+SarahLorentzIndexQ[index_Symbol] :=
+    StringMatchQ[ToString[index], RegularExpression["lt[[:digit:]]+"]];
 
 GetLorentzStructure[SARAH`Cp[__]] := 1;
 
