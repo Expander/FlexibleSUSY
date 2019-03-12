@@ -708,17 +708,12 @@ CXXCodeForGenericSum[sum_GenericSum, genericInsertions_List,
     subexpressions_List, preCXXRules_List] :=
   Module[{expr = sum[[1]], indices = sum[[2]],
           sortedGenericInsertions, genericFields, relevantSubexpressions,
-          subexpr, needsContext, cxxExpr},
+          subexpr, needsContext, cxxExpr, ReRatioColourFactors, ImRatioColourFactors},
     Utils`AssertWithMessage[NumberQ[#],
       "CXXDiagrams`CXXCodeForGenericSum[]: Projected colour factor is
 not a number: " <> ToString[#]] & /@ colourFactors;
-    
-    (* Non-integer colour factors need to be wrapped useing other
-     * types than boost::mpl::int_<>.
-     *)
-    Utils`AssertWithMessage[IntegerQ[#],
-      "CXXDiagrams`CXXCodeForGenericSum[]: non-integer projected colour
-factors are not implemented yet: " <> ToString[#]] & /@ colourFactors;
+    ReRatioColourFactors = {Numerator[#], Denominator[#]} & /@ Re[colourFactors];
+    ImRatioColourFactors = {Numerator[#], Denominator[#]} & /@ Im[colourFactors];
 
     relevantSubexpressions = DeleteDuplicates[Cases[expr,
       Pattern[subexpr, Alternatives @@ subexpressions[[All,1]]] :> subexpr,
@@ -792,7 +787,9 @@ factors are not implemented yet: " <> ToString[#]] & /@ colourFactors;
       ", "]] <> "\n>;\n" <>
     "using colour_factors" <> " = boost::mpl::vector<\n" <>
     StringJoin[Riffle[
-      "boost::mpl::int_<" <> ToString[#] <> ">" & /@ colourFactors,
+      StringReplace["detail::complex_helper<detail::ratio_helper<"
+        <> ToString[#1] <> ">, detail::ratio_helper<" <> ToString[#2] <> ">>" & @@@
+        Transpose[{ReRatioColourFactors, ImRatioColourFactors}], {"{" -> "", "}" -> ""}],
       ", "]] <> "\n>;\n\n" <>
 
     "return accumulate_generic<GenericKeys, GenericInsertions,\n" <> 
