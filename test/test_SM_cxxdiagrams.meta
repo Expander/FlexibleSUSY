@@ -156,8 +156,9 @@ nonzeroVertexPairs = {
 	}
 };
 
-cxxZeroVertices = "boost::mpl::vector<" <>
-	StringJoin[Riffle[CXXDiagrams`CXXNameOfVertex /@ zeroVertices, ", "]] <> ">";
+cxxZeroVertices = "boost::mpl::vector<\n" <> TextFormatting`IndentText[
+	StringJoin[Riffle[CXXDiagrams`CXXNameOfVertex /@ zeroVertices, ",\n"]]] <>
+	"\n>";
 
 cxxVertexWrappers = StringJoin[Riffle[
 	Module[{fields = #[[1]], fsVertexCalls = #[[2]], cxxFieldSequence},
@@ -180,14 +181,15 @@ cxxVertexWrappers = StringJoin[Riffle[
 		] <> "\n}"
 	] & /@ nonzeroVertexPairs, "\n\n"]];
 
-cxxNonzeroVertexPairs = "boost::mpl::vector<" <> StringJoin[Riffle[
+cxxNonzeroVertexPairs = "boost::mpl::vector<\n" <> TextFormatting`IndentText[
+	StringJoin[Riffle[
 	"boost::mpl::pair<" <> #[[1]] <> ", " <> #[[2]] <> ">" & /@
 		Transpose[{
 			CXXDiagrams`CXXNameOfVertex /@ nonzeroVertexPairs[[All, 1]],
 			StringReplace[#, "Vertex" -> "FSVertexWrapper"] & /@
 				(CXXDiagrams`CXXNameOfVertex /@ nonzeroVertexPairs[[All, 1]])
 		}],
-	", "]] <> ">";
+	",\n"]]] <> "\n>";
 
 cxxDiagramsDir = FileNameJoin[{SARAH`SARAH[OutputDirectory],
 	ToString[FlexibleSUSY`FSEigenstates], "CXXDiagrams"}];
