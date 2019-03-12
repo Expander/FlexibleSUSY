@@ -35,10 +35,8 @@ ToCp::usage="ToCp[cpPattern] converts field index patterns inside cpPattern to s
 FieldIndexList::usage;
 SortCp::usage="SortCp[cp] sorts fields in cp into SARAH internal order.";
 SortCps::usage="SortCps[nPointFunctions] sorts all SARAH`Cp[] and SARAH`Cp[][] in nPointFunctions.";
-SortFieldsInCp::usage="";
 EnforceCpColorStructures::usage;
 EnforceCpColorStructures::cpext="Fixing positions of external field `1` within `2`.  This might happen with SARAH version 4.1.0 or earlier.  Please report to us if you see this message with a newer version of SARAH.";
-FindVertexWithLorentzStructure::usage="";
 
 GetLorentzStructure::usage;
 GetParticleList::usage;
