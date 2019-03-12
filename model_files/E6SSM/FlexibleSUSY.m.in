@@ -115,16 +115,7 @@ ExtraSLHAOutputBlocks = {
                 {1, Hold[SUSYScale]},
                 {2, Hold[LowScale]} } },
    {FlexibleSUSYLowEnergy,
-           {{21, FlexibleSUSYObservable`aMuon},
-            {23, FlexibleSUSYObservable`EDM[Fe[1]]},
-            {24, FlexibleSUSYObservable`EDM[Fe[2]]},
-            {25, FlexibleSUSYObservable`EDM[Fe[3]]}, 
-            {26, FlexibleSUSYObservable`MuEGamma[Fe[2], Fe[1], VP]}, 
-            {27, FlexibleSUSYObservable`MuEGamma[Fd[3], Fd[2], VP]}, 
-            {28, FlexibleSUSYObservable`MuEGamma[Fd[3], Fd[2], VG]},
-            {29, FlexibleSUSYObservable`FToFConversionInNucleus[Fe[2], Fe[1], Au]}
-           } 
-   },
+               {{21, FlexibleSUSYObservable`aMuon} } },
    {EFFHIGGSCOUPLINGS, NoScale,
                {{1, FlexibleSUSYObservable`CpHiggsPhotonPhoton},
                 {2, FlexibleSUSYObservable`CpHiggsGluonGluon},

@@ -23,7 +23,7 @@
 *)
 
 BeginPackage["FFVFormFactors`",
-   {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "ColorMathInterface`", "Utils`"}
+   {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "CXXDiagrams`", "Utils`"}
 ];
 
 FFVFormFactorsCreateInterfaceFunction::usage = "";
@@ -143,7 +143,9 @@ FFVFormFactorsCreateInterfaceFunction[Fj_ -> {Fi_, V_}, topologies_, diagrams_] 
 
                temp <>
 
+               "\n" <>
                "return val;"
+
             ] <> "\n}\n\n";
 
       {prototype <> ";", definition}

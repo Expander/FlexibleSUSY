@@ -26,7 +26,6 @@
  */
 
 #include "@ModelName@_a_muon.hpp"
-#include "@ModelName@_FFV_form_factors.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
 #include "cxx_qft/@ModelName@_qft.hpp"
@@ -349,19 +348,7 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
       model.solve_ewsb();
       model.calculate_M@AMuon_MuonField@_pole();
    }
-   m_muon_pole = muonPhysicalMass(context_base{model});
 
-   auto my =
-      -1 *
-      (MRSSM2_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[2] + MRSSM2_FFV_form_factors::calculate_Fe_Fe_VP_form_factors(1, 1, model)[3])
-      // factor out electric charge
-      /unit_charge(context_base{model})
-      * model.get_MFe(1) 
-      * m_muon_pole;
-
-   std::cout << "Ratio!!!!!: " << 
-      1 - my/calculate_a_muon_impl(model)
-      << std::endl;
    return calculate_a_muon_impl(model);
 }
 

@@ -76,7 +76,6 @@ META_SRC     := \
 		$(DIR)/FFMassiveVFormFactors.m \
 		$(DIR)/BrLToLGamma.m \
 		$(DIR)/FToFConversionInNucleus.m \
-		$(DIR)/ColorMathInterface.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \

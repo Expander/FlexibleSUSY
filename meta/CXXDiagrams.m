@@ -976,7 +976,7 @@ CreateVertices[vertices_List,
 		OptionsPattern[{MaximumVerticesLimit -> 500}]] :=
 	Module[{cxxVertices, vertexPartition},
 		cxxVertices = CreateVertex /@ DeleteDuplicates[vertices];
-
+		
 		(* Mathematica 7 does not support the `UpTo[n]` notation *)
 		vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
 		If[vertexPartition === {},
