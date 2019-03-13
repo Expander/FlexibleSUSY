@@ -4371,10 +4371,10 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            Print["Creating l->l'A class ..."];
            WriteLToLGammaClass[LToLGammaFields,
-                           {{FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.hpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.hpp"}]},
-                            {FileNameJoin[{$flexiblesusyTemplateDir, "mu_to_egamma.cpp.in"}],
-                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_mu_to_egamma.cpp"}]}}];
+                           {{FileNameJoin[{$flexiblesusyTemplateDir, "l_to_lgamma.hpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_l_to_lgamma.hpp"}]},
+                            {FileNameJoin[{$flexiblesusyTemplateDir, "l_to_lgamma.cpp.in"}],
+                             FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_l_to_lgamma.cpp"}]}}];
 
            (* OBSERVABLE: l -> l conversion *)
 

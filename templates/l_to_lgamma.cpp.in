@@ -19,7 +19,7 @@
 // File generated at @DateAndTime@
 
 /**
- * @file @ModelName@_mu_to_egamma.cpp
+ * @file @ModelName@_l_to_lgamma.cpp
  *
  * This file was generated at @DateAndTime@ with FlexibleSUSY
  * @FlexibleSUSYVersion@ and SARAH @SARAHVersion@ .
@@ -29,7 +29,7 @@
 #include <complex>
 #include <iostream>
 
-#include "@ModelName@_mu_to_egamma.hpp"
+#include "@ModelName@_l_to_lgamma.hpp"
 #include "@ModelName@_mass_eigenstates.hpp"
 
 #include "cxx_qft/@ModelName@_qft.hpp"
@@ -42,7 +42,7 @@ using namespace @ModelName@_cxx_diagrams::fields;
 using namespace @ModelName@_FFV_form_factors;
 
 namespace flexiblesusy {
-namespace @ModelName@_mu_to_egamma {
+namespace @ModelName@_l_to_lgamma {
 
 template <typename T1, typename T2>
 double lepton_total_decay_width(
