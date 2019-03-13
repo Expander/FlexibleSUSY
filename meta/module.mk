@@ -73,9 +73,7 @@ META_SRC     := \
 		$(DIR)/NPointFunctions/createFAModelFile.m \
 		$(DIR)/EDM.m \
 		$(DIR)/FFVFormFactors.m \
-		$(DIR)/FFMassiveVFormFactors.m \
 		$(DIR)/BrLToLGamma.m \
-		$(DIR)/FToFConversionInNucleus.m \
 		$(DIR)/EffectiveCouplings.m \
 		$(DIR)/EWSB.m \
 		$(DIR)/FlexibleEFTHiggsMatching.m \

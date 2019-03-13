@@ -3575,8 +3575,8 @@ Options[MakeFlexibleSUSY] :=
 MakeFlexibleSUSY[OptionsPattern[]] :=
     Module[{nPointFunctions, runInputFile, initialGuesserInputFile,
             edmVertices, aMuonVertices, edmFields,
-            LToLGammaFields = {}, LToLConversionFields = {}, FFMasslessVVertices = {}, conversionVertices,
-       fieldsForFToFMassiveVFormFactors, fFFMassiveVFormFactorVertices,
+            LToLGammaFields = {}, LToLConversionFields = {}, FFMasslessVVertices = {}, conversionVertices = {},
+            fieldsForFToFMassiveVFormFactors = {}, fFFMassiveVFormFactorVertices = {},
             cxxQFTTemplateDir, cxxQFTOutputDir, cxxQFTFiles,
             cxxQFTVerticesTemplate, cxxQFTVerticesMakefileTemplates,
             susyBetaFunctions, susyBreakingBetaFunctions,
@@ -4380,6 +4380,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            (* OBSERVABLE: l -> l conversion *)
 
+           (*
            Print["Creating FToFConversionInNucleus class ..."];
            LToLConversionFields =
               DeleteDuplicates @ Cases[Observables`GetRequestedObservables[extraSLHAOutputBlocks],
@@ -4394,18 +4395,33 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.hpp"}]},
                             {FileNameJoin[{$flexiblesusyTemplateDir, "f_to_f_conversion.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_f_to_f_conversion.cpp"}]}}];
+                             *)
 
            Print["Creating FFMasslessV form factor class for other observables ..."];
            FFMasslessVVertices =
                WriteFFVFormFactorsClass[
                   (* collect external states from observables needing massless triangles *)
                   DeleteDuplicates @ Join[
+
+                     (* muon g-2 *)
+                     If[MemberQ[Observables`GetRequestedObservables[extraSLHAOutputBlocks], FlexibleSUSYObservable`aMuon],
+                           Block[{muon = TreeMasses`GetSMMuonLepton[], muonWithoutIndex},
+                              muonWithoutIndex = If[AtomQ[muon], TreeMasses`GetSMMuonLepton[], Head@muon];
+                              {muonWithoutIndex -> {muonWithoutIndex, TreeMasses`GetPhoton[]}}
+                           ],
+                        {}
+                     ],
+
+                     (* Br(L -> L Gamma) *)
                      LToLGammaFields,
+
+                     (* L -> L conversion in nucleus *)
                      If[LToLConversionFields === {},
                         {},
                         (#[[1, 1]] -> {#[[1, 2]], TreeMasses`GetPhoton[]})& /@ Transpose[Drop[Transpose[LToLConversionFields],-1]]
                      ]
                   ],
+
                   {{FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.hpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFV_form_factors.hpp"}]},
                      {FileNameJoin[{$flexiblesusyTemplateDir, "FFV_form_factors.cpp.in"}],
@@ -4413,6 +4429,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                ];
 
             (* internally the F -> F conversion routines require form factors with massive vector bosons *)
+           (*
             fieldsForFToFMassiveVFormFactors = {};
             If[LToLConversionFields =!= {},
                fieldsForFToFMassiveVFormFactors =
@@ -4432,6 +4449,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                             {FileNameJoin[{$flexiblesusyTemplateDir, "FFMassiveV_form_factors.cpp.in"}],
                              FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_FFMassiveV_form_factors.cpp"}]}}
                ];
+               *)
 
            Print["Creating AMuon class ..."];
            aMuonVertices = 
