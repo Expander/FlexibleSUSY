@@ -164,12 +164,12 @@ Example::
 
     h = k (4 Pi)^2;
 
-    MtOvermt = GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. {
+    MfOvermf = GetMTopPoleOverMTopMSbar[{1,h,h^2,h^3}] /. {
         Log[Q^2/mt^2] -> -Lbar[t],
         Log[mt^2/Q^2] -> Lbar[t]
     };
 
-    Mt = mt N[Collect[MtOvermt, {k, g3, Lbar[__]}, Simplify]]
+    Mt = mt N[Collect[MfOvermf, {k, g3, Lbar[__]}, Simplify]]
 
 Output::
 
@@ -209,8 +209,29 @@ Example::
     Get["meta/SM/mf_3loop_qcd.m"];
 
     L = Lbar[t];
-    NL = 5;
-    NH = 1;
+    NL = 5; (* number of light quark masses *)
+    NH = 1; (* number of heavy quark masses *)
+
+    Mt = mt N[Collect[MfOvermf, {k, g3, Lbar[__]}, Simplify]]
+
+Output::
+
+    mt*(1 +
+        g3^2*k*(5.333333333333333 - 4*Lbar[t]) +
+        g3^4*k^2*(131.78498721717762 - 80.66666666666667*Lbar[t] + 22*Lbar[t]^2) +
+        g3^6*k^3*(4712.740192659316 - 2031.1382275647934*Lbar[t] + 710*Lbar[t]^2 - 132*Lbar[t]^3))
+
+------
+
+``meta/SM/mt_4loop_qcd.m`` contains the 4-loop relation between the
+top quark pole mass and the corresponding running
+:math:`\overline{\text{MS}}` mass from [1604.01134]_.
+
+Example::
+
+    Get["meta/SM/mt_4loop_qcd.m"];
+
+    L = Lbar[t];
 
     Mt = mt N[Collect[MtOvermt, {k, g3, Lbar[__]}, Simplify]]
 
@@ -219,7 +240,9 @@ Output::
     mt*(1 +
         g3^2*k*(5.333333333333333 - 4*Lbar[t]) +
         g3^4*k^2*(131.78498721717762 - 80.66666666666667*Lbar[t] + 22*Lbar[t]^2) +
-        g3^6*k^3*(4712.740192659316 - 2031.1382275647934*Lbar[t] + 710*Lbar[t]^2 - 132*Lbar[t]^3))
+        g3^6*k^3*(4712.740192659316 - 2031.1382275647934*Lbar[t] + 710*Lbar[t]^2 - 132*Lbar[t]^3) +
+        g3^8*k^4*(211681.74421123447 - 104673.38261571848*Lbar[t] + 22162.91142653778*Lbar[t]^2 - 5638*Lbar[t]^3 + 825*Lbar[t]^4))
+
 
 2HDM
 ''''
@@ -339,4 +362,5 @@ References
 .. [1508.00912] `Phys.Rev. D92 (2015) no.5, 054029 <https://inspirehep.net/record/1386688>`_ [`arXiv:1508.00912 <https://arxiv.org/abs/1508.00912>`_]
 .. [1508.02680] `Phys.Lett. B762 (2016) 151-156 <https://inspirehep.net/record/1387530>`_ [`arXiv:1508.02680 <https://arxiv.org/abs/1508.02680>`_]
 .. [1604.00853] `JHEP 1606 (2016) 175 <https://inspirehep.net/record/1441223>`_ [`arXiv:1604.00853 <https://arxiv.org/abs/1604.00853>`_]
+.. [1604.01134] `Phys.Rev. D93 (2016) no.9, 094017 <https://inspirehep.net/record/1442368>`_ [`arXiv:1604.01134 <https://arxiv.org/abs/1604.01134>`_]
 .. [1606.08659] `Phys.Rev.Lett. 118 (2017) no.8, 082002 <https://inspirehep.net/record/1472834>`_ [`arXiv:1606.08659 <https://arxiv.org/abs/1606.08659>`_]

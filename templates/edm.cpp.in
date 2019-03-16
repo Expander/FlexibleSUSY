@@ -30,6 +30,7 @@
 
 #include "cxx_qft/@ModelName@_qft.hpp"
 
+#include "wrappers.hpp"
 #include "numerics2.hpp"
 
 #define INPUTPARAMETER(p) context.model.get_input().p
@@ -156,7 +157,7 @@ EDMField, PhotonEmitter, ExchangeField
    double res = 0.0;
 
    using FermionVertex = Vertex<
-                         typename EDMField::lorentz_conjugate,
+                         EDMField,
                          ExchangeField,
                          PhotonEmitter
                          >;
@@ -175,7 +176,7 @@ EDMField, PhotonEmitter, ExchangeField
       const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
 
       const double photonEmitterCharge =
-         PhotonEmitter::electric_charge * unit_charge(context);
+         - PhotonEmitter::electric_charge * unit_charge(context);
 
       constexpr double numericFactor = oneOver16PiSquared;
       const double massFactor = photonEmitterMass/(exchangeFieldMass * exchangeFieldMass);
@@ -199,7 +200,7 @@ EDMField, PhotonEmitter, ExchangeField
    double res = 0.0;
 
    using FermionVertex = Vertex<
-                         typename EDMField::lorentz_conjugate,
+                         EDMField,
                          ExchangeField,
                          PhotonEmitter
                          >;
@@ -218,7 +219,7 @@ EDMField, PhotonEmitter, ExchangeField
       const auto exchangeFieldMass = context.mass<ExchangeField>(exchangeFieldIndices);
 
       const double photonEmitterCharge =
-         PhotonEmitter::electric_charge * unit_charge(context);
+         - PhotonEmitter::electric_charge * unit_charge(context);
 
       constexpr double numericFactor = oneOver16PiSquared;
       const double massFactor = exchangeFieldMass/(photonEmitterMass * photonEmitterMass);

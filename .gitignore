@@ -37,6 +37,7 @@ doc/*.bbl
 doc/*.blg
 doc/flexiblesusy-1.0.pdf
 doc/flexiblesusy-2.0.pdf
+doc/flexiblesusy-new_features.pdf
 doc/version.tex
 doc/mainpage.dox
 doc/html/
@@ -76,7 +77,9 @@ test/*.spc
 test/*.spc.*
 test/*.xml
 test/LesHouches.out.*
+test/SM
 test/test_*.callgrind.out*
 test/test_SM_npointfunctions.cpp
 test/test_MSSM_npointfunctions.cpp
+test/test_SM_cxxdiagrams.cpp
 

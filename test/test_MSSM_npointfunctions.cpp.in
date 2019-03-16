@@ -19,119 +19,14 @@
 #define BOOST_TEST_MODULE Test NPointFunctions
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <boost/version.hpp>
 
-#include "random_sign_dataset.hpp"
+#include "random_MSSM_dataset.hpp"
 #include "test_complex_equality.hpp"
-
-#include "lowe.h"
-
-#include "MSSM_two_scale_spectrum_generator.hpp"
-#include "MSSM_input_parameters.hpp"
-#include "MSSM_mass_eigenstates.hpp"
 
 @NPointFunctions_Headers@
 
 using namespace flexiblesusy;
-namespace bdata = boost::unit_test::data;
-
-namespace
-{
-constexpr int number_of_random_samples = 100;
-static_assert( number_of_random_samples >= 2,
-	"There must be at least two random samples." );
-
-auto random_data_points( void ) -> decltype(
-	bdata::random( 5.0, 30.0 ) ^
-	boost_test_tools::random_sign_dataset{} ^
-	bdata::random( 1.94e+16, 1.95e+16 ) ^
-	bdata::random( 500000.0, 10000000.0 ) ^
-	bdata::random( 500000.0, 10000000.0 ) ^
-	bdata::random( 700.0, 3000.0 ) ^
-	bdata::random( 700.0, 3000.0 ) ^
-	bdata::random( 700.0, 3000.0 )
-)
-{
-	auto TanBeta_random = bdata::random( 5.0, 30.0 );
-	auto signMu_random = boost_test_tools::random_sign_dataset{};
-	auto Q_random = bdata::random( 1.94e+16, 1.95e+16 );
-	auto mHd2IN_random = bdata::random( 500000.0, 10000000.0 );
-	auto mHu2IN_random = bdata::random( 500000.0, 10000000.0 );
-	auto MassBInput_random = bdata::random( 700.0, 3000.0 );
-	auto MassWBInput_random = bdata::random( 700.0, 3000.0 );
-	auto MassGInput_random = bdata::random( 700.0, 3000.0 );
-	
-	return (
-		std::move(TanBeta_random) ^ std::move(signMu_random) ^
-		std::move(Q_random) ^ std::move(mHd2IN_random) ^
-		std::move(mHu2IN_random) ^ std::move(MassBInput_random) ^
-		std::move(MassWBInput_random) ^ std::move(MassGInput_random)
-	);
-}
-
-auto data_points( void ) -> decltype(
-	bdata::xrange( 1, number_of_random_samples + 1 ) ^
-	random_data_points()
-)
-{
-	auto random_datset =
-		bdata::xrange( 1, number_of_random_samples + 1 ) ^
-		random_data_points();
-	
-	return std::move(random_datset);
-}
-
-MSSM_input_parameters wrap_input_parameters(
-	double TanBeta, int SignMu, double Qin, double mHd2IN,
-	double mHu2IN, double MassBInput, double MassWBInput,
-	double MassGInput )
-{
-	MSSM_input_parameters input;
-	
-	input.TanBeta = TanBeta;
-	input.SignMu = SignMu;
-	input.Qin = Qin;
-	input.mHd2IN = mHd2IN;
-	input.mHu2IN = mHu2IN;
-	input.MassBInput = MassBInput;
-	input.MassWBInput = MassWBInput;
-	input.MassGInput = MassGInput;
-	
-	// Pick a sensible value for sfermion masses
-	double sfermion_massSqr = (input.mHd2IN + input.mHu2IN) / 2.0;
-	Eigen::Matrix<double,3,3> sfermion_mass_matrix;
-	
-	sfermion_mass_matrix <<
-		sfermion_massSqr, 0, 0,
-		0, sfermion_massSqr, 0,
-		0, 0, sfermion_massSqr;
-	
-	input.mq2Input = sfermion_mass_matrix;
-	input.ml2Input = sfermion_mass_matrix;
-	input.md2Input = sfermion_mass_matrix;
-	input.mu2Input = sfermion_mass_matrix;
-	input.me2Input = sfermion_mass_matrix;
-	
-	return input;
-}
-
-MSSM_mass_eigenstates calculate_spectrum(
-	const MSSM_input_parameters &input )
-{
-	softsusy::QedQcd qedqcd;
-	
-	Spectrum_generator_settings spectrum_generator_settings;
-	spectrum_generator_settings.set(
-		Spectrum_generator_settings::calculate_sm_masses, 1.0 );
-	
-	MSSM_spectrum_generator<Two_scale> spectrum_generator;
-	spectrum_generator.set_settings( spectrum_generator_settings );
-	spectrum_generator.set_parameter_output_scale( qedqcd.get_scale() );
-
-	spectrum_generator.run( qedqcd, input );
-	return spectrum_generator.get_model();
-}
-}
+using namespace boost_test_tools;
 
 #define INPUTPARAMETER(p) context.model.get_input().p
 #define MODELPARAMETER(p) context.model.get_##p()
@@ -142,9 +37,12 @@ namespace flexiblesusy
 {
 namespace MSSM_cxx_diagrams
 {
-@CXXDiagrams_VertexData@
+namespace detail
+{
+@CXXDiagrams_VertexPrototypes@
 
-@CXXDiagrams_Vertices@
+@CXXDiagrams_VertexDefinitions@
+}
 
 namespace npointfunctions
 {
@@ -153,17 +51,20 @@ namespace npointfunctions
 }
 }
 
+namespace
+{
+static constexpr int number_of_random_samples = 100;
+}
+
 BOOST_AUTO_TEST_SUITE(selfenergy_test_suite, 
 	* boost::unit_test::tolerance(1.0e-12) )
 
 BOOST_DATA_TEST_CASE( test_selfenergies,
-	data_points(),
-  index, TanBeta, SignMu, Qin, mHd2IN, mHu2IN, MassBInput,
-	MassWBInput, MassGInput )
+	random_MSSM_dataset( number_of_random_samples ),
+  index, FS_TEST_MSSM_PARAMETER_SEQUENCE )
 {
 	auto input_parameters = wrap_input_parameters(
-		TanBeta, SignMu, Qin, mHd2IN, mHu2IN, MassBInput,
-		MassWBInput, MassGInput );
+		FS_TEST_MSSM_PARAMETER_SEQUENCE );
 	auto model = calculate_spectrum( input_parameters );
 	
 	auto problems = model.get_problems();

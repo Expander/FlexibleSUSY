@@ -72,50 +72,66 @@ IsDiagramSupported[field_,vertexCorrectionGraph,diagram_] :=
   ]
 
 EDMCreateInterfaceFunctionForField[field_,gTaggedDiagrams_List] :=
-  Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
-    prototype = "double calculate_edm_" <> CXXNameOfField[field] <>
-                 "(" <> If[TreeMasses`GetDimension[field] =!= 1,
-                           " int generationIndex, ",
-                           " "] <>
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );";
+	Module[{prototype,definition,numberOfIndices = CXXDiagrams`NumberOfFieldIndices[field]},
+		prototype = "double calculate_edm_" <> CXXNameOfField[field] <>
+			"(" <> If[TreeMasses`GetDimension[field] =!= 1,
+				" int generationIndex, ",
+				" "] <>
+			"const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model );";
                  
     definition = "double calculate_edm_" <> CXXNameOfField[field] <>
-                 "(" <> If[TreeMasses`GetDimension[field] =!= 1,
-                           " int generationIndex, ",
-                           " "] <>
-                 "const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
-                 "{\n" <>
-                 IndentText[
-                   FlexibleSUSY`FSModelName <> "_mass_eigenstates model_ = model;\n" <>
-                   "context_base context{ model_ };\n" <>
-                   "std::array<int, " <> ToString @ numberOfIndices <>
-                     "> indices = {" <>
-                       If[TreeMasses`GetDimension[field] =!= 1,
-                          " generationIndex" <>
-                          If[numberOfIndices =!= 1,
-                             StringJoin @ Table[", 0", {numberOfIndices-1}],
-                             ""] <> " ",
-                          If[numberOfIndices =!= 0,
-                             StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
-                             ""]
-                         ] <> "};\n\n" <>
-                                 
-                   "double val = 0.0;\n\n" <>
-                   
-                   "using namespace " <> FlexibleSUSY`FSModelName <> "_cxx_diagrams::fields;\n\n" <>
-                   
-                   StringJoin @ Riffle[("val += " <> ToString @ # <> "::value(indices, context);") & /@ 
-                     Flatten[CXXEvaluatorsForFieldAndDiagramsFromGraph[field,#[[2]],#[[1]]] & /@ gTaggedDiagrams],
-                                       "\n"] <> "\n\n" <>
-                   
-                   "return val;"
-                 ] <> "\n}";
+			"(" <> If[TreeMasses`GetDimension[field] =!= 1,
+				" int generationIndex, ",
+				" "] <>
+			"const " <> FlexibleSUSY`FSModelName <> "_mass_eigenstates& model )\n" <>
+			"{\n" <> IndentText[
+				"context_base context{ model };\n" <>
+				"std::array<int, " <> ToString @ numberOfIndices <> "> indices = {" <>
+					If[TreeMasses`GetDimension[field] =!= 1,
+						" generationIndex" <>
+						If[numberOfIndices =!= 1,
+							StringJoin @ Table[", 0", {numberOfIndices-1}],
+							""] <> " ",
+						If[numberOfIndices =!= 0,
+							StringJoin @ Riffle[Table[" 0", {numberOfIndices}], ","] <> " ",
+							""]
+					] <> "};\n\n" <>
+
+				"double val = 0.0;\n\n" <>
+
+				"using namespace " <> FlexibleSUSY`FSModelName <> "_cxx_diagrams::fields;\n\n" <>
+
+				StringJoin @ Riffle[Module[{graph = #[[1]], diagrams = #[[2]]},
+					StringJoin @ Riffle[Module[{diagram = #, indexedDiagram},
+						indexedDiagram = CXXDiagrams`IndexDiagramFromGraph[diagram, graph];
+						
+						"val += " <> 
+						ToString @ ProjectColourFactor[field,
+							CXXDiagrams`ColourFactorForIndexedDiagramFromGraph[indexedDiagram, graph]] <>
+						" * " <> 
+						CXXEvaluatorForFieldAndDiagramFromGraph[field, diagram, graph] <>
+						"::value(indices, context);"
+					] & /@ diagrams, "\n"]
+				] & /@ gTaggedDiagrams, "\n"] <> "\n\n" <>
+
+				"return val;"
+			] <> "\n}";
     
     {prototype, definition}
   ];
 
-CXXEvaluatorsForFieldAndDiagramsFromGraph[field_,diagrams_,graph_] :=
-  CXXEvaluatorForFieldAndDiagramFromGraph[field,#,graph] & /@ diagrams
+(* Because of colour conservation, we know that the resulting colour
+ * structure is either trivial or a ``SARAH`Delta[]``.
+ * A more general approach should use Coefficient[] instead.
+ *)
+ProjectColourFactor[field_, colourFactor_] := colourFactor /;
+	!TreeMasses`ColorChargedQ[field]
+	
+ProjectColourFactor[field_, colourFactor_ * SARAH`Delta[cIndex1, cIndex2]] := 
+	colourFactor /;
+	TreeMasses`ColorChargedQ[field] && 
+		Vertices`SarahColorIndexQ[cIndex1] && Vertices`SarahColorIndexQ[cIndex2]
+
 CXXEvaluatorForFieldAndDiagramFromGraph[field_,diagram_,vertexCorrectionGraph] := 
   Module[{photonEmitter,exchangeParticle},
     photonEmitter = diagram[[4,3]]; (* Edge between vertices 4 and 6 (3rd edge of vertex 4) *)

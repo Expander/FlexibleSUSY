@@ -16,6 +16,13 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#ifndef TEST_RANDOM_SIGN_DATASET_H
+#define TEST_RANDOM_SIGN_DATASET_H
+
+#include <boost/test/included/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
+#include <random>
+
 namespace flexiblesusy
 {
 namespace boost_test_tools
@@ -68,3 +75,5 @@ struct is_dataset<
 }
 }
 }
+
+#endif
