@@ -17,18 +17,18 @@
 // ====================================================================
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE test_MRSSM2_gmm2
+#define BOOST_TEST_MODULE test_MRSSM2_l_to_lgamma
 
 #include <boost/test/unit_test.hpp>
 
 #include "test_MRSSM2.hpp"
 
 #include "wrappers.hpp"
-#include "MRSSM2_mu_to_egamma.hpp"
+#include "MRSSM2_l_to_lgamma.hpp"
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE( test_mu_to_egamma )
+BOOST_AUTO_TEST_CASE( test_l_to_lgamma )
 {
    typedef Eigen::DiagonalMatrix<double, 3> DiagonalMatrix3;
    MRSSM2_input_parameters input;
@@ -62,10 +62,9 @@ BOOST_AUTO_TEST_CASE( test_mu_to_egamma )
    softsusy::QedQcd qedqcd;
    Physical_input physical_inputs;
 
-   auto width = MRSSM2_mu_to_egamma::lepton_total_decay_width(std::array<int,1> {1}, std::array<int,1> {0}, m, qedqcd);
-   std::cout << width << '\n';
+   auto width = MRSSM2_l_to_lgamma::lepton_total_decay_width(std::array<int,1> {1}, std::array<int,1> {0}, m, qedqcd);
 
-   auto brMuEGamma = MRSSM2_mu_to_egamma::calculate_Fe_to_Fe_VP(1, 0, m, qedqcd, physical_inputs);
+   auto brMuEGamma = MRSSM2_l_to_lgamma::calculate_Fe_to_Fe_VP(1, 0, m, qedqcd, physical_inputs);
    //auto amu = MRSSM2_a_muon::calculate_a_muon(m);
    //BOOST_CHECK_CLOSE(amu, -8.30e-11, 1.0);
 
@@ -73,7 +72,5 @@ BOOST_AUTO_TEST_CASE( test_mu_to_egamma )
    input.ml2Input = DiagonalMatrix3(Sqr(8000), Sqr(8000), Sqr(8000));
    m = setup_MRSSM2(input);
 
-   //amu = MRSSM2_a_muon::calculate_a_muon(m);
-   std::cout << brMuEGamma << ' ' << 6.33e-12 << std::endl;
-   //BOOST_CHECK_CLOSE(amu, 6.33e-12, 1.0);
+   BOOST_CHECK_CLOSE_FRACTION(brMuEGamma, 1.3147385103144814e-15, 1e-4);
 }
