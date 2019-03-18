@@ -4,23 +4,27 @@ MODNAME      := doc
 DOC_MK       := \
 		$(DIR)/module.mk
 
+MODELS_DIR    :=$(DIR)/Models
 DOC_TMPL     := \
-		$(DIR)/FlexibleEFTHiggs.rst \
-		$(DIR)/HSSUSY.rst \
-		$(DIR)/librarylink.rst \
-		$(DIR)/meta_code.rst \
-		$(DIR)/mainpage.dox.in \
-		$(DIR)/model_file.rst \
-		$(DIR)/MSSMEFTHiggs.rst \
-		$(DIR)/NUHMSSMNoFVHimalaya.rst \
-		$(DIR)/slha_input.rst
+		$(MODELS_DIR)/FlexibleEFTHiggs.rst \
+		$(MODELS_DIR)/HSSUSY.rst \
+		$(MODELS_DIR)/librarylink.rst \
+		$(MODELS_DIR)/meta_code.rst \
+		$(MODELS_DIR)/mainpage.dox.in \
+		$(MODELS_DIR)/model_file.rst \
+		$(MODELS_DIR)/MSSMEFTHiggs.rst \
+		$(MODELS_DIR)/NUHMSSMNoFVHimalaya.rst \
+		$(MODELS_DIR)/slha_input.rst
 
 DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
 HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
-PDF_OUTPUT_DIR  := $(DIR)
-IMAGE_DIR       := $(DIR)/images
+MANUALS_DIR     := $(DIR)/Manuals
+PDF_OUTPUT_DIR  := $(MANUALS_DIR)
+
+
+IMAGE_DIR       := $(MANUALS_DIR)/images
 IMAGES          := $(IMAGE_DIR)/FS-logo.png \
 		   $(IMAGE_DIR)/HSSUSY_Mh_MS.png \
 		   $(IMAGE_DIR)/HSSUSY_Mh_Xt.png \
@@ -28,7 +32,7 @@ IMAGES          := $(IMAGE_DIR)/FS-logo.png \
 		   $(IMAGE_DIR)/MSSMEFTHiggs_Mh_MS.png \
 		   $(IMAGE_DIR)/MSSMEFTHiggs_tower.svg \
 		   $(IMAGE_DIR)/NUHMSSMNoFVHimalaya_tower.svg
-EXAMPLES_DIR    := $(DIR)/examples
+EXAMPLES_DIR    := $(MANUALS_DIR)/examples
 EXAMPLES        := $(EXAMPLES_DIR)/HSSUSY_uncertainty_estimate.m \
 		   $(EXAMPLES_DIR)/MSSMEFTHiggs_uncertainty_estimate.m \
 		   $(EXAMPLES_DIR)/NUHMSSMNoFVHimalaya_uncertainty_estimate.m
@@ -41,11 +45,11 @@ PAPER_PDF_1     := $(PDF_OUTPUT_DIR)/flexiblesusy-1.0.pdf
 PAPER_PDF_2     := $(PDF_OUTPUT_DIR)/flexiblesusy-2.0.pdf
 PAPER_PDF_3     := $(PDF_OUTPUT_DIR)/flexiblesusy-new_features.pdf
 PAPER_PDF       := $(PAPER_PDF_1) $(PAPER_PDF_2) $(PAPER_PDF_3)
-PAPER_SRC_1     := $(DIR)/flexiblesusy-1.0.tex
-PAPER_SRC_2     := $(DIR)/flexiblesusy-2.0.tex
-PAPER_SRC_3     := $(DIR)/flexiblesusy-new_features.tex
+PAPER_SRC_1     := $(MANUALS_DIR)/flexiblesusy-1.0.tex
+PAPER_SRC_2     := $(MANUALS_DIR)/flexiblesusy-2.0.tex
+PAPER_SRC_3     := $(MANUALS_DIR)/flexiblesusy-new_features.tex
 PAPER_SRC       := $(PAPER_SRC_1) $(PAPER_SRC_2) $(PAPER_SRC_3)
-PAPER_STY       := $(DIR)/JHEP.bst $(DIR)/tikz-uml.sty
+PAPER_STY       := $(MANUALS_DIR)/JHEP.bst $(MANUALS_DIR)/tikz-uml.sty
 
 LATEX_TMP       := \
 		$(patsubst %.pdf, %.aux, $(PAPER_PDF)) \
