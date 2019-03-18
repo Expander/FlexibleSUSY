@@ -127,18 +127,18 @@ $(MAN_PAGE):
 		) | doxygen -
 
 $(PAPER_PDF_1): $(PAPER_SRC_1) $(PAPER_STY)
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
+		cd doc/manuals && pdflatex flexiblesusy-1.0.tex
+		cd doc/manuals && pdflatex flexiblesusy-1.0.tex
+		cd doc/manuals && pdflatex flexiblesusy-1.0.tex
 
 $(PAPER_PDF_2): $(PAPER_SRC_2) $(PAPER_STY)
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-		bibtex $(PAPER_SRC_2:.tex=)
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
+		cd doc/manuals && pdflatex flexiblesusy-2.0.tex
+		cd doc/manuals && bibtex flexiblesusy-2.0
+		cd doc/manuals && pdflatex flexiblesusy-2.0.tex
+		cd doc/manuals && pdflatex flexiblesusy-2.0.tex
 
 $(PAPER_PDF_3): $(PAPER_SRC_3) $(PAPER_STY)
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-		bibtex $(PAPER_SRC_3:.tex=)
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
-		pdflatex -output-directory $(PDF_OUTPUT_DIR) $<
+		cd doc/manuals && pdflatex flexiblesusy-new_features.tex
+		cd doc/manuals && bibtex flexiblesusy-new_features
+		cd doc/manuals && pdflatex flexiblesusy-new_features.tex
+		cd doc/manuals && pdflatex flexiblesusy-new_features.tex
