@@ -10,7 +10,7 @@ HSSUSY (high scale supersymmetry) is an implementation of the Standard
 Model, matched to the MSSM at the SUSY scale, :math:`M_\text{SUSY}`. The
 setup of HSSUSY is shown in the following figure.
 
-.. image:: images/HSSUSY_tower.svg
+.. image:: ../images/HSSUSY_tower.svg
    :align: center
 
 Boundary conditions
@@ -267,12 +267,12 @@ pole mass calculated at the 3-loop level with HSSUSY as a function of
 the SUSY scale (red solid line), together with the estimated
 uncertainty (grey band).
 
-.. include:: examples/HSSUSY_uncertainty_estimate.m
+.. include:: ../manuals/examples/HSSUSY_uncertainty_estimate.m
    :code:
 
 When this script is executed, the following figure is produced:
 
-.. image:: images/HSSUSY_Mh_MS.png
+.. image:: ../images/HSSUSY_Mh_MS.png
    :align: center
 
 

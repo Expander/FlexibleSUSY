@@ -13,7 +13,7 @@ using the FlexibleEFTHiggs approach described in [1609.00371]_ and
 [1710.03760]_.  The setup of MSSMEFTHiggs is shown in the following
 figure.
 
-.. image:: images/MSSMEFTHiggs_tower.svg
+.. image:: ../images/MSSMEFTHiggs_tower.svg
    :align: center
 
 Boundary conditions
@@ -257,12 +257,12 @@ pole mass calculated at the 3-loop level with MSSMEFTHiggs as a
 function of the SUSY scale (red solid line), together with the
 estimated uncertainty (grey band).
 
-.. include:: examples/MSSMEFTHiggs_uncertainty_estimate.m
+.. include:: ../manuals/examples/MSSMEFTHiggs_uncertainty_estimate.m
    :code:
 
 When this script is executed, the following figure is produced:
 
-.. image:: images/MSSMEFTHiggs_Mh_MS.png
+.. image:: ../images/MSSMEFTHiggs_Mh_MS.png
    :align: center
 
 
