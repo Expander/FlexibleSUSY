@@ -60,7 +60,7 @@ nPointFunctionHeaders = CreateCXXHeaders[];
 
 hhSelfenergyVertices = VerticesForNPointFunction[hhSelfenergy];
 
-cxxDiagramsDir = FileNameJoin[{SARAH`SARAH[OutputDirectory], FlexibleSUSY`FSModelName,
+cxxDiagramsDir = FileNameJoin[{SARAH`$sarahCurrentOutputMainDir,
 	ToString[FlexibleSUSY`FSEigenstates], "CXXDiagrams"}];
 createdVerticesFile = FileNameJoin[{cxxDiagramsDir, "CreatedVertices.m"}];
     
