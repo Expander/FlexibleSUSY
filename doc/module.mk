@@ -4,7 +4,7 @@ MODNAME      := doc
 DOC_MK       := \
 		$(DIR)/module.mk
 
-MODELS_DIR    :=$(DIR)/Models
+MODELS_DIR    :=$(DIR)/models
 DOC_TMPL     := \
 		$(MODELS_DIR)/FlexibleEFTHiggs.rst \
 		$(MODELS_DIR)/HSSUSY.rst \
@@ -20,7 +20,7 @@ DOC_INSTALL_DIR := $(INSTALL_DIR)/$(DIR)
 
 HTML_OUTPUT_DIR := $(DIR)/html
 MAN_OUTPUT_DIR  := $(DIR)/man
-MANUALS_DIR     := $(DIR)/Manuals
+MANUALS_DIR     := $(DIR)/manuals
 PDF_OUTPUT_DIR  := $(MANUALS_DIR)
 
 
