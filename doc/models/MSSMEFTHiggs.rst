@@ -13,7 +13,7 @@ using the FlexibleEFTHiggs approach described in [1609.00371]_ and
 [1710.03760]_.  The setup of MSSMEFTHiggs is shown in the following
 figure.
 
-.. image:: ../images/MSSMEFTHiggs_tower.svg
+.. image:: images/MSSMEFTHiggs_tower.svg
    :align: center
 
 Boundary conditions
@@ -262,14 +262,14 @@ estimated uncertainty (grey band).
 
 When this script is executed, the following figure is produced:
 
-.. image:: ../images/MSSMEFTHiggs_Mh_MS.png
+.. image:: images/MSSMEFTHiggs_Mh_MS.png
    :align: center
 
 
 References
 ----------
 
-.. _`SLHA input parameters`: slha_input.rst
+.. _`SLHA input parameters`: ../slha_input.rst
 
 .. [hep-ph:9305305] `Phys.Lett. B313 (1993) 441-446 <https://inspirehep.net/record/354674>`_ [`arXiv:hep-ph/9305305 <https://arxiv.org/abs/hep-ph/9305305>`_]
 .. [hep-ph:9707474] `Phys.Lett. B424 (1998) 367-374 <https://inspirehep.net/record/446409>`_ [`arXiv:hep-ph/9707474 <https://arxiv.org/abs/hep-ph/9707474>`_]

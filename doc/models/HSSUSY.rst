@@ -10,7 +10,7 @@ HSSUSY (high scale supersymmetry) is an implementation of the Standard
 Model, matched to the MSSM at the SUSY scale, :math:`M_\text{SUSY}`. The
 setup of HSSUSY is shown in the following figure.
 
-.. image:: ../images/HSSUSY_tower.svg
+.. image:: images/HSSUSY_tower.svg
    :align: center
 
 Boundary conditions
@@ -272,15 +272,15 @@ uncertainty (grey band).
 
 When this script is executed, the following figure is produced:
 
-.. image:: ../images/HSSUSY_Mh_MS.png
+.. image:: images/HSSUSY_Mh_MS.png
    :align: center
 
 
 References
 ----------
 
-.. _`LibraryLink documentation`: librarylink.rst
-.. _`SLHA input parameters`: slha_input.rst
+.. _`LibraryLink documentation`: ../librarylink.rst
+.. _`SLHA input parameters`: ../slha_input.rst
 
 .. [hep-ph:9305305] `Phys.Lett. B313 (1993) 441-446 <https://inspirehep.net/record/354674>`_ [`arXiv:hep-ph/9305305 <https://arxiv.org/abs/hep-ph/9305305>`_]
 .. [hep-ph:9707474] `Phys.Lett. B424 (1998) 367-374 <https://inspirehep.net/record/446409>`_ [`arXiv:hep-ph/9707474 <https://arxiv.org/abs/hep-ph/9707474>`_]

@@ -13,7 +13,7 @@ model to include 3-loop corrections of :math:`O(\alpha_t\alpha_s^2)`
 [0803.0672]_, [1005.5709]_ to the light CP-even Higgs pole mass.  The
 setup of NUHMSSMNoFVHimalaya is shown in the following figure.
 
-.. image:: ../images/NUHMSSMNoFVHimalaya_tower.svg
+.. image:: images/NUHMSSMNoFVHimalaya_tower.svg
    :align: center
 
 Building the NUHMSSMNoFVHimalaya
@@ -213,7 +213,7 @@ uncertainty (grey band).
 
 When this script is executed, the following figure is produced:
 
-.. image:: ../images/NUHMSSMNoFVHimalaya_Mh_MS.png
+.. image:: images/NUHMSSMNoFVHimalaya_Mh_MS.png
    :align: center
 
 
