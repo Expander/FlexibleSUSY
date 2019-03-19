@@ -267,7 +267,7 @@ pole mass calculated at the 3-loop level with HSSUSY as a function of
 the SUSY scale (red solid line), together with the estimated
 uncertainty (grey band).
 
-.. include:: ../manuals/examples/HSSUSY_uncertainty_estimate.m
+.. include:: examples/HSSUSY_uncertainty_estimate.m
    :code:
 
 When this script is executed, the following figure is produced:
