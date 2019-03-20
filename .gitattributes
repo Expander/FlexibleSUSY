@@ -56,7 +56,6 @@ model_files/LRLR                export-ignore
 model_files/lowNUHMSSM          export-ignore
 model_files/lowNUHMSSMSemiAnalytic export-ignore
 model_files/MDM                 export-ignore
-model_files/MRSSM2              export-ignore
 model_files/MSSMNoEWVEVs        export-ignore
 model_files/MSSMNoFVSLHA2       export-ignore
 model_files/minMSSM             export-ignore
