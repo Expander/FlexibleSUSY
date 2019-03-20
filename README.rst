@@ -185,9 +185,9 @@ documentation.
  `NUHMSSMNoFVHimalaya`_   fixed-order MSSM
 ======================== ====================================
 
-.. _`HSSUSY`: doc/HSSUSY.rst
-.. _`MSSMEFTHiggs`: doc/MSSMEFTHiggs.rst
-.. _`NUHMSSMNoFVHimalaya`: doc/NUHMSSMNoFVHimalaya.rst
+.. _`HSSUSY`: doc/models/HSSUSY.rst
+.. _`MSSMEFTHiggs`: doc/models/MSSMEFTHiggs.rst
+.. _`NUHMSSMNoFVHimalaya`: doc/models/NUHMSSMNoFVHimalaya.rst
 
 
 Command line
