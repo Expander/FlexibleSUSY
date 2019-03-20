@@ -70,6 +70,7 @@ model_files/NUHMSSMNoFVNoMomIt  export-ignore
 model_files/rootMSSM            export-ignore
 model_files/YukawaCMSSM         export-ignore
 model_files/UnbrokenMSSM        export-ignore
+model_files/ScalarLeptoquarks   export-ignore
 model_files/SMEWSBAtMZ          export-ignore
 model_files/SMHighScale         export-ignore
 model_files/SMHighPrecision     export-ignore
