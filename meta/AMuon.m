@@ -25,7 +25,6 @@ BeginPackage["AMuon`", {"SARAH`", "CXXDiagrams`", "TextFormatting`", "TreeMasses
 AMuonContributingGraphs::usage="";
 AMuonGetMuon::usage="";
 AMuonContributingDiagramsForGraph::usage="";
-AMuonCreateMuonPhysicalMass::usage="";
 AMuonCreateCalculation::usage="";
 AMuonGetMSUSY::usage="";
 
@@ -54,6 +53,7 @@ AMuonGetMuon[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet
                 Cases[SARAH`ParticleDefinitions[FlexibleSUSY`FSEigenstates],
                       {p_, {Description -> "Muon", ___}} -> p, 1][[1]]
                ]
+
 GetCXXMuonIndex[] := If[TreeMasses`GetDimension[TreeMasses`GetSMMuonLeptonMultiplet[]] =!= 1,
                         1,
                         Null]
@@ -80,13 +80,6 @@ IsDiagramSupported[vertexCorrectionGraph,diagram_] :=
     
     Return[False];
   ]
-
-AMuonCreateMuonPhysicalMass[] := "return context.model.get_physical().M" <>
-                             CXXDiagrams`CXXNameOfField[AMuonGetMuon[]] <>
-                             If[GetCXXMuonIndex[] =!= Null,
-                                "( " <> ToString @ GetCXXMuonIndex[] <> " )",
-                                ""] <>
-                             ";"
 
 AMuonCreateCalculation[gTaggedDiagrams_List] :=
   Module[{muon = AMuonGetMuon[], cxxMuonIndex = GetCXXMuonIndex[],
@@ -115,7 +108,7 @@ AMuonCreateCalculation[gTaggedDiagrams_List] :=
 					CXXDiagrams`ColourFactorForIndexedDiagramFromGraph[indexedDiagram, graph]] <>
 				" * " <> 
 				CXXEvaluatorForDiagramFromGraph[diagram, graph] <>
-				"::value(indices, context);"
+				"::value(indices, context, qedqcd);"
 			] & /@ diagrams, "\n"]
 		] & /@ gTaggedDiagrams, "\n"]
   ];

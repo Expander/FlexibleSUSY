@@ -2216,8 +2216,6 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
 (* Write the AMuon c++ files *)
 WriteAMuonClass[files_List] :=
     Module[{graphs,diagrams,vertices,
-            muonPoleMass,
-            muonPhysicalMass,
             calculation,
             getMSUSY},
       graphs = AMuon`AMuonContributingGraphs[];
@@ -2225,14 +2223,12 @@ WriteAMuonClass[files_List] :=
       
       vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
       
-      muonPhysicalMass = AMuon`AMuonCreateMuonPhysicalMass[];
       calculation = AMuon`AMuonCreateCalculation @ Transpose[{graphs,diagrams}];
             
       getMSUSY = AMuon`AMuonGetMSUSY[];
       
       WriteOut`ReplaceInFiles[files,
         {"@AMuon_MuonField@"      -> CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]],
-         "@AMuon_MuonPhysicalMass@"       -> TextFormatting`IndentText[muonPhysicalMass],
          "@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
          "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],
          Sequence @@ GeneralReplacementRules[]
