@@ -126,17 +126,9 @@ Block YVIN
 
    munuSSM_slha<munuSSM<Two_scale>> m = setup_munuSSM(input, qedqcd, settings);
 
-#if defined(__INTEL_COMPILER)
-   constexpr double reference_value = 1.24070126531925e-09;
-#elif defined(__clang__)
-   constexpr double reference_value = 1.24070101020353e-09;
-#elif defined(__GNUC__)
-   constexpr double reference_value = 1.24070097343634e-09;
-#else
-   BOOST_TEST_MESSAGE(false, "No reference value for this compiler");
-#endif
+   constexpr double reference_value = 1.2407009e-09;
 
    double amu = munuSSM_a_muon::calculate_a_muon(m, qedqcd);
 
-   BOOST_CHECK_CLOSE_FRACTION(amu, reference_value, 2e-15);
+   BOOST_CHECK_CLOSE_FRACTION(amu, reference_value, 1e-7);
 }
