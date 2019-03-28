@@ -130,5 +130,5 @@ Block YVIN
 
    double amu = munuSSM_a_muon::calculate_a_muon(m, qedqcd);
 
-   BOOST_CHECK_CLOSE_FRACTION(amu, reference_value, 5e-8);
+   BOOST_CHECK_CLOSE_FRACTION(amu, reference_value, 1e-7);
 }
