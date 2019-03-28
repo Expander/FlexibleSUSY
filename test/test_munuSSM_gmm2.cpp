@@ -22,6 +22,8 @@
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 
+#include "lowe.h"
+
 #include "test_munuSSM.hpp"
 
 #include "wrappers.hpp"
