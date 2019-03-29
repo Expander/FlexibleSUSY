@@ -22,6 +22,8 @@
 #include <boost/test/unit_test.hpp>
 #include <cstdlib>
 
+#include "lowe.h"
+
 #include "test_munuSSM.hpp"
 
 #include "wrappers.hpp"
@@ -126,9 +128,9 @@ Block YVIN
 
    munuSSM_slha<munuSSM<Two_scale>> m = setup_munuSSM(input, qedqcd, settings);
 
-   constexpr double reference_value = 1.2407009e-09;
+   constexpr double reference_value = 1.2407012653192522e-09;
 
    double amu = munuSSM_a_muon::calculate_a_muon(m, qedqcd);
 
-   BOOST_CHECK_CLOSE_FRACTION(amu, reference_value, 1e-7);
+   BOOST_CHECK_CLOSE_FRACTION(amu, reference_value, 1e-6);
 }

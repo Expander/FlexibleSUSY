@@ -21,10 +21,13 @@
 
 #include <tuple>
 
-#include "lowe.h"
 #include "munuSSM_input_parameters.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "munuSSM_two_scale_spectrum_generator.hpp"
+
+namespace softsusy {
+   class QedQcd;
+} // namespace softsusy
 
 namespace flexiblesusy {
 
