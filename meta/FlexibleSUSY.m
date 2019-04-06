@@ -2103,8 +2103,6 @@ WriteFFVFormFactorsClass[extParticles_List, files_List] :=
          {"@FFVFormFactors_InterfacePrototypes@"   -> interfacePrototypes,
           "@FFVFormFactors_InterfaceDefinitions@"  -> interfaceDefinitions,
           "@FFVFormFactors_ChargedHiggsMultiplet@" -> CXXDiagrams`CXXNameOfField[SARAH`ChargedHiggs],
-          "@FFVFormFactors_GluonName@" -> CXXDiagrams`CXXNameOfField[TreeMasses`GetGluon[]],
-          "@FFVFormFactors_PhotonName@" -> CXXDiagrams`CXXNameOfField[TreeMasses`GetPhoton[]],
           Sequence @@ GeneralReplacementRules[]}
       ];
 
@@ -2215,26 +2213,31 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
 
 (* Write the AMuon c++ files *)
 WriteAMuonClass[files_List] :=
-    Module[{graphs,diagrams,vertices,
-            calculation,
-            getMSUSY},
-      graphs = AMuon`AMuonContributingGraphs[];
-      diagrams = AMuon`AMuonContributingDiagramsForGraph /@ graphs;
-      
-      vertices = Flatten[CXXDiagrams`VerticesForDiagram /@ Flatten[diagrams,1],1];
-      
-      calculation = AMuon`AMuonCreateCalculation @ Transpose[{graphs,diagrams}];
+    Module[{calculation, getMSUSY,
+            (* in models without flavour violation (no FV models) muon does not have an index,
+               otherwise we assume it's the second particle in the lepton multiplet *)
+            muonIndex = If[TreeMasses`GetDimension[AMuon`AMuonGetMuon[]] =!= 1, "1", ""],
+            (* we want to calculate an offset of g-2 compared to the SM *)
+            discardSMcontributions = CXXDiagrams`CXXBoolValue[True]},
+
+      calculation =
+         "const auto form_factors = " <>
+         FSModelName <> "_FFV_form_factors::calculate_" <> CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]] <> "_" <>
+         CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]] <> "_" <> CXXDiagrams`CXXNameOfField[TreeMasses`GetPhoton[]] <> "_form_factors(" <>
+         muonIndex <> If[muonIndex === "", "", ", "] <>
+         muonIndex <> If[muonIndex === "", "", ", "] <>
+         "model, " <> discardSMcontributions <> ");";
             
       getMSUSY = AMuon`AMuonGetMSUSY[];
-      
+
       WriteOut`ReplaceInFiles[files,
         {"@AMuon_MuonField@"      -> CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]],
          "@AMuon_Calculation@"    -> TextFormatting`IndentText[calculation],
-         "@AMuon_GetMSUSY@"       -> IndentText[WrapLines[getMSUSY]],
+         "@AMuon_GetMSUSY@"       -> TextFormatting`IndentText[WrapLines[getMSUSY]],
+         "@AMuon_MuonIndex@" -> muonIndex,
          Sequence @@ GeneralReplacementRules[]
         }];
-                              
-      vertices
+
       ];
 
 GetBVPSolverHeaderName[solver_] :=
@@ -4446,8 +4449,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                *)
 
            Print["Creating AMuon class ..."];
-           aMuonVertices = 
-             WriteAMuonClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
+           WriteAMuonClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
@@ -4472,10 +4474,12 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
            
-           WriteCXXDiagramClass[Join[edmVertices,aMuonVertices, FFMasslessVVertices, fFFMassiveVFormFactorVertices, conversionVertices
-], cxxQFTFiles,
-             cxxQFTVerticesTemplate, cxxQFTOutputDir,
-             cxxQFTVerticesMakefileTemplates];
+           WriteCXXDiagramClass[
+              Join[edmVertices, FFMasslessVVertices, fFFMassiveVFormFactorVertices, conversionVertices],
+              cxxQFTFiles,
+              cxxQFTVerticesTemplate, cxxQFTOutputDir,
+              cxxQFTVerticesMakefileTemplates
+           ];
 
            Utils`PrintHeadline["Creating Mathematica interface"];
            Print["Creating LibraryLink ", FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> ".mx"}], " ..."];
