@@ -547,9 +547,9 @@ TSIL_COMPLEXCPP Sigma1L(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP deltamt2QCD(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
 {
    const auto g34 = g3*g3*g3*g3;
+   const auto d1 = delta1QCD(t,qq);
 
-   const auto a = ((3.0L*delta1QCD(t,qq)*delta1QCD(t,qq) - 4.0L*
-      delta2QCD(t,qq))*g34*k2)/8.0L;
+   const auto a = ((3.0L*d1*d1 - 4.0L*delta2QCD(t,qq))*g34*k2)/8.0L;
 
    return a;
 }
@@ -558,12 +558,13 @@ TSIL_COMPLEXCPP deltamt2mixed(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
    const auto g32 = g3*g3;
+   const auto d1 = delta1QCD(t, qq);
 
    const auto a = (g32*k2*(-delta2mixed(t, h, yt, qq)
-      - 3.0L*delta1QCD(t, qq)*(SigmaL(t, h, yt, t, qq)
+      - 3.0L*d1*(SigmaL(t, h, yt, t, qq)
       + SigmaR(t, h, yt, t, qq))
-      - 2.0L*delta1QCD(t, qq)*t*(dSigmaRds(t, h, yt, T, qq)
-      +dSigmaLds(t, h, yt, T, qq))))/2.0L;
+      - 2.0L*d1*t*(dSigmaRds(t, h, yt, T, qq)
+      + dSigmaLds(t, h, yt, T, qq))))/2.0L;
 
    return a;
 }
@@ -571,13 +572,13 @@ TSIL_COMPLEXCPP deltamt2mixed(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
 TSIL_COMPLEXCPP deltamt2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL T, TSIL_REAL qq)
 {
+   const auto sl = SigmaL(t, h, yt, t, qq);
+   const auto sr = SigmaR(t, h, yt, t, qq);
+
    const auto a = (k2*(-delta2Higgs(t, h, yt, qq)
-      + 3.0L*SigmaL(t, h, yt, t, qq)*SigmaL(t, h, yt, t, qq)
-      + 6.0L*SigmaL(t, h, yt, t, qq)*SigmaR(t, h, yt, t, qq)
-      + 3.0L*SigmaR(t, h, yt, t, qq)*SigmaR(t, h, yt, t, qq)
+      + 3.0L*sl*sl + 6.0L*sl*sr + 3.0L*sr*sr
       + 4.0L*(SigmaS(t, h, yt, t, qq)*sqrt(t)
-      + (SigmaR(t, h, yt, t, qq)
-      + SigmaL(t, h, yt, t, qq))*t)*(dSigmaRds(t, h, yt, T, qq)
+      + (sr + sl)*t)*(dSigmaRds(t, h, yt, T, qq)
       + dSigmaLds(t, h, yt, T, qq))))/2.0L;
 
    return a;
@@ -598,11 +599,13 @@ TSIL_COMPLEXCPP Sigma2SHiggs(TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
+   const auto ss = SigmaS(t, h, yt, t, qq);
+   const auto sl = SigmaL(t, h, yt, t, qq);
+   const auto sr = SigmaR(t, h, yt, t, qq);
 
-   const auto a = (k2*(SigmaS(t, h, yt, t, qq)*(SigmaS(t, h, yt, t, qq)
-      + 4.0L*(SigmaL(t, h, yt, t, qq) + SigmaR(t, h, yt, t, qq))*mt)
-      + 4.0L*(SigmaS(t, h, yt, t, qq) + (SigmaL(t, h, yt, t, qq)
-      + SigmaR(t, h, yt, t, qq))*mt)*t*dSigmaSds(t, h, yt, T, qq)))
+   const auto a = (k2*(ss*(ss
+      + 4.0L*(sl + sr)*mt)
+      + 4.0L*(ss + (sl + sr)*mt)*t*dSigmaSds(t, h, yt, T, qq)))
       /(2.0L*mt);
 
    return a;
@@ -627,9 +630,9 @@ TSIL_COMPLEXCPP deltamt2QCDspheno(TSIL_REAL g3, TSIL_REAL t,
    TSIL_REAL qq)
 {
    const auto g34 = g3*g3*g3*g3;
+   const auto d1 = delta1QCD(t,qq);
 
-   const auto a = ((delta1QCD(t,qq)*delta1QCD(t,qq) - 4.0L*
-      delta2QCD(t,qq))*g34*k2)/8.0L;
+   const auto a = ((d1*d1 - 4.0L*delta2QCD(t,qq))*g34*k2)/8.0L;
 
    return a;
 }
@@ -639,13 +642,14 @@ TSIL_COMPLEXCPP deltamt2mixedspheno(TSIL_REAL g3, TSIL_REAL t,
 {
    const auto g32 = g3*g3;
    const auto mt = sqrt(t);
+   const auto d1 = delta1QCD(t,qq);
 
    const auto a = -(g32*k2*(delta2mixed(t, h, yt, qq)
-      + delta1QCD(t,qq)*SigmaL(t, h, yt, t, qq)
-      + delta1QCD(t,qq)*SigmaR(t, h, yt, t, qq)
-      + 2.0L*delta1QCD(t,qq)*t*(dSigmaLds(t, h, yt, T, qq)
+      + d1*SigmaL(t, h, yt, t, qq)
+      + d1*SigmaR(t, h, yt, t, qq)
+      + 2.0L*d1*t*(dSigmaLds(t, h, yt, T, qq)
       + dSigmaRds(t, h, yt, T, qq))
-      + 2.0L*delta1QCD(t,qq)*mt*dSigmaSds(t, h, yt, T, qq)))/2.0L;
+      + 2.0L*d1*mt*dSigmaSds(t, h, yt, T, qq)))/2.0L;
 
    return a;
 }
@@ -654,13 +658,12 @@ TSIL_COMPLEXCPP deltamt2Higgsspheno(TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
+   const auto sl = SigmaL(t, h, yt, t, qq);
+   const auto sr = SigmaR(t, h, yt, t, qq);
 
    const auto a = (k2*(-delta2Higgs(t, h, yt, qq)
-      + (SigmaL(t, h, yt, t, qq)
-      + SigmaR(t, h, yt, t, qq))*(SigmaL(t, h, yt, t, qq)
-      + SigmaR(t, h, yt, t, qq)) + 4.0L*(SigmaS(t, h, yt, t, qq)
-      + (SigmaL(t, h, yt, t, qq)
-      + SigmaR(t, h, yt, t, qq))*mt)*(mt*(dSigmaLds(t, h, yt, T, qq)
+      + (sl + sr)*(sl + sr) + 4.0L*(SigmaS(t, h, yt, t, qq)
+      + (sl + sr)*mt)*(mt*(dSigmaLds(t, h, yt, T, qq)
       + dSigmaRds(t, h, yt, T, qq)) + dSigmaSds(t, h, yt, T, qq))))
    /2.0L;
 
@@ -682,10 +685,11 @@ TSIL_COMPLEXCPP Sigma2SHiggsspheno(TSIL_REAL t,
    TSIL_REAL h, TSIL_REAL yt, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
+   const auto ss = SigmaS(t, h, yt, t, qq);
 
-   const auto a = (k2*SigmaS(t, h, yt, t, qq)*(2.0L
-      *(SigmaL(t, h, yt, t, qq) + SigmaR(t, h, yt, t, qq))
-      + SigmaS(t, h, yt, t, qq)/mt))/2.0L;
+   const auto a =
+      (k2*ss*(2.0L*(SigmaL(t, h, yt, t, qq) + SigmaR(t, h, yt, t, qq))
+      + ss/mt))/2.0L;
 
    return a;
 }
