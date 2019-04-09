@@ -372,6 +372,9 @@ TSIL_COMPLEXCPP delta2mixed(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL qq)
 {
+   using std::log;
+   using std::sqrt;
+
    TSIL_DATA           result1, result2, result3, result4;
    const TSIL_REAL     EPS = 1.0L;
 
@@ -441,8 +444,8 @@ TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    const auto Logh = log(h);
    const auto Logtmh = log(t-h);
    const auto Log1mth = log(t/h-1.0L);
-   const auto Logt2 = log(t)*log(t);
-   const auto Logh2 = log(h)*log(h);
+   const auto Logt2 = Logt*Logt;
+   const auto Logh2 = Logh*Logh;
    const auto Ah = TSIL_A_(h,qq);
    const auto At = TSIL_A_(t,qq);
    const auto At2 = TSIL_A_(t,qq)*TSIL_A_(t,qq);
