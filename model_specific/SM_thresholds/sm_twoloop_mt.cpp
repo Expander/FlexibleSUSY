@@ -36,12 +36,10 @@ namespace sm_twoloop_mt {
 
 namespace {
 
-const auto Zeta2 = 1.644934066848226436472415166646025189219L;
-const auto Zeta3 = 1.202056903159594285399738161511449990765L;
+const auto zeta3 = 1.2020569031595942853997381615114L;
+const auto sqrt2 = 1.4142135623730950488016887242097L;
 const auto PI = 3.1415926535897932384626433832795L;
 const auto PI2 = PI*PI;
-const auto PI3 = PI*PI*PI;
-const auto PI4 = PI*PI*PI*PI;
 const auto k  = (1.0L/4.0L/PI)*(1.0L/4.0L/PI);
 const auto k2 = k*k;
 
@@ -121,7 +119,7 @@ TSIL_COMPLEXCPP SigmaS(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto t32 = t*sqrt(t);
    const auto Bht = TSIL_B_(h,t,s,qq);
@@ -148,7 +146,7 @@ TSIL_COMPLEXCPP dSigmaSds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto t32 = t*sqrt(t);
    const auto dBhtds = TSIL_dBds_(h,t,s,qq);
@@ -176,7 +174,7 @@ TSIL_COMPLEXCPP SigmaR(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto At = TSIL_A_(t,qq);
    const auto Ah = TSIL_A_(h,qq);
@@ -205,7 +203,7 @@ TSIL_COMPLEXCPP dSigmaRds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto s2 = s*s;
    const auto At = TSIL_A_(t,qq);
@@ -238,7 +236,7 @@ TSIL_COMPLEXCPP SigmaL(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto At = TSIL_A_(t,qq);
    const auto Ah = TSIL_A_(h,qq);
@@ -268,7 +266,7 @@ TSIL_COMPLEXCPP dSigmaLds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2.0L);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto s2 = s*s;
    const auto At = TSIL_A_(t,qq);
@@ -303,7 +301,7 @@ TSIL_COMPLEXCPP delta2QCD(TSIL_REAL t, TSIL_REAL qq)
 
    const TSIL_COMPLEXCPP a = 112.55555555555556L + (16.0L*PI2)/9.0L
    + (60.0L*At2)*(1.0L/t2) - 84.0L*At*(1.0L/t)
-   + (32.0L*PI2*log(2.0L))/9.0L - (16.0L*Zeta3)/3.0L;
+   + (32.0L*PI2*log(2.0L))/9.0L - (16.0L*zeta3)/3.0L;
 
    return a;
 }
@@ -334,7 +332,7 @@ TSIL_COMPLEXCPP delta2mixed(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_Manalytic_(0.0L,0.0L,t,0.0L,0.0L,t,&M00t00);
 
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2);
+   const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto t2 = t*t;
    const auto h2 = h*h;
@@ -429,7 +427,7 @@ TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    const auto M0t0h0 = (M0t0h0a+M0t0h0b)/2.0L;
 
    const auto mt = sqrt(t);
-   const auto v = mt / yt * sqrt(2.0L);
+   const auto v = mt / yt * sqrt2;
 
    const auto q = 0.5L*log(qq);
    const auto q2 = q*q;
