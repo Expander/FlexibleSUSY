@@ -40,7 +40,7 @@ const auto zeta3 = 1.2020569031595942853997381615114L;
 const auto sqrt2 = 1.4142135623730950488016887242097L;
 const auto PI = 3.1415926535897932384626433832795L;
 const auto PI2 = PI*PI;
-const auto k  = (1.0L/4.0L/PI)*(1.0L/4.0L/PI);
+const auto k  = 1.0L/(16.0L*PI2);
 const auto k2 = k*k;
 
 /*
