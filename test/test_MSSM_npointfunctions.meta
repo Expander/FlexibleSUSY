@@ -50,33 +50,34 @@ templateCode = StringJoin @ Riffle[Utils`ReadLinesInFile[
 
 hhSelfenergy = NPointFunctions`NPointFunction[
 	{SARAH`HiggsBoson}, {SARAH`HiggsBoson},
-	NPointFunctions`ZeroExternalMomenta -> True];
+    NPointFunctions`UseCache -> False,
+	NPointFunctions`ZeroExternalMomenta -> True,
+    NPointFunctions`ExcludedTopologies -> NPointFunctions`OneParticleReducible];
 
 hhSelfenergyCode = NPointFunctions`CreateCXXFunctions[
-	{hhSelfenergy}, {"selfenergy_hh_1loop"}][[2]];
+	{hhSelfenergy}, {"selfenergy_hh_1loop"}, {Identity}][[2]];
 nPointFunctionHeaders = CreateCXXHeaders[];
 
 hhSelfenergyVertices = VerticesForNPointFunction[hhSelfenergy];
 
-cxxDiagramsDir = FileNameJoin[{SARAH`SARAH[OutputDirectory],
+cxxDiagramsDir = FileNameJoin[{SARAH`$sarahCurrentOutputMainDir,
 	ToString[FlexibleSUSY`FSEigenstates], "CXXDiagrams"}];
 createdVerticesFile = FileNameJoin[{cxxDiagramsDir, "CreatedVertices.m"}];
     
-createdVertices = If[FileExistsQ[cxxDiagramsDir] === True,
-	Get[cxxDiagramsDir], {}];
+createdVertices = If[FileExistsQ[createdVerticesFile] === True,
+	Get[createdVerticesFile], {}];
 
 nPointFunctionVertices = DeleteDuplicates[Join[hhSelfenergyVertices]];
 remainingVertices = Complement[nPointFunctionVertices, createdVertices];
 
-vertexDataCode = StringJoin @ Riffle[
-	CXXDiagrams`CreateVertexData /@ remainingVertices, "\n\n"];
-verticesCode = CXXDiagrams`CreateVertices[remainingVertices];
+verticesCode = CXXDiagrams`CreateVertices[remainingVertices,
+	CXXdiagrams`MaximumVerticesLimit -> Length[remainingVertices]][[1]];
 
 code = StringReplace[templateCode, {
 	"@NPointFunctions_Selfenergy_hh_1loop@" -> hhSelfenergyCode,
 	"@NPointFunctions_Headers@" -> nPointFunctionHeaders,
-	"@CXXDiagrams_VertexData@" -> vertexDataCode,
-	"@CXXDiagrams_Vertices@" -> verticesCode
+	"@CXXDiagrams_VertexPrototypes@" -> verticesCode[[1]],
+	"@CXXDiagrams_VertexDefinitions@" -> verticesCode[[2]]
 }];
 
 fileHandle = OpenWrite[FileNameJoin[{workingDirectory, "test", "test_MSSM_npointfunctions.cpp"}]];

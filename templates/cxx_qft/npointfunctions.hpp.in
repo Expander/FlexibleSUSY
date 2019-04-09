@@ -102,6 +102,8 @@ namespace detail
       using field_insertions = typename at_c<InsertionData, 0>::type;
       static constexpr int combinatorial_factor =
         at_c<InsertionData, 1>::type::value;
+      static constexpr auto colour_factor =
+        at_c<InsertionData, 2>::type::value;
       
       using pairs = typename transform<
         GenericKeys,
@@ -115,9 +117,10 @@ namespace detail
         pairs
       >::type;
     
-      value += combinatorial_factor * boost::fusion::fused<
-        boost::value_factory<F<GenericFieldMap>>
-      >{}( state )();
+      value += colour_factor * combinatorial_factor *
+        boost::fusion::fused<
+          boost::value_factory<F<GenericFieldMap>>
+        >{}( state )();
     }
   };
 
@@ -141,6 +144,17 @@ namespace detail
   {
     using type = typename GenericFieldKey::field_vector;
   };
+
+  template<std::intmax_t Num, std::intmax_t Denom = 1> struct ratio_helper
+  {
+    static constexpr double value = double(Num) / double(Denom);
+  };
+  
+  template<class RealPart, class ImPart> struct complex_helper
+  {
+    static constexpr std::complex<double> value {RealPart::value, ImPart::value};
+  };
+
 }
 
 struct lorentz_scalar {};
@@ -219,7 +233,7 @@ class correlation_function_context
 
 public:
   correlation_function_context(
-    @ModelName@_mass_eigenstates &m,
+    const @ModelName@_mass_eigenstates &m,
     const std::array<int, NumberOfExternalIndices> &ei,
     const std::array<Eigen::Vector4d, NumberOfExternalMomenta> &em
   ) : context_with_vertices( m ),
@@ -283,6 +297,7 @@ template<
   class GenericFieldKeys,
   class GenericFieldInsertions,
   class CombinatorialFactors,
+  class ColourFactors,
   template<typename> class F,
   class ...Args
 >
@@ -291,7 +306,8 @@ std::complex<double> accumulate_generic( Args &&...args )
   using insertion_data = boost::mpl::zip_view<
     boost::mpl::vector<
       GenericFieldInsertions,
-      CombinatorialFactors
+      CombinatorialFactors,
+      ColourFactors
     >
   >;
 

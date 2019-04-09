@@ -154,7 +154,11 @@ CreateDependencePrototypes::usage="";
 CreateDependenceFunctions::usage="";
 
 ColorChargedQ::usage="";
+
 FieldInfo::usage="";
+includeLorentzIndices::usage="";
+includeColourIndices::usage="";
+
 IsScalar::usage="";
 IsFermion::usage="";
 IsVector::usage="";
@@ -177,6 +181,8 @@ IsSMUpQuark::usage="";
 IsSMDownQuark::usage="";
 IsSMQuark::usage="";
 IsSMParticle::usage="";
+IsSMParticleElementwise::usage="Maps a predicate over the multiplet, \
+indicating whether the element belongs to the SM or not";
 IsElectricallyCharged::usage="";
 ContainsGoldstone::usage="";
 
@@ -209,6 +215,7 @@ GetPhoton::usage           = "returns the photon";
 GetGluon::usage            = "returns the gluon";
 GetZBoson::usage           = "returns the Z boson";
 GetWBoson::usage           = "returns the W boson";
+GetHiggsBoson::usage       = "return Higgs boson(s)";
 
 GetSMTopQuarkMultiplet::usage    = "Returns multiplet containing the top quark, Fu or Ft";
 GetSMBottomQuarkMultiplet::usage = "Returns multiplet containing the bottom quark, Fd or Fb";
@@ -280,14 +287,19 @@ GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
 ParticleQ[p_, states_:FlexibleSUSY`FSEigenstates] :=
     MemberQ[GetParticles[states], p];
 
-FieldInfo[field_,OptionsPattern[{includeLorentzIndices -> False}]] :=
-    Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
-                                {SARAH`getParticleName @ field, ___}][[1]]},
-            fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
-            If[!OptionValue[includeLorentzIndices],
-               DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
-               fieldInfo]
-          ]
+FieldInfo[field_, OptionsPattern[{includeLorentzIndices -> False,
+	includeColourIndices -> False}]] := 
+	Module[{fieldInfo = Cases[SARAH`Particles[FlexibleSUSY`FSEigenstates],
+		{SARAH`getParticleName @ field, ___}][[1]]},
+		fieldInfo = DeleteCases[fieldInfo, {SARAH`generation, 1}, {2}];
+		
+		fieldInfo = If[!OptionValue[includeLorentzIndices],
+			DeleteCases[fieldInfo, {SARAH`lorentz, _}, {2}],
+			fieldInfo];
+		If[!OptionValue[includeColourIndices],
+			DeleteCases[fieldInfo, {SARAH`color, _}, {2}],
+			fieldInfo]
+	]
 
 IsOfType[sym_Symbol, type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
     SARAH`getType[sym, False, states] === type;
@@ -298,6 +310,8 @@ IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsSMParticle[sym_List] := And @@ (IsSMParticle /@ sym);
 IsSMParticle[sym_[__]] := IsSMParticle[sym];
 IsSMParticle[sym_] := SARAH`SMQ[sym, Higgs -> True];
+IsSMParticleElementwise[sym_] :=
+   (IsSMParticle[#] || IsSMGoldstone[#])& /@ Table[sym[i], {i, GetDimension[sym]}];
 
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
 IsScalar[SARAH`bar[sym_]] := IsScalar[sym];
@@ -410,7 +424,7 @@ ContainsMassless[sym_List, states_:FlexibleSUSY`FSEigenstates] :=
     Or @@ (IsMassless[#,states]& /@ sym);
 
 ColorChargedQ[field_] :=
-    !FreeQ[FieldInfo[field], SARAH`color];
+    !FreeQ[FieldInfo[field, includeColourIndices -> True], SARAH`color];
 
 GetColoredParticles[] :=
     Select[GetParticles[], ColorChargedQ];

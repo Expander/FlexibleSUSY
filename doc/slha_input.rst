@@ -17,16 +17,16 @@ FlexibleSUSY configuration block (FlexibleSUSY)
         1   0         # max. iterations (0 = automatic)
         2   0         # algorithm (0 = all, 1 = two_scale, 2 = semi_analytic)
         3   0         # calculate SM pole masses
-        4   2         # pole mass loop order
-        5   2         # EWSB loop order
+        4   4         # pole mass loop order
+        5   4         # EWSB loop order
         6   4         # beta-functions loop order
-        7   2         # threshold corrections loop order
+        7   4         # threshold corrections loop order
         8   1         # Higgs 2-loop corrections O(alpha_t alpha_s)
         9   1         # Higgs 2-loop corrections O(alpha_b alpha_s)
        10   1         # Higgs 2-loop corrections O((alpha_t + alpha_b)^2)
        11   1         # Higgs 2-loop corrections O(alpha_tau^2)
        12   0         # force output
-       13   1         # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L)
+       13   3         # Top pole mass QCD corrections (0 = 1L, 1 = 2L, 2 = 3L, 3 = 4L)
        14   1.0e-11   # beta-function zero threshold
        15   0         # calculate observables (a_muon, effective couplings)
        16   0         # force positive majorana masses
@@ -37,7 +37,7 @@ FlexibleSUSY configuration block (FlexibleSUSY)
        21   1         # EFT loop order for downwards matching (BSM -> SM)
        22   0         # EFT index of SM-like Higgs in the BSM model (0 = lightest Higgs)
        23   1         # calculate BSM pole masses
-       24   123111321 # individual threshold correction loop orders
+       24   124111321 # individual threshold correction loop orders
        25   0         # ren. scheme for Higgs 3L corrections (0 = DR', 1 = MDR', 2 = H3m)
        26   1         # Higgs 3-loop corrections O(alpha_t alpha_s^2)
        27   1         # Higgs 3-loop corrections O(alpha_b alpha_s^2)
@@ -62,13 +62,13 @@ or the loop order of the pole mass calculation can be selected.
   4      pole mass loop order                     0, 1, 2, 3, 4                                 4 (= 4-loop)                           
   5      EWSB loop order                          0, 1, 2, 3, 4                                 4 (= 4-loop)                           
   6      beta function loop order                 0, 1, 2, 3, 4, 5                              4 (= 4-loop)                           
-  7      threshold corrections loop order         0, 1, 2, 3                                    3 (= 3-loop)                           
+  7      threshold corrections loop order         0, 1, 2, 3, 4                                 4 (= 4-loop)                           
   8      higgs 2-loop correction O(at as)         0, 1                                          1 (= enabled)                          
   9      higgs 2-loop correction O(ab as)         0, 1                                          1 (= enabled)                          
  10      higgs 2-loop correction O(at at)         0, 1                                          1 (= enabled)                          
  11      higgs 2-loop correction O(atau atau)     0, 1                                          1 (= enabled)                          
  12      force output                             0 (no) or 1 (yes)                             0 (= no)                               
- 13      top quark pole QCD corrections           0 (1L), 1 (2L), 2 (3L)                        1 (= 2L QCD)                           
+ 13      top quark pole QCD corrections           0 (1L), 1 (2L), 2 (3L), 3 (4L)                3 (= 4L QCD)                           
  14      beta function zero threshold             any positive double                           1.0e-11                                
  15      calculate observables                    0 (no) or 1 (yes)                             0 (= no)                               
  16      force positive Majorana masses           0 (no) or 1 (yes)                             0 (= no)                               
@@ -79,7 +79,7 @@ or the loop order of the pole mass calculation can be selected.
  21      EFT loop order for downwards matching    0, 1                                          1 (= 1-loop)                           
  22      EFT Higgs index                          any integer >= 0                              0 (= lightest)                         
  23      calculate pole masses of BSM particles   0 (no) or 1 (yes)                             1 (= yes)                              
- 24      individual threshold corrections         positive integer                              123111321                              
+ 24      individual threshold corrections         positive integer                              124111321                              
  25      ren. scheme for higgs 3L corrections     0 (DR'), 1 (MDR'), 2 (H3m)                    0 (= DR')                              
  26      higgs 3-loop correction O(at as^2)       0, 1                                          1 (= enabled)                          
  27      higgs 3-loop correction O(ab as^2)       0, 1                                          1 (= enabled)                          

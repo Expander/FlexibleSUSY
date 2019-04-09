@@ -22,10 +22,18 @@
 
 BeginPackage["NPointFunctions`", {"SARAH`"}];
 
-CreateFAModelFile::usage="";
+CreateFAModelFile::usage="Create the FeynArts model file using \
+SARAH`MakeFeynArts[].";
 
 Begin["`Private`"];
 
+(** \brief Create the FeynArts model file using
+ * ``SARAH`MakeFeynArts[]``.
+ * \param sarahInputDirectories the SARAH input directories
+ * \param sarahOutputDirectory the SARAH output directory
+ * \param sarahModelName the model name used by SARAH
+ * \param eigenstates the option to forward to ``SARAH`MakeFeynArts[]``
+ **)
 CreateFAModelFile[sarahInputDirectories_, sarahOutputDirectory_,
 	sarahModelName_, eigenstates_] :=
 (
