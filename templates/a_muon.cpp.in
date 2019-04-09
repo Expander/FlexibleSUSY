@@ -99,10 +99,10 @@ double calculate_a_muon_impl(const @ModelName@_mass_eigenstates& model, const so
 
 @AMuon_Calculation@
 
-   BOOST_ASSERT_MSG(
-      is_zero((form_factors[2] + form_factors[3]).imag()), 
-      "Form factor F2 should be real"
-   );
+   if (!is_zero((form_factors[2] + form_factors[3]).imag())) {
+      std::cout << "Error in the g-2 calculation! Form factor F2 should be real\n";
+      return std::numeric_limits<double>::quiet_NaN();
+   }
 
    double val = 
       // vector form factor
