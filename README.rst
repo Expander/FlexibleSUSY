@@ -579,6 +579,11 @@ to FlexibleSUSY, configure via::
        --with-tsil-incdir=$TSIL_DIR \
        --with-tsil-libdir=$TSIL_DIR
 
+Note also that TSIL_ must be compiled with ``-fPIC``, which can be
+achieved by setting in the TSIL_ ``Makefile``::
+
+    TSIL_OPT = -O3 -funroll-loops -fPIC
+
 
 Creating an addon
 -----------------

@@ -59,7 +59,11 @@ New features
       UseSMYukawa2Loop = True
 
   Note that FlexibleSUSY must be configured with TSIL_ to use these
-  corrections, see `README.rst <README.rst>`_.
+  corrections, see `README.rst <README.rst>`_.  Furthermore TSIL_ must
+  be compiled with ``-fPIC``, which can be achieved by setting in the
+  TSIL_ ``Makefile``::
+
+      TSIL_OPT = -O3 -funroll-loops -fPIC
 
 
 FlexibleSUSY 2.3.0 [January, 22 2019]
