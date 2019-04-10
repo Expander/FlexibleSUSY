@@ -1988,6 +1988,45 @@ check_himalaya() {
 }
 
 #_____________________________________________________________________
+check_required_libs() {
+    if [ "$enable_meta" = yes -a -n "${MATH}" ] ; then
+        message "Checking model files for required third party libraries"
+
+        for m in ${MODELS}; do
+            local model_name=$(echo ${m} | sed -e 's|models/||')
+            local model_file="models/${model_name}/FlexibleSUSY.m"
+
+            mma_symbol_is "${model_file}" "${MATH}" "UseSMYukawa2Loop" "True" && {
+                message "    TSIL is required to build $model_name"
+                enable_tsil=yes
+            }
+
+            mma_symbol_is "${model_file}" "${MATH}" "UseHiggs3LoopMSSM" "True" && {
+                message "    Himalaya is required to build $model_name";
+                enable_himalaya=yes
+            }
+
+            cat <<EOF | "${MATH}" > /dev/null 2>&1
+Get["${model_file}"]
+
+If[FreeQ[HighScaleInput, FSHimalayaMh23L] &&
+   FreeQ[SUSYScaleInput, FSHimalayaMh23L] &&
+   FreeQ[LowScaleInput , FSHimalayaMh23L],
+   Quit[1],
+   Quit[0]
+]
+EOF
+
+            [ "x$?" = "x0" ] && {
+                message "    Himalaya is required to build $model_name";
+                enable_himalaya=yes
+            }
+
+        done
+    fi
+}
+
+#_____________________________________________________________________
 # Mathematica 9.0 or newer is shipped with Intel MKL with the ILP64
 # interface whereas LP64 is the standard 64 bit programming model
 # which external LAPACK/BLAS would also follow:
@@ -3275,7 +3314,15 @@ else
     enable_formcalc=no
 fi
 
+check_models
+check_addons
+check_optional_modules
+# BEGIN: NOT EXPORTED ##########################################
+update_model_makefiles
+# END:   NOT EXPORTED ##########################################
+
 if test "x${enable_compile}" = "xyes"; then
+    check_required_libs
     check_multiarch
     check_cxx
     check_cxx_compiler_type
@@ -3314,13 +3361,6 @@ if test "x${enable_compile}" = "xyes"; then
     check_std_threads
     check_thread_libs
 fi
-
-check_models
-check_addons
-check_optional_modules
-# BEGIN: NOT EXPORTED ##########################################
-update_model_makefiles
-# END:   NOT EXPORTED ##########################################
 
 enable_defines
 
