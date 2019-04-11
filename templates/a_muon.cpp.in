@@ -42,7 +42,6 @@ using namespace @ModelName@_cxx_diagrams;
 using Muon = fields::@AMuon_MuonField@;
 
 namespace {
-static constexpr double oneOver16PiSquared = 0.0063325739776461107152;
 
 double get_QED_2L(context_base&, const softsusy::QedQcd&);
 
