@@ -38,13 +38,13 @@ using namespace @ModelName@_cxx_diagrams::fields;
 
 namespace {
 
-static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
+static constexpr double oneOver32PiSqr = 0.5*oneOver16PiSqr;
 
 /**
- * @class MuEGammaVertexCorrectionSF
- * @brief A template that calculate contributions to the mu to e gamma
- *        of a given particle in a one loop diagram specified
- *        by a photon emitter and an exchange particle.
+ * @class FFV_SSF
+ * @brief A template that calculate contributions to the FFV form
+ *        factors of a given particles in a one loop diagram
+ *        specified by a vector emitters and an exchange particle.
  * @tparam Args Specifies in order the field of which to
  *              calculate the electric dipole moment,
  *              the photon emitter and the exchange particle
@@ -55,8 +55,7 @@ static constexpr double oneOver32PiSquared = 1.0/(32.0*Pi*Pi);
  * dipole moment of a one loop diagram with fields given by
  * \a Args.
  */
-template <class Fj, class Fi, class V, class S1, class S2,
-          class F>
+template <class Fj, class Fi, class V, class S1, class S2, class F>
 struct FFV_SSF {
    static std::valarray<std::complex<double>>
    value(const typename field_indices<Fj>::type& indices_in,
@@ -66,10 +65,10 @@ struct FFV_SSF {
 };
 
 /**
-* @class EDMVertexCorrectionFS
-* @brief A template that calculate contributions to the EDM
-*        of a given particle in a one loop diagram specified
-*        by a photon emitter and an exchange particle.
+* @class FFV_FFS
+* @brief A template that calculate contributions to the FFV form
+*        factors of a given particle in a one loop diagram
+*        specified by a vector emitters and an exchange particle.
 * @tparam Args Specifies in order the field of which to
 *              calculate the electric dipole moment,
 *              the photon emitter and the exchange particle
@@ -80,12 +79,10 @@ struct FFV_SSF {
 * dipole moment of a one loop diagram with fields given by
 * \a Args.
 */
-
-template <class FermionIn, class Fi, class Spectator, class Emitter1, class Emitter2,
-          class ExchangeParticle>
+template <class Fj, class Fi, class V, class F1, class F2, class S>
 struct FFV_FFS {
    static std::valarray<std::complex<double>>
-   value(const typename field_indices<FermionIn>::type& indices_in,
+   value(const typename field_indices<Fj>::type& indices_in,
          const typename field_indices<Fi>::type& indices_out,
          context_base const& context,
          bool discard_SM_contributions);
@@ -332,7 +329,7 @@ std::valarray<std::complex<double>> FFV_SSF<Fj, Fi, V, SA, SB, F>::value(
 
          const std::complex<double> massFactor = pow(mS,-2);
 
-         res += oneOver32PiSquared * vector_boson_coupling * massFactor 
+         res += oneOver32PiSqr * vector_boson_coupling * massFactor
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
@@ -420,7 +417,7 @@ std::valarray<std::complex<double>> FFV_FFS<Fj, Fi, V, FA, FB, S>::value(
 
          const std::complex<double> massFactor = pow(mS,-2);
 
-         res += oneOver32PiSquared * vector_boson_coupling * massFactor 
+         res += oneOver32PiSqr * vector_boson_coupling * massFactor
             * std::valarray<std::complex<double>> {A1L, A1R, A2L, A2R};
       }
    }
