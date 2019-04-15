@@ -1292,7 +1292,7 @@ atas_LR_2l = sm_twoloop_mt::delta_mt_2loop_as_at_LR_flexiblesusy(gs, yt, t, h, s
 
 atat_S_2l  = sm_twoloop_mt::delta_mt_2loop_at_at_S_flexiblesusy(yt, t, h, s, qq);
 atat_LR_2l = sm_twoloop_mt::delta_mt_2loop_at_at_LR_flexiblesusy(yt, t, h, s, qq);"
-                  ]
+                  , ""]
               ] <> "\n" <>
               "}\n\n" <>
               If[qcdThreeLoop =!= 0,
