@@ -118,10 +118,10 @@ TSIL_COMPLEXCPP delta1QCD(TSIL_REAL t,TSIL_REAL qq)
 TSIL_COMPLEXCPP SigmaS(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
-   const auto t32 = t*sqrt(t);
+   const auto t32 = t*std::sqrt(t);
    const auto Bht = TSIL_B_(h,t,s,qq);
    const auto Bt0 = TSIL_B_(t,0.0L,s,qq);
 
@@ -145,10 +145,10 @@ TSIL_COMPLEXCPP SigmaS(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP dSigmaSds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
-   const auto t32 = t*sqrt(t);
+   const auto t32 = t*std::sqrt(t);
    const auto dBhtds = TSIL_dBds_(h,t,s,qq);
    const auto dBt0ds = TSIL_dBds_(t,0.0L,s,qq);
 
@@ -173,7 +173,7 @@ TSIL_COMPLEXCPP dSigmaSds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP SigmaR(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto At = TSIL_A_(t,qq);
@@ -202,7 +202,7 @@ TSIL_COMPLEXCPP SigmaR(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP dSigmaRds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto s2 = s*s;
@@ -235,7 +235,7 @@ TSIL_COMPLEXCPP dSigmaRds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP SigmaL(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto At = TSIL_A_(t,qq);
@@ -265,7 +265,7 @@ TSIL_COMPLEXCPP SigmaL(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP dSigmaLds(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL s, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto s2 = s*s;
@@ -301,7 +301,7 @@ TSIL_COMPLEXCPP delta2QCD(TSIL_REAL t, TSIL_REAL qq)
 
    const TSIL_COMPLEXCPP a = 112.55555555555556L + (16.0L*PI2)/9.0L
    + (60.0L*At2)*(1.0L/t2) - 84.0L*At*(1.0L/t)
-   + (32.0L*PI2*log(2.0L))/9.0L - (16.0L*zeta3)/3.0L;
+   + (32.0L*PI2*std::log(2.0L))/9.0L - (16.0L*zeta3)/3.0L;
 
    return a;
 }
@@ -331,7 +331,7 @@ TSIL_COMPLEXCPP delta2mixed(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_Tanalytic_(h,0.0L,t,t,qq,&Th0t);
    TSIL_Manalytic_(0.0L,0.0L,t,0.0L,0.0L,t,&M00t00);
 
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
    const auto v2 = v*v;
    const auto t2 = t*t;
@@ -370,9 +370,6 @@ TSIL_COMPLEXCPP delta2mixed(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_REAL qq)
 {
-   using std::log;
-   using std::sqrt;
-
    TSIL_DATA           result1, result2, result3, result4;
    const TSIL_REAL     EPS = 1.0L;
 
@@ -426,10 +423,10 @@ TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    TSIL_Manalytic_(0.0L,t,0.0L,h,0.0L,t+EPS,&M0t0h0b);
    const auto M0t0h0 = (M0t0h0a+M0t0h0b)/2.0L;
 
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto v = mt / yt * sqrt2;
 
-   const auto q = 0.5L*log(qq);
+   const auto q = 0.5L*std::log(qq);
    const auto q2 = q*q;
    const auto v4 = v*v*v*v;
    const auto h2 = h*h;
@@ -438,10 +435,10 @@ TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    const auto t2 = t*t;
    const auto t3 = t*t*t;
    const auto t4 = t*t*t*t;
-   const auto Logt = log(t);
-   const auto Logh = log(h);
-   const auto Logtmh = log(t-h);
-   const auto Log1mth = log(t/h-1.0L);
+   const auto Logt = std::log(t);
+   const auto Logh = std::log(h);
+   const auto Logtmh = std::log(t-h);
+   const auto Log1mth = std::log(t/h-1.0L);
    const auto Logt2 = Logt*Logt;
    const auto Logh2 = Logh*Logh;
    const auto Ah = TSIL_A_(h,qq);
@@ -578,7 +575,7 @@ TSIL_COMPLEXCPP deltamt2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
 
    const auto a = (k2*(-delta2Higgs(t, h, yt, qq)
       + 3.0L*sl*sl + 6.0L*sl*sr + 3.0L*sr*sr
-      + 4.0L*(SigmaS(t, h, yt, t, qq)*sqrt(t)
+      + 4.0L*(SigmaS(t, h, yt, t, qq)*std::sqrt(t)
       + (sr + sl)*t)*(dSigmaRds(t, h, yt, T, qq)
       + dSigmaLds(t, h, yt, T, qq))))/2.0L;
 
@@ -599,7 +596,7 @@ TSIL_COMPLEXCPP Sigma2Smixed(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
 TSIL_COMPLEXCPP Sigma2SHiggs(TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto ss = SigmaS(t, h, yt, t, qq);
    const auto sl = SigmaL(t, h, yt, t, qq);
    const auto sr = SigmaR(t, h, yt, t, qq);
@@ -615,7 +612,7 @@ TSIL_COMPLEXCPP Sigma2SHiggs(TSIL_REAL t, TSIL_REAL h,
 TSIL_COMPLEXCPP mt_flexiblesusy(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
-   const auto Mt = sqrt(T);
+   const auto Mt = std::sqrt(T);
 
    const auto a = Mt + Sigma1S(t, h, yt, T, qq)
       + Sigma2Smixed(g3, t, h, yt, T, qq)
@@ -642,7 +639,7 @@ TSIL_COMPLEXCPP deltamt2mixedspheno(TSIL_REAL g3, TSIL_REAL t,
    TSIL_REAL h, TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
    const auto g32 = g3*g3;
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto d1 = delta1QCD(t,qq);
 
    const auto a = -(g32*k2*(delta2mixed(t, h, yt, qq)
@@ -658,7 +655,7 @@ TSIL_COMPLEXCPP deltamt2mixedspheno(TSIL_REAL g3, TSIL_REAL t,
 TSIL_COMPLEXCPP deltamt2Higgsspheno(TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto sl = SigmaL(t, h, yt, t, qq);
    const auto sr = SigmaR(t, h, yt, t, qq);
 
@@ -685,7 +682,7 @@ TSIL_COMPLEXCPP Sigma2Smixedspheno(TSIL_REAL g3, TSIL_REAL t,
 TSIL_COMPLEXCPP Sigma2SHiggsspheno(TSIL_REAL t,
    TSIL_REAL h, TSIL_REAL yt, TSIL_REAL qq)
 {
-   const auto mt = sqrt(t);
+   const auto mt = std::sqrt(t);
    const auto ss = SigmaS(t, h, yt, t, qq);
 
    const auto a =
@@ -698,8 +695,8 @@ TSIL_COMPLEXCPP Sigma2SHiggsspheno(TSIL_REAL t,
 TSIL_COMPLEXCPP mt_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
-   const auto Mt = sqrt(T);
-   const auto mt = sqrt(t);
+   const auto Mt = std::sqrt(T);
+   const auto mt = std::sqrt(t);
 
    const auto a = Mt + Sigma1S(t, h, yt, T, qq)
       + Sigma2Smixedspheno(g3, t, h, yt, qq)
