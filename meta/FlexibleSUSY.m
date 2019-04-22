@@ -1994,32 +1994,37 @@ WriteObservables[extraSLHAOutputBlocks_, files_List] :=
 WriteCXXDiagramClass[vertices_List, files_List,
     cxxQFTVerticesTemplate_, cxxQFTVerticesOutputDirectory_,
     cxxQFTVerticesMakefileTemplates_] :=
-  Module[{fields, cxxVerticesParts, massFunctions, unitCharge,
+  Module[{fields = "", cxxVerticesParts = {}, massFunctions, unitCharge,
           sarahOutputDir = SARAH`$sarahCurrentOutputMainDir,
           outputDir, cxxDiagramsDir, createdVerticesFile, fileHandle,
           cxxQFTVerticesFiles},
-    fields = CXXDiagrams`CreateFields[];
-    cxxVerticesParts = CXXDiagrams`CreateVertices[vertices];
-    massFunctions = CXXDiagrams`CreateMassFunctions[];
-    unitCharge = CXXDiagrams`CreateUnitCharge[];
+
+     massFunctions = CXXDiagrams`CreateMassFunctions[];
+     fields = CXXDiagrams`CreateFields[];
+
+     If[vertices =!= {},
+
+        cxxVerticesParts = CXXDiagrams`CreateVertices[vertices];
+        unitCharge = CXXDiagrams`CreateUnitCharge[];
     
-    cxxVerticesParts[[1, 2]] = cxxVerticesParts[[1, 2]] <> "\n\n" <>
-      unitCharge;
+        cxxVerticesParts[[1, 2]] = cxxVerticesParts[[1, 2]] <> "\n\n" <>
+           unitCharge;
     
-    (* Document which vertices are created. This is mainly useful for
-       unit testing. See e.g test/test_MSSM_npointfunctions.m *)
-    outputDir = FileNameJoin[{sarahOutputDir, ToString[FlexibleSUSY`FSEigenstates]}];
-    cxxDiagramsDir = FileNameJoin[{outputDir, "CXXDiagrams"}];
-    createdVerticesFile = FileNameJoin[{cxxDiagramsDir, "CreatedVertices.m"}];
+       (* Document which vertices are created. This is mainly useful for
+          unit testing. See e.g test/test_MSSM_npointfunctions.m *)
+       outputDir = FileNameJoin[{sarahOutputDir, ToString[FlexibleSUSY`FSEigenstates]}];
+       cxxDiagramsDir = FileNameJoin[{outputDir, "CXXDiagrams"}];
+       createdVerticesFile = FileNameJoin[{cxxDiagramsDir, "CreatedVertices.m"}];
     
-    If[DirectoryQ[cxxDiagramsDir] === False,
-		   CreateDirectory[cxxDiagramsDir]];
+       If[DirectoryQ[cxxDiagramsDir] === False,
+          CreateDirectory[cxxDiagramsDir]];
     
-    (* There is a bug in WriteString[] in older Mathematica versions
-       that causes the files to be left open. *)
-    fileHandle = OpenWrite[createdVerticesFile];
-    Write[fileHandle, vertices];
-    Close[fileHandle];
+       (* There is a bug in WriteString[] in older Mathematica versions
+          that causes the files to be left open. *)
+       fileHandle = OpenWrite[createdVerticesFile];
+       Write[fileHandle, vertices];
+       Close[fileHandle];
+    ];
 
     WriteOut`ReplaceInFiles[files,
                             {"@CXXDiagrams_Fields@"            -> fields,
@@ -2211,7 +2216,7 @@ WriteFToFConversionInNucleusClass[leptonPairs_List, files_List] :=
    ];
 
 (* Write the AMuon c++ files *)
-WriteAMuonClass[files_List] :=
+WriteAMuonClass[calcAMu_, files_List] :=
     Module[{calculation, getMSUSY,
             (* in models without flavour violation (no FV models) muon does not have an index,
                otherwise we assume it's the second particle in the lepton multiplet *)
@@ -2220,12 +2225,15 @@ WriteAMuonClass[files_List] :=
             discardSMcontributions = CXXDiagrams`CXXBoolValue[True]},
 
       calculation =
-         "const auto form_factors = " <>
-         FSModelName <> "_FFV_form_factors::calculate_" <> CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]] <> "_" <>
-         CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]] <> "_" <> CXXDiagrams`CXXNameOfField[TreeMasses`GetPhoton[]] <> "_form_factors(" <>
-         muonIndex <> If[muonIndex === "", "", ", "] <>
-         muonIndex <> If[muonIndex === "", "", ", "] <>
-         "model, " <> discardSMcontributions <> ");";
+         If[calcAMu,
+            "const auto form_factors = " <>
+            FSModelName <> "_FFV_form_factors::calculate_" <> CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]] <> "_" <>
+            CXXDiagrams`CXXNameOfField[AMuon`AMuonGetMuon[]] <> "_" <> CXXDiagrams`CXXNameOfField[TreeMasses`GetPhoton[]] <> "_form_factors(" <>
+            muonIndex <> If[muonIndex === "", "", ", "] <>
+            muonIndex <> If[muonIndex === "", "", ", "] <>
+            "model, " <> discardSMcontributions <> ");",
+            "const std::valarray<std::complex<double>> form_factors {0., 0., 0., 0.};"
+         ];
             
       getMSUSY = AMuon`AMuonGetMSUSY[];
 
@@ -4448,7 +4456,8 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
                *)
 
            Print["Creating AMuon class ..."];
-           WriteAMuonClass[{{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
+           WriteAMuonClass[MemberQ[Observables`GetRequestedObservables[extraSLHAOutputBlocks], FlexibleSUSYObservable`aMuon],
+              {{FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.hpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.hpp"}]},
                               {FileNameJoin[{$flexiblesusyTemplateDir, "a_muon.cpp.in"}],
                                FileNameJoin[{FSOutputDir, FlexibleSUSY`FSModelName <> "_a_muon.cpp"}]}}];
@@ -4472,7 +4481,7 @@ MakeFlexibleSUSY[OptionsPattern[]] :=
 
            If[DirectoryQ[cxxQFTOutputDir] === False,
               CreateDirectory[cxxQFTOutputDir]];
-           
+
            WriteCXXDiagramClass[
               Join[edmVertices, FFMasslessVVertices, fFFMassiveVFormFactorVertices, conversionVertices],
               cxxQFTFiles,
