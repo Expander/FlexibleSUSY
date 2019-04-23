@@ -181,8 +181,11 @@ IsSMUpQuark::usage="";
 IsSMDownQuark::usage="";
 IsSMQuark::usage="";
 IsSMParticle::usage="";
-IsSMParticleElementwise::usage="Maps a predicate over the multiplet, \
-indicating whether the element belongs to the SM or not";
+IsSMParticleElementwise::usage=
+"For a given multiplet this function returns a list indicating whether
+the element is a SM-like field or not.  The function assumes that BSM
+fields are always heavier than the SM fields.";
+
 IsElectricallyCharged::usage="";
 ContainsGoldstone::usage="";
 
@@ -310,8 +313,19 @@ IsOfType[sym_[__], type_Symbol, states_:FlexibleSUSY`FSEigenstates] :=
 IsSMParticle[sym_List] := And @@ (IsSMParticle /@ sym);
 IsSMParticle[sym_[__]] := IsSMParticle[sym];
 IsSMParticle[sym_] := SARAH`SMQ[sym, Higgs -> True];
+
+MakeTrueFalse[n_, t_] :=
+    Join[Array[True&, n]] /; t >= n;
+
+MakeTrueFalse[n_, t_] :=
+    Join[Array[True&, t], Array[False&, n - t]];
+
 IsSMParticleElementwise[sym_] :=
-   (IsSMParticle[#] || IsSMGoldstone[#])& /@ Table[sym[i], {i, GetDimension[sym]}];
+    Which[
+        IsSMLepton[sym], MakeTrueFalse[GetDimension[sym], 3],
+        IsSMQuark[sym], MakeTrueFalse[GetDimension[sym], 3],
+        True, (IsSMParticle[#] || IsSMGoldstone[#]) & /@ Table[sym[i], {i, GetDimension[sym]}]
+    ];
 
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
 IsScalar[SARAH`bar[sym_]] := IsScalar[sym];
