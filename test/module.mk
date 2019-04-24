@@ -498,6 +498,11 @@ TEST_META += \
 		$(DIR)/test_MSSMNoFV_TreeMasses.m
 endif
 
+ifeq ($(WITH_MSSMCPV),yes)
+TEST_META += \
+		$(DIR)/test_MSSMCPV_TreeMasses.m
+endif
+
 ifeq ($(WITH_NMSSMCPV),yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSMCPV_ewsb.cpp
@@ -616,7 +621,8 @@ endif
 
 ifeq ($(WITH_SM),yes)
 TEST_META += \
-		$(DIR)/test_SM_3loop_beta.m
+		$(DIR)/test_SM_3loop_beta.m \
+		$(DIR)/test_SM_TreeMasses.m
 endif
 
 ifeq ($(WITH_SMnoGUT),yes)

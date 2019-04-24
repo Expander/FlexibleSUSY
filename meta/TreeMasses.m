@@ -165,6 +165,7 @@ IsVector::usage="";
 IsGhost::usage="";
 IsGoldstone::usage="";
 IsSMGoldstone::usage="";
+IsSMHiggs::usage="";
 IsAuxiliary::usage="";
 IsMajoranaFermion::usage="";
 IsDiracFermion::usage="";
@@ -324,7 +325,8 @@ IsSMParticleElementwise[sym_] :=
     Which[
         IsSMLepton[sym], MakeTrueFalse[GetDimension[sym], 3],
         IsSMQuark[sym], MakeTrueFalse[GetDimension[sym], 3],
-        True, (IsSMParticle[#] || IsSMGoldstone[#]) & /@ Table[sym[i], {i, GetDimension[sym]}]
+        True, (IsSMParticle[#] || IsSMGoldstone[#] || IsSMHiggs[#])& /@
+              Table[sym[i], {i, GetDimension[sym]}]
     ];
 
 IsScalar[Susyno`LieGroups`conj[sym_]] := IsScalar[sym];
@@ -363,6 +365,16 @@ IsSMGoldstone[Susyno`LieGroups`conj[sym_]] := IsSMGoldstone[sym];
 IsSMGoldstone[SARAH`bar[sym_]] := IsSMGoldstone[sym];
 IsSMGoldstone[sym_] :=
     MemberQ[GetSMGoldstones[], sym];
+
+IsSMHiggs[Susyno`LieGroups`conj[sym_]] := IsSMHiggs[sym];
+IsSMHiggs[SARAH`bar[sym_]] := IsSMHiggs[sym];
+IsSMHiggs[sym_] :=
+    Module[{higgs = Parameters`GetParticleFromDescription["Higgs"]},
+           If[GetDimension[sym] == 1,
+              SameQ[sym, higgs],
+              SameQ[sym, higgs[GetDimensionStartSkippingGoldstones[higgs]]]
+           ]
+    ];
 
 IsChargino[Susyno`LieGroups`conj[p_]] := IsChargino[p];
 IsChargino[SARAH`bar[p_]] := IsChargino[p];

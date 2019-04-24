@@ -21,40 +21,26 @@
 *)
 
 Get["utils/load-FlexibleSUSY.m"];
-Start["MSSMNoFV"];
+Start["MSSM","CPV"];
 Needs["TestSuite`", "TestSuite.m"];
 
 Print["testing IsSMParticleElementwise[] ..."];
 
-TestEquality[IsSMParticleElementwise[Fu], {True}];
-TestEquality[IsSMParticleElementwise[Fd], {True}];
-TestEquality[IsSMParticleElementwise[Fs], {True}];
-TestEquality[IsSMParticleElementwise[Fc], {True}];
-TestEquality[IsSMParticleElementwise[Ft], {True}];
-TestEquality[IsSMParticleElementwise[Fb], {True}];
-TestEquality[IsSMParticleElementwise[Fe], {True}];
-TestEquality[IsSMParticleElementwise[Fm], {True}];
-TestEquality[IsSMParticleElementwise[Ftau], {True}];
+TestEquality[IsSMParticleElementwise[Fu], {True, True, True}];
+TestEquality[IsSMParticleElementwise[Fd], {True, True, True}];
+TestEquality[IsSMParticleElementwise[Fe], {True, True, True}];
+TestEquality[IsSMParticleElementwise[Fv], {True, True, True}];
 TestEquality[IsSMParticleElementwise[Chi], {False, False, False, False}];
 TestEquality[IsSMParticleElementwise[Cha], {False, False}];
 TestEquality[IsSMParticleElementwise[Glu], {False}];
 TestEquality[IsSMParticleElementwise[VP], {True}];
 TestEquality[IsSMParticleElementwise[VZ], {True}];
 TestEquality[IsSMParticleElementwise[VWm], {True}];
-TestEquality[IsSMParticleElementwise[Su], {False, False}];
-TestEquality[IsSMParticleElementwise[Sd], {False, False}];
-TestEquality[IsSMParticleElementwise[Ss], {False, False}];
-TestEquality[IsSMParticleElementwise[Sc], {False, False}];
-TestEquality[IsSMParticleElementwise[St], {False, False}];
-TestEquality[IsSMParticleElementwise[Sb], {False, False}];
-TestEquality[IsSMParticleElementwise[Se], {False, False}];
-TestEquality[IsSMParticleElementwise[Sm], {False, False}];
-TestEquality[IsSMParticleElementwise[Stau], {False, False}];
-TestEquality[IsSMParticleElementwise[SveL], {False}];
-TestEquality[IsSMParticleElementwise[SvmL], {False}];
-TestEquality[IsSMParticleElementwise[SvtL], {False}];
-TestEquality[IsSMParticleElementwise[hh], {True, False}];
-TestEquality[IsSMParticleElementwise[Ah], {True, False}];
+TestEquality[IsSMParticleElementwise[Su], {False, False, False, False, False, False}];
+TestEquality[IsSMParticleElementwise[Sd], {False, False, False, False, False, False}];
+TestEquality[IsSMParticleElementwise[Se], {False, False, False, False, False, False}];
+TestEquality[IsSMParticleElementwise[Sv], {False, False, False}];
+TestEquality[IsSMParticleElementwise[hh], {True, True, False, False}];
 TestEquality[IsSMParticleElementwise[Hpm], {True, False}];
 
 PrintTestSummary[];
