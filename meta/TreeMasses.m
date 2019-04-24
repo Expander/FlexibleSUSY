@@ -323,7 +323,7 @@ MakeTrueFalse[n_, t_] :=
 
 Options[IsSMParticleElementwise] :=
     {
-        IncludeHiggs -> True
+        IncludeHiggs -> False
     };
 
 IsSMParticleElementwise[sym_, OptionsPattern[]] :=
