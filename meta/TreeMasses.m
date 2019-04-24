@@ -321,11 +321,17 @@ MakeTrueFalse[n_, t_] :=
 MakeTrueFalse[n_, t_] :=
     Join[Array[True&, t], Array[False&, n - t]];
 
-IsSMParticleElementwise[sym_] :=
+Options[IsSMParticleElementwise] :=
+    {
+        IncludeHiggs -> True
+    };
+
+IsSMParticleElementwise[sym_, OptionsPattern[]] :=
     Which[
         IsSMLepton[sym], MakeTrueFalse[GetDimension[sym], 3],
         IsSMQuark[sym], MakeTrueFalse[GetDimension[sym], 3],
-        True, (IsSMParticle[#] || IsSMGoldstone[#] || IsSMHiggs[#])& /@
+        True, (IsSMParticle[#] || IsSMGoldstone[#] ||
+               (OptionValue[IncludeHiggs] && IsSMHiggs[#]))& /@
               Table[sym[i], {i, GetDimension[sym]}]
     ];
 

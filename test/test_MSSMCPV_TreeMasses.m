@@ -40,7 +40,8 @@ TestEquality[IsSMParticleElementwise[Su], {False, False, False, False, False, Fa
 TestEquality[IsSMParticleElementwise[Sd], {False, False, False, False, False, False}];
 TestEquality[IsSMParticleElementwise[Se], {False, False, False, False, False, False}];
 TestEquality[IsSMParticleElementwise[Sv], {False, False, False}];
-TestEquality[IsSMParticleElementwise[hh], {True, True, False, False}];
+TestEquality[IsSMParticleElementwise[hh, IncludeHiggs -> True], {True, True, False, False}];
+TestEquality[IsSMParticleElementwise[hh, IncludeHiggs -> False], {True, False, False, False}];
 TestEquality[IsSMParticleElementwise[Hpm], {True, False}];
 
 PrintTestSummary[];
