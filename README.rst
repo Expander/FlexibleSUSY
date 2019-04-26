@@ -63,6 +63,7 @@ Optional:
 * FormCalc_ (version 9.5 or higher)
 * LoopTools_ (version 2.8 or higher)
 * Himalaya_
+* TSIL_
 
 
 Installation of SARAH
@@ -566,6 +567,24 @@ directory configure via
 Note: LoopTools 2.8 or higher is required.
 
 
+TSIL support
+------------
+
+Some extensions of FlexibleSUSY require TSIL_.  In order to link TSIL_
+to FlexibleSUSY, configure via::
+
+    $TSIL_DIR=/path/to/tsil
+
+    ./configure --enable-tsil \
+       --with-tsil-incdir=$TSIL_DIR \
+       --with-tsil-libdir=$TSIL_DIR
+
+Note also that TSIL_ must be compiled with ``-fPIC``, which can be
+achieved by setting in the TSIL_ ``Makefile``::
+
+    TSIL_OPT = -O3 -funroll-loops -fPIC
+
+
 Creating an addon
 -----------------
 
@@ -745,6 +764,7 @@ References
 .. _LAPACK: http://www.netlib.org/lapack/
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
+.. _TSIL: https://www.niu.edu/spmartin/tsil/
 
 .. _`FlexibleSUSY model file`: doc/model_file.rst
 .. _`FlexibleEFTHiggs`: doc/FlexibleEFTHiggs.rst

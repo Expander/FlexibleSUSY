@@ -187,6 +187,7 @@ UseSM3LoopRGEs = False;
 UseSM4LoopRGEs = False;
 UseSM5LoopRGEs = False;
 UseSMAlphaS3Loop = False;
+UseSMYukawa2Loop = False;
 UseMSSM3LoopRGEs = False;
 UseMSSMYukawa2Loop = False;
 UseMSSMAlphaS2Loop = False;
@@ -2757,6 +2758,7 @@ FSCheckFlags[] :=
            If[FlexibleSUSY`UseHiggs3LoopSM === True,
               FlexibleSUSY`UseHiggs2LoopSM = True;
               FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseSMYukawa2Loop = True;
               FlexibleSUSY`UseYukawa3LoopQCD = True;
               FlexibleSUSY`UseSM3LoopRGEs = True;
              ];
@@ -2765,6 +2767,7 @@ FSCheckFlags[] :=
               FlexibleSUSY`UseHiggs2LoopSM = True;
               FlexibleSUSY`UseHiggs3LoopSM = True;
               FlexibleSUSY`UseSMAlphaS3Loop = True;
+              FlexibleSUSY`UseSMYukawa2Loop = True;
               FlexibleSUSY`UseYukawa3LoopQCD = True;
               FlexibleSUSY`UseSM3LoopRGEs = True;
               FlexibleSUSY`UseSM4LoopRGEs = True;
@@ -2788,7 +2791,10 @@ FSCheckFlags[] :=
               References`AddReference["Melnikov:2000qh"];
              ];
 
-           If[FlexibleSUSY`UseYukawa4LoopQCD || FlexibleSUSY`FlexibleEFTHiggs,
+           If[FlexibleSUSY`UseSMYukawa2Loop || FlexibleSUSY`UseYukawa4LoopQCD ||
+              FlexibleSUSY`FlexibleEFTHiggs,
+              Print["Adding 2-loop SM O(as^2,at*as,at^2) corrections to yt from ",
+                    "[arXiv:1604.01134]"];
               Print["Adding 4-loop SM QCD corrections to yt from ",
                     "[arxiv:1604.01134]"];
               References`AddReference["Martin:2016xsp"];
