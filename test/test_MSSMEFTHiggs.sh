@@ -275,11 +275,6 @@ MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
 MhHSSUSY="($MhHSSUSY - 0.05)"
 CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.0001" || error=$(expr $error + 1)
 
-MS=100000
-MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
-MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
-CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.0001" || error=$(expr $error + 1)
-
 if [ "x$error" != "x0" ] ; then
     echo "Test FAILED: There were $error errors."
 else
