@@ -271,6 +271,8 @@ CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.001" || error=$(expr $erro
 MS=10000
 MhMSSMEFTHiggs=$(run_sg "$MODELDIR/MSSMEFTHiggs/run_MSSMEFTHiggs.x" tower)
 MhHSSUSY=$(run_sg "$MODELDIR/HSSUSY/run_HSSUSY.x" fixedOrder)
+# shift -0.05 GeV due to 2-loop O(at*as + at^2) corrections to mt(MZ)
+MhHSSUSY="($MhHSSUSY - 0.05)"
 CHECK_EQUAL_FRACTION "$MhMSSMEFTHiggs" "$MhHSSUSY" "0.0001" || error=$(expr $error + 1)
 
 MS=100000
