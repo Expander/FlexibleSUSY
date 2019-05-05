@@ -2538,6 +2538,18 @@ If[Needs["SARAH\`"] === \$Failed || !ValueQ[\$sarahModelDir],
 WriteString["stderr", \$sarahModelDir];
 EOF
              )
+
+    if [ -z "$SARAH_MODEL_DIR" ] ; then
+        message "Error: Could not determine the SARAH model directory."
+        message "   Please check that Mathematica and SARAH are installed correctly."
+        message "   To do that, you may run \`${MATH}' and then copy and paste:\n"
+        message "\
+If[Needs[\"SARAH\`\"] === \$Failed,
+   Print[\"SARAH could not be loaded.\"]; Quit[1],
+   Print[\"SARAH successfully loaded.\"]; Quit[0]
+  ];"
+        exit 1
+    fi
 }
 
 #_____________________________________________________________________
