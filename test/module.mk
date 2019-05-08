@@ -296,6 +296,9 @@ TEST_SRC += \
 endif
 
 ifeq ($(WITH_munuSSM), yes)
+TEST_META += \
+		$(DIR)/test_munuSSM_TreeMasses.m
+
 TEST_SRC += \
 		$(DIR)/test_munuSSM_gmm2.cpp
 endif
@@ -495,6 +498,16 @@ TEST_SH += \
 		$(DIR)/test_CMSSMCPV_spectrum.sh
 endif
 
+ifeq ($(WITH_MSSMNoFV),yes)
+TEST_META += \
+		$(DIR)/test_MSSMNoFV_TreeMasses.m
+endif
+
+ifeq ($(WITH_MSSMCPV),yes)
+TEST_META += \
+		$(DIR)/test_MSSMCPV_TreeMasses.m
+endif
+
 ifeq ($(WITH_NMSSMCPV),yes)
 TEST_SRC += \
 		$(DIR)/test_NMSSMCPV_ewsb.cpp
@@ -613,7 +626,8 @@ endif
 
 ifeq ($(WITH_SM),yes)
 TEST_META += \
-		$(DIR)/test_SM_3loop_beta.m
+		$(DIR)/test_SM_3loop_beta.m \
+		$(DIR)/test_SM_TreeMasses.m
 endif
 
 ifeq ($(WITH_SMnoGUT),yes)
