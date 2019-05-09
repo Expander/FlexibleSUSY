@@ -65,6 +65,14 @@ New features
 
       TSIL_OPT = -O3 -funroll-loops -fPIC
 
+Fixed bugs
+----------
+
+* [commit c47ef34a]: In function ``SLHA_io::read_entry``, if there is
+  more than one entry with the same key in an SLHA block, use the last
+  one.  Note, that ``SLHA_io::read_entry`` has not been used in
+  FlexibleSUSY so far.
+
 
 FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
