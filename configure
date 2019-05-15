@@ -2293,6 +2293,15 @@ check_tsil_size() {
 
 #_____________________________________________________________________
 check_tsil() {
+    type pkg-config > /dev/null && [ -f TSIL.pc ] && {
+        message -n "Checking TSIL using local TSIL.pc ... "
+        TSILFLAGS=$(PKG_CONFIG_PATH=. pkg-config TSIL --cflags)
+        TSILLIBS=$(PKG_CONFIG_PATH=. pkg-config TSIL --libs)
+        enable_tsil=yes
+        message "ok"
+        return
+    }
+
     if test "x$enable_tsil" != "xno" ; then
         if check_tsil_incl && check_tsil_libs && check_tsil_size ; then
             enable_tsil=yes
