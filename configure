@@ -1317,7 +1317,11 @@ check_multiarch() {
 
 #_____________________________________________________________________
 check_boost() {
-    type pkg-config > /dev/null && [ -f boost.pc ] && {
+    [ -z "$boost_inc_dir" ] && \
+    [ -z "$boost_lib_dir" ] && \
+    type pkg-config > /dev/null && \
+    [ -f boost.pc ] && \
+    {
         message -n "Checking boost library using local boost.pc ... "
         BOOSTFLAGS=$(PKG_CONFIG_PATH=. pkg-config boost --cflags)
         BOOSTTESTLIBS=$(PKG_CONFIG_PATH=. pkg-config boost --libs)
@@ -1782,7 +1786,10 @@ int main() {
 
 #_____________________________________________________________________
 check_eigen() {
-    type pkg-config > /dev/null && [ -f eigen.pc ] && {
+    [ -z "$eigen_inc_dir" ] && \
+    type pkg-config > /dev/null && \
+    [ -f eigen.pc ] && \
+    {
         message -n "Checking Eigen library using local eigen.pc ... "
         EIGENFLAGS=$(PKG_CONFIG_PATH=. pkg-config eigen --cflags)
         message "ok"
@@ -2004,7 +2011,11 @@ check_himalaya_libs() {
 #_____________________________________________________________________
 check_himalaya() {
     if test "x$enable_himalaya" != "xno" ; then
-        type pkg-config > /dev/null && [ -f Himalaya.pc ] && {
+        [ -z "$himalaya_inc_dir" ] && \
+        [ -z "$himalaya_lib_dir" ] && \
+        type pkg-config > /dev/null && \
+        [ -f Himalaya.pc ] && \
+        {
             message -n "Checking Himalaya using local Himalaya.pc ... "
             HIMALAYAFLAGS=$(PKG_CONFIG_PATH=. pkg-config Himalaya --cflags)
             HIMALAYALIBS=$(PKG_CONFIG_PATH=. pkg-config Himalaya --libs)
@@ -2176,7 +2187,11 @@ check_looptools_incl() {
 #_____________________________________________________________________
 check_looptools() {
     if [ "x$enable_looptools" = "xyes" ] ; then
-        type pkg-config > /dev/null && [ -f LoopTools.pc ] && {
+        [ -z "$looptools_inc_dir" ] && \
+        [ -z "$looptools_lib_dir" ] && \
+        type pkg-config > /dev/null && \
+        [ -f LoopTools.pc ] && \
+        {
             message -n "Checking LoopTools using local LoopTools.pc ... "
             LOOPTOOLSFLAGS=$(PKG_CONFIG_PATH=. pkg-config LoopTools --cflags)
             LOOPTOOLSLIBS=$(PKG_CONFIG_PATH=. pkg-config LoopTools --libs)
@@ -2344,7 +2359,11 @@ check_tsil_size() {
 
 #_____________________________________________________________________
 check_tsil() {
-    type pkg-config > /dev/null && [ -f TSIL.pc ] && {
+    [ -z "$tsil_inc_dir" ] && \
+    [ -z "$tsil_lib_dir" ] && \
+    type pkg-config > /dev/null && \
+    [ -f TSIL.pc ] && \
+    {
         message -n "Checking TSIL using local TSIL.pc ... "
         TSILFLAGS=$(PKG_CONFIG_PATH=. pkg-config TSIL --cflags)
         TSILLIBS=$(PKG_CONFIG_PATH=. pkg-config TSIL --libs)
