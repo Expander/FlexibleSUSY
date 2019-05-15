@@ -2146,7 +2146,7 @@ check_looptools() {
             message -n "Checking LoopTools using local LoopTools.pc ... "
             LOOPTOOLSFLAGS=$(PKG_CONFIG_PATH=. pkg-config LoopTools --cflags)
             LOOPTOOLSLIBS=$(PKG_CONFIG_PATH=. pkg-config LoopTools --libs)
-            enable_tsil=yes
+            enable_looptools=yes
             message "ok"
             return
         }
