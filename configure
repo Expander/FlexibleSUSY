@@ -2140,6 +2140,23 @@ check_looptools_incl() {
 }
 
 #_____________________________________________________________________
+check_looptools() {
+    if [ "x$enable_looptools" = "xyes" ] ; then
+        type pkg-config > /dev/null && [ -f LoopTools.pc ] && {
+            message -n "Checking LoopTools using local LoopTools.pc ... "
+            LOOPTOOLSFLAGS=$(PKG_CONFIG_PATH=. pkg-config LoopTools --cflags)
+            LOOPTOOLSLIBS=$(PKG_CONFIG_PATH=. pkg-config LoopTools --libs)
+            enable_tsil=yes
+            message "ok"
+            return
+        }
+
+        check_looptools_incl
+        check_looptools_libs
+    fi
+}
+
+#_____________________________________________________________________
 check_loop_functions() {
     if test "$enable_fflite" = "yes" -a "$enable_looptools" = "yes"; then
 	message "Error: do not \`--enable-fflite' and \`--enable-looptools' at the same time"
@@ -3370,8 +3387,7 @@ if test "x${enable_compile}" = "xyes"; then
         check_boost_thread_incl
         check_boost_thread_libs
     fi
-    check_looptools_incl
-    check_looptools_libs
+    check_looptools
     check_loop_functions
     check_odeint
     check_sqlite
