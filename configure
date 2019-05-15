@@ -1317,6 +1317,14 @@ check_multiarch() {
 
 #_____________________________________________________________________
 check_boost() {
+    type pkg-config > /dev/null && [ -f boost.pc ] && {
+        message -n "Checking boost library using local boost.pc ... "
+        BOOSTFLAGS=$(PKG_CONFIG_PATH=. pkg-config boost --cflags)
+        BOOSTTESTLIBS=$(PKG_CONFIG_PATH=. pkg-config boost --libs)
+        message "ok"
+        return
+    }
+
     check_header "boost/version.hpp" "$boost_inc_dir" \
 	"$default_inc_paths"
     if test "x$found_hdr" = "x" ; then
@@ -1329,6 +1337,10 @@ check_boost() {
             BOOSTFLAGS="${BOOSTFLAGS} -I$found_dir"
         fi
     fi
+
+    check_boost_version
+    check_boost_test_incl
+    check_boost_test_libs
 }
 
 #_____________________________________________________________________
@@ -3394,9 +3406,6 @@ if test "x${enable_compile}" = "xyes"; then
     check_linking
     check_librarylink
     check_boost
-    check_boost_version
-    check_boost_test_incl
-    check_boost_test_libs
     check_eigen
     check_fortran_libs
     check_gsl_config
