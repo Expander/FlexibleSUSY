@@ -587,9 +587,11 @@ To use the LoopTools library and header files from a specific
 directory configure via
 ::
 
+    LOOPTOOL_DIR=/path/to/looptools/build
+
     ./configure --enable-looptools \
-       --with-looptools-incdir="/path/to/looptools/build/" \
-       --with-looptools-libdir="/path/to/looptools/build/"
+       --with-looptools-incdir=$LOOPTOOLS_DIR \
+       --with-looptools-libdir=$LOOPTOOLS_DIR
 
 Note: LoopTools 2.8 or higher is required.
 
@@ -597,8 +599,12 @@ Note: LoopTools 2.8 or higher is required.
 TSIL support
 ------------
 
-Some extensions of FlexibleSUSY require TSIL_.  In order to link TSIL_
-to FlexibleSUSY, configure via::
+Some models of FlexibleSUSY require TSIL_, for example HSSUSY.  When
+such models are activated (via ``./configure --with-models=<model>``),
+FlexibleSUSY requires TSIL to be available.  If TSIL is installed in a
+system directory or installed via Conan, FlexibleSUSY will find the
+TSIL automatically.  To use TSIL from a a non-standard directory,
+configure FlexibleSUSY like this::
 
     $TSIL_DIR=/path/to/tsil
 
@@ -606,8 +612,8 @@ to FlexibleSUSY, configure via::
        --with-tsil-incdir=$TSIL_DIR \
        --with-tsil-libdir=$TSIL_DIR
 
-Note also that TSIL_ must be compiled with ``-fPIC``, which can be
-achieved by setting in the TSIL_ ``Makefile``::
+Note also that TSIL must be compiled with ``-fPIC``, which can be
+achieved by setting in the TSIL ``Makefile``::
 
     TSIL_OPT = -O3 -funroll-loops -fPIC
 
