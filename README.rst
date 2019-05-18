@@ -65,6 +65,33 @@ Optional:
 * Himalaya_
 * TSIL_
 
+Installation of required libraries
+----------------------------------
+
+The required libraries Boost_, `Eigen 3`_, LoopTools_, Himalaya_ and
+TSIL_ can be installed using the Conan_ package manager.  If not
+already installed, Conan can be installed with pip::
+
+    pip install conan
+
+If Conan is installed, add `conan-hep`_ to the list of remote package
+repositories::
+
+    conan remote add conan-hep https://api.bintray.com/conan/expander/conan-hep
+
+To install the required libraries from above run::
+
+    conan install . --build=missing
+
+The `GNU scientific library`_ can currently not be installed via
+Conan_.  One may use the package manager of the operating system to
+install it.  On Debian/Ubuntu one may run for example::
+
+    sudo apt-get install libgsl-dev
+
+When the required libraries are installed via Conan or the operating
+system's package manager, they will be found automatically by
+FlexibleSUSY.
 
 Installation of SARAH
 ---------------------
@@ -89,14 +116,14 @@ script::
 
 See ``./install-sarah --help`` for more options.
 
-Installation of FeynArts/FormCalc/LoopTools
--------------------------------------------
+Installation of FeynArts/FormCalc (optional)
+--------------------------------------------
 
-If you want FlexibleSUSY to use either FeynArts_, FormCalc_ or
-LoopTools_ you will need to install these packages first.  Also — as
-with SARAH — they need to be loadable with the ``Needs[]`` command
-from inside Mathematica.  We recommend using the installation script
-``FeynInstall`` provided on the FeynArts web page. e.g.::
+If you want FlexibleSUSY to use FeynArts_ or FormCalc_ you will need
+to install these packages first.  Also — as with SARAH — they need to
+be loadable with the ``Needs[]`` command from inside Mathematica.  We
+recommend using the installation script ``FeynInstall`` provided on
+the FeynArts web page. e.g.::
 
     cd ~/.local
     wget http://www.feynarts.de/FeynInstall
@@ -756,6 +783,8 @@ References
 .. _SARAH: http://sarah.hepforge.org
 .. _SOFTSUSY: http://softsusy.hepforge.org
 .. _Boost: http://www.boost.org
+.. _Conan: https://conan.io/
+.. _conan-hep: https://bintray.com/expander/conan-hep
 .. _Eigen 3: http://eigen.tuxfamily.org
 .. _FeynArts: http://www.feynarts.de
 .. _FormCalc: http://www.feynarts.de/formcalc
