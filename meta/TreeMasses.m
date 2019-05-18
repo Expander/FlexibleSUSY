@@ -84,6 +84,8 @@ CreateMassArraySetter::usage="";
 CreateMixingArrayGetter::usage="";
 CreateMixingArraySetter::usage="";
 
+GetSMVEVExpr::usage = "Returns expression for SM-like VEV";
+
 GetParticles::usage="returns list of particles";
 
 GetSusyParticles::usage="returns list of susy particles";
@@ -1861,16 +1863,30 @@ FindLeftGaugeCoupling[] := SARAH`leftCoupling;
 
 FindHyperchargeGaugeCoupling[] := SARAH`hyperchargeCoupling;
 
+GetSMVEVExpr[symbIfUndefined_:Undefined] :=
+    Module[{vexp},
+           If[ValueQ[SARAH`VEVSM],
+              vexp = Cases[Parameters`GetDependenceSPhenoRules[],
+                           RuleDelayed[SARAH`VEVSM, expr_] :> expr];
+              If[vexp === {}, SARAH`VEVSM, First[vexp]]
+              ,
+              DebugPrint["Warning: SM-like Higgs vev is not define in the SARAH model file!"];
+              symbIfUndefined
+           ]
+    ];
+
+PrivateGetDependenceSPhenoRules[] :=
+    DecreaseIndexLiterals @ Join[
+        Parameters`GetDependenceSPhenoRules[],
+        { FlexibleSUSY`VEV -> GetSMVEVExpr[0] }
+    ];
+
 CreateDependencePrototype[(Rule | RuleDelayed)[parameter_, _]] :=
     CConversion`CreateCType[CConversion`ScalarType[CConversion`realScalarCType]] <>
     " " <> CConversion`ToValidCSymbolString[parameter] <> "() const;\n";
 
-CreateDependencePrototypes[massMatrices_List] :=
-    Module[{dependencies, result = ""},
-           dependencies = Parameters`DecreaseIndexLiterals[Parameters`GetDependenceSPhenoRules[]];
-           (result = result <> CreateDependencePrototype[#])& /@ dependencies;
-           Return[result];
-          ];
+CreateDependencePrototypes[] :=
+    StringJoin[CreateDependencePrototype /@ PrivateGetDependenceSPhenoRules[]]
 
 CreateDependenceFunction[(Rule | RuleDelayed)[parameter_, value_]] :=
     Module[{result, body, parStr},
@@ -1883,12 +1899,8 @@ CreateDependenceFunction[(Rule | RuleDelayed)[parameter_, value_]] :=
            Return[result];
           ];
 
-CreateDependenceFunctions[massMatrices_List] :=
-    Module[{dependencies, result = ""},
-           dependencies = Parameters`DecreaseIndexLiterals[Parameters`GetDependenceSPhenoRules[]];
-           (result = result <> CreateDependenceFunction[#])& /@ dependencies;
-           Return[result];
-          ];
+CreateDependenceFunctions[] :=
+    StringJoin[CreateDependenceFunction /@ PrivateGetDependenceSPhenoRules[]]
 
 CreateDependencyFunctionSymbols[] :=
     RuleDelayed[#,#[]]& /@ Parameters`GetDependenceSPhenoSymbols[];

@@ -1688,8 +1688,8 @@ WriteModelClass[massMatrices_List, ewsbEquations_List,
            setExtraParameters           = Parameters`CreateExtraParameterArraySetter[Parameters`GetExtraParameters[]];
            mixingMatrices               = Flatten[TreeMasses`GetMixingMatrixSymbol[#]& /@ massMatrices];
            printMixingMatrices          = WriteOut`PrintParameters[mixingMatrices, "ostr"];
-           dependencePrototypes      = TreeMasses`CreateDependencePrototypes[massMatrices];
-           dependenceFunctions       = TreeMasses`CreateDependenceFunctions[massMatrices];
+           dependencePrototypes         = TreeMasses`CreateDependencePrototypes[];
+           dependenceFunctions          = TreeMasses`CreateDependenceFunctions[];
            If[Head[SARAH`ListSoftBreakingScalarMasses] === List,
               softScalarMasses          = DeleteDuplicates[SARAH`ListSoftBreakingScalarMasses];,
               softScalarMasses          = {};
