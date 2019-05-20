@@ -57,8 +57,6 @@ Requirements
 
 Optional:
 
-* BLAS_
-* LAPACK_
 * FeynArts_ (version 3.9 or higher)
 * FormCalc_ (version 9.5 or higher)
 * LoopTools_ (version 2.8 or higher)
@@ -795,8 +793,6 @@ References
 .. _FeynArts: http://www.feynarts.de
 .. _FormCalc: http://www.feynarts.de/formcalc
 .. _GNU scientific library: http://www.gnu.org/software/gsl/
-.. _BLAS: http://www.netlib.org/blas/
-.. _LAPACK: http://www.netlib.org/lapack/
 .. _LoopTools: http://www.feynarts.de/looptools/
 .. _Himalaya: https://github.com/Himalaya-Library/Himalaya
 .. _TSIL: https://www.niu.edu/spmartin/tsil/
