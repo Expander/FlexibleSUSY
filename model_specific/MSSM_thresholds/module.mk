@@ -68,11 +68,11 @@ endif
 
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIB_model_specific_MSSM_thresholds): $(LIB_model_specific_MSSM_thresholds_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS)
 else
 $(LIB_model_specific_MSSM_thresholds): $(LIB_model_specific_MSSM_thresholds_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
 endif
 

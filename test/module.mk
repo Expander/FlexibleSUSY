@@ -776,15 +776,15 @@ $(DIR)/test_CMSSM_NMSSM_linking.x: $(LIBCMSSM) $(LIBNMSSM)
 
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 $(DIR)/test_pv_fflite.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(LIBFFLITE)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
 $(DIR)/test_pv_looptools.x: $(DIR)/test_pv_crosschecks.cpp $(LIBFLEXI)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(LOOPTOOLSLIBS) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(FLIBS)
 
 $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp src/pv.cpp $(filter-out %pv.o,$(LIBFLEXI_OBJ))
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
@@ -800,17 +800,17 @@ $(DIR)/test_loopfunctions.x: $(LIBCMSSM)
 $(DIR)/test_sfermions.x: $(LIBCMSSM)
 
 $(DIR)/test_SM_cxxdiagrams.cpp : $(DIR)/test_SM_cxxdiagrams.meta $(DIR)/test_SM_cxxdiagrams.cpp.in $(META_SRC) $(METACODE_STAMP_SM)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[0];"
 $(DIR)/test_SM_cxxdiagrams.x: $(LIBSM)
 
 $(DIR)/test_SM_npointfunctions.cpp : $(DIR)/test_SM_npointfunctions.meta $(DIR)/test_SM_npointfunctions.cpp.in $(META_SRC) $(METACODE_STAMP_SM)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[0];"
 $(DIR)/test_SM_npointfunctions.x: $(LIBSM)
 
 $(DIR)/test_MSSM_npointfunctions.cpp : $(DIR)/test_MSSM_npointfunctions.meta $(DIR)/test_MSSM_npointfunctions.cpp.in $(META_SRC) $(METACODE_STAMP_MSSM)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)"$(MATH)" -run "AppendTo[\$$Path, \"./meta/\"]; Get[\"$<\"]; Quit[0];"
 $(DIR)/test_MSSM_npointfunctions.x: $(LIBMSSM)
 
@@ -1016,7 +1016,7 @@ $(TEST_EXE): $(LIBSOFTSUSY) $(MODtest_LIB) $(LIBTEST) $(LIBFLEXI) $(filter-out -
 
 # general test rule
 $(DIR)/test_%.x: $(DIR)/test_%.o
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
 		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS)
@@ -1026,11 +1026,11 @@ $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += -Itest/SOFTSUSY $(MODtest_INC) $(BOOSTFLAGS
 
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBTEST): $(LIBTEST_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(FLIBS)
 else
 $(LIBTEST): $(LIBTEST_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
 endif
 

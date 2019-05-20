@@ -110,11 +110,11 @@ endif
 $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP) $(LIBGM2Calc_OBJ) $(EXEGM2Calc_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
 $(LIBGM2Calc): $(LIBGM2Calc_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(DIR)/%.x: $(DIR)/%.o $(LIBGM2Calc) $(LIBFLEXI)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^)
 
 ALLDEP += $(LIBGM2Calc_DEP) $(EXEGM2Calc_DEP)

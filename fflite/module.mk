@@ -78,7 +78,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(LIBFFLITE): $(LIBFFLITE_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
 
 ifeq ($(ENABLE_FFLITE),yes)

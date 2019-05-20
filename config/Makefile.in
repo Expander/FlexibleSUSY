@@ -108,6 +108,9 @@ SHELL = /bin/sh
 # disable built-in rules to improve speed
 MAKEFLAGS += -rR --include-dir=$(CURDIR)
 
+# message printed for each target
+MSG = echo "Building $@"
+
 # flexiblesusy-config script
 FSCONFIG := @FSCONFIG@
 

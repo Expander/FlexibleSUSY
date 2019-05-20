@@ -80,7 +80,7 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 $(DEPGEN_EXE): $(DEPGEN_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) $(CXXFLAGS) -o $@ $^ $(LDLIBS)
 
 ALLEXE += $(DEPGEN_EXE)

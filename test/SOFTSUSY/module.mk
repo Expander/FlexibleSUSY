@@ -110,15 +110,15 @@ $(LIBSOFTSUSY_OBJ) $(RUN_SOFTSUSY_OBJ) $(RUN_SOFTPOINT_OBJ): \
 	CPPFLAGS += $(MODSOFTSUSY_INC) $(BOOSTFLAGS) $(EIGENFLAGS)
 
 $(LIBSOFTSUSY): $(LIBSOFTSUSY_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
 
 $(RUN_SOFTSUSY_EXE): $(RUN_SOFTSUSY_OBJ) $(LIBSOFTSUSY) $(MODSOFTSUSY_LIB) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 $(RUN_SOFTPOINT_EXE): $(RUN_SOFTPOINT_OBJ) $(LIBSOFTSUSY) $(MODSOFTSUSY_LIB) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(FLIBS)
 
 ALLDEP += $(LIBSOFTSUSY_DEP) $(RUN_SOFTSUSY_DEP) $(RUN_SOFTPOINT_DEP)

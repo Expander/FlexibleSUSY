@@ -189,11 +189,11 @@ endif
 
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS) $(THREADLIBS)
 else
 $(LIBFLEXI): $(LIBFLEXI_OBJ)
-		@echo "Building $@"
+		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
 endif
 
