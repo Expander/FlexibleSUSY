@@ -1866,9 +1866,16 @@ FindHyperchargeGaugeCoupling[] := SARAH`hyperchargeCoupling;
 GetSMVEVExpr[symbIfUndefined_:Undefined] :=
     Module[{vexp},
            If[ValueQ[SARAH`VEVSM],
-              vexp = Cases[Parameters`GetDependenceSPhenoRules[],
+              vexp = Cases[Parameters`GetAllDependenceSPhenoRules[],
                            RuleDelayed[SARAH`VEVSM, expr_] :> expr];
-              If[vexp === {}, SARAH`VEVSM, First[vexp]]
+              If[vexp === {},
+                 If[Parameters`IsParameter[SARAH`VEVSM],
+                    SARAH`VEVSM,
+                    DebugPrint["Warning: SM-like Higgs vev is not define in the SARAH model file!"];
+                    symbIfUndefined]
+                 ,
+                 First[vexp]
+              ]
               ,
               DebugPrint["Warning: SM-like Higgs vev is not define in the SARAH model file!"];
               symbIfUndefined

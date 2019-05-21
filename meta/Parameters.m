@@ -140,11 +140,14 @@ FindMacro::usage="Returns preprocessor macro for parameter";
 WrapPreprocessorMacroAround::usage="Applies preprocessor symbols
 to parameters";
 
-GetDependenceSPhenoSymbols::usage="Returns list of symbols for which a
- DependenceSPheno rule is defined";
+GetDependenceSPhenoSymbols::usage="Returns list of SARAH parameters
+ for which a DependenceSPheno rule is defined";
 
 GetDependenceSPhenoRules::usage="Returns list of replacement rules for
- symbols for which a DependenceSPheno rule is defined";
+ SARAH parameters for which a DependenceSPheno rule is defined";
+
+GetAllDependenceSPhenoRules::usage="Returns list of replacement rules
+ for all DependenceSPheno rules"
 
 GetOutputParameterDependencies::usage="Returns list of output
  parameters which appear in the given expression";
