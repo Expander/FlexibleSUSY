@@ -22,7 +22,7 @@
 
 Off[General::spell]
 
-Model`Name = "THDMMW";
+Model`Name = "FlavorAligned2HDM";
 Model`NameLaTeX ="Two Higgs Doublet Model";
 Model`Authors = "M.Weisswange";
 Model`Date = "2018-04-03";
