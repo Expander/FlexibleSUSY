@@ -79,7 +79,7 @@ repositories::
 
 To install the required libraries from above run::
 
-    conan install . --build=missing
+    conan install . --build=missing -s compiler.libcxx=libstdc++11
 
 The `GNU scientific library`_ can currently not be installed via
 Conan_.  One may use the package manager of the operating system to
