@@ -314,7 +314,7 @@ std::pair<double,double> vary_scale(const @ModelName@_mass_eigenstates& model, c
                         amu = calculate_a_muon_impl(m, qedqcd);
                      }
                      catch(const Error& e) {
-                        ERROR("@ModelName@_a_muon: scale variation: " << e.what());
+                        ERROR("@ModelName@_a_muon: scale variation: " << e.what_detailed());
                      }
                      return amu;
                   });
@@ -341,7 +341,7 @@ double @ModelName@_a_muon::calculate_a_muon(const @ModelName@_mass_eigenstates& 
       run_to_MSUSY(model);
       model.get_physical().clear();
    } catch (const Error& e) {
-      ERROR("@ModelName@_a_muon:" << e.what());
+      ERROR("@ModelName@_a_muon:" << e.what_detailed());
       return std::numeric_limits<double>::quiet_NaN();
    }
 
@@ -365,7 +365,7 @@ double @ModelName@_a_muon::calculate_a_muon_uncertainty(const @ModelName@_mass_e
       run_to_MSUSY(model);
       model.get_physical().clear();
    } catch (const Error& e) {
-      ERROR("@ModelName@_a_muon uncertainty: " << e.what());
+      ERROR("@ModelName@_a_muon uncertainty: " << e.what_detailed());
       return std::numeric_limits<double>::quiet_NaN();
    }
 

@@ -31,6 +31,7 @@ TEST_SRC := \
 		$(DIR)/test_effective_couplings.cpp \
 		$(DIR)/test_eigen_utils.cpp \
 		$(DIR)/test_ewsb_solver.cpp \
+		$(DIR)/test_error.cpp \
 		$(DIR)/test_fixed_point_iterator.cpp \
 		$(DIR)/test_goldstones.cpp \
 		$(DIR)/test_gsl_vector.cpp \
