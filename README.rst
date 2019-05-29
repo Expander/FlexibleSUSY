@@ -77,7 +77,7 @@ repositories::
 
     conan remote add conan-hep https://api.bintray.com/conan/expander/conan-hep
 
-To install the required libraries from above run::
+To install the libraries required by FlexibleSUSY run::
 
     conan install . --build=missing -s compiler.libcxx=libstdc++11
 
@@ -87,9 +87,9 @@ install it.  On Debian/Ubuntu one may run for example::
 
     sudo apt-get install libgsl-dev
 
-When the required libraries are installed via Conan or the operating
+If the required libraries are installed via Conan or the operating
 system's package manager, they will be found automatically by
-FlexibleSUSY.
+FlexibleSUSY's ``configure`` script, see below.
 
 Installation of SARAH
 ---------------------
@@ -177,9 +177,9 @@ Building a FlexibleSUSY model
    Use ``make -j<N>`` to use ``<N>`` CPU cores.  When ``make`` is
    executed, Mathematica is called, which generates the C++ code for
    the specified models.  All C++ source files are written to the
-   directory ``models/<model>/``.  When ``make`` has finished, the C++
-   code is compiled and the following spectrum generators are created
-   for each specified model:
+   directory ``models/<model>/``.  When ``make`` has finished, the
+   following spectrum generator(s) are available for each specified
+   model:
 
    * ``models/<model>/run_<model>.x``: command line spectrum generator
    * ``models/<model>/run_<model>.m``: Mathematica interface
