@@ -289,7 +289,7 @@ GetSMParticles[states_:FlexibleSUSY`FSEigenstates] :=
     Select[GetParticles[states], IsSMParticle];
 
 IsParticle[p_, states_:FlexibleSUSY`FSEigenstates] :=
-    MemberQ[GetParticles[states], p];
+    MemberQ[GetParticles[states], p] || MemberQ[GetParticles[states], AntiField[p]];
 
 FieldInfo[field_, OptionsPattern[{includeLorentzIndices -> False,
 	includeColourIndices -> False}]] := 

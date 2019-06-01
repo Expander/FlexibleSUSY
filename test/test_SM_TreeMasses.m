@@ -35,6 +35,10 @@ Print["testing ParticleQ[] ..."];
 
 TestEquality[TreeMasses`IsParticle /@ smParticles, Array[True&, Length[smParticles]]];
 
+conjSMParticles = AntiField /@ smParticles;
+
+TestEquality[TreeMasses`IsParticle /@ conjSMParticles, Array[True&, Length[conjSMParticles]]];
+
 Print["testing IsSMParticleElementwise[] ..."];
 
 TestEquality[IsSMParticleElementwise[Fu], {True, True, True}];
