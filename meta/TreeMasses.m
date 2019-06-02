@@ -506,8 +506,6 @@ IsSMQuark[SARAH`bar[sym_]] := IsSMQuark[sym];
 IsSMQuark[sym_[__]]         := IsSMQuark[sym];
 IsSMQuark[sym_]             := MemberQ[GetSMQuarks[], sym];
 
-FSAntiField[SARAH`bar[p_]] := p;
-FSAntiField[Susyno`LieGroups`conj[p_]] := p;
 FSAntiField[p_?IsRealScalar] := p;
 FSAntiField[p_?IsComplexScalar] := Susyno`LieGroups`conj[p];
 FSAntiField[p_?IsMajoranaFermion] := p;
