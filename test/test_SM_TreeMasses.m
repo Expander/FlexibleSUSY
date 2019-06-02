@@ -24,20 +24,50 @@ Get["utils/load-FlexibleSUSY.m"];
 Start["SM"];
 Needs["TestSuite`", "TestSuite.m"];
 
+Print["testing FSAntifield[] ..."];
+
+TestEquality[FSAntiField[hh], hh];
+TestEquality[FSAntiField[Ah], Ah];
+TestEquality[FSAntiField[Hp], conj[Hp]];
+TestEquality[FSAntiField[VP], VP];
+TestEquality[FSAntiField[VZ], VZ];
+TestEquality[FSAntiField[VWp], conj[VWp]];
+TestEquality[FSAntiField[gP], conj[gP]];
+TestEquality[FSAntiField[gZ], conj[gZ]];
+TestEquality[FSAntiField[gWp], conj[gWp]];
+TestEquality[FSAntiField[gWpC], conj[gWpC]];
+TestEquality[FSAntiField[Fv], bar[Fv]];
+TestEquality[FSAntiField[Fe], bar[Fe]];
+TestEquality[FSAntiField[Fu], bar[Fu]];
+TestEquality[FSAntiField[Fd], bar[Fd]];
+
 Print["testing GetSMParticles[] ..."];
 
 smParticles = {VG, gG, Hp, Fv, Ah, hh, VP, VZ, gP, gZ, gWp, gWpC, Fd, Fu, Fe, VWp};
 
-TestEquality[TreeMasses`GetSMParticles[], smParticles];
-TestEquality[TreeMasses`GetParticles[]  , smParticles];
+TestEquality[Sort[TreeMasses`GetSMParticles[]], Sort[smParticles]];
+TestEquality[Sort[TreeMasses`GetParticles[]]  , Sort[smParticles]];
 
-Print["testing ParticleQ[] ..."];
+Print["testing IsParticle[] ..."];
 
 TestEquality[TreeMasses`IsParticle /@ smParticles, Array[True&, Length[smParticles]]];
 
-conjSMParticles = AntiField /@ smParticles;
+conjSMParticles = {VG, conj[gG], conj[Hp], bar[Fv], Ah, hh, VP, VZ,
+                   conj[gP], conj[gZ], conj[gWp], conj[gWpC], bar[Fd],
+                   bar[Fu], bar[Fe], conj[VWp]};
 
-TestEquality[TreeMasses`IsParticle /@ conjSMParticles, Array[True&, Length[conjSMParticles]]];
+TestEquality[Sort[FSAntiField /@ smParticles], Sort[conjSMParticles]];
+
+TestEquality[TreeMasses`IsParticle /@ FSAntiField /@ smParticles,
+             Array[True&, Length[conjSMParticles]]];
+
+Print["testing IsSMParticle[] ..."];
+
+TestEquality[TreeMasses`IsSMParticle /@ TreeMasses`GetSMParticles[],
+             Array[True&, Length[TreeMasses`GetSMParticles[]]]];
+
+TestEquality[TreeMasses`IsSMParticle /@ FSAntiField /@ TreeMasses`GetSMParticles[],
+             Array[True&, Length[TreeMasses`GetSMParticles[]]]];
 
 Print["testing IsSMParticleElementwise[] ..."];
 
