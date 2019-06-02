@@ -158,7 +158,7 @@ FieldInfo::usage="";
 includeLorentzIndices::usage="";
 includeColourIndices::usage="";
 
-IsParticle::usage = "returns True if argument is a particle, False otherwise"
+IsParticle::usage = "returns True if argument is a particle or anti-particle, False otherwise"
 IsScalar::usage="";
 IsFermion::usage="";
 IsVector::usage="";
