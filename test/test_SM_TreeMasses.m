@@ -151,6 +151,47 @@ TestEquality[IsDiracFermion[FSAntiField[Fe]], True];
 TestEquality[IsDiracFermion[FSAntiField[Fu]], True];
 TestEquality[IsDiracFermion[FSAntiField[Fd]], True];
 
+Print["testing IsVector[] ..."];
+
+TestEquality[IsVector[hh], False];
+TestEquality[IsVector[Ah], False];
+TestEquality[IsVector[Hp], False];
+TestEquality[IsVector[FSAntiField[Hp]], False];
+TestEquality[IsVector[VP], True];
+TestEquality[IsVector[VZ], True];
+TestEquality[IsVector[VWp], True];
+TestEquality[IsVector[FSAntiField[VWp]], True];
+TestEquality[IsVector[gP], False];
+TestEquality[IsVector[gZ], False];
+TestEquality[IsVector[gWp], False];
+TestEquality[IsVector[gWpC], False];
+TestEquality[IsVector[FSAntiField[gP]], False];
+TestEquality[IsVector[FSAntiField[gZ]], False];
+TestEquality[IsVector[FSAntiField[gWp]], False];
+TestEquality[IsVector[FSAntiField[gWpC]], False];
+TestEquality[IsVector[Fv], False];
+TestEquality[IsVector[Fe], False];
+TestEquality[IsVector[Fu], False];
+TestEquality[IsVector[Fd], False];
+TestEquality[IsVector[FSAntiField[Fv]], False];
+TestEquality[IsVector[FSAntiField[Fe]], False];
+TestEquality[IsVector[FSAntiField[Fu]], False];
+TestEquality[IsVector[FSAntiField[Fd]], False];
+
+Print["testing IsRealVector[] ..."];
+
+TestEquality[IsRealVector[VP], True];
+TestEquality[IsRealVector[VZ], True];
+TestEquality[IsRealVector[VWp], False];
+TestEquality[IsRealVector[FSAntiField[VWp]], False];
+
+Print["testing IsComplexVector[] ..."];
+
+TestEquality[IsComplexVector[VP], False];
+TestEquality[IsComplexVector[VZ], False];
+TestEquality[IsComplexVector[VWp], True];
+TestEquality[IsComplexVector[FSAntiField[VWp]], True];
+
 Print["testing IsGhost[] ..."];
 
 TestEquality[IsGhost[hh], False];

@@ -171,6 +171,8 @@ IsMajoranaFermion::usage="";
 IsDiracFermion::usage="";
 IsComplexScalar::usage="";
 IsRealScalar::usage="";
+IsComplexVector::usage="";
+IsRealVector::usage="";
 IsMassless::usage="";
 IsUnmixed::usage="";
 IsQuark::usage="";
@@ -432,6 +434,10 @@ IsRealScalar[sym_Symbol] :=
 
 IsRealScalar[sym_List] :=
     And[IsScalar[sym], And @@ (Parameters`IsRealParameter /@ sym)];
+
+IsRealVector[p_] := IsVector[p] && Parameters`IsRealParameter[p];
+
+IsComplexVector[p_] := IsVector[p] && Parameters`IsComplexParameter[p];
 
 IsMassless[Susyno`LieGroups`conj[sym_], states_:FlexibleSUSY`FSEigenstates] := IsMassless[sym, states];
 
