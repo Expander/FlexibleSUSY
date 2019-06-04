@@ -238,15 +238,15 @@ depend:  $(ALLDEP)
 	$(Q)$(DEPGEN) $(CPPFLAGS) -MM -MI -o '$@' -MT '$*.o' $^
 
 %.o: %.cpp
-	@$(MSG) "Building $@"
+	@$(MSG)
 	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.o: %.f
-	@$(MSG) "Building $@"
+	@$(MSG)
 	$(Q)$(FC) $(FFLAGS) -c $< -o $@
 
 %.o: %.F
-	@$(MSG) "Building $@"
+	@$(MSG)
 	$(Q)$(FC) $(FFLAGS) $(CPPFLAGS) -c $< -o $@
 
 distclean::
