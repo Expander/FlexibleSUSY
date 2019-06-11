@@ -3,11 +3,11 @@ Get["model_files/HSSUSY/HSSUSY_uncertainty_estimate.m"];
 
 settings = {
     precisionGoal -> 1.*^-5,
-    poleMassLoopOrder -> 3,
-    ewsbLoopOrder -> 3,
-    betaFunctionLoopOrder -> 3,
+    poleMassLoopOrder -> 4,
+    ewsbLoopOrder -> 4,
+    betaFunctionLoopOrder -> 5,
     thresholdCorrectionsLoopOrder -> 3,
-    thresholdCorrections -> 123111321
+    thresholdCorrections -> 124111321
 };
 
 smpars = {
@@ -63,12 +63,13 @@ HSSUSYCalcMh[MS_, TB_, Xtt_] :=
             msd2 -> MS^2 IdentityMatrix[3],
             msl2 -> MS^2 IdentityMatrix[3],
             mse2 -> MS^2 IdentityMatrix[3],
-            LambdaLoopOrder -> 2,
+            LambdaLoopOrder -> 3,
             TwoLoopAtAs -> 1,
             TwoLoopAbAs -> 1,
             TwoLoopAtAb -> 1,
             TwoLoopAtauAtau -> 1,
-            TwoLoopAtAt -> 1
+            TwoLoopAtAt -> 1,
+            ThreeLoopAtAsAs -> 1
         }
    ];
 
