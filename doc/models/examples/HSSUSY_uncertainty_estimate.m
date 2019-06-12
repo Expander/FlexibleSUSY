@@ -77,7 +77,7 @@ LinearRange[start_, stop_, steps_] :=
     Range[start, stop, (stop - start)/steps];
 
 Xtt = Sqrt[6];
-TB  = 5;
+TB  = 20;
 
 data = ParallelMap[
     { N[#], Sequence @@ HSSUSYCalcMh[#, TB, Xtt] }&,
@@ -102,7 +102,7 @@ plot1 = ListLinePlot[{dataMhMax, dataMhMin},
 
 plot = Show[{plot1, plot2},
             BaseStyle -> {FontSize -> 16, FontFamily -> "Helvetica"},
-            PlotLabel -> Style["\*SubscriptBox[X, t] = 2.44949 \*SubscriptBox[M, S], tan\[Beta] = 5"],
+            PlotLabel -> Style["\*SubscriptBox[X, t] = 2.44949 \*SubscriptBox[M, S], tan\[Beta] = 20"],
             PlotRange -> Automatic,
             Axes -> False, Frame -> True,
             FrameLabel -> {Style["\*SubscriptBox[M, S] / GeV"],
