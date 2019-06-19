@@ -50,6 +50,10 @@ namespace sm_twoloop_mt {
 TSIL_REAL delta_Mt_1loop_as(
    TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);
 
+/// returns 1-loop O(at) correction to Mt
+TSIL_REAL delta_Mt_1loop_at(
+   TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt, TSIL_REAL qq);
+
 /// returns 1-loop O(as) correction to mt
 TSIL_REAL delta_mt_1loop_as(
    TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq);

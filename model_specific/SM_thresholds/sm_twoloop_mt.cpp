@@ -718,6 +718,16 @@ TSIL_REAL delta_Mt_1loop_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
    return std::real(-deltamt1QCD(g3, t, qq));
 }
 
+TSIL_REAL delta_Mt_1loop_at(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt, TSIL_REAL qq)
+{
+   const auto mt = std::sqrt(t);
+   const auto ss = Sigma1S(t, h, yt, t, qq);
+   const auto sl = Sigma1L(t, h, yt, t, qq);
+   const auto sr = Sigma1R(t, h, yt, t, qq);
+
+   return -std::real(ss + mt*(sl + sr));
+}
+
 TSIL_REAL delta_mt_1loop_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
 {
    return std::real(deltamt1QCD(g3, t, qq));

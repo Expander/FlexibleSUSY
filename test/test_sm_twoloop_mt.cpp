@@ -5,6 +5,7 @@
 #include "sm_twoloop_mt.hpp"
 #include <complex>
 #include <cmath>
+#include <tsil_cpp.h>
 
 #ifdef TSIL_SIZE_DOUBLE
 typedef std::complex<double> TSIL_COMPLEXCPP;
@@ -166,6 +167,40 @@ BOOST_AUTO_TEST_CASE( test_sm_oneloop_QCD )
    const double    qcd_1l_2 = 4./3.*k*(4. - 3.*std::log(t/qq))*g32;
 
    BOOST_CHECK_CLOSE_FRACTION(qcd_1l_1, qcd_1l_2, 1e-15);
+}
+
+BOOST_AUTO_TEST_CASE( test_sm_oneloop_non_QCD )
+{
+   using namespace flexiblesusy::sm_twoloop_mt;
+   using namespace flexiblesusy;
+
+   const TSIL_REAL PI = 3.1415926535897932384626433832795L;
+   const TSIL_REAL k = 1.0L/4.0L/4.0L/PI/PI;
+   const TSIL_REAL g3 = 1.166L;
+   const TSIL_REAL g32 = g3*g3;
+   const TSIL_REAL yt = 0.9L;
+   const TSIL_REAL yt2 = yt*yt;
+   const TSIL_REAL v = 246.0L;
+   const TSIL_REAL v2 = v*v;
+   const TSIL_REAL mt = yt*v/std::sqrt(2.0L);;
+   const TSIL_REAL t = mt*mt;
+   const TSIL_REAL mh = 125.0L;
+   const TSIL_REAL h = mh*mh;
+   const TSIL_REAL qq = 30046.76L;
+   const TSIL_REAL g2 = 0.6L;
+   const TSIL_REAL s = t;
+   const auto At = TSIL_A_(t,qq);
+   const auto Ah = TSIL_A_(h,qq);
+   const auto Bht = TSIL_B_(h,t,s,qq);
+   const auto B00 = TSIL_B_(0.0L,0.0L,s,qq);
+
+   const auto non_qcd_1l_1 = delta_Mt_1loop_at(t, h, yt, qq);
+   // Eq.(2.20) of [1604.01134] in the limit g1 = g2 = yb = 0
+   const auto delta_non_qcd_1l =
+      t/v2 * (Ah - 2.0L*At - B00*t + Bht*(h - 4.0L*t));
+   const auto non_qcd_1l_2 = k*0.5L/mt*std::real(delta_non_qcd_1l);
+
+   BOOST_CHECK_CLOSE_FRACTION(non_qcd_1l_1, non_qcd_1l_2, 1e-15L);
 }
 
 BOOST_AUTO_TEST_CASE( test_sm_twoloop_QCD )
