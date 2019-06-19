@@ -713,6 +713,11 @@ TSIL_COMPLEXCPP mt_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
 
 /* ******************** 1-loop ******************** */
 
+TSIL_REAL delta_Mt_1loop_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
+{
+   return std::real(-deltamt1QCD(g3, t, qq));
+}
+
 TSIL_REAL delta_mt_1loop_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
 {
    return std::real(deltamt1QCD(g3, t, qq));
@@ -734,6 +739,16 @@ TSIL_REAL delta_mt_1loop_at_R(TSIL_REAL yt, TSIL_REAL t, TSIL_REAL h, TSIL_REAL 
 }
 
 /* ******************** 2-loop ******************** */
+
+TSIL_REAL delta_Mt_2loop_as_as(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL qq)
+{
+   const auto g34 = g3*g3*g3*g3;
+   const auto d1 = delta1QCD(t,qq);
+
+   const auto a = -d1*d1/8.0L + 0.5L*delta2QCD(t,qq);
+
+   return std::real(k2*g34*a);
+}
 
 /// FlexibleSUSY convention ///
 
