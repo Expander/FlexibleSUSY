@@ -297,7 +297,7 @@ TSIL_COMPLEXCPP delta2QCD(TSIL_REAL t, TSIL_REAL qq)
 {
    const auto t2 = t*t;
    const auto At = TSIL_A_(t,qq);
-   const auto At2 = TSIL_A_(t,qq)*TSIL_A_(t,qq);
+   const auto At2 = At*At;
 
    const TSIL_COMPLEXCPP a = 112.55555555555556L + (16.0L*PI2)/9.0L
    + (60.0L*At2)*(1.0L/t2) - 84.0L*At*(1.0L/t)
