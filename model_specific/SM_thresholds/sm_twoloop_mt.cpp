@@ -450,7 +450,7 @@ TSIL_COMPLEXCPP delta2Higgs(TSIL_REAL t, TSIL_REAL h, TSIL_REAL yt,
    const auto B0h = TSIL_B_(0.0L,h,t,qq);
    const auto Bht = TSIL_B_(h,t,t,qq);
    const auto B002 = B00*B00;
-   const auto Bht2 = Bht2*Bht2;;
+   const auto Bht2 = Bht*Bht;
    const auto Ih00 = TSIL_I2_(h,0.0L,0.0L,qq);
    const auto I0t0 = TSIL_I2_(0.0L,t,0.0L,qq);
    const auto Ihhh = TSIL_I2_(h,h,h,qq);
