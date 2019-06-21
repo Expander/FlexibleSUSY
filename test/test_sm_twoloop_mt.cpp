@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE( test_fixed_values )
    }
 }
 
-BOOST_AUTO_TEST_CASE( test_sm_oneloop_QCD )
+BOOST_AUTO_TEST_CASE( test_sm_1loop_QCD )
 {
    using namespace flexiblesusy::sm_twoloop_mt;
    using namespace flexiblesusy;
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE( test_sm_oneloop_QCD )
    BOOST_CHECK_CLOSE_FRACTION(qcd_1l_1, qcd_1l_2, 1e-15);
 }
 
-BOOST_AUTO_TEST_CASE( test_sm_oneloop_non_QCD )
+BOOST_AUTO_TEST_CASE( test_sm_1loop_non_QCD )
 {
    using namespace flexiblesusy::sm_twoloop_mt;
    using namespace flexiblesusy;
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE( test_sm_oneloop_non_QCD )
    BOOST_CHECK_CLOSE_FRACTION(non_qcd_1l_1, non_qcd_1l_2, 1e-15L);
 }
 
-BOOST_AUTO_TEST_CASE( test_sm_twoloop_QCD )
+BOOST_AUTO_TEST_CASE( test_sm_2loop_QCD )
 {
    using namespace flexiblesusy::sm_twoloop_mt;
    using namespace flexiblesusy;
