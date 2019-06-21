@@ -226,3 +226,61 @@ BOOST_AUTO_TEST_CASE( test_sm_2loop_QCD )
 
    BOOST_CHECK_CLOSE_FRACTION(qcd_2l_1, qcd_2l_2, 1e-15);
 }
+
+struct Point {
+   TSIL_REAL g3{1.16646929E+00L};
+   TSIL_REAL yt{9.35314726E-01L};
+   TSIL_REAL lam{2.52274422E-01L};
+};
+
+TSIL_REAL calc_Mt(const Point& point, TSIL_REAL q, int loops)
+{
+   using namespace flexiblesusy::sm_twoloop_mt;
+   using namespace flexiblesusy;
+
+   const TSIL_REAL PI = 3.1415926535897932384626433832795L;
+   const TSIL_REAL k = 1.0L/4.0L/4.0L/PI/PI;
+   const TSIL_REAL g3 = point.g3;
+   const TSIL_REAL g32 = g3*g3;
+   const TSIL_REAL yt = point.yt;
+   const TSIL_REAL yt2 = yt*yt;
+   const TSIL_REAL v = 2.47455395E+02L;
+   const TSIL_REAL v2 = v*v;
+   const TSIL_REAL mt = yt*v/std::sqrt(2.0L);;
+   const TSIL_REAL t = mt*mt;
+   const TSIL_REAL lam = point.lam;
+   const TSIL_REAL h = lam * v2;
+   const TSIL_REAL qq = q*q;
+   const TSIL_REAL s = t;
+
+   TSIL_REAL qcd_1l = 0.0L;
+   TSIL_REAL qcd_2l = 0.0L;
+   TSIL_REAL non_qcd_1l = 0.0L;
+
+   if (loops > 0) {
+      qcd_1l     = delta_Mt_1loop_as(g3, t, qq);
+      non_qcd_1l = delta_Mt_1loop_at(t, h, yt, qq);
+   }
+
+   if (loops > 1) {
+      qcd_2l     = delta_Mt_2loop_as_as(g3, t, qq);
+   }
+
+   const auto Mt = mt * (1.0L + qcd_1l + qcd_2l) + non_qcd_1l;
+
+   return Mt;
+}
+
+BOOST_AUTO_TEST_CASE( test_sm_2loop_all )
+{
+   Point point;
+   const TSIL_REAL q = 173.34L;
+
+   const auto Mt_0l = calc_Mt(point, q, 0);
+   const auto Mt_1l = calc_Mt(point, q, 1);
+   const auto Mt_2l = calc_Mt(point, q, 2);
+
+   BOOST_CHECK_CLOSE_FRACTION(Mt_0l, 163.658927569092591148L, 1e-15L);
+   BOOST_CHECK_CLOSE_FRACTION(Mt_1l, 171.160204343174181488L, 1e-15L);
+   BOOST_CHECK_CLOSE_FRACTION(Mt_2l, 172.877644921476320339L, 1e-15L);
+}
