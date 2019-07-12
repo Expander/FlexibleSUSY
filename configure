@@ -877,6 +877,18 @@ is_empty_dir() {
 }
 
 #_____________________________________________________________________
+is_posix_platform() {
+    case "$operating_system" in
+        *BSD*)     return 0 ;;
+        Darwin)    return 0 ;;
+        DragonFly) return 0 ;;
+        GNU*)      return 0 ;;
+        Linux)     return 0 ;;
+    esac
+    return 1
+}
+
+#_____________________________________________________________________
 check_install() {
     if test -z "${INSTALL_DIR}"; then
         return 0
