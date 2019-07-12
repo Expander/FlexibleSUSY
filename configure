@@ -1488,9 +1488,9 @@ check_std_threads() {
 
 #_____________________________________________________________________
 check_thread_libs() {
-    # link libpthread only if $enable_threads = yes
-    # I'm assuming here, that no other library we link needs libpthread.
-    if [ "x$enable_threads" = "xyes" -o -n "$pthread_lib_dir" ] ; then
+    is_posix_platform || return
+
+    if [ "x${enable_threads}" != "xno" ] ; then
         check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths"
         if [ -z "$found_lib" ]; then
             message "Error: libpthread must be installed to enable multithreading!"
