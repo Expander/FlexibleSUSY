@@ -1490,20 +1490,18 @@ check_std_threads() {
 check_thread_libs() {
     is_posix_platform || return
 
-    if [ "x${enable_threads}" != "xno" ] ; then
-        check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths"
-        if [ -z "$found_lib" ]; then
-            message "Error: libpthread must be installed to enable multithreading!"
-            exit 1
-        fi
-        THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
-        # need to link whole libpthread.a for static linking
-        if [ "x$enable_static" = xyes ] ; then
-            THREADLIBS="-Wl,--push-state,-z,muldefs,--whole-archive ${THREADLIBS} -Wl,--pop-state"
-        fi
-        if [ -n "$pthread_lib_dir" ]; then
-            THREADLIBS="-L$pthread_lib_dir $THREADLIBS"
-        fi
+    check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths"
+    if [ -z "$found_lib" ]; then
+        message "Error: libpthread must be installed to enable multithreading!"
+        exit 1
+    fi
+    THREADLIBS=-l$(echo "$found_lib" | sed 's/^lib\(.*\)\..*$/\1/')
+    # need to link whole libpthread.a for static linking
+    if [ "x$enable_static" = xyes ] ; then
+        THREADLIBS="-Wl,--push-state,-z,muldefs,--whole-archive ${THREADLIBS} -Wl,--pop-state"
+    fi
+    if [ -n "$pthread_lib_dir" ]; then
+        THREADLIBS="-L$pthread_lib_dir $THREADLIBS"
     fi
 }
 
