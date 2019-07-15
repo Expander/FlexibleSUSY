@@ -2023,12 +2023,12 @@ check_required_libs() {
             local model_file="models/${model_name}/FlexibleSUSY.m"
 
             mma_symbol_is "${model_file}" "${MATH}" "UseSMYukawa2Loop" "True" && {
-                message "    TSIL is required to build $model_name"
+                message "   TSIL is required to build $model_name"
                 enable_tsil=yes
             }
 
             mma_symbol_is "${model_file}" "${MATH}" "UseHiggs3LoopMSSM" "True" && {
-                message "    Himalaya is required to build $model_name";
+                message "   Himalaya is required to build $model_name";
                 enable_himalaya=yes
             }
 
@@ -2044,7 +2044,7 @@ If[FreeQ[HighScaleInput, FSHimalayaMh23L] &&
 EOF
 
             [ "x$?" = "x0" ] && {
-                message "    Himalaya is required to build $model_name";
+                message "   Himalaya is required to build $model_name";
                 enable_himalaya=yes
             }
 
