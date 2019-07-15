@@ -93,6 +93,11 @@ Fixed bugs
   one.  Note, that ``SLHA_io::read_entry`` has not been used in
   FlexibleSUSY so far.
 
+* [commit eac58a54]: Correcting 2-loop O(ατ^2) threshold corrections
+  to the quartic Higgs coupling in HSSUSY.
+
+  Thanks to Emanuele Bagnaschi.
+
 
 FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
