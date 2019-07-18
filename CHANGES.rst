@@ -88,6 +88,11 @@ Changes
 Fixed bugs
 ----------
 
+* [commit 3b417122]: MSSMD5O model is fixed so that the initial guess
+  of WOp does not depend on uninitialized vu.
+
+  Thanks to Andrew Miller.
+
 * [commit c47ef34a]: In function ``SLHA_io::read_entry``, if there is
   more than one entry with the same key in an SLHA block, use the last
   one.  Note, that ``SLHA_io::read_entry`` has not been used in
