@@ -116,7 +116,7 @@ Fixed bugs
 
 * [commit 41e13c3f] Fix compatibility with SARAH 4.14.2.  The issue
   arose due to a name clash regarding the Mathematica function
-  `CreateParameterList[]`.
+  ``CreateParameterList[]``.
 
 FlexibleSUSY 2.3.0 [January, 22 2019]
 =====================================
