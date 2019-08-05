@@ -874,6 +874,7 @@ double Standard_model::calculate_delta_alpha_s(double alphaS) const
 
    double delta_alpha_s_2loop = 0.;
    double delta_alpha_s_3loop = 0.;
+   double delta_alpha_s_4loop = 0.;
 
    if (get_thresholds() > 1 && threshold_corrections.alpha_s > 1) {
       sm_fourloop_as::Parameters pars;
@@ -900,7 +901,23 @@ double Standard_model::calculate_delta_alpha_s(double alphaS) const
       delta_alpha_s_3loop = - das_3L - Power3(das_1L) + 2. * das_1L * das_2L;
    }
 
-   return delta_alpha_s_1loop + delta_alpha_s_2loop + delta_alpha_s_3loop;
+   if (get_thresholds() > 3 && get_threshold_corrections().alpha_s > 3) {
+      sm_fourloop_as::Parameters pars;
+      pars.as   = alphaS; // alpha_s(SM(5)) MS-bar
+      pars.mt   = MFu(2);
+      pars.Q    = get_scale();
+
+      const auto das_1L = sm_fourloop_as::delta_alpha_s_1loop_as(pars);
+      const auto das_2L = sm_fourloop_as::delta_alpha_s_2loop_as_as(pars);
+      const auto das_3L = sm_fourloop_as::delta_alpha_s_3loop_as_as_as(pars);
+      const auto das_4L = sm_fourloop_as::delta_alpha_s_4loop_as_as_as_as(pars);
+
+      delta_alpha_s_4loop = - das_4L + 2. * das_1L * das_3L
+         + Power2(das_2L) - 3. * Power2(das_1L) * das_2L + Power4(das_1L);
+   }
+
+   return delta_alpha_s_1loop + delta_alpha_s_2loop + delta_alpha_s_3loop
+      + delta_alpha_s_4loop;
 
 }
 
