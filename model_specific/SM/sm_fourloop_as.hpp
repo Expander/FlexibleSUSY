@@ -22,7 +22,7 @@
 #include <iosfwd>
 
 namespace flexiblesusy {
-namespace sm_threeloop_as {
+namespace sm_fourloop_as {
 
 struct Parameters {
     double as{};    ///< SM(5) strong coupling MS-bar
@@ -44,7 +44,7 @@ double delta_alpha_s_4loop_as_as_as_as(const Parameters&);
 
 std::ostream& operator<<(std::ostream&, const Parameters&);
 
-} // namespace sm_threeloop_as
+} // namespace sm_fourloop_as
 } // namespace flexiblesusy
 
 #endif

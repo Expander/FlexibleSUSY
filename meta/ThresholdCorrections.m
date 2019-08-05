@@ -123,13 +123,13 @@ CalculateDeltaAlphaEm[renormalizationScheme_] :=
 CalculateDeltaAlpha2LSM[] :=
 "if (model->get_thresholds() > 1 && model->get_threshold_corrections().alpha_s > 1) {\n" <>
 IndentText["\
-sm_threeloop_as::Parameters pars;
+sm_fourloop_as::Parameters pars;
 pars.as   = alphaS; // alpha_s(SM(5)) MS-bar
 pars.mt   = model->get_" <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[],True,True]] <> ";
 pars.Q    = model->get_scale();
 
-const auto das_1L = sm_threeloop_as::delta_alpha_s_1loop_as(pars);
-const auto das_2L = sm_threeloop_as::delta_alpha_s_2loop_as_as(pars);
+const auto das_1L = sm_fourloop_as::delta_alpha_s_1loop_as(pars);
+const auto das_2L = sm_fourloop_as::delta_alpha_s_2loop_as_as(pars);
 
 delta_alpha_s_2loop = - das_2L + Sqr(das_1L);"
 ] <> "
@@ -140,14 +140,14 @@ delta_alpha_s_2loop = - das_2L + Sqr(das_1L);"
 CalculateDeltaAlpha3LSM[] :=
 "if (model->get_thresholds() > 2 && model->get_threshold_corrections().alpha_s > 2) {\n" <>
 IndentText["\
-sm_threeloop_as::Parameters pars;
+sm_fourloop_as::Parameters pars;
 pars.as   = alphaS; // alpha_s(SM(5)) MS-bar
 pars.mt   = model->get_" <> CConversion`RValueToCFormString[TreeMasses`GetThirdGenerationMass[TreeMasses`GetSMTopQuarkMultiplet[],True,True]] <> ";
 pars.Q    = model->get_scale();
 
-const auto das_1L = sm_threeloop_as::delta_alpha_s_1loop_as(pars);
-const auto das_2L = sm_threeloop_as::delta_alpha_s_2loop_as_as(pars);
-const auto das_3L = sm_threeloop_as::delta_alpha_s_3loop_as_as_as(pars);
+const auto das_1L = sm_fourloop_as::delta_alpha_s_1loop_as(pars);
+const auto das_2L = sm_fourloop_as::delta_alpha_s_2loop_as_as(pars);
+const auto das_3L = sm_fourloop_as::delta_alpha_s_3loop_as_as_as(pars);
 
 delta_alpha_s_3loop = - das_3L - Power3(das_1L) + 2. * das_1L * das_2L;"
 ] <> "
@@ -556,7 +556,7 @@ GetTwoLoopThresholdHeaders[] :=
                        "#include \"mssm_twoloop_mtau.hpp\"\n";
              ];
            If[FlexibleSUSY`UseSMAlphaS3Loop === True,
-              result = result <> "#include \"sm_threeloop_as.hpp\"\n";
+              result = result <> "#include \"sm_fourloop_as.hpp\"\n";
              ];
            If[FlexibleSUSY`UseMSSMAlphaS2Loop === True,
               result = result <> "#include \"mssm_twoloop_as.hpp\"\n";
