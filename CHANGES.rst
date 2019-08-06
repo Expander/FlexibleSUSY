@@ -1,3 +1,15 @@
+FlexibleSUSY 2.4.1 [not released yet]
+=====================================
+
+Fixed bugs
+----------
+
+* [commit c06e57497]: Correcting sign of 2- and 3-loop pure QCD
+  threshold corrections for αs in the Standard Model.  The effect is
+  of the order 50 MeV w.r.t. the Higgs pole mass.
+
+
+
 FlexibleSUSY 2.4.0 [August, 04 2019]
 ====================================
 
