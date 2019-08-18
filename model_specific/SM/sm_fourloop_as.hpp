@@ -45,6 +45,9 @@ double delta_alpha_s_4loop_as_as_as_as(const Parameters&);
 /// calculate alpha_s(SM(6)) from alpha_s(SM(5)) Eq (14) [hep-ph/0512060]
 double calc_alpha_s(const Parameters&, int);
 
+/// calculate alpha_s(SM(6)) from alpha_s(SM(5)) alternatively
+double calc_alpha_s_alternative(const Parameters&, int);
+
 std::ostream& operator<<(std::ostream&, const Parameters&);
 
 } // namespace sm_fourloop_as
