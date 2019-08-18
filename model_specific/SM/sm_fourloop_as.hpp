@@ -36,10 +36,10 @@ double delta_alpha_s_1loop_as(const Parameters&);
 /// 2-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0004189]
 double delta_alpha_s_2loop_as_as(const Parameters&);
 
-/// 3-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0004189]
+/// 3-loop O(alpha_s^3) contributions to Delta alpha_s [hep-ph/0004189]
 double delta_alpha_s_3loop_as_as_as(const Parameters&);
 
-/// 3-loop O(alpha_s^2) contributions to Delta alpha_s [hep-ph/0512060]
+/// 4-loop O(alpha_s^4) contributions to Delta alpha_s [hep-ph/0512060]
 double delta_alpha_s_4loop_as_as_as_as(const Parameters&);
 
 std::ostream& operator<<(std::ostream&, const Parameters&);
