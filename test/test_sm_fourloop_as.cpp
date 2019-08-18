@@ -92,5 +92,5 @@ BOOST_AUTO_TEST_CASE( test_alternatives )
    BOOST_TEST_MESSAGE("alpha_s       = " << as6);
    BOOST_TEST_MESSAGE("alpha_s (alt) = " << as6_alt);
 
-   BOOST_CHECK_LT(std::abs(as6 - as6_alt), 1.0e-8);
+   BOOST_CHECK_LT(std::abs(as6 - as6_alt)/as6, 1.0e-7);
 }
