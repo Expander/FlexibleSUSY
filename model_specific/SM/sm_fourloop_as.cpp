@@ -143,7 +143,7 @@ double delta_alpha_s_4loop_as_as_as_as(const Parameters& pars)
 std::ostream& operator<<(std::ostream& out, const Parameters& pars)
 {
    out <<
-      "Delta alpha_s(SM) 2L parameters:\n"
+      "Delta alpha_s(SM) parameters:\n"
       "alpha_s(SM(5)) = " <<  pars.as   << '\n' <<
       "mt             = " <<  pars.mt   << '\n' <<
       "Q              = " <<  pars.Q    << '\n';
