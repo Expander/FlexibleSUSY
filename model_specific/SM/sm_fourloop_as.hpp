@@ -42,6 +42,9 @@ double delta_alpha_s_3loop_as_as_as(const Parameters&);
 /// 4-loop O(alpha_s^4) contributions to Delta alpha_s [hep-ph/0512060]
 double delta_alpha_s_4loop_as_as_as_as(const Parameters&);
 
+/// calculate alpha_s(SM(6)) from alpha_s(SM(5)) [hep-ph/0512060]
+double calc_alpha_s(const Parameters&, int);
+
 std::ostream& operator<<(std::ostream&, const Parameters&);
 
 } // namespace sm_fourloop_as

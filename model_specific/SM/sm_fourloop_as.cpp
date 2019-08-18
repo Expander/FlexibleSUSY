@@ -140,6 +140,25 @@ double delta_alpha_s_4loop_as_as_as_as(const Parameters& pars)
    );
 }
 
+/**
+ * Calculates alpha_s(SM(6)) from alpha_s(SM(5)) in QCD using
+ * (inverted) Eq (14) from [hep-ph/0512060].
+ *
+ * @param pars parameters
+ *
+ * @return alpha_s(SM(6))
+ */
+double calc_alpha_s(const Parameters& pars, int loops)
+{
+   const auto as = pars.as; // SM(5)
+   const auto d1 = loops < 1 ? 0.0 : delta_alpha_s_1loop_as(pars);
+   const auto d2 = loops < 2 ? 0.0 : delta_alpha_s_2loop_as_as(pars);
+   const auto d3 = loops < 3 ? 0.0 : delta_alpha_s_3loop_as_as_as(pars);
+   const auto d4 = loops < 4 ? 0.0 : delta_alpha_s_4loop_as_as_as_as(pars);
+
+   return as * (1.0 + d1 + d2 + d3 + d4);
+}
+
 std::ostream& operator<<(std::ostream& out, const Parameters& pars)
 {
    out <<

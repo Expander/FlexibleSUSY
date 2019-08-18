@@ -66,4 +66,8 @@ BOOST_AUTO_TEST_CASE( test_fixed_values_inverse )
    BOOST_CHECK_CLOSE_FRACTION(d2, -0.152778, eps);
    BOOST_CHECK_CLOSE_FRACTION(d3, -0.972057 + 0.0846515*nl, eps);
    BOOST_CHECK_CLOSE_FRACTION(d4, -5.10032 + 1.00993*nl + 0.0219784*nl2, eps);
+
+   const auto as6 = calc_alpha_s(pars, 4);
+
+   BOOST_CHECK_CLOSE_FRACTION(as6, alpha_s_SM5 * (1.0 + d1 + d2 + d3 + d4), eps);
 }
