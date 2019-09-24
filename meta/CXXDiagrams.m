@@ -23,7 +23,7 @@
 *)
 
 (*** This module generates c++ code capable of representing fields, vertices and diagrams. ***)
-BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`", "CConversion`", "ColorMath`"}];
+BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`", "CConversion`", "ColorMath`", "Utils`"}];
 
 (*** Public interfaces that model fields ***)
 CreateFields::usage="Creates c++ code that makes all fields and their properties \
@@ -971,28 +971,38 @@ GaugeStructureOfVertex[vertex_] :=
  * corresponding c++ code where no sublist contains more than
  * `MaximumVerticesLimit` number of vertices.
  **)
-CreateVertices[vertices:{{__}...},
-		OptionsPattern[{MaximumVerticesLimit -> 500}]] :=
-	Module[{cxxVertices, vertexPartition},
-		cxxVertices = CreateVertex /@ DeleteDuplicates[vertices];
+CreateVertices::errUnknownInput =
+"Input should have the following form:
+CreateVertices[vertices, CXXDiagrams`.`MaximumVerticesLimit -> num], where
+1) vertices is {{__}...}, i.e. List (of possibly zero length) of non-empty Lists;
+2) CXXDiagrams`.`MaximumVerticesLimit is an option which can be omitted (then
+it is set equal to 500), if it is used, then num should be positive Integer.
 
-		(* Mathematica 7 does not support the `UpTo[n]` notation *)
-		vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
-		If[Part[vertexPartition,1]===cxxVertices,
-		   Return@{Map[StringJoin[Riffle[#,"\n\n"]]&, Transpose@cxxVertices],Transpose[""]}];
-		(* Partition splits cxxVertices into lists of length MaximumVerticesLimit.
-		   If the length of cxxVertices is not a multiple of MaximumVerticesLimit,
-		   some vertices will be discarded! *)
-		AppendTo[vertexPartition,
-		   Complement[cxxVertices, Sequence@@vertexPartition]
-		];
+And not this one
+CreateVertices[`1`].";
+CreateVertices::errLostVertices =
+"Some vertices lost after splitting of cxxVertices into multiple lists.";
+CreateVertices::errMaximumVerticesLimit =
+"CXXDiagrams`.`MaximumVerticesLimit should be positive integer number.";
+CreateVertices[
+   vertices:{{__}...},
+   OptionsPattern[{MaximumVerticesLimit -> 500}]] :=
+Module[{cxxVertices, vertexPartition},
+   cxxVertices = CreateVertex /@ DeleteDuplicates[vertices];
 
-		Utils`AssertWithMessage[Sort[cxxVertices] === Sort[Join@@vertexPartition],
-		   "Some vertices lost after splitting of cxxVertices into multiple lists."
-		];
+   (* Mathematica 7 does not support the `UpTo[n]` notation *)
+   vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
+   (* Partition splits cxxVertices into lists of length MaximumVerticesLimit.
+      If the length of cxxVertices is not a multiple of MaximumVerticesLimit,
+      some vertices will be discarded! (This is why Complement is used) *)
+   If[# =!= {}, AppendTo[vertexPartition,#] ] &@ Complement[cxxVertices, Sequence @@ vertexPartition];
 
-		Map[StringJoin[Riffle[#, "\n\n"]] &, Transpose /@ vertexPartition, {2}]
-	];
+   Utils`AssertOrQuit[Sort[cxxVertices] === Sort[Join@@vertexPartition],CreateVertices::errLostVertices];
+
+   Map[StringJoin[Riffle[#, "\n\n"]] &, Transpose /@ vertexPartition, {2}]
+] /; Utils`AssertOrQuit[And[IntegerQ@OptionValue@MaximumVerticesLimit, OptionValue@MaximumVerticesLimit>0],CreateVertices::errMaximumVerticesLimit];
+CreateVertices[args___] :=
+Utils`AssertOrQuit[False,CreateVertices::errUnknownInput,StringJoin@@Riffle[ToString/@{args},", "]];
 
 (** \brief Creates c++ code that makes a function available that
  * numerically evaluates the given vertex.
