@@ -198,8 +198,7 @@ endif
 ifeq ($(WITH_MRSSM2),yes)
 TEST_SRC += \
 		$(DIR)/test_MRSSM2_gmm2.cpp \
-		$(DIR)/test_MRSSM2_l_to_lgamma.cpp \
-		$(DIR)/test_MRSSM2_l_to_l_conversion.cpp
+		$(DIR)/test_MRSSM2_l_to_lgamma.cpp
 endif
 
 endif # ifneq ($(findstring two_scale,$(SOLVERS)),)
@@ -854,8 +853,6 @@ $(DIR)/test_CMSSM_gluino.sh: $(RUN_SOFTPOINT_EXE)
 $(DIR)/test_MRSSM2_gmm2.x: $(LIBMRSSM2)
 
 $(DIR)/test_MRSSM2_l_to_lgamma.x: $(LIBMRSSM2)
-
-$(DIR)/test_MRSSM2_l_to_l_conversion.x: $(LIBMRSSM2)
 
 $(DIR)/test_CMSSM_model.x: $(LIBCMSSM)
 
