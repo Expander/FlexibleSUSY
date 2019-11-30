@@ -342,8 +342,6 @@ void search_includes(const std::string& file_name,
 
    if (include_non_existing)
       result.insert(result.end(), non_existing.cbegin(), non_existing.cend());
-
-   return;
 }
 
 /// search recursively for include statments in `file_name'
