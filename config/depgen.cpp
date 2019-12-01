@@ -221,10 +221,12 @@ std::vector<std::string> get_included_files(const std::string& file_name)
 std::vector<std::string> prepend(const std::string& str,
                                  const std::vector<std::string>& strings)
 {
-   auto result = strings;
+   std::vector<std::string> result;
+   result.reserve(strings.size());
 
-   for (auto& s: result)
-      s = str + s;
+   for (auto& s: strings) {
+      result.push_back(str + s);
+   }
 
    return result;
 }
