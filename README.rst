@@ -4,6 +4,8 @@
 FlexibleSUSY
 ============
 
+.. image:: https://github.com/FlexibleSUSY/FlexibleSUSY/workflows/Unit%20tests/badge.svg?branch=development
+   
 .. image:: doc/images/FS-logo.png
    :align: right
 
