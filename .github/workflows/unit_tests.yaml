@@ -3,10 +3,10 @@ name: Unit tests
 on:
   push:
     branches:
-      - developement
+      - development
   pull_request:
     branches:
-      - developement
+      - development
 
 jobs:
   build:
