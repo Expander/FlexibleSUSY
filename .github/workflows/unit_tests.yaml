@@ -48,9 +48,9 @@ jobs:
           CXX:  ${{ matrix.CXXCOMPILER }}
         if: matrix.LOOPLIBRAY == 'looptools'
       - name: Create models
-        run: docker exec builder bash -c 'cd FlexibleSUSY && for m in SM MSSM MSSMCPV MSSMNoFV MRSSM2 ScalarLeptoquarks munuSSM E6SSM THDMII; do ./createmodel --with-math-cmd=/usr/local/Wolfram/WolframEngine/12.0/Executables/math --name=$m; done'
+        run: docker exec builder bash -c 'cd FlexibleSUSY && for m in SM MSSM MSSMCPV MSSMNoFV MRSSM2 ScalarLeptoquarks munuSSM LRLR THDMII; do ./createmodel --with-math-cmd=/usr/local/Wolfram/WolframEngine/12.0/Executables/math --name=$m; done'
       - name: Configure
-        run: docker exec builder bash -c "models=SM; for m in MSSM MSSMCPV MSSMNoFV MRSSM2 ScalarLeptoquarks munuSSM E6SSM THDMII; do models=\$models,\$m; done && cd FlexibleSUSY && if [ "$LOOPLIBRAY" = "looptools" ]; then export FL=\"--enable-looptools --with-looptools-libdir=/LoopTools-2.15/lib64 --with-looptools-incdir=/LoopTools-2.15/include\"; fi &&./configure --with-cxx=$CXXCOMPILER --with-math-cmd=/usr/local/Wolfram/WolframEngine/12.0/Executables/math --with-optional-modules=test --with-models=\$models \$FL"
+        run: docker exec builder bash -c "models=SM; for m in MSSM MSSMCPV MSSMNoFV MRSSM2 ScalarLeptoquarks munuSSM LRLR THDMII; do models=\$models,\$m; done && cd FlexibleSUSY && if [ "$LOOPLIBRAY" = "looptools" ]; then export FL=\"--enable-looptools --with-looptools-libdir=/LoopTools-2.15/lib64 --with-looptools-incdir=/LoopTools-2.15/include\"; fi &&./configure --with-cxx=$CXXCOMPILER --with-math-cmd=/usr/local/Wolfram/WolframEngine/12.0/Executables/math --with-optional-modules=test --with-models=\$models \$FL"
         env:   
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
           LOOPLIBRAY: ${{ matrix.LOOPLIBRAY }} 
