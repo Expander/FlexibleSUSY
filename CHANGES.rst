@@ -1,3 +1,13 @@
+FlexibleSUSY 2.4.2 [not released yet]
+=====================================
+
+Fixed bugs
+----------
+
+* [commit de7091b0d]: Fixed setting of threshold correction flags with
+  clang++ 7.0.
+
+
 FlexibleSUSY 2.4.1 [October, 16 2019]
 =====================================
 
