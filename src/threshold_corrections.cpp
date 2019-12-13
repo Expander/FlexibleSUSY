@@ -19,7 +19,6 @@
 #include "threshold_corrections.hpp"
 #include "error.hpp"
 #include "logger.hpp"
-#include <cmath>
 #include <string>
 #include <iostream>
 
