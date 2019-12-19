@@ -694,11 +694,10 @@ endif
 		clean-$(MODNAME)-dep clean-$(MODNAME)-log \
 		clean-$(MODNAME)-lib clean-$(MODNAME)-obj \
 		execute-tests execute-meta-tests execute-compiled-tests \
-		execute-shell-tests reset-test-results
+		execute-shell-tests
 
-all-$(MODNAME): $(LIBTEST) $(TEST_EXE) $(TEST_XML) | reset-test-results
-		@echo "TEST_RESULTS=$(TEST_RESULTS)"
-		@[ $(TEST_RESULTS) = 0 ]
+all-$(MODNAME): $(LIBTEST) $(TEST_EXE) $(TEST_XML)
+		@true
 
 clean-$(MODNAME)-dep: clean-SOFTSUSY-dep
 		$(Q)-rm -f $(TEST_DEP)
@@ -730,25 +729,16 @@ clean::         clean-$(MODNAME)
 distclean::     distclean-$(MODNAME)
 
 execute-tests:  $(TEST_XML)
-		@[ $(TEST_RESULTS) = 0 ]
 
 ifeq ($(ENABLE_META),yes)
 execute-meta-tests: $(TEST_META_XML)
-		@[ $(TEST_RESULTS) = 0 ]
 else
 execute-meta-tests:
-		@true
 endif
 
 execute-compiled-tests: $(TEST_EXE_XML)
-		@[ $(TEST_RESULTS) = 0 ]
 
 execute-shell-tests: $(TEST_SH_XML)
-		@[ $(TEST_RESULTS) = 0 ]
-
-reset-test-results:
-		$(eval TEST_RESULTS=0)
-		@true
 
 # creates .xml file with test result
 PTR = write_test_result_file() { \
@@ -764,7 +754,6 @@ PTR = write_test_result_file() { \
 		printf "%-66s %4s\n" "$$2" "OK"; \
 	else \
 		printf "%-66s %4s\n" "$$2" "FAILED"; \
-		$$(eval TEST_RESULTS=$$1); \
 	fi \
 }
 
