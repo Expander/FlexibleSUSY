@@ -69,87 +69,87 @@ namespace {
 
 double F1(double x) noexcept
 {
-   const double x2 = sqr(x);
-
    if (is_equal(x, 0.))
       return 0.;
 
    if (is_equal(x, 1., 0.01))
-      return (16 + 41*x - 44*x2 + 21*cube(x) - 4*quad(x))/30.;
+      return (16 + x*(41 + x*(-44 + x*(21 - 4*x))))/30.;
 
-   return x*std::log(x2)/(x2-1);
+   const double x2 = sqr(x);
+
+   return x*std::log(x2)/(x2 - 1);
 }
 
 double F2(double x) noexcept
 {
-   const double x2 = sqr(x);
-
    if (is_equal(x, 0.))
       return 0.;
 
    if (is_equal(x, 1., 0.01))
-      return (-5 + 216*x - 226*x2 + 104*cube(x) - 19*quad(x))/70.;
+      return (-5 + x*(216 + x*(-226 + x*(104 - 19*x))))/70.;
 
-   return 6*x2*(2-2*x2+(1+x2)*std::log(x2))/cube(x2-1);
+   const double x2 = sqr(x);
+
+   return 6*x2*(2 - 2*x2 + (1 + x2)*std::log(x2))/cube(x2 - 1);
 }
 
 double F3(double x) noexcept
 {
-   const double x2 = sqr(x);
-
    if (is_equal(x, 0.))
       return 0.;
 
    if (is_equal(x, 1., 0.01))
-      return (-27 + 218*x - 142*x2 + 48*cube(x) - 7*quad(x))/90.;
+      return (-27 + x*(218 + x*(-142 + x*(48 - 7*x))))/90.;
 
-   return 2*x*(5*(1-x2)+(1+4*x2)*std::log(x2))/(3*sqr(x2-1));
+   const double x2 = sqr(x);
+
+   return 2*x*(5*(1 - x2) + (1 + 4*x2)*std::log(x2))/(3*sqr(x2 - 1));
 }
 
 double F4(double x) noexcept
 {
-   const double x2 = sqr(x);
-
    if (is_equal(x, 0.))
       return 0.;
 
    if (is_equal(x, 1., 0.01))
-      return (31 + 22*x - 42*x2 + 24*cube(x) - 5*quad(x))/30.;
+      return (31 + x*(22 + x*(-42 + x*(24 - 5*x))))/30.;
 
-   return 2*x*(x2-1-std::log(x2))/sqr(x2-1);
+   const double x2 = sqr(x);
+
+   return 2*x*(x2 - 1 - std::log(x2))/sqr(x2 - 1);
 }
 
 double F5(double x) noexcept
 {
-   const double x2 = sqr(x);
-   const double x4 = quad(x);
-
    if (is_equal(x, 0.))
       return 0.;
 
    if (is_equal(x, 1., 0.01))
-      return (13 + 165*x - 174*x2 + 81*cube(x) - 15*x4)/70.;
+      return (13 + x*(165 + x*(-174 + x*(81 - 15*x))))/70.;
 
    if (is_equal(x, -1., 0.01))
-     return (-13 + 165*x + 174*x2 + 81*cube(x) + 15*x4)/70.;
+      return (-13 + x*(165 + x*(174 + x*(81 + 15*x))))/70.;
 
-   return 3*x*(1-x4+2*x2*std::log(x2))/cube(1-x2);
+   const double x2 = sqr(x);
+   const double x4 = sqr(x2);
+
+   return 3*x*(1 - x4 + 2*x2*std::log(x2))/cube(1 - x2);
 }
 
 double F6(double x) noexcept
 {
-   const double x2 = sqr(x);
-
    if (is_equal(x, 0.))
       return -0.75;
 
+   const double x2 = sqr(x);
+
    if (is_equal(x, 1., 0.01))
-      return (-103 + 128*x - 26*x2 + quad(x))/120.;
+      return (-103 + x*(128 + x*(-26 + x2)))/120.;
 
    if (is_equal(x, -1., 0.01))
-      return (-103 - 128*x - 26*x2 + quad(x))/120.;
+      return (-103 + x*(-128 + x*(-26 + x2)))/120.;
 
-   return (x2-3)/(4*(1-x2)) + x2*(x2-2)/(2*sqr(1.-x2))*std::log(x2);
+   return (x2 - 3)/(4*(1 - x2)) + x2*(x2 - 2)/(2*sqr(1 - x2))*std::log(x2);
 }
 
 double F7(double x) noexcept
