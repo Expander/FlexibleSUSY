@@ -177,8 +177,10 @@ double F7(double x) noexcept
 /// F8(x1,x2) in the limit x1 -> 1 and x2 -> 1
 static double F8_1_1(double x1, double x2) noexcept
 {
-   return 1. + 1.333333333333333*(-1 + x1) +
-      (1.333333333333333 - 0.6666666666666661*(-1 + x1))*(-1 + x2);
+   const double x1m1 = x1 - 1;
+   const double x2m1 = x2 - 1;
+
+   return 1 + 4./3.*(x1m1 + x2m1) - 2./3.*x1m1*x2m1;
 }
 
 /// F8(x1,x2) in the limit x1 -> 1
