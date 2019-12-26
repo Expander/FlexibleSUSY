@@ -214,10 +214,11 @@ static double F8_1_x2(double x1, double x2) noexcept
 /// F8(x1,x2) in the limit x1 -> 0
 static double F8_0_x2(double x1, double x2) noexcept
 {
-   const double lx22 = std::log(sqr(x2));
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+   const double lx22 = std::log(x22);
 
-   return -2. + (2.*sqr(x1)*lx22)/(-1. + sqr(x2)) +
-      (2.*sqr(x2)*lx22)/(-1. + sqr(x2));
+   return 2*(1 - x22 + (x12 + x22)*lx22)/(-1 + x22);
 }
 
 // F8(x1,x2) in the limit x1 -> x2
