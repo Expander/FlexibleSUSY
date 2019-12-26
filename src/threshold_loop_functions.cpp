@@ -154,24 +154,24 @@ double F6(double x) noexcept
 
 double F7(double x) noexcept
 {
-   const double x2 = sqr(x);
-   const double x4 = quad(x);
-
    if (is_equal(x, 0.))
       return -1.5;
 
-   if (is_equal(x, 1., 0.01))
-      return -1.8642857142857139 + 2.057142857142856*x
-         + 1.7142857142857153*x2 - 1.1428571428571432*cube(x)
-         + 0.2357142857142858*x4;
+   if (is_equal(x, 1., 0.01)) {
+      const double xm1 = x - 1;
+      return 1 + xm1*(3 + xm1*(-0.3 + xm1*(-0.2 + 33/140.*xm1)));
+   }
 
-   if (is_equal(x, -1., 0.01))
-      return -1.8642857142857139 - 2.057142857142856*x
-         + 1.7142857142857153*x2 + 1.1428571428571432*cube(x)
-         + 0.2357142857142858*x4;
+   if (is_equal(x, -1., 0.01)) {
+      const double xp1 = x + 1;
+      return 1 + xp1*(-3 + xp1*(-0.3 + xp1*(0.2 + 33/140.*xp1)));
+   }
 
-   return (-3*(x4-6*x2+1.))/(2*sqr(x2-1))
-      + (3*x4*(x2-3.))/(cube(x2-1.))*std::log(x2);
+   const double x2 = sqr(x);
+   const double x4 = sqr(x2);
+
+   return (-3*(x4 - 6*x2 + 1))/(2*sqr(x2 - 1))
+      + (3*x4*(x2 - 3))/(cube(x2 - 1))*std::log(x2);
 }
 
 /// F8(x1,x2) in the limit x1 -> 1 and x2 -> 1
