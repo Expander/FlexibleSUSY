@@ -221,27 +221,25 @@ static double F8_0_x2(double x1, double x2) noexcept
    return 2*(1 - x22 + (x12 + x22)*lx22)/(-1 + x22);
 }
 
-// F8(x1,x2) in the limit x1 -> x2
+// F8(x1,x2) in the limit x1 -> x2, x2 != 1
 static double F8_x1_x2(double x1, double x2) noexcept
 {
-   const double lx22 = std::log(sqr(x2));
+   const double x1mx2 = x1 - x2;
+   const double x1mx22 = sqr(x1mx2);
+   const double x1mx23 = x1mx2*x1mx22;
+   const double x22 = sqr(x2);
+   const double x22m1 = x22 - 1;
+   const double x22m12 = sqr(x22m1);
+   const double x22m13 = x22m1*x22m12;
+   const double x22m14 = sqr(x22m12);
+   const double x22m15 = x22m12*x22m13;
+   const double lx22 = std::log(x22);
 
-   return -2. + (2.*(x1 - x2)*(3.*x2 - 4.*cube(x2) + pow5(x2) +
-        2.*x2*lx22))/cube(-1. + sqr(x2)) +
-   (2.*sqr(x2)*(-1. + sqr(x2) - 2.*lx22 +
-        sqr(x2)*lx22))/sqr(-1. + sqr(x2)) -
-   (0.33333333333333326*sqr(x1 - x2)*
-      (17.000000000000007 - 9.000000000000007*sqr(x2) -
-        9.*quad(x2) + pow6(x2) +
-        6.000000000000002*lx22 +
-        18.000000000000004*sqr(x2)*lx22))/
-    quad(-1. + sqr(x2)) -
-   (1.333333333333333*cube(x1 - x2)*
-      (-1. - 9.000000000000002*sqr(x2) +
-        9.000000000000002*quad(x2) + pow6(x2) -
-        6.*sqr(x2)*lx22 -
-        6.000000000000003*quad(x2)*lx22))/
-    (x2*pow5(-1. + sqr(x2)));
+   return
+      + 2*((-2 + x22)*x22*lx22 + x22m1)/x22m12
+      + x1mx2*2*x2*(3 + (-4 + x22)*x22 + 2*lx22)/x22m13
+      + x1mx22*(-17 + x22*(9 + x22*(9 - x22)) - 6*lx22*(1 + 3*x22))/(3*x22m14)
+      - x1mx23*4*(-1 + x22*(-9 + x22*(9 + x22)) - 6*lx22*x22*(1 + x22))/(3*x2*x22m15);
 }
 
 double F8(double x1, double x2) noexcept
