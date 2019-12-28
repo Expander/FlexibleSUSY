@@ -224,22 +224,22 @@ static double F8_0_x2(double x1, double x2) noexcept
 // F8(x1,x2) in the limit x1 -> x2, x2 != 1
 static double F8_x1_x2(double x1, double x2) noexcept
 {
-   const double x1mx2 = x1 - x2;
-   const double x1mx22 = sqr(x1mx2);
-   const double x1mx23 = x1mx2*x1mx22;
+   const double d = x1 - x2;
+   const double d2 = sqr(d);
+   const double d3 = d*d2;
    const double x22 = sqr(x2);
-   const double x22m1 = x22 - 1;
-   const double x22m12 = sqr(x22m1);
-   const double x22m13 = x22m1*x22m12;
-   const double x22m14 = sqr(x22m12);
-   const double x22m15 = x22m12*x22m13;
+   const double y = x22 - 1;
+   const double y2 = sqr(y);
+   const double y3 = y*y2;
+   const double y4 = sqr(y2);
+   const double y5 = y2*y3;
    const double lx22 = std::log(x22);
 
    return
-      + 2*((-2 + x22)*x22*lx22 + x22m1)/x22m12
-      + x1mx2*2*x2*(3 + (-4 + x22)*x22 + 2*lx22)/x22m13
-      + x1mx22*(-17 + x22*(9 + x22*(9 - x22)) - 6*lx22*(1 + 3*x22))/(3*x22m14)
-      - x1mx23*4*(-1 + x22*(-9 + x22*(9 + x22)) - 6*lx22*x22*(1 + x22))/(3*x2*x22m15);
+      + 2*((-2 + x22)*x22*lx22 + y)/y2
+      + d*2*x2*(3 + (-4 + x22)*x22 + 2*lx22)/y3
+      + d2*(-17 + x22*(9 + x22*(9 - x22)) - 6*lx22*(1 + 3*x22))/(3*y4)
+      - d3*4*(-1 + x22*(-9 + x22*(9 + x22)) - 6*lx22*x22*(1 + x22))/(3*x2*y5);
 }
 
 double F8(double x1, double x2) noexcept
