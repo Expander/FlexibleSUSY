@@ -23,7 +23,9 @@ jobs:
       - name: Clone FlesibleSUSY repo into the image
         run: docker exec builder bash -c "git clone --single-branch --branch ${GITHUB_REF##*/} --depth=1 https://github.com/${GITHUB_REPOSITORY}.git FlexibleSUSY"
       - name: Copy Wolfram Engine license to the image
-        run: docker exec builder bash -c "mkdir /root/.WolframEngine && mkdir /root/.WolframEngine/Licensing && echo $MATHPASS > /root/.WolframEngine/Licensing/mathpass"
+        run: |
+          docker exec builder bash -c "mkdir /root/.WolframEngine && mkdir /root/.WolframEngine/Licensing && echo $MATHPASS > /root/.WolframEngine/Licensing/mathpass"
+          docker exec builder bash -c "wolframscript -code 1+2"
         env:
           MATHPASS: ${{ secrets.MATHPASS }}
       - name: Install SARAH and FeynArts
