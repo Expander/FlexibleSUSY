@@ -243,28 +243,31 @@ double F8(double x1, double x2) noexcept
    if (is_equal(x1, 0.) && is_equal(x2, 0.))
       return -2.;
 
-   if (is_equal(std::fabs(x1), 1., 0.01) && is_equal(std::fabs(x2), 1., 0.01))
-      return F8_1_1(std::fabs(x1), std::fabs(x2));
+   const double ax1 = std::fabs(x1);
+   const double ax2 = std::fabs(x2);
 
-   if (is_equal(std::fabs(x1), 1., 0.01)) {
+   if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
+      return F8_1_1(ax1, ax2);
+
+   if (is_equal(ax1, 1., 0.01)) {
       if (is_equal(x2, 0., 0.01)) {
          return -2.333333333333332 + 5.66666666666667*sqr(x2) +
-            std::fabs(x1)*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
+            ax1*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
             sqr(x1)*(-0.33333333333333215 + 1.6666666666666696*sqr(x2));
       }
 
-      return F8_1_x2(std::fabs(x1), x2);
+      return F8_1_x2(ax1, x2);
    }
 
-   if (is_equal(std::fabs(x2), 1., 0.01)) {
+   if (is_equal(ax2, 1., 0.01)) {
       if (is_equal(x1, 0., 0.01)) {
-         return -2.3333333333333335 + 2.6666666666666665*std::fabs(x2) -
+         return -2.3333333333333335 + 2.6666666666666665*ax2 -
             0.3333333333333333*sqr(x2) +
-            sqr(x1)*(5.666666666666667 - 5.333333333333334*std::fabs(x2) +
+            sqr(x1)*(5.666666666666667 - 5.333333333333334*ax2 +
                      1.6666666666666667*sqr(x2));
       }
 
-      return F8_1_x2(std::fabs(x2), x1);
+      return F8_1_x2(ax2, x1);
    }
 
    if (is_equal(x1, 0., 0.0001))
@@ -273,15 +276,15 @@ double F8(double x1, double x2) noexcept
    if (is_equal(x2, 0., 0.0001))
       return F8_0_x2(x2, x1);
 
-   if (is_equal(std::fabs(x1), std::fabs(x2), 0.00001))
-      return F8_x1_x2(std::fabs(x1), std::fabs(x2));
+   if (is_equal(ax1, ax2, 0.00001))
+      return F8_x1_x2(ax1, ax2);
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
 
-   return -2. + 2./(x12-x22)
-      *(quad(x1)/(x12-1.)*std::log(x12)
-        -quad(x2)/(x22-1.)*std::log(x22));
+   return -2. + 2./(x12 - x22)*(
+      + quad(x1)/(x12 - 1)*std::log(x12)
+      - quad(x2)/(x22 - 1)*std::log(x22));
 }
 
 /// F9(x1,x2) in the limit x1 -> 1 and x2 -> 1
