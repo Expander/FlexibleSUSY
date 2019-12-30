@@ -198,10 +198,12 @@ double F7(double x) noexcept
 /// F8(x1,x2) in the limit x1 -> 1 and x2 -> 1
 static double F8_1_1(double x1, double x2) noexcept
 {
-   const double x1m1 = x1 - 1;
-   const double x2m1 = x2 - 1;
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+   const double d1 = x12 - 1;
+   const double d2 = x22 - 1;
 
-   return 1 + 4./3.*(x1m1 + x2m1) - 2./3.*x1m1*x2m1;
+   return 1 + 2/3.*(d1 + d2) + 1/6.*(-d1*d1 - d1*d2 - d2*d2);
 }
 
 /// F8(x1,x2) in the limit x1 -> 1, x2 != 1
