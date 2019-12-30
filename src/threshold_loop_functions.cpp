@@ -209,8 +209,9 @@ static double F8_1_1(double x1, double x2) noexcept
 /// F8(x1,x2) in the limit x1 -> 1, x2 != 1
 static double F8_1_x2(double x1, double x2) noexcept
 {
+   const double x12 = sqr(x1);
    const double x22 = sqr(x2);
-   const double d = x1 - 1;
+   const double d = x12 - 1;
    const double d2 = sqr(d);
    const double d3 = d*d2;
    const double d4 = sqr(d2);
@@ -224,10 +225,10 @@ static double F8_1_x2(double x1, double x2) noexcept
 
    return
       - 2 + 2*(1 + x22*(-1 + lx22*x22))/y2
-      + 2*d*(-1 + x22*(4 + x22*(-3 + 2*lx22)))/y3
-      + d2*(-1 + x22*(9 + x22*(9 + 18*lx22 + x22*(-17 + 6*lx22))))/(3*y4)
-      - 4*d3*x22*(-1 + x22*(-9 - 6*lx22 + x22*(9 - 6*lx22 + x22)))/(3*y5)
-      + d4*(1 + x22*(10 + x22*(320 + 150*lx22 + x22*(-190 + 300*lx22 + x22*(-145 + 30*lx22 + 4*x22)))))/(15*y6);
+      + d*(-1 + x22*(4 + x22*(-3 + 2*lx22)))/y3
+      + d2*(-1 + x22*(6 + x22*(-3 + 6*lx22 + -2*x22)))/(3*y4)
+      + d3*(-1 + x22*(8 + x22*(12*lx22 + x22*(-8 + x22))))/(6*y5)
+      + d4*(-3 + x22*(30 + x22*(20 + 60*lx22 + x22*(-60 + x22*(15 - 2*x22)))))/(30*y6);
 }
 
 /// F8(x1,x2) in the limit x1 -> 0
