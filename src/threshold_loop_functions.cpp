@@ -330,7 +330,6 @@ static double F9_1_x2(double x1, double x2) noexcept
    const double y4 = sqr(y2);
    const double y5 = y2*y3;
    const double y6 = sqr(y3);
-
    const double lx22 = std::log(x22);
 
    return
@@ -341,7 +340,7 @@ static double F9_1_x2(double x1, double x2) noexcept
       + d4*(12 + x22*(65 + 60*lx22 + x22*(-120 + x22*(60 + x22*(-20 + 3*x22)))))/(30*y6);
 }
 
-/// F9(x1,x2) in the limit x1 -> 0
+/// F9(x1,x2) in the limit x1 -> 0, x2 != 1, x2 != 0
 static double F9_0_x2(double, double x2) noexcept
 {
    const double x22 = sqr(x2);
@@ -349,27 +348,26 @@ static double F9_0_x2(double, double x2) noexcept
    return 2*std::log(x22)/(-1 + x22);
 }
 
-/// F9(x1,x2) in the limit x1 -> x2
+/// F9(x1,x2) in the limit x1 -> x2, x2 != 0
 static double F9_x1_x2(double x1, double x2) noexcept
 {
-   const double lx22 = std::log(sqr(x2));
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+   const double d = x12 - x22;
+   const double d2 = sqr(d);
+   const double d3 = d*d2;
+   const double y = x22 - 1;
+   const double y2 = sqr(y);
+   const double y3 = y*y2;
+   const double y4 = sqr(y2);
+   const double y5 = y2*y3;
+   const double lx22 = std::log(x22);
 
-   return (2.*(-1. + sqr(x2) - lx22))/
-      sqr(-1. + sqr(x2)) -
-      (2.*(x1 - x2)*(-1. + quad(x2) -
-                     2.*sqr(x2)*lx22))/
-      (x2*cube(-1. + sqr(x2))) -
-      (1.3333333333333333*cube(x1 - x2)*
-       (-1.0000000000000002 - 9.*sqr(x2) + 9.*quad(x2) +
-        pow6(x2) - 6.*sqr(x2)*lx22 -
-        6.*quad(x2)*lx22))/
-      (x2*pow5(-1. + sqr(x2))) +
-      (1.6666666666666665*sqr(x1 - x2)*
-       (0.2000000000000001 - 4.200000000000001*sqr(x2) +
-        3.000000000000001*quad(x2) + pow6(x2) -
-        1.2000000000000002*sqr(x2)*lx22 -
-        3.6000000000000005*quad(x2)*lx22))/
-      (sqr(x2)*quad(-1. + sqr(x2)));
+   return
+      + 2*(y - lx22)/y2
+      + d*(1 + x22*(2*lx22 - x22))/(x22*y3)
+      + d2*(1 + x22*(-6 + x22*(3 - 6*lx22 + 2*x22)))/(3*x22*x22*y4)
+      + d3*(1 + x22*(-6 + x22*(18 + x22*(-10 + 12*lx22 - 3*x22))))/(6*x22*x22*x22*y5);
 }
 
 double F9(double x1, double x2) noexcept
