@@ -276,9 +276,11 @@ double F8(double x1, double x2) noexcept
 
    if (is_equal(ax1, 1., 0.01)) {
       if (is_equal(x2, 0., 0.01)) {
-         return -2.333333333333332 + 5.66666666666667*sqr(x2) +
-            ax1*(2.6666666666666643 - 5.333333333333339*sqr(x2)) +
-            sqr(x1)*(-0.33333333333333215 + 1.6666666666666696*sqr(x2));
+         const double x12 = sqr(x1);
+         const double x22 = sqr(x2);
+         const double d = x12 - 1;
+
+         return 2*x22 + d*(1 - x22 + d*(-1/3. + 2/3.*x22));
       }
 
       return F8_1_x2(ax1, x2);
@@ -286,10 +288,11 @@ double F8(double x1, double x2) noexcept
 
    if (is_equal(ax2, 1., 0.01)) {
       if (is_equal(x1, 0., 0.01)) {
-         return -2.3333333333333335 + 2.6666666666666665*ax2 -
-            0.3333333333333333*sqr(x2) +
-            sqr(x1)*(5.666666666666667 - 5.333333333333334*ax2 +
-                     1.6666666666666667*sqr(x2));
+         const double x12 = sqr(x1);
+         const double x22 = sqr(x2);
+         const double d = x22 - 1;
+
+         return 2*x12 + d*(1 - x12 + d*(-1/3. + 2/3.*x12));
       }
 
       return F8_1_x2(ax2, x1);
@@ -306,10 +309,12 @@ double F8(double x1, double x2) noexcept
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
+   const double x14 = sqr(x12);
+   const double x24 = sqr(x22);
 
    return -2. + 2./(x12 - x22)*(
-      + quad(x1)/(x12 - 1)*std::log(x12)
-      - quad(x2)/(x22 - 1)*std::log(x22));
+      + x14/(x12 - 1)*std::log(x12)
+      - x24/(x22 - 1)*std::log(x22));
 }
 
 /// F9(x1,x2) in the limit x1 -> 1 and x2 -> 1
