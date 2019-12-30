@@ -72,8 +72,11 @@ double F1(double x) noexcept
    if (is_equal(x, 0.))
       return 0.;
 
-   if (is_equal(x, 1., 0.01))
-      return (16 + x*(41 + x*(-44 + x*(21 - 4*x))))/30.;
+   if (is_equal(x, 1., 0.01)) {
+      const double d = x - 1;
+      const double d2 = sqr(d);
+      return 1 + d2*(-1/6. + d*(1/6. - 2/15.*d));
+   }
 
    const double x2 = sqr(x);
 
@@ -85,10 +88,13 @@ double F2(double x) noexcept
    if (is_equal(x, 0.))
       return 0.;
 
-   if (is_equal(x, 1., 0.01))
-      return (-5 + x*(216 + x*(-226 + x*(104 - 19*x))))/70.;
-
    const double x2 = sqr(x);
+
+   if (is_equal(x, 1., 0.01)) {
+      const double d = x2 - 1;
+      const double d2 = sqr(d);
+      return 1 + d2*(-0.1 + d*(0.1 - 3/35.*d));
+   }
 
    return 6*x2*(2 - 2*x2 + (1 + x2)*std::log(x2))/cube(x2 - 1);
 }
@@ -98,8 +104,10 @@ double F3(double x) noexcept
    if (is_equal(x, 0.))
       return 0.;
 
-   if (is_equal(x, 1., 0.01))
-      return (-27 + x*(218 + x*(-142 + x*(48 - 7*x))))/90.;
+   if (is_equal(x, 1., 0.01)) {
+      const double d = x - 1;
+      return 1 + d*(5/9. + d*(-4/9. + d*(2/9. - 7/90.*d)));
+   }
 
    const double x2 = sqr(x);
 
@@ -111,8 +119,11 @@ double F4(double x) noexcept
    if (is_equal(x, 0.))
       return 0.;
 
-   if (is_equal(x, 1., 0.01))
-      return (31 + x*(22 + x*(-42 + x*(24 - 5*x))))/30.;
+   if (is_equal(x, 1., 0.01)) {
+      const double d = x - 1;
+      const double d2 = sqr(d);
+      return 1 + d*(-1/3. + d2*(2/15. - d/6.));
+   }
 
    const double x2 = sqr(x);
 
@@ -124,11 +135,17 @@ double F5(double x) noexcept
    if (is_equal(x, 0.))
       return 0.;
 
-   if (is_equal(x, 1., 0.01))
-      return (13 + x*(165 + x*(-174 + x*(81 - 15*x))))/70.;
+   if (is_equal(x, 1., 0.01)) {
+      const double d = x - 1;
+      const double d2 = sqr(d);
+      return 1 + d2*(-0.3 + d*(0.3 - 3/14.*d));
+   }
 
-   if (is_equal(x, -1., 0.01))
-      return (-13 + x*(165 + x*(174 + x*(81 + 15*x))))/70.;
+   if (is_equal(x, -1., 0.01)) {
+      const double d = x + 1;
+      const double d2 = sqr(d);
+      return -1 + d2*(0.3 + d*(0.3 + 3/14.*d));
+   }
 
    const double x2 = sqr(x);
    const double x4 = sqr(x2);
@@ -141,13 +158,17 @@ double F6(double x) noexcept
    if (is_equal(x, 0.))
       return -0.75;
 
+   if (is_equal(x, 1., 0.01)) {
+      const double d = x - 1;
+      return d*(2/3. + d*(-1/6. + d*(1/30. + d/120.)));
+   }
+
+   if (is_equal(x, -1., 0.01)) {
+      const double d = x + 1;
+      return d*(-2/3. + d*(-1/6. + d*(-1/30. + d/120.)));
+   }
+
    const double x2 = sqr(x);
-
-   if (is_equal(x, 1., 0.01))
-      return (-103 + x*(128 + x*(-26 + x2)))/120.;
-
-   if (is_equal(x, -1., 0.01))
-      return (-103 + x*(-128 + x*(-26 + x2)))/120.;
 
    return (x2 - 3)/(4*(1 - x2)) + x2*(x2 - 2)/(2*sqr(1 - x2))*std::log(x2);
 }
@@ -158,20 +179,20 @@ double F7(double x) noexcept
       return -1.5;
 
    if (is_equal(x, 1., 0.01)) {
-      const double xm1 = x - 1;
-      return 1 + xm1*(3 + xm1*(-0.3 + xm1*(-0.2 + 33/140.*xm1)));
+      const double d = x - 1;
+      return 1 + d*(3 + d*(-0.3 + d*(-0.2 + 33/140.*d)));
    }
 
    if (is_equal(x, -1., 0.01)) {
-      const double xp1 = x + 1;
-      return 1 + xp1*(-3 + xp1*(-0.3 + xp1*(0.2 + 33/140.*xp1)));
+      const double d = x + 1;
+      return 1 + d*(-3 + d*(-0.3 + d*(0.2 + 33/140.*d)));
    }
 
    const double x2 = sqr(x);
    const double x4 = sqr(x2);
 
-   return (-3*(x4 - 6*x2 + 1))/(2*sqr(x2 - 1))
-      + (3*x4*(x2 - 3))/(cube(x2 - 1))*std::log(x2);
+   return -3*(x4 - 6*x2 + 1)/(2*sqr(x2 - 1))
+      + 3*x4*(x2 - 3)/cube(x2 - 1)*std::log(x2);
 }
 
 /// F8(x1,x2) in the limit x1 -> 1 and x2 -> 1
