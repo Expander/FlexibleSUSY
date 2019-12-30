@@ -297,24 +297,22 @@ double F8(double x1, double x2) noexcept
 /// F9(x1,x2) in the limit x1 -> 1 and x2 -> 1
 static double F9_1_1(double x1, double x2) noexcept
 {
-   return 8.223809523809523 - 12.863492063492064*x2
-      + 10.580952380952382*sqr(x2) - 4.609523809523809*cube(x2)
-      + 0.8349206349206348*quad(x2)
-      + x1*(-12.863492063492064 + 26.260317460317456*x2
-            - 24.609523809523807*sqr(x2) + 11.530158730158728*cube(x2)
-            - 2.184126984126984*quad(x2))
-      + cube(x1)*(-4.60952380952381 + 11.53015873015873*x2
-                        - 11.961904761904762*sqr(x2)
-                        + 5.942857142857143*cube(x2)
-                        - 1.1682539682539683*quad(x2))
-      + quad(x1)*(0.8349206349206351 - 2.1841269841269844*x2
-                        + 2.3190476190476197*sqr(x2)
-                        - 1.1682539682539685*cube(x2)
-                        + 0.23174603174603178*quad(x2))
-      + sqr(x1)*(10.580952380952379 - 24.609523809523804*x2
-                 + 24.6047619047619*sqr(x2)
-                 - 11.96190476190476*cube(x2)
-                 + 2.319047619047619*quad(x2));
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+   const double d1 = x12 - 1;
+   const double d2 = x22 - 1;
+   const double d12 = sqr(d1);
+   const double d22 = sqr(d2);
+   const double d13 = d1*d12;
+   const double d23 = d2*d22;
+   const double d14 = sqr(d12);
+   const double d24 = sqr(d22);
+
+   return 1
+      + 1/3.*(-d2 - d1)
+      + 1/6.*(d12 + d1*d2 + d22)
+      + 1/10.*(-d13 - d12*d2 - d1*d22 - d23)
+      + 1/15.*(d14 + d13*d2 + d12*d22 + d1*d23 + d24);
 }
 
 /// F9(x1,x2) in the limit x1 -> 1
