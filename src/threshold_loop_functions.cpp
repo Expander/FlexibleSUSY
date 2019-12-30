@@ -158,17 +158,12 @@ double F6(double x) noexcept
    if (is_equal(x, 0.))
       return -0.75;
 
-   if (is_equal(x, 1., 0.01)) {
-      const double d = x - 1;
-      return d*(2/3. + d*(-1/6. + d*(1/30. + d/120.)));
-   }
-
-   if (is_equal(x, -1., 0.01)) {
-      const double d = x + 1;
-      return d*(-2/3. + d*(-1/6. + d*(-1/30. + d/120.)));
-   }
-
    const double x2 = sqr(x);
+
+   if (is_equal(x2, 1., 0.01)) {
+      const double d = x2 - 1;
+      return d*(1/3. + d*(-1/8. + d*(1/15. + d/24.)));
+   }
 
    return (x2 - 3)/(4*(1 - x2)) + x2*(x2 - 2)/(2*sqr(1 - x2))*std::log(x2);
 }
@@ -178,17 +173,13 @@ double F7(double x) noexcept
    if (is_equal(x, 0.))
       return -1.5;
 
-   if (is_equal(x, 1., 0.01)) {
-      const double d = x - 1;
-      return 1 + d*(3 + d*(-0.3 + d*(-0.2 + 33/140.*d)));
-   }
-
-   if (is_equal(x, -1., 0.01)) {
-      const double d = x + 1;
-      return 1 + d*(-3 + d*(-0.3 + d*(0.2 + 33/140.*d)));
-   }
-
    const double x2 = sqr(x);
+
+   if (is_equal(x2, 1., 0.01)) {
+      const double d = x2 - 1;
+      return 1 + d*(3/2. + d*(-9/20. + d*(0.2 - 3/28.*d)));
+   }
+
    const double x4 = sqr(x2);
 
    return -3*(x4 - 6*x2 + 1)/(2*sqr(x2 - 1))
