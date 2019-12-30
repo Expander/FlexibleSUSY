@@ -318,25 +318,27 @@ static double F9_1_1(double x1, double x2) noexcept
 /// F9(x1,x2) in the limit x1 -> 1
 static double F9_1_x2(double x1, double x2) noexcept
 {
-   const double lx22 = std::log(sqr(x2));
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+   const double d = x12 - 1;
+   const double d2 = sqr(d);
+   const double d3 = d*d2;
+   const double d4 = sqr(d2);
+   const double y = x22 - 1;
+   const double y2 = sqr(y);
+   const double y3 = y*y2;
+   const double y4 = sqr(y2);
+   const double y5 = y2*y3;
+   const double y6 = sqr(y3);
 
-   return (-2.*(-1. + x1)*cube(-1. + sqr(x2))*(
-              -1. + quad(x2) - 2.*sqr(x2)*lx22)
-           + 2.*quad(-1. + sqr(x2))*(
-              1. - sqr(x2) + sqr(x2)*lx22)
-           - 1.3333333333333333*cube(-1. + x1)*(
-              -1. + sqr(x2))*(
-                 -1. - 9.*sqr(x2) + 9.*quad(x2) + pow6(x2)
-                 + (-6.*sqr(x2) - 6.*quad(x2))*lx22)
-           + 0.3333333333333333*sqr(-1. + x1)*sqr(-1. + sqr(x2))
-           *(5. + 15.*sqr(x2) - 21.*quad(x2) + pow6(x2)
-             + (18.*sqr(x2) + 6.*quad(x2))*lx22)
-           - 0.06666666666666667*quad(-1. + x1)*(
-              -16. - 305.*sqr(x2) + 170.*quad(x2) + 160.*pow6(x2)
-              - 10.*pow8(x2) + power10(x2)
-              + (-150.*sqr(x2) - 300.*quad(x2)
-                 - 30.*pow6(x2))*lx22))
-      /pow6(-1. + sqr(x2));
+   const double lx22 = std::log(x22);
+
+   return
+      + 2*(1 + x22*(-1 + lx22))/y2
+      + d*(1 + x22*(2*lx22 - x22))/y3
+      + d2*(2 + x22*(3 + 6*lx22 + x22*(-6 + x22)))/(3*y4)
+      + d3*(3 + x22*(10 + 12*lx22 + x22*(-18 + x22*(6 - x22))))/(6*y5)
+      + d4*(12 + x22*(65 + 60*lx22 + x22*(-120 + x22*(60 + x22*(-20 + 3*x22)))))/(30*y6);
 }
 
 /// F9(x1,x2) in the limit x1 -> 0
