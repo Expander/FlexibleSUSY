@@ -344,7 +344,9 @@ static double F9_1_x2(double x1, double x2) noexcept
 /// F9(x1,x2) in the limit x1 -> 0
 static double F9_0_x2(double, double x2) noexcept
 {
-   return (2.*std::log(sqr(x2)))/(-1. + sqr(x2));
+   const double x22 = sqr(x2);
+
+   return 2*std::log(x22)/(-1 + x22);
 }
 
 /// F9(x1,x2) in the limit x1 -> x2
