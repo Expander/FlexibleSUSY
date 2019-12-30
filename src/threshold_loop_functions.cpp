@@ -372,21 +372,24 @@ static double F9_x1_x2(double x1, double x2) noexcept
 
 double F9(double x1, double x2) noexcept
 {
-   if (is_equal(std::fabs(x1), 1., 0.01) && is_equal(std::fabs(x2), 1., 0.01))
-      return F9_1_1(std::fabs(x1), std::fabs(x2));
+   const double ax1 = std::fabs(x1);
+   const double ax2 = std::fabs(x2);
 
-   if (is_equal(std::fabs(x1), 1., 0.01)) {
+   if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
+      return F9_1_1(ax1, ax2);
+
+   if (is_equal(ax1, 1., 0.01)) {
       if (is_equal(x2, 0., 0.01))
-         return 2. - 2.*(-1 + std::fabs(x1)) + 5./3.*sqr(-1 + std::fabs(x1));
+         return 2. - 2.*(-1 + ax1) + 5./3.*sqr(-1 + ax1);
 
-      return F9_1_x2(std::fabs(x1), x2);
+      return F9_1_x2(ax1, x2);
    }
 
-   if (is_equal(std::fabs(x2), 1., 0.01)) {
+   if (is_equal(ax2, 1., 0.01)) {
       if (is_equal(x1, 0., 0.01))
-         return 2. - 2.*(-1 + std::fabs(x2)) + 5./3.*sqr(-1 + std::fabs(x2));
+         return 2. - 2.*(-1 + ax2) + 5./3.*sqr(-1 + ax2);
 
-      return F9_1_x2(std::fabs(x2), x1);
+      return F9_1_x2(ax2, x1);
    }
 
    if (is_equal(x1, 0., 0.0001))
@@ -395,13 +398,15 @@ double F9(double x1, double x2) noexcept
    if (is_equal(x2, 0., 0.0001))
       return F9_0_x2(x2, x1);
 
-   if (is_equal(std::fabs(x1), std::fabs(x2), 0.00001))
-      return F9_x1_x2(std::fabs(x1), std::fabs(x2));
+   if (is_equal(ax1, ax2, 0.00001))
+      return F9_x1_x2(ax1, ax2);
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
 
-   return 2./(x12-x22)*(x12/(x12-1.)*std::log(x12)-x22/(x22-1.)*std::log(x22));
+   return 2/(x12 - x22)*(
+      + x12/(x12 - 1)*std::log(x12)
+      - x22/(x22 - 1)*std::log(x22));
 }
 
 double f(double r) noexcept
