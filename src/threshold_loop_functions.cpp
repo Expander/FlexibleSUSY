@@ -231,7 +231,7 @@ static double F8_1_x2(double x1, double x2) noexcept
       + d4*(-3 + x22*(30 + x22*(20 + 60*lx22 + x22*(-60 + x22*(15 - 2*x22)))))/(30*y6);
 }
 
-/// F8(x1,x2) in the limit x1 -> 0
+/// F8(x1,x2) in the limit x1 -> 0, x2 != 0
 static double F8_0_x2(double x1, double x2) noexcept
 {
    const double x12 = sqr(x1);
