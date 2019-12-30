@@ -332,6 +332,9 @@ static double F9_1_x2(double x1, double x2) noexcept
    const double y6 = sqr(y3);
    const double lx22 = std::log(x22);
 
+   if (is_equal(x2, 0., 0.01))
+      return 2 + d;
+
    return
       + 2*(1 + x22*(-1 + lx22))/y2
       + d*(1 + x22*(2*lx22 - x22))/y3
@@ -378,19 +381,11 @@ double F9(double x1, double x2) noexcept
    if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
       return F9_1_1(ax1, ax2);
 
-   if (is_equal(ax1, 1., 0.01)) {
-      if (is_equal(x2, 0., 0.01))
-         return 2. - 2.*(-1 + ax1) + 5./3.*sqr(-1 + ax1);
-
+   if (is_equal(ax1, 1., 0.01))
       return F9_1_x2(ax1, x2);
-   }
 
-   if (is_equal(ax2, 1., 0.01)) {
-      if (is_equal(x1, 0., 0.01))
-         return 2. - 2.*(-1 + ax2) + 5./3.*sqr(-1 + ax2);
-
+   if (is_equal(ax2, 1., 0.01))
       return F9_1_x2(ax2, x1);
-   }
 
    if (is_equal(x1, 0., 0.0001))
       return F9_0_x2(x1, x2);
