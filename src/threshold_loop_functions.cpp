@@ -203,6 +203,10 @@ static double F8_1_x2(double x1, double x2) noexcept
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
    const double d = x12 - 1;
+
+   if (is_equal(x2, 0., 0.01))
+      return 2*x22 + d*(1 - x22 + d*(-1/3. + 2/3.*x22));
+
    const double d2 = sqr(d);
    const double d3 = d*d2;
    const double d4 = sqr(d2);
@@ -265,29 +269,11 @@ double F8(double x1, double x2) noexcept
    if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
       return F8_1_1(ax1, ax2);
 
-   if (is_equal(ax1, 1., 0.01)) {
-      if (is_equal(x2, 0., 0.01)) {
-         const double x12 = sqr(x1);
-         const double x22 = sqr(x2);
-         const double d = x12 - 1;
-
-         return 2*x22 + d*(1 - x22 + d*(-1/3. + 2/3.*x22));
-      }
-
+   if (is_equal(ax1, 1., 0.01))
       return F8_1_x2(ax1, x2);
-   }
 
-   if (is_equal(ax2, 1., 0.01)) {
-      if (is_equal(x1, 0., 0.01)) {
-         const double x12 = sqr(x1);
-         const double x22 = sqr(x2);
-         const double d = x22 - 1;
-
-         return 2*x12 + d*(1 - x12 + d*(-1/3. + 2/3.*x12));
-      }
-
+   if (is_equal(ax2, 1., 0.01))
       return F8_1_x2(ax2, x1);
-   }
 
    if (is_equal(x1, 0., 0.0001))
       return F8_0_x2(x1, x2);
