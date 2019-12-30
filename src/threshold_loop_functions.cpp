@@ -267,13 +267,13 @@ double F8(double x1, double x2) noexcept
    const double ax2 = std::fabs(x2);
 
    if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
-      return F8_1_1(ax1, ax2);
+      return F8_1_1(x1, x2);
 
    if (is_equal(ax1, 1., 0.01))
-      return F8_1_x2(ax1, x2);
+      return F8_1_x2(x1, x2);
 
    if (is_equal(ax2, 1., 0.01))
-      return F8_1_x2(ax2, x1);
+      return F8_1_x2(x2, x1);
 
    if (is_equal(x1, 0., 0.0001))
       return F8_0_x2(x1, x2);
@@ -282,7 +282,7 @@ double F8(double x1, double x2) noexcept
       return F8_0_x2(x2, x1);
 
    if (is_equal(ax1, ax2, 0.00001))
-      return F8_x1_x2(ax1, ax2);
+      return F8_x1_x2(x1, x2);
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -379,13 +379,13 @@ double F9(double x1, double x2) noexcept
    const double ax2 = std::fabs(x2);
 
    if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
-      return F9_1_1(ax1, ax2);
+      return F9_1_1(x1, x2);
 
    if (is_equal(ax1, 1., 0.01))
-      return F9_1_x2(ax1, x2);
+      return F9_1_x2(x1, x2);
 
    if (is_equal(ax2, 1., 0.01))
-      return F9_1_x2(ax2, x1);
+      return F9_1_x2(x2, x1);
 
    if (is_equal(x1, 0., 0.0001))
       return F9_0_x2(x1, x2);
@@ -394,7 +394,7 @@ double F9(double x1, double x2) noexcept
       return F9_0_x2(x2, x1);
 
    if (is_equal(ax1, ax2, 0.00001))
-      return F9_x1_x2(ax1, ax2);
+      return F9_x1_x2(x1, x2);
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
