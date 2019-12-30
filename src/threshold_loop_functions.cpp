@@ -244,10 +244,11 @@ static double F8_0_x2(double x1, double x2) noexcept
 // F8(x1,x2) in the limit x1 -> x2, x2 != 1
 static double F8_x1_x2(double x1, double x2) noexcept
 {
-   const double d = x1 - x2;
+   const double x12 = sqr(x1);
+   const double x22 = sqr(x2);
+   const double d = x12 - x22;
    const double d2 = sqr(d);
    const double d3 = d*d2;
-   const double x22 = sqr(x2);
    const double y = x22 - 1;
    const double y2 = sqr(y);
    const double y3 = y*y2;
@@ -257,9 +258,9 @@ static double F8_x1_x2(double x1, double x2) noexcept
 
    return
       + 2*((-2 + x22)*x22*lx22 + y)/y2
-      + d*2*x2*(3 + (-4 + x22)*x22 + 2*lx22)/y3
-      + d2*(-17 + x22*(9 + x22*(9 - x22)) - 6*lx22*(1 + 3*x22))/(3*y4)
-      - d3*4*(-1 + x22*(-9 + x22*(9 + x22)) - 6*lx22*x22*(1 + x22))/(3*x2*y5);
+      + d*(3 + x22*(-4 + x22) + 2*lx22)/y3
+      + d2*(-2 + x22*(-3 - 6*lx22 + x22*(6 - x22)))/(3*x22*y4)
+      + d3*(-1 + x22*(8 + x22*(12*lx22 + x22*(-8 + x22))))/(6*x22*x22*y5);
 }
 
 double F8(double x1, double x2) noexcept
