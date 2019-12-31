@@ -1738,12 +1738,18 @@ check_cxxflags() {
 
 #_____________________________________________________________________
 check_eigen_incl() {
+    local eigen_name=""
+
+    [ -f eigen.pc ] && eigen_name="eigen"
+    [ -f eigen3.pc ] && eigen_name="eigen3"
+
     [ -z "$eigen_inc_dir" ] && \
     type pkg-config > /dev/null && \
-    [ -f eigen.pc ] && \
+    [ -n ${eigen_name} ] && \
+    [ -f ${eigen_name}.pc ] && \
     {
-        message -n "Checking for Eigen library using local eigen.pc ... "
-        EIGENFLAGS=$(PKG_CONFIG_PATH=. pkg-config eigen --cflags)
+        message -n "Checking for Eigen library using local ${eigen_name}.pc ... "
+        EIGENFLAGS=$(PKG_CONFIG_PATH=. pkg-config ${eigen_name} --cflags)
         message "ok"
         return
     }
