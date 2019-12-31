@@ -1738,6 +1738,16 @@ check_cxxflags() {
 
 #_____________________________________________________________________
 check_eigen_incl() {
+    [ -z "$eigen_inc_dir" ] && \
+    type pkg-config > /dev/null && \
+    [ -f eigen.pc ] && \
+    {
+        message -n "Checking for Eigen library using local eigen.pc ... "
+        EIGENFLAGS=$(PKG_CONFIG_PATH=. pkg-config eigen --cflags)
+        message "ok"
+        return
+    }
+
     # Eigen headers are usually in the `eigen3` subdirectory of the include paths.
     eigen_inc_paths=""
     IFS=":"
