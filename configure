@@ -1490,7 +1490,16 @@ check_std_threads() {
 check_thread_libs() {
     is_posix_platform || return
 
-    check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths"
+    # additional search paths by the compiler
+    local cc_lib_search_paths=""
+
+    case "$cxx_compiler_type" in
+	gnu|clang)
+	    cc_lib_search_paths=$(${CXX} -print-search-dirs | sed -n -e '/libraries:/s/libraries: *=//p')
+	    ;;
+    esac
+
+    check_library "libpthread" "$pthread_lib_dir" "$default_lib_paths:$cc_lib_search_paths"
     if [ -z "$found_lib" ]; then
         message "Error: libpthread must be installed to enable multithreading!"
         exit 1
