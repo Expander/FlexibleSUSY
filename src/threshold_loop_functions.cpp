@@ -451,19 +451,17 @@ double f3(double r) noexcept
    if (is_equal(r, 0., 0.001))
       return 4./3.;
 
-   if (is_equal(r, 1., 0.01))
-      return (849 - 1184*r + 1566*sqr(r)
-              - 736*cube(r) + 135*quad(r))/630.;
-
-   if (is_equal(r, -1., 0.01))
-      return (849 + 1184*r + 1566*sqr(r)
-              + 736*cube(r) + 135*quad(r))/630.;
-
    const double r2 = sqr(r);
-   const double r4 = quad(r);
 
-   return (2*(r4+9*r2+2))/(3*sqr(r2-1))
-      + (2*(r4-7*r2-6)*r2*std::log(r2))/(3*cube(r2-1));
+   if (is_equal(std::fabs(r), 1., 0.01)) {
+      const double d = r2 - 1;
+      return 1 + d*(2/9. + d*(1/90. + d*(-2/45. + 29/630.*d)));
+   }
+
+   const double r4 = sqr(r2);
+
+   return 2*(r4 + 9*r2 + 2)/(3*sqr(r2 - 1))
+      + 2*(r4 - 7*r2 - 6)*r2*std::log(r2)/(3*cube(r2 - 1));
 }
 
 double f4(double r) noexcept
