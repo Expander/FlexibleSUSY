@@ -432,23 +432,18 @@ double f1(double r) noexcept
 
 double f2(double r) noexcept
 {
-   if (is_equal(r, 0., 0.01))
-      return 22./9.*sqr(r);
-
-   // The function is even under x -> -x
-   if (is_equal(r, 1., 0.01))
-      return (-285 + 1616*r + 1230*sqr(r)
-              - 848*cube(r) + 177*quad(r))/1890.;
-
-   // Notice the flipped sign for the odd terms
-   if (is_equal(r, -1., 0.01))
-      return (-285 - 1616*r + 1230*sqr(r)
-              + 848*cube(r) + 177*quad(r))/1890.;
-
    const double r2 = sqr(r);
 
-   return (2*(r2+11)*r2)/(9*sqr(r2-1))
-      + (2*(5*r2-17)*quad(r)*std::log(r2))/(9*cube(r2-1));
+   if (is_equal(r, 0., 0.01))
+      return 22./9.*r2;
+
+   if (is_equal(std::fabs(r), 1., 0.01)) {
+      const double d = r2 - 1;
+      return 1 + d*(16/27. + d*(-49/270. + d*(11/135. - 83/1890.*d)));
+   }
+
+   return 2*(r2 + 11)*r2/(9*sqr(r2 - 1))
+      + 2*(5*r2 - 17)*sqr(r2)*std::log(r2)/(9*cube(r2 - 1));
 }
 
 double f3(double r) noexcept
