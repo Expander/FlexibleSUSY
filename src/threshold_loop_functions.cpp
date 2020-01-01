@@ -470,16 +470,16 @@ double f4(double r) noexcept
       return 12./7.;
 
    const double r2 = sqr(r);
-   const double r4 = quad(r);
 
-   if (is_equal(r, 1., 0.01))
-      return (2589 - 3776*r + 4278*r2 - 1984*cube(r) + 363*r4)/1470.;
+   if (is_equal(std::fabs(r), 1., 0.01)) {
+      const double d = r2 - 1;
+      return 1 + d*(2/21. + d*(13/210. + d*(-8/105. + 101/1470.*d)));
+   }
 
-   if (is_equal(r, -1., 0.01))
-      return (2589 + 3776*r + 4278*r2 + 1984*cube(r) + 363*r4)/1470.;
+   const double r4 = sqr(r2);
 
-   return (2*(5*r4+25*r2+6))/(7*sqr(r2-1))
-      + (2*(r4-19*r2-18)*r2*std::log(r2))/(7*cube(r2-1));
+   return 2*(5*r4 + 25*r2 + 6)/(7*sqr(r2 - 1))
+      + 2*(r4 - 19*r2 - 18)*r2*std::log(r2)/(7*cube(r2 - 1));
 }
 
 /// f5(r1,r2) in the limit r1 -> 1 and r2 -> 1
