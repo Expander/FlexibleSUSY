@@ -54,7 +54,7 @@ Install required libraries and packages (if not already done)::
     sudo apt-get install libgsl-dev
     ./install-sarah
 
-Build a spectrum generating (here: HSSUSY [1710.03760]_
+Build a spectrum generator (here: HSSUSY [1710.03760]_
 [1804.09410]_)::
 
     ./createmodel --name=HSSUSY
