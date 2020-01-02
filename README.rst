@@ -5,7 +5,8 @@ FlexibleSUSY
 ============
 
 .. image:: https://github.com/FlexibleSUSY/FlexibleSUSY/workflows/Unit%20tests/badge.svg?branch=development
-   
+   :target: https://github.com/FlexibleSUSY/FlexibleSUSY/actions
+
 .. image:: doc/images/FS-logo.png
    :align: right
 
