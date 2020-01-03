@@ -15,6 +15,7 @@ jobs:
       matrix:
         CXXCOMPILER: [g++, clang++]
         LOOPLIBRAY: [internal, looptools]
+      max-parallel: 2
     steps:
       # action checks-out our repository under $GITHUB_WORKSPACE
       - name: Checkout 
