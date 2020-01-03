@@ -19,7 +19,7 @@ jobs:
     steps:
       # action checks-out our repository under $GITHUB_WORKSPACE
       - name: Checkout 
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Pull the docker image
         run: docker pull navir/opensuseleap-for-flexiblesusy:0.1.5
       - name: Run the image
