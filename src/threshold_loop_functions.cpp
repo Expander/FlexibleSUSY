@@ -88,13 +88,13 @@ double F2(double x) noexcept
    if (is_equal(x, 0.))
       return 0.;
 
-   const double x2 = sqr(x);
-
    if (is_equal(x, 1., 0.01)) {
-      const double d = x2 - 1;
+      const double d = (x - 1)*(x + 1);
       const double d2 = sqr(d);
       return 1 + d2*(-0.1 + d*(0.1 - 3/35.*d));
    }
+
+   const double x2 = sqr(x);
 
    return 6*x2*(2 - 2*x2 + (1 + x2)*std::log(x2))/cube(x2 - 1);
 }
@@ -161,7 +161,7 @@ double F6(double x) noexcept
    const double x2 = sqr(x);
 
    if (is_equal(x2, 1., 0.01)) {
-      const double d = x2 - 1;
+      const double d = (x - 1)*(x + 1);
       return d*(1/3. + d*(-1/8. + d*(1/15. + d/24.)));
    }
 
@@ -176,7 +176,7 @@ double F7(double x) noexcept
    const double x2 = sqr(x);
 
    if (is_equal(x2, 1., 0.01)) {
-      const double d = x2 - 1;
+      const double d = (x - 1)*(x + 1);
       return 1 + d*(3/2. + d*(-9/20. + d*(0.2 - 3/28.*d)));
    }
 
@@ -189,10 +189,8 @@ double F7(double x) noexcept
 /// F8(x1,x2) in the limit x1 -> 1 and x2 -> 1
 static double F8_1_1(double x1, double x2) noexcept
 {
-   const double x12 = sqr(x1);
-   const double x22 = sqr(x2);
-   const double d1 = x12 - 1;
-   const double d2 = x22 - 1;
+   const double d1 = (x1 - 1)*(x1 + 1);
+   const double d2 = (x2 - 1)*(x2 + 1);
 
    return 1 + 2/3.*(d1 + d2) + 1/6.*(-d1*d1 - d1*d2 - d2*d2);
 }
@@ -200,9 +198,8 @@ static double F8_1_1(double x1, double x2) noexcept
 /// F8(x1,x2) in the limit x1 -> 1, x2 != 1
 static double F8_1_x2(double x1, double x2) noexcept
 {
-   const double x12 = sqr(x1);
    const double x22 = sqr(x2);
-   const double d = x12 - 1;
+   const double d = (x1 - 1)*(x1 + 1);
 
    if (is_equal(x2, 0., 0.01))
       return 2*x22 + d*(1 - x22 + d*(-1/3. + 2/3.*x22));
@@ -210,7 +207,7 @@ static double F8_1_x2(double x1, double x2) noexcept
    const double d2 = sqr(d);
    const double d3 = d*d2;
    const double d4 = sqr(d2);
-   const double y = x22 - 1;
+   const double y = (x2 - 1)*(x2 + 1);
    const double y2 = sqr(y);
    const double y3 = y*y2;
    const double y4 = sqr(y2);
@@ -239,12 +236,11 @@ static double F8_0_x2(double x1, double x2) noexcept
 // F8(x1,x2) in the limit x1 -> x2, x2 != 1
 static double F8_x1_x2(double x1, double x2) noexcept
 {
-   const double x12 = sqr(x1);
    const double x22 = sqr(x2);
-   const double d = x12 - x22;
+   const double d = (x1 - x2)*(x1 + x2);
    const double d2 = sqr(d);
    const double d3 = d*d2;
-   const double y = x22 - 1;
+   const double y = (x2 - 1)*(x2 + 1);
    const double y2 = sqr(y);
    const double y3 = y*y2;
    const double y4 = sqr(y2);
@@ -297,10 +293,8 @@ double F8(double x1, double x2) noexcept
 /// F9(x1,x2) in the limit x1 -> 1 and x2 -> 1
 static double F9_1_1(double x1, double x2) noexcept
 {
-   const double x12 = sqr(x1);
-   const double x22 = sqr(x2);
-   const double d1 = x12 - 1;
-   const double d2 = x22 - 1;
+   const double d1 = (x1 - 1)*(x1 + 1);
+   const double d2 = (x2 - 1)*(x2 + 1);
    const double d12 = sqr(d1);
    const double d22 = sqr(d2);
    const double d13 = d1*d12;
@@ -318,13 +312,12 @@ static double F9_1_1(double x1, double x2) noexcept
 /// F9(x1,x2) in the limit x1 -> 1
 static double F9_1_x2(double x1, double x2) noexcept
 {
-   const double x12 = sqr(x1);
    const double x22 = sqr(x2);
-   const double d = x12 - 1;
+   const double d = (x1 - 1)*(x1 + 1);
    const double d2 = sqr(d);
    const double d3 = d*d2;
    const double d4 = sqr(d2);
-   const double y = x22 - 1;
+   const double y = (x2 - 1)*(x2 + 1);
    const double y2 = sqr(y);
    const double y3 = y*y2;
    const double y4 = sqr(y2);
@@ -354,12 +347,11 @@ static double F9_0_x2(double, double x2) noexcept
 /// F9(x1,x2) in the limit x1 -> x2, x2 != 0
 static double F9_x1_x2(double x1, double x2) noexcept
 {
-   const double x12 = sqr(x1);
    const double x22 = sqr(x2);
-   const double d = x12 - x22;
+   const double d = (x1 - x2)*(x1 + x2);
    const double d2 = sqr(d);
    const double d3 = d*d2;
-   const double y = x22 - 1;
+   const double y = (x2 - 1)*(x2 + 1);
    const double y2 = sqr(y);
    const double y3 = y*y2;
    const double y4 = sqr(y2);
