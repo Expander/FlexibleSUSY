@@ -16,18 +16,20 @@ jobs:
         CXXCOMPILER: [g++, clang++]
         LOOPLIBRAY: [internal, looptools]
     steps:
+      # action checks-out our repository under $GITHUB_WORKSPACE
+      - name: Checkout 
+        uses: actions/checkout@v1
       - name: Pull the docker image
-        run: docker pull "navir/opensuseleap-for-flexiblesusy:0.1.5"
+        run: docker pull navir/opensuseleap-for-flexiblesusy:0.1.5
       - name: Run the image
-        run: docker run -it -d --name builder "navir/opensuseleap-for-flexiblesusy:0.1.5"
-      - name: Clone FlesibleSUSY repo into the image
-        run: docker exec builder bash -c "git clone --single-branch --branch ${GITHUB_REF##*/} --depth=1 https://github.com/${GITHUB_REPOSITORY}.git FlexibleSUSY"
+        # mount $GITHUB_WORKSPACE as /FlexibleSUSY on the container
+        run: docker run -it -d --name builder -v $GITHUB_WORKSPACE:/FlexibleSUSY navir/opensuseleap-for-flexiblesusy:0.1.5
       - name: Copy Wolfram Engine license to the image
         run: |
           docker exec builder bash -c "mkdir /root/.WolframEngine && mkdir /root/.WolframEngine/Licensing && echo $MATHPASS > /root/.WolframEngine/Licensing/mathpass"
-          docker exec builder bash -c "wolframscript -code 1+2"
+          docker exec builder bash -c printf "Checking is Wolfram Engine workings... "; if [ $(wolframscript -code 1+2) -eq 3 ]; then echo OK; else echo fail && exit 1; fi'
         env:
-          MATHPASS: ${{ secrets.MATHPASS }}
+          MATHPASS: ${{ secrets.MATHPASS }}  
       - name: Install SARAH and FeynArts
         run: |
           docker exec builder bash -c 'wget -qO- https://sarah.hepforge.org/downloads/SARAH-4.14.3.tar.gz | tar xzf -'
