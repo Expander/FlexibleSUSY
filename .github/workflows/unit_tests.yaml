@@ -39,7 +39,7 @@ jobs:
       - name: Install FormCalc
         run: |
           docker exec builder bash -c 'wget -qO- http://www.feynarts.de/formcalc/FormCalc-9.9.tar.gz | tar xzf -'
-          docker exec builder bash -c "cd FormCalc-9.9 && PATH=/usr/local/Wolfram/WolframEngine/12.0/Executables:\$PATH && ./compile"
+          docker exec builder bash -c "cd FormCalc-9.9 && PATH=/usr/local/Wolfram/WolframEngine/12.0/Executables:\$PATH ./compile"
           docker exec builder bash -c "echo 'AppendTo[\$Path, \"/FormCalc-9.9\"];' >> /root/.WolframEngine/Kernel/init.m"
         env:
           CXX:  ${{ matrix.CXXCOMPILER }}
