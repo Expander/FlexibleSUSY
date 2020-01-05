@@ -209,7 +209,7 @@ std::complex<long double> dilog(const std::complex<long double>& z) noexcept
 
    const long double rz = std::real(z);
    const long double iz = std::imag(z);
-   const long double az = std::abs(z);
+   const long double nz = sqr(rz) + sqr(iz);
 
    // special cases
    if (iz == 0.l) {
@@ -217,7 +217,7 @@ std::complex<long double> dilog(const std::complex<long double>& z) noexcept
          return std::complex<long double>(dilog(rz), 0.l);
       if (rz > 1.l)
          return std::complex<long double>(dilog(rz), -PI*std::log(rz));
-   } else if (az < std::numeric_limits<long double>::epsilon()) {
+   } else if (nz < std::numeric_limits<long double>::epsilon()) {
       return z;
    }
 
@@ -226,24 +226,24 @@ std::complex<long double> dilog(const std::complex<long double>& z) noexcept
 
    // transformation to |z|<1, Re(z)<=0.5
    if (rz <= 0.5l) {
-      if (az > 1.l) {
+      if (nz > 1.l) {
          cy = -0.5l * sqr(std::log(-z));
          cz = -std::log(1.l - 1.l / z);
          jsgn = -1;
          ipi12 = -2;
-      } else { // (az <= 1.)
+      } else { // nz <= 1.l
          cy = 0;
          cz = -std::log(1.l - z);
          jsgn = 1;
          ipi12 = 0;
       }
    } else { // rz > 0.5
-      if (az <= std::sqrt(2*rz)) {
+      if (nz <= 2*rz) {
          cz = -std::log(z);
          cy = cz * std::log(1.l - z);
          jsgn = -1;
          ipi12 = 2;
-      } else { // (az > sqrt(2*rz))
+      } else { // nz > 2*rz
          cy = -0.5l * sqr(std::log(-z));
          cz = -std::log(1.l - 1.l / z);
          jsgn = -1;
@@ -299,7 +299,7 @@ std::complex<double> dilog(const std::complex<double>& z) noexcept
 
    const double rz = std::real(z);
    const double iz = std::imag(z);
-   const double az = std::abs(z);
+   const double nz = sqr(rz) + sqr(iz);
 
    // special cases
    if (iz == 0.) {
@@ -307,7 +307,7 @@ std::complex<double> dilog(const std::complex<double>& z) noexcept
          return {dilog(rz), 0.};
       else // (rz > 1.)
          return {dilog(rz), -PI*std::log(rz)};
-   } else if (az < std::numeric_limits<double>::epsilon()) {
+   } else if (nz < std::numeric_limits<double>::epsilon()) {
       return z;
    }
 
@@ -316,24 +316,24 @@ std::complex<double> dilog(const std::complex<double>& z) noexcept
 
    // transformation to |z|<1, Re(z)<=0.5
    if (rz <= 0.5) {
-      if (az > 1.) {
+      if (nz > 1.) {
          cy = -0.5 * sqr(std::log(-z));
          cz = -std::log(1. - 1. / z);
          jsgn = -1;
          ipi12 = -2;
-      } else { // (az <= 1.)
+      } else { // nz <= 1.
          cy = 0;
          cz = -std::log(1. - z);
          jsgn = 1;
          ipi12 = 0;
       }
    } else { // rz > 0.5
-      if (az <= std::sqrt(2*rz)) {
+      if (nz <= 2*rz) {
          cz = -std::log(z);
          cy = cz * std::log(1. - z);
          jsgn = -1;
          ipi12 = 2;
-      } else { // (az > sqrt(2*rz))
+      } else { // nz > 2*rz
          cy = -0.5 * sqr(std::log(-z));
          cz = -std::log(1. - 1. / z);
          jsgn = -1;
