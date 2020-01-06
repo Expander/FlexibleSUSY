@@ -145,4 +145,4 @@ test                            export-ignore
 *.m linguist-language=Mathematica
 *.cpp.in linguist-language=C++
 *.hpp.in linguist-language=C++
-
+*.spc linguist-detectable=false
