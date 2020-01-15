@@ -83,4 +83,4 @@ jobs:
         if: failure()
         with:
           name: test-logs
-          path: 'test/test_*.log'
+          path: 'test'
