@@ -282,10 +282,10 @@ double F8(double x1, double x2) noexcept
    if (is_equal(ax2, 1., 0.01))
       return F8_1_x2(x2, x1);
 
-   if (is_equal(x1, 0., 0.0001))
+   if (is_equal(x1, 0., 0.00001))
       return F8_0_x2(x1, x2);
 
-   if (is_equal(x2, 0., 0.0001))
+   if (is_equal(x2, 0., 0.00001))
       return F8_0_x2(x2, x1);
 
    if (is_equal(ax1, ax2, 0.00001))
@@ -451,7 +451,7 @@ double f2(double r) noexcept
 
 double f3(double r) noexcept
 {
-   if (is_equal(r, 0., 0.001))
+   if (is_equal(r, 0., 1e-6))
       return 4./3.;
 
    const double r2 = sqr(r);
@@ -469,7 +469,7 @@ double f3(double r) noexcept
 
 double f4(double r) noexcept
 {
-   if (is_equal(r, 0., 0.001))
+   if (is_equal(r, 0., 1e-6))
       return 12./7.;
 
    const double r2 = sqr(r);
@@ -602,7 +602,7 @@ static double f5_r1_r2(double r1, double r2) noexcept
 
 double f5(double r1, double r2) noexcept
 {
-   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+   if (is_equal(r1, 0., 1e-5) && is_equal(r2, 0., 1e-5))
       return 0.75;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
@@ -739,23 +739,23 @@ static double f6_0_1(double, double r2) noexcept
 
 double f6(double r1, double r2) noexcept
 {
-   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+   if (is_equal(r1, 0., 1e-5) && is_equal(r2, 0., 1e-5))
       return 0.;
 
-   if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
+   if (is_equal(r1, 1., 0.02) && is_equal(r2, 1., 0.02))
       return f6_1_1(r1, r2);
 
-   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+   if (is_equal(r1, -1., 0.02) && is_equal(r2, -1., 0.02))
       return f6_1_1(-r1, -r2);
 
-   if (is_equal(r1, 1., 0.01)) {
+   if (is_equal(r1, 1., 0.001)) {
       if (is_equal(r2, 0., 0.0001))
          return f6_0_1(r2, r1);
 
       return f6_1_r2(r1, r2);
    }
 
-   if (is_equal(r2, 1., 0.01)) {
+   if (is_equal(r2, 1., 0.001)) {
       if (is_equal(r1, 0., 0.0001))
          return f6_0_1(r1, r2);
 
@@ -873,7 +873,7 @@ static double f7_r1_r2(double r1, double r2) noexcept
 
 double f7(double r1, double r2) noexcept
 {
-   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+   if (is_equal(r1, 0., 1e-6) && is_equal(r2, 0., 1e-6))
       return 6.;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
@@ -1007,7 +1007,7 @@ static double f8_r1_r2(double r1, double r2) noexcept
 
 double f8(double r1, double r2) noexcept
 {
-   if (is_equal(r1, 0., 0.0001) && is_equal(r2, 0., 0.0001))
+   if (is_equal(r1, 0., 1e-6) && is_equal(r2, 0., 1e-6))
       return 0.;
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
