@@ -62,7 +62,9 @@ namespace {
       if (std::fabs(a) < std::numeric_limits<T>::epsilon())
          return is_equal(a, b, prec);
 
-      return std::fabs((a - b)/a) < prec;
+      const double max = std::max(std::fabs(a), std::fabs(b));
+
+      return is_equal(a, b, prec*max);
    }
 
    bool is_close(double a, double b, double prec)
@@ -1923,7 +1925,7 @@ double W(double m1, double m2, double scale) noexcept
    if (is_zero(m12, eps) || is_zero(m22, eps) || is_zero(Q2, eps))
       return 0.;
 
-   if (is_equal_rel(m12,m22,1e-3))
+   if (is_equal_rel(m12, m22, 1e-3))
       return 2./3. - 2. * std::log(Q2/m22);
 
    return (- 2*std::log(Q2/m12)
