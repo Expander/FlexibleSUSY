@@ -65,6 +65,17 @@ namespace {
       return std::fabs((a - b)/a) < prec;
    }
 
+   bool is_close_zero(double a, double prec)
+   {
+      return std::fabs(a) < prec;
+   }
+
+   bool is_close(double a, double b, double prec)
+   {
+      const double max = std::max(std::abs(a), std::abs(b));
+      return is_close_zero(a - b, prec*(1.0 + max));
+   }
+
 } // anonymous namespace
 
 double F1(double x) noexcept
@@ -1660,78 +1671,109 @@ double D2F7(double x) noexcept
       6*log(sqr(x))*sqr(x)*(3 + 5*sqr(x))))/pow5(-1 + sqr(x));
 }
 
-/// Iabc(a,a,a)
-static double Iaaa(double a, double b, double c) noexcept
-{
-   return (151.*quad(a) + 13.*sqr(b)*sqr(c) - 128.*cube(a)*(b + c) - 40.*a*b*c*(b + c)
-           + sqr(a)*(37.*sqr(b) + 128.*b*c + 37.*sqr(c))) / (60.*pow6(a));
+namespace {
+
+/// I2abc(a,a,a), squared arguments, a != 0
+double I2aaa(double a, double b, double c) noexcept {
+   const double ba = b - a;
+   const double ca = c - a;
+   const double a2 = sqr(a);
+   const double a3 = a2*a;
+
+   return 0.5/a + (-ba - ca)/(6.0*a2) + (sqr(ba) + ba*ca + sqr(ca))/(12.0*a3);
 }
 
-/// Iabc(a,a,c)
-static double Iaac(double a, double b, double c) noexcept
-{
-   return ((sqr(a) - sqr(c))
-           * (17.*pow6(a) - 16.*pow5(a)*b - 40.*cube(a)*b*sqr(c)
-              + 8.*a*b*quad(c) - sqr(b)*quad(c) + quad(a)*(5.*sqr(b) + 8.*sqr(c))
-              + sqr(a)*(20.*sqr(b)*sqr(c) - quad(c)))
-           - 6.*sqr(a)*sqr(c) * log(sqr(a)/sqr(c))
-           * (6.*quad(a) - 8.*cube(a)*b + 3.*sqr(a)*(sqr(b) - sqr(c)) + sqr(c)*(sqr(b) + sqr(c))))
-      / (6.*sqr(a)*quad(sqr(a) - sqr(c)));
+/// I2abc(a,a,c), squared arguments, a != c
+double I2aac(double a, double b, double c) noexcept {
+   const double ba = b - a;
+   const double ac = a - c;
+   const double a2 = sqr(a);
+   const double a3 = a2*a;
+   const double c2 = sqr(c);
+   const double c3 = c2*c;
+   const double ac2 = sqr(ac);
+   const double ac3 = ac2*ac;
+   const double ac4 = ac2*ac2;
+   const double lac = std::log(a/c);
+
+   return (ac - c*lac)/ac2
+      + ba*(-a2 + c2 + 2*a*c*lac)/(2.0*a*ac3)
+      + sqr(ba)*((2*a3 + 3*a2*c - 6*a*c2 + c3 - 6*a2*c*lac)/(6.*a2*ac4));
 }
 
-/// Iabc(a,a,0)
-double Iaa0(double a, double b) noexcept
-{
-   return (17.*sqr(a) - 16.*a*b + 5.*sqr(b)) / (6.*quad(a));
+/// I2abc(a,a,0), squared arguments, a != 0
+double I2aa0(double a, double b) noexcept {
+   const double a2 = sqr(a);
+   const double a3 = a2*a;
+   const double ba = b - a;
+   const double ba2 = sqr(ba);
+
+   return 1.0/a - ba/(2.0*a2) + ba2/(3.0*a3);
 }
 
-/// Iabc(0,b,c)
-double I0bc(double b, double c)
-{
-   return log(sqr(b/c))/(sqr(b) - sqr(c));
+/// I2abc(0,b,c), squared arguments, b != c
+double I20bc(double b, double c) noexcept {
+   return std::log(b/c)/(b - c);
 }
+
+} // anonymous namespace
 
 double Iabc(double a, double b, double c) noexcept {
-   if ((is_zero(a) && is_zero(b) && is_zero(c)) ||
-       (is_zero(a) && is_zero(b)) ||
-       (is_zero(a) && is_zero(c)) ||
-       (is_zero(b) && is_zero(c)))
-      return 0.;
+   const double eps = 10.0*std::numeric_limits<double>::epsilon();
 
-   if (is_equal_rel(std::abs(a), std::abs(b), 0.01) && is_equal_rel(std::abs(a), std::abs(c), 0.01))
-      return Iaaa(std::abs(a),std::abs(b),std::abs(c));
-
-   if (is_equal_rel(std::abs(a), std::abs(b), 0.01)) {
-      if (is_zero(c))
-         return Iaa0(std::abs(a),std::abs(b));
-      return Iaac(std::abs(a),std::abs(b),c);
+   if ((is_close_zero(a, eps) && is_close_zero(b, eps) && is_close_zero(c, eps)) ||
+       (is_close_zero(a, eps) && is_close_zero(b, eps)) ||
+       (is_close_zero(a, eps) && is_close_zero(c, eps)) ||
+       (is_close_zero(b, eps) && is_close_zero(c, eps))) {
+      return 0.0;
    }
 
-   if (is_equal_rel(std::abs(b), std::abs(c), 0.01)) {
-      if (is_zero(a))
-         return Iaa0(std::abs(b),std::abs(c));
-      return Iaac(std::abs(b),std::abs(c),a);
+   const double a2 = sqr(a);
+   const double b2 = sqr(b);
+   const double c2 = sqr(c);
+   const double eps_eq = 0.001;
+
+   if (is_close(a2, b2, eps_eq) && is_close(a2, c2, eps_eq)) {
+      return I2aaa(a2, b2, c2);
    }
 
-   if (is_equal_rel(std::abs(a), std::abs(c), 0.01)) {
-      if (is_zero(b))
-         return Iaa0(std::abs(a),std::abs(c));
-      return Iaac(std::abs(a),std::abs(c),b);
+   if (is_close(a2, b2, eps_eq)) {
+      if (is_close_zero(c, eps)) {
+         return I2aa0(a2, b2);
+      }
+      return I2aac(a2, b2, c2);
    }
 
-   if (is_zero(a))
-      return I0bc(b,c);
+   if (is_close(b2, c2, eps_eq)) {
+      if (is_close_zero(a, eps)) {
+         return I2aa0(b2, c2);
+      }
+      return I2aac(b2, c2, a2);
+   }
 
-   if (is_zero(b))
-      return I0bc(c,a);
+   if (is_close(a2, c2, eps_eq)) {
+      if (is_close_zero(b, eps)) {
+         return I2aa0(a2, c2);
+      }
+      return I2aac(a2, c2, b2);
+   }
 
-   if (is_zero(c))
-      return I0bc(a,b);
+   if (is_close_zero(a, eps)) {
+      return I20bc(b2, c2);
+   }
 
-   return ( (sqr(a * b) * log(sqr(a / b))
-           + sqr(b * c) * log(sqr(b / c))
-           + sqr(c * a) * log(sqr(c / a)))
-           / ((sqr(a) - sqr(b)) * (sqr(b) - sqr(c)) * (sqr(a) - sqr(c))) );
+   if (is_close_zero(b, eps)) {
+      return I20bc(c2, a2);
+   }
+
+   if (is_close_zero(c, eps)) {
+      return I20bc(a2, b2);
+   }
+
+   return (+ a2 * b2 * std::log(a2/b2)
+           + b2 * c2 * std::log(b2/c2)
+           + c2 * a2 * std::log(c2/a2))
+           / ((a2 - b2) * (b2 - c2) * (a2 - c2));
 }
 
 /// Delta function from hep-ph/0907.47682v1
