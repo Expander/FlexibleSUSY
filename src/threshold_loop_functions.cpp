@@ -1068,7 +1068,6 @@ double f8(double r1, double r2) noexcept
 
 double fth1(double y) noexcept
 {
-   using std::log;
    const double eps = 10.*std::numeric_limits<double>::epsilon();
 
    if (is_zero(y, eps))
@@ -1080,7 +1079,7 @@ double fth1(double y) noexcept
    if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
       const double y2 = sqr(y);
 
-      return y2*log(y2) / (1. - y2);
+      return y2*std::log(y2) / (1. - y2);
    }
 
    return 0.;
@@ -1088,7 +1087,6 @@ double fth1(double y) noexcept
 
 double fth2(double y) noexcept
 {
-   using std::log;
    const double eps = 10.*std::numeric_limits<double>::epsilon();
 
    if (is_zero(y, eps))
@@ -1100,7 +1098,7 @@ double fth2(double y) noexcept
    if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
       const double y2 = sqr(y);
 
-      return (1. + y2*log(y2) / (1. - y2)) / (1 - y2);
+      return (1. + y2*std::log(y2) / (1. - y2)) / (1 - y2);
    }
 
    return 0.;
@@ -1108,7 +1106,6 @@ double fth2(double y) noexcept
 
 double fth3(double y) noexcept
 {
-   using std::log;
    const double eps = 10.*std::numeric_limits<double>::epsilon();
    const double z2 = sqr(Pi) / 6.;
 
@@ -1121,9 +1118,10 @@ double fth3(double y) noexcept
    if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
       const double y2 = sqr(y);
       const double y4 = sqr(y2);
+      const double ly = std::log(y2);
 
       return (-1. + 2*y2 + 2*y4)
-         *(-z2 - y2*log(y2) + log(y2)*log(1. - y2) + dilog(y2))
+         *(-z2 - y2*ly + ly*std::log(1. - y2) + dilog(y2))
          / sqr(1 - y2);
    }
 
@@ -1133,8 +1131,6 @@ double fth3(double y) noexcept
 /// First derivative of F1
 double D1F1(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.0001))
       return (5 - 8*x + 3*sqr(x))/6.;
 
@@ -1144,165 +1140,139 @@ double D1F1(double x) noexcept
 /// First derivative of F2
 double D1F2(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (133 - 326*x - 138*cube(x) + 25*quad(x) + 306*sqr(x))/35.;
 
-   return (-12*x*(3 - 3*quad(x) + log(sqr(x))*(1 + quad(x) + 4*sqr(x)))) /
+   return (-12*x*(3 - 3*quad(x) + std::log(sqr(x))*(1 + quad(x) + 4*sqr(x)))) /
       quad(-1 + sqr(x));
 }
 
 /// First derivative of F3
 double D1F3(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.0001))
       return (1541 - 2048*x - 256*cube(x) + 15*quad(x) + 1098*sqr(x))/630.;
 
-   return (-2*(7 - 13*quad(x) + 6*sqr(x) + log(sqr(x))*(1 + 4*quad(x)
+   return (-2*(7 - 13*quad(x) + 6*sqr(x) + std::log(sqr(x))*(1 + 4*quad(x)
       + 15*sqr(x))))/(3.*cube(-1 + sqr(x)));
 }
 
 /// First derivative of F4
 double D1F4(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.0001))
       return -0.3333333333333333 - (2*cube(-1 + x))/3. + (11*quad(-1 + x))/14.
          + (2*sqr(-1 + x))/5.;
 
-   return (-2*(-3 + quad(x) + 2*sqr(x)) + log(sqr(x))*(2 + 6*sqr(x))) /
+   return (-2*(-3 + quad(x) + 2*sqr(x)) + std::log(sqr(x))*(2 + 6*sqr(x))) /
          cube(-1 + sqr(x));
 }
 
 /// First derivative of F5
 double D1F5(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (3*(70 - 176*x - 80*cube(x) + 15*quad(x) + 171*sqr(x)))/70.;
 
-   return (-3*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(quad(x)
+   return (-3*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*std::log(sqr(x))*(quad(x)
       + sqr(x))))/quad(-1 + sqr(x));
 }
 
 /// First derivative of F6
 double D1F6(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.0001))
       return (204 - 11*x + 87*cube(x) - 20*quad(x) - 120*sqr(x))/210.;
 
-   return (x*(3 + 2*log(sqr(x)) + quad(x) - 4*sqr(x)))/cube(-1 + sqr(x));
+   return (x*(3 + 2*std::log(sqr(x)) + quad(x) - 4*sqr(x)))/cube(-1 + sqr(x));
 }
 
 /// First derivative of F7
 double D1F7(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (-3*(-14 - 80*x - 51*cube(x) + 10*quad(x) + 100*sqr(x)))/35.;
 
    return (6*x*(2 + pow6(x) - 6*quad(x) + 3*sqr(x)
-                + 6*log(sqr(x))*sqr(x)))/quad(-1 + sqr(x));
+                + 6*std::log(sqr(x))*sqr(x)))/quad(-1 + sqr(x));
 }
 
 /// First derivative of f
 double D1f(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (3*(70 - 176*x - 80*cube(x) + 15*quad(x) + 171*sqr(x)))/70.;
 
-   return (-3*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(quad(x)
+   return (-3*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*std::log(sqr(x))*(quad(x)
       + sqr(x))))/quad(-1 + sqr(x));
 }
 
 /// First derivative of g
 double D1g(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (-3*(-14 - 80*x - 51*cube(x) + 10*quad(x) + 100*sqr(x)))/35.;
 
    return (6*x*(2 + pow6(x) - 6*quad(x) + 3*sqr(x)
-      + 6*log(sqr(x))*sqr(x)))/quad(-1 + sqr(x));
+      + 6*std::log(sqr(x))*sqr(x)))/quad(-1 + sqr(x));
 }
 
 /// First derivative of f1
 double D1f1(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.01))
       return (-2*(-71 - 315*x - 225*cube(x) + 45*quad(x) + 426*sqr(x)))/245.;
 
    return (12*x*(3 + pow6(x) - 11*quad(x) + 7*sqr(x)
-      + 2*log(sqr(x))*sqr(x)*(5 + sqr(x))))/(7.*quad(-1 + sqr(x)));
+      + 2*std::log(sqr(x))*sqr(x)*(5 + sqr(x))))/(7.*quad(-1 + sqr(x)));
 }
 
 /// First derivative of f2
 double D1f2(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.01))
       return (-2*(-239 - 1275*x - 837*cube(x) + 165*quad(x) + 1626*sqr(x)))/945.;
 
    return (4*x*(11 + 5*pow6(x) - 35*quad(x) + 19*sqr(x)
-      + 2*log(sqr(x))*sqr(x)*(17 + sqr(x))))/(9.*quad(-1 + sqr(x)));
+      + 2*std::log(sqr(x))*sqr(x)*(17 + sqr(x))))/(9.*quad(-1 + sqr(x)));
 }
 
 /// First derivative of f3
 double D1f3(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (-2*(386 - 1143*x - 495*cube(x) + 90*quad(x) + 1092*sqr(x)))/315.;
 
    return (4*x*(19 + pow6(x) - 19*quad(x) - sqr(x)
-      + log(sqr(x))*(6 + 4*quad(x) + 26*sqr(x))))/(3.*quad(-1 + sqr(x)));
+      + std::log(sqr(x))*(6 + 4*quad(x) + 26*sqr(x))))/(3.*quad(-1 + sqr(x)));
 }
 
 /// First derivative of f4
 double D1f4(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (-2*(1184 - 3099*x - 1323*cube(x) + 240*quad(x) + 2928*sqr(x)))/735.;
 
    return (4*x*(55 + pow6(x) - 55*quad(x) - sqr(x)
-      + 2*log(sqr(x))*(9 + 8*quad(x) + 37*sqr(x))))/(7.*quad(-1 + sqr(x)));
+      + 2*std::log(sqr(x))*(9 + 8*quad(x) + 37*sqr(x))))/(7.*quad(-1 + sqr(x)));
 }
 
 /// First derivative of f5 w.r.t. 1st argument
 double D10f5(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (-117 + 306*y - 91*sqr(y) - 3*sqr(x)*(55 - 36*y + 9*sqr(y))
          + x*(450 - 344*y + 90*sqr(y)))/560.;
 
    if (is_equal(x, 1., 0.001))
-      return (30*cube(y)*log(sqr(y))*(1 + sqr(y))*(6 + 2*x*(-4 + y) - 4*y +
+      return (30*cube(y)*std::log(sqr(y))*(1 + sqr(y))*(6 + 2*x*(-4 + y) - 4*y +
          3*sqr(x) + sqr(y)) - (-1 + sqr(y))*(-12 + 71*y + 306*cube(y) +
          43*pow5(y) - 164*quad(y) + 3*sqr(x)*(-4 + 17*y + 42*cube(y) + pow5(y)
          + 12*quad(y) - 8*sqr(y)) - 64*sqr(y) + 2*x*(17 - 76*y - 176*cube(y) +
          12*pow5(y) - 11*quad(y) + 54*sqr(y))))/(40.*pow6(-1 + y)*sqr(1 + y));
 
    if (is_equal(y, 1., 0.001))
-      return (-6*log(sqr(x))*sqr(x)*(y*pow5(x) + 3*cube(x)*(-5 + sqr(y)) + 3*(3 -
+      return (-6*std::log(sqr(x))*sqr(x)*(y*pow5(x) + 3*cube(x)*(-5 + sqr(y)) + 3*(3 -
          3*y + sqr(y)) + quad(x)*(6 - 3*y + 2*sqr(y)) + x*(-3 - 5*y +
          3*sqr(y)) + sqr(x)*(23 - 24*y + 9*sqr(y))) + (-1 + sqr(x))*(3 - 4*y +
          12*pow6(x) + sqr(y) + x*(1 - 4*y + 3*sqr(y)) + pow5(x)*(-35 + 20*y +
@@ -1311,7 +1281,7 @@ double D10f5(double x, double y) noexcept
          x)*pow6(-1 + x));
 
    if (is_equal(x, y, 0.001))
-      return (6*y*log(sqr(y))*(y + 9*cube(y) + 205*pow5(y) + 247*pow7(y) +
+      return (6*y*std::log(sqr(y))*(y + 9*cube(y) + 205*pow5(y) + 247*pow7(y) +
          18*pow9(y) - 2*x*(-1 + 203*pow6(y) + 12*pow8(y) + 245*quad(y) +
          21*sqr(y)) + 3*y*sqr(x)*(15 + 3*pow6(y) + 57*quad(y) + 85*sqr(y))) +
          (-1 + sqr(y))*(3*sqr(x)*(-3 - 92*pow6(y) + pow8(y) - 590*quad(y) -
@@ -1321,8 +1291,8 @@ double D10f5(double x, double y) noexcept
 
    return (3*((-1 + sqr(x))*(-2*(cube(y) + cube(y)*quad(x) + 2*y*sqr(x)*(-2 +
       sqr(y)) - 3*cube(x)*(-1 + sqr(y)) - pow5(x)*(-1 + sqr(y)))*(-1 +
-      sqr(y)) + cube(y)*log(sqr(y))*(1 + sqr(y))*sqr(-1 + sqr(x))) -
-      log(sqr(x))*sqr(x)*(2*x - 3*y + 6*cube(x) + y*quad(x) -
+      sqr(y)) + cube(y)*std::log(sqr(y))*(1 + sqr(y))*sqr(-1 + sqr(x))) -
+      std::log(sqr(x))*sqr(x)*(2*x - 3*y + 6*cube(x) + y*quad(x) -
       6*y*sqr(x))*sqr(-1 + sqr(y))))/(4.*cube(-1 + sqr(x))*sqr(x -
       y)*sqr(-1 + sqr(y)));
 }
@@ -1330,14 +1300,12 @@ double D10f5(double x, double y) noexcept
 /// First derivative of f5 w.r.t. 2nd argument
 double D01f5(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (sqr(x)*(-91 + 90*y - 27*sqr(y)) + 2*x*(153 - 172*y + 54*sqr(y))
          - 3*(39 - 150*y + 55*sqr(y)))/560.;
 
    if (is_equal(x, 1., 0.001))
-      return (-6*log(sqr(y))*sqr(y)*(9 - 3*y - 15*cube(y) + 6*quad(y) + x*(-9 -
+      return (-6*std::log(sqr(y))*sqr(y)*(9 - 3*y - 15*cube(y) + 6*quad(y) + x*(-9 -
          5*y + pow5(y) - 3*quad(y) - 24*sqr(y)) + 23*sqr(y) + sqr(x)*(3 + 3*y
          + 3*cube(y) + 2*quad(y) + 9*sqr(y))) + (-1 + sqr(y))*(3 + y -
          74*cube(y) - 35*pow5(y) + 12*pow6(y) + 75*quad(y) + 4*x*(-1 - y -
@@ -1346,7 +1314,7 @@ double D01f5(double x, double y) noexcept
          46*sqr(y))))/(8.*cube(1 + y)*pow6(-1 + y));
 
    if (is_equal(y, 1., 0.001))
-      return (30*cube(x)*log(sqr(x))*(1 + sqr(x))*(6 + 2*x*(-2 + y) - 8*y +
+      return (30*cube(x)*std::log(sqr(x))*(1 + sqr(x))*(6 + 2*x*(-2 + y) - 8*y +
          sqr(x) + 3*sqr(y)) - (-1 + sqr(x))*(pow5(x)*(43 + 24*y + 3*sqr(y)) -
          4*sqr(x)*(16 - 27*y + 6*sqr(y)) - 2*(6 - 17*y + 6*sqr(y)) +
          2*quad(x)*(-82 - 11*y + 18*sqr(y)) + x*(71 - 152*y + 51*sqr(y)) +
@@ -1356,13 +1324,13 @@ double D01f5(double x, double y) noexcept
       return ((-1 + sqr(y))*(sqr(x)*(-3 - 92*pow6(y) + pow8(y) - 590*quad(y) -
          276*sqr(y)) - 4*x*y*(7 - 68*pow6(y) + pow8(y) - 340*quad(y) -
          80*sqr(y)) + sqr(y)*(-35 - 276*pow6(y) + 9*pow8(y) - 662*quad(y) +
-         4*sqr(y))) + 6*y*log(sqr(y))*(y*(2 + 101*pow6(y) + 9*pow8(y) +
+         4*sqr(y))) + 6*y*std::log(sqr(y))*(y*(2 + 101*pow6(y) + 9*pow8(y) +
          45*quad(y) + 3*sqr(y)) - x*(-1 + 146*pow6(y) + 9*pow8(y) +
          160*quad(y) + 6*sqr(y)) + y*sqr(x)*(15 + 3*pow6(y) + 57*quad(y) +
          85*sqr(y))))/(8.*y*pow6(-1 + sqr(y)));
 
-   return (3*(cube(x)*cube(-1 + sqr(y))*log(sqr(x))*(1 + sqr(x)) - (-1 +
-      sqr(x))*(log(sqr(y))*sqr(y)*(-2*(y + 3*cube(y)) + 2*(y +
+   return (3*(cube(x)*cube(-1 + sqr(y))*std::log(sqr(x))*(1 + sqr(x)) - (-1 +
+      sqr(x))*(std::log(sqr(y))*sqr(y)*(-2*(y + 3*cube(y)) + 2*(y +
       3*cube(y))*sqr(x) + cube(x)*(-3 + quad(y) - 6*sqr(y)) + x*(3 -
       quad(y) + 6*sqr(y))) + 2*(-1 + sqr(y))*(-4*x*sqr(y) + cube(y)*(3 +
       sqr(y)) - cube(y)*sqr(x)*(3 + sqr(y)) + cube(x)*sqr(1 +
@@ -1372,21 +1340,19 @@ double D01f5(double x, double y) noexcept
 /// First derivative of f6 w.r.t. 1st argument
 double D10f6(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (259 + 99*y - 43*sqr(y) - 3*sqr(x)*(22 - 21*y + 6*sqr(y))
          + 2*x*(54 - 88*y + 27*sqr(y)))/490.;
 
    if (is_equal(x, 1., 0.001))
-      return (30*log(sqr(y))*pow5(y)*(6 + 2*x*(-4 + y) - 4*y + 3*sqr(x) + sqr(y))
+      return (30*std::log(sqr(y))*pow5(y)*(6 + 2*x*(-4 + y) - 4*y + 3*sqr(x) + sqr(y))
          + (-1 + sqr(y))*(-14 + 32*y - 223*cube(y) - 19*pow5(y) + 82*quad(y) +
          52*sqr(y) + sqr(x)*(6 - 33*y - 63*cube(y) + 6*pow5(y) - 78*quad(y) +
          72*sqr(y)) - 2*x*(6 - 38*y - 108*cube(y) + 26*pow5(y) - 73*quad(y) +
          97*sqr(y))))/(35.*pow6(-1 + y)*sqr(1 + y));
 
    if (is_equal(y, 1., 0.001))
-      return (-6*log(sqr(x))*quad(x)*(y*cube(x) + 5*(3 - 3*y + sqr(y)) + 3*x*(-3
+      return (-6*std::log(sqr(x))*quad(x)*(y*cube(x) + 5*(3 - 3*y + sqr(y)) + 3*x*(-3
          - y + sqr(y)) + sqr(x)*(4 - 3*y + 2*sqr(y))) + (-1 + sqr(x))*(-1 -
          3*y + 12*pow6(x) + x*(-9 + 17*y - 5*sqr(y)) + sqr(y) + pow5(x)*(-36 +
          17*y + 4*sqr(y)) + sqr(x)*(47 - 30*y + 7*sqr(y)) + cube(x)*(-9 - 46*y
@@ -1394,7 +1360,7 @@ double D10f6(double x, double y) noexcept
          x)*pow6(-1 + x));
 
    if (is_equal(x, y, 0.001))
-      return (6*y*log(sqr(y))*(3*sqr(x)*(5 + 2*pow6(y) + 33*quad(y) + 40*sqr(y))
+      return (6*y*std::log(sqr(y))*(3*sqr(x)*(5 + 2*pow6(y) + 33*quad(y) + 40*sqr(y))
          + sqr(y)*(5 + 12*pow6(y) + 141*quad(y) + 82*sqr(y)) - 2*x*y*(5 +
          8*pow6(y) + 117*quad(y) + 110*sqr(y))) + (-1 +
          sqr(y))*(3*y*sqr(x)*(-107 + pow6(y) - 61*quad(y) - 313*sqr(y)) +
@@ -1404,22 +1370,20 @@ double D10f6(double x, double y) noexcept
 
    return (6*((-1 + sqr(x))*(-((-1 + sqr(y))*(cube(y) + y*sqr(x)*(-3 + sqr(y))
       - 2*cube(x)*(-1 + sqr(y)) - 2*pow5(x)*(-1 + sqr(y)) + y*quad(x)*(-1 +
-      2*sqr(y)))) + log(sqr(y))*pow5(y)*sqr(-1 + sqr(x))) -
-      log(sqr(x))*quad(x)*(4*x - 5*y + y*sqr(x))*sqr(-1 +
+      2*sqr(y)))) + std::log(sqr(y))*pow5(y)*sqr(-1 + sqr(x))) -
+      std::log(sqr(x))*quad(x)*(4*x - 5*y + y*sqr(x))*sqr(-1 +
       sqr(y))))/(7.*cube(-1 + sqr(x))*sqr(x - y)*sqr(-1 + sqr(y)));
 }
 
 /// First derivative of f6 w.r.t. 2nd argument
 double D01f6(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (259 + 108*y + sqr(x)*(-43 + 54*y - 18*sqr(y)) - 66*sqr(y)
          + x*(99 - 176*y + 63*sqr(y)))/490.;
 
    if (is_equal(x, 1., 0.001))
-      return (-6*log(sqr(y))*quad(y)*(15 - 9*y + x*(-15 - 3*y + cube(y) -
+      return (-6*std::log(sqr(y))*quad(y)*(15 - 9*y + x*(-15 - 3*y + cube(y) -
          3*sqr(y)) + 4*sqr(y) + sqr(x)*(5 + 3*y + 2*sqr(y))) + (-1 +
          sqr(y))*(-1 - 9*y - 9*cube(y) - 36*pow5(y) + 12*pow6(y) + 56*quad(y)
          + x*(-3 + 17*y - 46*cube(y) + 17*pow5(y) - 75*quad(y) - 30*sqr(y)) +
@@ -1427,22 +1391,22 @@ double D01f6(double x, double y) noexcept
          7*sqr(y))))/(7.*cube(1 + y)*pow6(-1 + y));
 
    if (is_equal(y, 1., 0.001))
-      return (30*log(sqr(x))*pow5(x)*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
+      return (30*std::log(sqr(x))*pow5(x)*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
          + (-1 + sqr(x))*(quad(x)*(82 + 146*y - 78*sqr(y)) + cube(x)*(-223 +
          216*y - 63*sqr(y)) + x*(32 + 76*y - 33*sqr(y)) + 2*(-7 - 6*y +
          3*sqr(y)) + pow5(x)*(-19 - 52*y + 6*sqr(y)) + 2*sqr(x)*(26 - 97*y +
          36*sqr(y))))/(35.*pow6(-1 + x)*sqr(1 + x));
 
    if (is_equal(x, y, 0.001))
-      return (6*log(sqr(y))*(cube(y)*(5 + 6*pow6(y) + 57*quad(y) + 12*sqr(y)) +
+      return (6*std::log(sqr(y))*(cube(y)*(5 + 6*pow6(y) + 57*quad(y) + 12*sqr(y)) +
          y*sqr(x)*(5 + 2*pow6(y) + 33*quad(y) + 40*sqr(y)) - 2*x*quad(y)*(35 +
          3*quad(y) + 42*sqr(y))) + (-1 + sqr(y))*(y*sqr(x)*(-107 + pow6(y) -
          61*quad(y) - 313*sqr(y)) + y*(-12 - 193*pow6(y) + 9*pow8(y) -
          277*quad(y) - 7*sqr(y)) + x*(-6 + 182*pow6(y) - 4*pow8(y) +
          698*quad(y) + 90*sqr(y))))/(7.*pow6(-1 + sqr(y)));
 
-   return (6*(cube(-1 + sqr(y))*log(sqr(x))*pow5(x) - (-1 +
-      sqr(x))*(log(sqr(y))*quad(y)*(-1 + sqr(x))*(4*y + x*(-5 + sqr(y))) +
+   return (6*(cube(-1 + sqr(y))*std::log(sqr(x))*pow5(x) - (-1 +
+      sqr(x))*(std::log(sqr(y))*quad(y)*(-1 + sqr(x))*(4*y + x*(-5 + sqr(y))) +
       (-1 + sqr(y))*(2*(cube(y) + pow5(y)) - 2*(cube(y) + pow5(y))*sqr(x) -
       x*sqr(y)*(3 + sqr(y)) + cube(x)*(1 + 2*quad(y) +
       sqr(y))))))/(7.*cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
@@ -1451,14 +1415,12 @@ double D01f6(double x, double y) noexcept
 /// First derivative of f7 w.r.t. 1st argument
 double D10f7(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (-376 + 207*y - 48*sqr(y) - 9*sqr(x)*(11 - 5*y + sqr(y))
          + 6*x*(57 - 28*y + 6*sqr(y)))/70.;
 
    if (is_equal(x, 1., 0.001))
-      return (30*cube(y)*log(sqr(y))*(6 + 2*x*(-4 + y) - 4*y + 3*sqr(x) + sqr(y))
+      return (30*cube(y)*std::log(sqr(y))*(6 + 2*x*(-4 + y) - 4*y + 3*sqr(x) + sqr(y))
          - (-1 + sqr(y))*(-26 + 103*y + 83*cube(y) + 24*pow5(y) - 82*quad(y) -
          12*sqr(y) + 3*sqr(x)*(-2 + 6*y + 21*cube(y) + 3*pow5(y) - 14*quad(y)
          + 16*sqr(y)) - 2*x*(-11 + 38*y + 68*cube(y) + 14*pow5(y) - 62*quad(y)
@@ -1468,12 +1430,12 @@ double D10f7(double x, double y) noexcept
       return -(((-1 + sqr(x))*(-4 + y + sqr(x)*(-91 + 106*y - 39*sqr(y)) +
          cube(x)*(65 - 6*y - 11*sqr(y)) + x*(-10 + 21*y - 8*sqr(y)) +
          quad(x)*(-19 + y - 3*sqr(y)) + pow5(x)*(-1 - 3*y + sqr(y))) +
-         6*log(sqr(x))*sqr(x)*(3*(-2 + y)*cube(x) + 2*quad(x) + 3*(3 - 3*y +
+         6*std::log(sqr(x))*sqr(x)*(3*(-2 + y)*cube(x) + 2*quad(x) + 3*(3 - 3*y +
          sqr(y)) + x*(-3 - 5*y + 3*sqr(y)) + sqr(x)*(8 - 9*y +
          4*sqr(y))))/(cube(1 + x)*pow6(-1 + x)));
 
    if (is_equal(x, y, 0.001))
-      return (6*y*log(sqr(y))*(y + 4*cube(y) + 123*pow5(y) + 106*pow7(y) +
+      return (6*y*std::log(sqr(y))*(y + 4*cube(y) + 123*pow5(y) + 106*pow7(y) +
          6*pow9(y) - 2*x*(-1 + 86*pow6(y) + 4*pow8(y) + 135*quad(y) +
          16*sqr(y)) + 3*y*sqr(x)*(10 + pow6(y) + 24*quad(y) + 45*sqr(y))) -
          (-1 + sqr(y))*(1047*pow6(y) + 173*pow8(y) + 219*quad(y) + sqr(y) -
@@ -1482,7 +1444,7 @@ double D10f7(double x, double y) noexcept
 
    return (6*((-1 + sqr(x))*(-((-1 + sqr(y))*(cube(y) + y*quad(x) -
       4*cube(x)*(-1 + sqr(y)) + y*sqr(x)*(-5 + 3*sqr(y)))) +
-      cube(y)*log(sqr(y))*sqr(-1 + sqr(x))) - log(sqr(x))*sqr(x)*(2*x - 3*y
+      cube(y)*std::log(sqr(y))*sqr(-1 + sqr(x))) - std::log(sqr(x))*sqr(x)*(2*x - 3*y
       + 2*cube(x) - y*sqr(x))*sqr(-1 + sqr(y))))/(cube(-1 + sqr(x))*sqr(x -
       y)*sqr(-1 + sqr(y)));
 }
@@ -1490,14 +1452,12 @@ double D10f7(double x, double y) noexcept
 /// First derivative of f7 w.r.t. 2nd argument
 double D01f7(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (-376 + 342*y + sqr(x)*(-48 + 36*y - 9*sqr(y)) - 99*sqr(y)
          + 3*x*(69 - 56*y + 15*sqr(y)))/70.;
 
    if (is_equal(x, 1., 0.001))
-      return -((6*log(sqr(y))*sqr(y)*(9 - 3*y - 6*cube(y) + 2*quad(y) + x*(-9 -
+      return -((6*std::log(sqr(y))*sqr(y)*(9 - 3*y - 6*cube(y) + 2*quad(y) + x*(-9 -
          5*y + 3*cube(y) - 9*sqr(y)) + 8*sqr(y) + sqr(x)*(3 + 3*y + 4*sqr(y)))
          + (-1 + sqr(y))*(-4 - 10*y + 65*cube(y) - pow5(y) - 19*quad(y) +
          y*sqr(x)*(-8 - 39*y - 3*cube(y) + quad(y) - 11*sqr(y)) - 91*sqr(y) +
@@ -1505,22 +1465,22 @@ double D01f7(double x, double y) noexcept
          + y)*pow6(-1 + y)));
 
    if (is_equal(y, 1., 0.001))
-      return (30*cube(x)*log(sqr(x))*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
+      return (30*cube(x)*std::log(sqr(x))*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
          - (-1 + sqr(x))*(-26 + 22*y - 6*sqr(y) + pow5(x)*(24 - 28*y +
          9*sqr(y)) + x*(103 - 76*y + 18*sqr(y)) - 2*quad(x)*(41 - 62*y +
          21*sqr(y)) + 2*sqr(x)*(-6 - 43*y + 24*sqr(y)) + cube(x)*(83 - 136*y +
          63*sqr(y))))/(5.*pow6(-1 + x)*sqr(1 + x));
 
    if (is_equal(x, y, 0.001))
-      return (6*y*log(sqr(y))*(y*(2 + 44*pow6(y) + 3*pow8(y) + 33*quad(y) -
+      return (6*y*std::log(sqr(y))*(y*(2 + 44*pow6(y) + 3*pow8(y) + 33*quad(y) -
          2*sqr(y)) - x*(-1 + 62*pow6(y) + 3*pow8(y) + 90*quad(y) + 6*sqr(y)) +
          y*sqr(x)*(10 + pow6(y) + 24*quad(y) + 45*sqr(y))) - (-1 +
          sqr(y))*((23 + 83*pow6(y) + 385*quad(y) - 11*sqr(y))*sqr(y) -
          2*x*y*(-11 + 45*pow6(y) + 331*quad(y) + 115*sqr(y)) + sqr(x)*(3 +
          31*pow6(y) + 277*quad(y) + 169*sqr(y))))/(y*pow6(-1 + sqr(y)));
 
-   return (6*(cube(x)*cube(-1 + sqr(y))*log(sqr(x)) + (-1 +
-      sqr(x))*(log(sqr(y))*sqr(y)*(2*(y + cube(y)) - 2*(y + cube(y))*sqr(x)
+   return (6*(cube(x)*cube(-1 + sqr(y))*std::log(sqr(x)) + (-1 +
+      sqr(x))*(std::log(sqr(y))*sqr(y)*(2*(y + cube(y)) - 2*(y + cube(y))*sqr(x)
       - x*(3 + sqr(y)) + cube(x)*(3 + sqr(y))) - (-1 + sqr(y))*(4*cube(y) -
       4*cube(y)*sqr(x) + x*(-5 + sqr(y))*sqr(y) + cube(x)*(1 +
       3*sqr(y))))))/(cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
@@ -1529,8 +1489,6 @@ double D01f7(double x, double y) noexcept
 /// First derivative of f8 w.r.t. 1st argument
 double D10f8(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (288 - 232*y + x*(-356 + 234*y - 60*sqr(y)) + 63*sqr(y)
          + 9*sqr(x)*(13 - 8*y + 2*sqr(y)))/280.;
@@ -1539,11 +1497,11 @@ double D10f8(double x, double y) noexcept
       return ((-24 + 122*y + 12*cube(y) - 14*pow5(y) + 37*quad(y) - 2*x*(-14 +
          67*y - 43*cube(y) + 6*pow5(y) + 2*quad(y) - 108*sqr(y)) +
          3*sqr(x)*(-3 + 14*y - 16*cube(y) + 2*pow5(y) - 6*quad(y) - 21*sqr(y))
-         - 223*sqr(y))*(-1 + sqr(y)) + 30*log(sqr(y))*quad(y)*(6 + 2*x*(-4 +
+         - 223*sqr(y))*(-1 + sqr(y)) + 30*std::log(sqr(y))*quad(y)*(6 + 2*x*(-4 +
          y) - 4*y + 3*sqr(x) + sqr(y)))/(20.*pow6(-1 + y)*sqr(1 + y));
 
    if (is_equal(y, 1., 0.001))
-      return (-6*cube(x)*log(sqr(x))*((-3 + 2*y)*cube(x) + quad(x) + 4*(3 - 3*y +
+      return (-6*cube(x)*std::log(sqr(x))*((-3 + 2*y)*cube(x) + quad(x) + 4*(3 - 3*y +
          sqr(y)) + 3*sqr(x)*(2 - 2*y + sqr(y)) + x*(-6 - 4*y + 3*sqr(y))) +
          (-1 + sqr(x))*(-6 + 4*y + (17 + 4*y)*pow5(x) - sqr(y) + x*(26 - 14*y
          + 3*sqr(y)) + quad(x)*(-51 + 10*y + 8*sqr(y)) + sqr(x)*(3 - 26*y +
@@ -1551,7 +1509,7 @@ double D10f8(double x, double y) noexcept
          x)*pow6(-1 + x));
 
    if (is_equal(x, y, 0.001))
-      return (6*log(sqr(y))*(153*pow6(y) + 52*pow8(y) + 34*quad(y) + sqr(y) +
+      return (6*std::log(sqr(y))*(153*pow6(y) + 52*pow8(y) + 34*quad(y) + sqr(y) +
          3*sqr(x)*(1 + 10*pow6(y) + 45*quad(y) + 24*sqr(y)) - 2*x*y*(-1 +
          38*pow6(y) + 147*quad(y) + 56*sqr(y))) - (-1 + sqr(y))*(6 +
          771*pow6(y) + 23*pow8(y) + 651*quad(y) - 11*sqr(y) - 2*x*y*(17 +
@@ -1560,22 +1518,20 @@ double D10f8(double x, double y) noexcept
 
    return (-3*(-((-1 + sqr(x))*(-((-1 + sqr(y))*(sqr(x)*(1 - 3*sqr(y)) +
       quad(x)*(3 - 2*sqr(y)) + 2*x*y*(-1 + sqr(y)) + 2*y*cube(x)*(-1 +
-      sqr(y)) + sqr(y))) + log(sqr(y))*quad(y)*sqr(-1 + sqr(x)))) +
-      cube(x)*(3*x - 4*y + cube(x))*log(sqr(x))*sqr(-1 +
+      sqr(y)) + sqr(y))) + std::log(sqr(y))*quad(y)*sqr(-1 + sqr(x)))) +
+      cube(x)*(3*x - 4*y + cube(x))*std::log(sqr(x))*sqr(-1 +
       sqr(y))))/(2.*cube(-1 + sqr(x))*sqr(x - y)*sqr(-1 + sqr(y)));
 }
 
 /// First derivative of f8 w.r.t. 2nd argument
 double D01f8(double x, double y) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001) && is_equal(y, 1., 0.001))
       return (288 - 356*y + x*(-232 + 234*y - 72*sqr(y)) + 117*sqr(y)
          + 3*sqr(x)*(21 - 20*y + 6*sqr(y)))/280.;
 
    if (is_equal(x, 1., 0.001))
-      return (-6*cube(y)*log(sqr(y))*(12 - 6*y - 3*cube(y) + quad(y) + 2*x*(-6 -
+      return (-6*cube(y)*std::log(sqr(y))*(12 - 6*y - 3*cube(y) + quad(y) + 2*x*(-6 -
          2*y + cube(y) - 3*sqr(y)) + 6*sqr(y) + sqr(x)*(4 + 3*y + 3*sqr(y))) +
          (-1 + sqr(y))*(-6 + 26*y + 71*cube(y) + 17*pow5(y) - 51*quad(y) +
          2*x*(2 - 7*y - 49*cube(y) + 2*pow5(y) + 5*quad(y) - 13*sqr(y)) +
@@ -1583,111 +1539,97 @@ double D01f8(double x, double y) noexcept
          11*sqr(y))))/(4.*cube(1 + y)*pow6(-1 + y));
 
    if (is_equal(y, 1., 0.001))
-      return (30*log(sqr(x))*quad(x)*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
+      return (30*std::log(sqr(x))*quad(x)*(6 + 2*x*(-2 + y) - 8*y + sqr(x) + 3*sqr(y))
          + (-1 + sqr(x))*(-24 + 28*y + sqr(x)*(-223 + 216*y - 63*sqr(y)) +
          cube(x)*(12 + 86*y - 48*sqr(y)) + quad(x)*(37 - 4*y - 18*sqr(y)) -
          9*sqr(y) + 2*pow5(x)*(-7 - 6*y + 3*sqr(y)) + 2*x*(61 - 67*y +
          21*sqr(y))))/(20.*pow6(-1 + x)*sqr(1 + x));
 
    if (is_equal(x, y, 0.001))
-      return (6*log(sqr(y))*(sqr(y)*(3 + 24*pow6(y) + 51*quad(y) + 2*sqr(y)) -
+      return (6*std::log(sqr(y))*(sqr(y)*(3 + 24*pow6(y) + 51*quad(y) + 2*sqr(y)) -
          2*x*y*(-1 + 14*pow6(y) + 51*quad(y) + 16*sqr(y)) + sqr(x)*(1 +
          10*pow6(y) + 45*quad(y) + 24*sqr(y))) - (-1 + sqr(y))*(6 +
          325*pow6(y) + 13*pow8(y) + 133*quad(y) + 3*sqr(y) - 2*x*y*(-7 +
          5*pow6(y) + 223*quad(y) + 259*sqr(y)) + sqr(x)*(31 + 3*pow6(y) +
          169*quad(y) + 277*sqr(y))))/(4.*pow6(-1 + sqr(y)));
 
-   return (-3*(-(cube(-1 + sqr(y))*log(sqr(x))*quad(x)) + (-1 + sqr(x))*((-1 +
+   return (-3*(-(cube(-1 + sqr(y))*std::log(sqr(x))*quad(x)) + (-1 + sqr(x))*((-1 +
       sqr(y))*(-2*x*(y + cube(y)) + 2*cube(x)*(y + cube(y)) + 3*quad(y) +
       sqr(x)*(1 - 2*quad(y) - 3*sqr(y)) + sqr(y)) +
-      cube(y)*log(sqr(y))*(4*x - 4*cube(x) - y*(3 + sqr(y)) + y*sqr(x)*(3 +
+      cube(y)*std::log(sqr(y))*(4*x - 4*cube(x) - y*(3 + sqr(y)) + y*sqr(x)*(3 +
       sqr(y))))))/(2.*cube(-1 + sqr(y))*sqr(x - y)*sqr(-1 + sqr(x)));
 }
 
 /// Second derivative of F1
 double D2F1(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return -1.3333333333333333 + x + 2*cube(-1 + x) - (31*quad(-1 + x))/14.
          - (8*sqr(-1 + x))/5.;
 
-   return (2 - 6*quad(x) + 4*sqr(x) + 2*log(sqr(x))*sqr(x)*(3 +
+   return (2 - 6*quad(x) + 4*sqr(x) + 2*std::log(sqr(x))*sqr(x)*(3 +
       sqr(x)))/(x*cube(-1 + sqr(x)));
 }
 
 /// Second derivative of F2
 double D2F2(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.01))
       return (-381 + 832*x + 320*cube(x) - 55*quad(x) - 744*sqr(x))/35.;
 
-   return (12*(5 - 11*pow6(x) - 21*quad(x) + 27*sqr(x) + log(sqr(x))*(1 +
+   return (12*(5 - 11*pow6(x) - 21*quad(x) + 27*sqr(x) + std::log(sqr(x))*(1 +
       3*pow6(x) + 25*quad(x) + 19*sqr(x))))/pow5(-1 + sqr(x));
 }
 
 /// Second derivative of F3
 double D2F3(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (2*(-392 + 69*x - 465*cube(x) + 120*quad(x) + 528*sqr(x)))/315.;
 
    return (4*(1 - 17*pow6(x) - 25*quad(x) + 41*sqr(x) +
-      2*log(sqr(x))*sqr(x)*(9 + 2*quad(x) + 19*sqr(x))))/(3.*x*quad(-1 +
+      2*std::log(sqr(x))*sqr(x)*(9 + 2*quad(x) + 19*sqr(x))))/(3.*x*quad(-1 +
       sqr(x)));
 }
 
 /// Second derivative of F4
 double D2F4(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (-2*(174 - 529*x - 335*cube(x) + 70*quad(x) + 620*sqr(x)))/35.;
 
-   return (4*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(quad(x) +
+   return (4*(-1 + pow6(x) + 9*quad(x) - 9*sqr(x) - 6*std::log(sqr(x))*(quad(x) +
       sqr(x))))/(x*quad(-1 + sqr(x)));
 }
 
 /// Second derivative of F5
 double D2F5(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.01))
       return (-334 + 793*x + 370*cube(x) - 70*quad(x) - 780*sqr(x))/35.;
 
-   return (6*x*(-19 + pow6(x) + 27*quad(x) - 9*sqr(x) - 6*log(sqr(x))*(1 +
+   return (6*x*(-19 + pow6(x) + 27*quad(x) - 9*sqr(x) - 6*std::log(sqr(x))*(1 +
       2*quad(x) + 5*sqr(x))))/pow5(-1 + sqr(x));
 }
 
 /// Second derivative of F6
 double D2F6(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return (109 - 720*x - 560*cube(x) + 120*quad(x) + 981*sqr(x))/210.;
 
-   return (-7 - pow6(x) + 7*quad(x) + sqr(x) - 2*log(sqr(x))*(1 +
+   return (-7 - pow6(x) + 7*quad(x) + sqr(x) - 2*std::log(sqr(x))*(1 +
       5*sqr(x)))/quad(-1 + sqr(x));
 }
 
 /// Second derivative of F7
 double D2F7(double x) noexcept
 {
-   using std::log;
-
    if (is_equal(x, 1., 0.001))
       return 10 - (208*x)/7. - 16*cube(x) + (22*quad(x))/7. + (1119*sqr(x))/35.;
 
    return (-6*(2 + pow8(x) - 11*pow6(x) - 27*quad(x) + 35*sqr(x) +
-      6*log(sqr(x))*sqr(x)*(3 + 5*sqr(x))))/pow5(-1 + sqr(x));
+      6*std::log(sqr(x))*sqr(x)*(3 + 5*sqr(x))))/pow5(-1 + sqr(x));
 }
 
 namespace {
@@ -1811,11 +1753,10 @@ namespace {
    /// u < 1 && v < 1, lambda^2(u,v) > 0
    double phi_pos(double u, double v) noexcept
    {
-      using std::log;
       const auto lambda = std::sqrt(lambda_2(u,v));
 
-      return (-(log(u)*log(v))
-              + 2*log((1 - lambda + u - v)/2.)*log((1 - lambda - u + v)/2.)
+      return (-(std::log(u)*std::log(v))
+              + 2*std::log((1 - lambda + u - v)/2.)*std::log((1 - lambda - u + v)/2.)
               - 2*dilog((1 - lambda + u - v)/2.)
               - 2*dilog((1 - lambda - u + v)/2.)
               + sqr(Pi)/3.)/lambda;
@@ -1824,13 +1765,11 @@ namespace {
    /// lambda^2(u,v) < 0
    double phi_neg(double u, double v) noexcept
    {
-      using std::acos;
-      using std::sqrt;
       const auto lambda = std::sqrt(-lambda_2(u,v));
 
-      return 2*(+ clausen_2(2*acos((1 + u - v)/(2.*sqrt(u))))
-                + clausen_2(2*acos((1 - u + v)/(2.*sqrt(v))))
-                + clausen_2(2*acos((-1 + u + v)/(2.*sqrt(u*v)))))/lambda;
+      return 2*(+ clausen_2(2*std::acos((1 + u - v)/(2.*std::sqrt(u))))
+                + clausen_2(2*std::acos((1 - u + v)/(2.*std::sqrt(v))))
+                + clausen_2(2*std::acos((-1 + u + v)/(2.*std::sqrt(u*v)))))/lambda;
    }
 
    /**
