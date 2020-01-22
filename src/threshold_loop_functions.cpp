@@ -213,8 +213,16 @@ static double F8_1_1(double x1, double x2) noexcept
 {
    const double d1 = (x1 - 1)*(x1 + 1);
    const double d2 = (x2 - 1)*(x2 + 1);
+   const double d12 = sqr(d1);
+   const double d22 = sqr(d2);
+   const double d13 = d1*d12;
+   const double d23 = d2*d22;
+   const double d14 = sqr(d12);
+   const double d24 = sqr(d22);
 
-   return 1 + 2/3.*(d1 + d2) + 1/6.*(-d1*d1 - d1*d2 - d2*d2);
+   return 1 + 2/3.*(d1 + d2) + 1/6.*(-d12 - d1*d2 - d22)
+      + (d13 + d12*d2 + d1*d22 + d23)/15.
+      + (-d14 - d13*d2 - d12*d22 - d1*d23 - d24)/30.;
 }
 
 /// F8(x1,x2) in the limit x1 -> 1, x2 != 1
@@ -278,7 +286,7 @@ static double F8_x1_x2(double x1, double x2) noexcept
 
 double F8(double x1, double x2) noexcept
 {
-   const double eps = std::numeric_limits<double>::epsilon();
+   const double eps = 10.*std::numeric_limits<double>::epsilon();
 
    if (is_zero(x1, eps) && is_zero(x2, eps))
       return -2.;

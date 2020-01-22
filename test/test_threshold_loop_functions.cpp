@@ -613,8 +613,7 @@ BOOST_AUTO_TEST_CASE(test_F8_data)
 {
    using namespace flexiblesusy::threshold_loop_functions;
 
-   // @todo increase test precision
-   test_2("F8", [] (double x, double y) { return F8(x, y); }, 1e-8);
+   test_2("F8", [] (double x, double y) { return F8(x, y); }, 1e-10);
 }
 
 BOOST_AUTO_TEST_CASE(test_F9)
