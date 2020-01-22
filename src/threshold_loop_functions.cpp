@@ -42,7 +42,7 @@ namespace {
    template <typename T> T power10(T x) noexcept { return x*x*x*x*x*x*x*x*x*x; }
 
    template <typename T>
-   bool is_zero(T a, T prec = std::numeric_limits<T>::epsilon()) noexcept
+   bool is_zero(T a, T prec) noexcept
    {
       return std::fabs(a) < prec;
    }
@@ -1069,14 +1069,15 @@ double f8(double r1, double r2) noexcept
 double fth1(double y) noexcept
 {
    using std::log;
+   const double eps = 10.*std::numeric_limits<double>::epsilon();
 
-   if (is_zero(y))
+   if (is_zero(y, eps))
       return 0.;
 
    if (is_equal(std::abs(y), 1.))
       return -1.;
 
-   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
       const double y2 = sqr(y);
 
       return y2*log(y2) / (1. - y2);
@@ -1088,14 +1089,15 @@ double fth1(double y) noexcept
 double fth2(double y) noexcept
 {
    using std::log;
+   const double eps = 10.*std::numeric_limits<double>::epsilon();
 
-   if (is_zero(y))
+   if (is_zero(y, eps))
       return 0.;
 
    if (is_equal(std::abs(y), 1.))
       return 0.5;
 
-   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
       const double y2 = sqr(y);
 
       return (1. + y2*log(y2) / (1. - y2)) / (1 - y2);
@@ -1107,15 +1109,16 @@ double fth2(double y) noexcept
 double fth3(double y) noexcept
 {
    using std::log;
+   const double eps = 10.*std::numeric_limits<double>::epsilon();
    const double z2 = sqr(Pi) / 6.;
 
-   if (is_zero(y))
+   if (is_zero(y, eps))
       return z2;
 
    if (is_equal(std::abs(y), 1.))
       return -9./4.;
 
-   if (!is_zero(y) && !is_equal(std::abs(y), 1.)) {
+   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
       const double y2 = sqr(y);
       const double y4 = sqr(y2);
 
@@ -1895,12 +1898,13 @@ double B0(double m1, double m2, double scale) noexcept
  */
 double DB0(double m1, double m2) noexcept
 {
+   const double eps = 10.*std::numeric_limits<double>::epsilon();
    const double m12 = sqr(m1);
    const double m14 = sqr(m12);
    const double m22 = sqr(m2);
    const double m24 = sqr(m22);
 
-   if (is_zero(m12) || is_zero(m22))
+   if (is_zero(m12, eps) || is_zero(m22, eps))
       return 0.;
 
    if (is_equal_rel(m12, m22, 1e-3))
@@ -1974,6 +1978,7 @@ double D4t(double m1, double m2, double m3, double m4, double scale) noexcept
  */
 double W(double m1, double m2, double scale) noexcept
 {
+   const double eps = 10.*std::numeric_limits<double>::epsilon();
    const double m12 = sqr(m1);
    const double m14 = sqr(m12);
    const double m22 = sqr(m2);
@@ -1981,7 +1986,7 @@ double W(double m1, double m2, double scale) noexcept
    const double m26 = m24 * m22;
    const double Q2  = sqr(scale);
 
-   if (is_zero(m12) || is_zero(m22) || is_zero(Q2))
+   if (is_zero(m12, eps) || is_zero(m22, eps) || is_zero(Q2, eps))
       return 0.;
 
    if (is_equal_rel(m12,m22,1e-3))
