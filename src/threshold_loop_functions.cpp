@@ -566,10 +566,12 @@ static double f5_0_r2(double r1, double r2) noexcept
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
 
-   return ((1 + r22)*(1 - r22 + r22*lr22))/sqr(-1 + r22) +
-      (r1*r2*(2 - 2*r22 + lr22 +
-              r22*lr22))/sqr(-1 + r22) +
-      sqr(r1)*(-2/(-1 + r22) + ((1 + r22)*lr22)/sqr(-1 + r22));
+   // expansion in terms of r1 around r1 = 0 up to maximum possible
+   // power such that no IR-divergent terms appear (e.g. log(r1))
+
+   return
+      (1 + r22*(lr22 + (-1 + lr22)*r22)
+       + r1*(r1*(2 + lr22 + (-2 + lr22)*r22) + r2*(2 + lr22 + (-2 + lr22)*r22)))/sqr(-1 + r22);
 }
 
 /// f5(r1,r2) in the limit r1 -> 0 and r2 -> 1
