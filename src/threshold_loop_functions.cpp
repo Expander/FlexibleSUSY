@@ -536,6 +536,11 @@ static double f5_1_1(double r1, double r2) noexcept
 /// f5(r1,r2) in the limit r1 -> 1, r2 != 1
 static double f5_1_r2(double r1, double r2) noexcept
 {
+   if (is_zero(r2, 0.01)) {
+      const double d = r1 - 1;
+      return 0.75*(1 + d*(1./3. + d/6. + r2/3.));
+   }
+
    const double d1 = r1 - 1;
    const double d2 = r2 - 1;
    const double d12 = sqr(d1);
@@ -573,14 +578,6 @@ static double f5_0_r2(double r1, double r2) noexcept
        + r1*(r1*(2 + lr22 + (-2 + lr22)*r22) + r2*(2 + lr22 + (-2 + lr22)*r22)))/sqr(-1 + r22);
 
    return 0.75 * res;
-}
-
-/// f5(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f5_0_1(double r1, double r2) noexcept
-{
-   const double d = -1 + r2;
-
-   return 0.75*(1 + d*(1./3. + d/6. + r1/3.));
 }
 
 /// f5(r1,r2) in the limit r1 -> r2
@@ -623,16 +620,10 @@ double f5(double r1, double r2) noexcept
       return f5_1_1(-r1, -r2);
 
    if (is_equal(r1, 1., 0.01)) {
-      if (is_zero(r2, 0.01))
-         return f5_0_1(r2, r1);
-
       return f5_1_r2(r1, r2);
    }
 
    if (is_equal(r2, 1., 0.01)) {
-      if (is_zero(r1, 0.01))
-         return f5_0_1(r1, r2);
-
       return f5_1_r2(r2, r1);
    }
 
