@@ -568,10 +568,11 @@ static double f5_0_r2(double r1, double r2) noexcept
 
    // expansion in terms of r1 around r1 = 0 up to maximum possible
    // power such that no IR-divergent terms appear (e.g. log(r1))
-
-   return
+   const double res =
       (1 + r22*(lr22 + (-1 + lr22)*r22)
        + r1*(r1*(2 + lr22 + (-2 + lr22)*r22) + r2*(2 + lr22 + (-2 + lr22)*r22)))/sqr(-1 + r22);
+
+   return 0.75 * res;
 }
 
 /// f5(r1,r2) in the limit r1 -> 0 and r2 -> 1
@@ -636,10 +637,10 @@ double f5(double r1, double r2) noexcept
    }
 
    if (is_zero(r1, 0.0001))
-      return 0.75 * f5_0_r2(r1, r2);
+      return f5_0_r2(r1, r2);
 
    if (is_zero(r2, 0.0001))
-      return 0.75 * f5_0_r2(r2, r1);
+      return f5_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))
       return 0.75 * f5_r1_r2(r2, r1);
