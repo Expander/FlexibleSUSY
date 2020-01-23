@@ -533,44 +533,31 @@ static double f5_1_1(double r1, double r2) noexcept
       + 1./280.*(9*(d14 + d13*d2 + d12*d22 + d1*d23 + d24));
 }
 
-/// f5(r1,r2) in the limit r1 -> 1
+/// f5(r1,r2) in the limit r1 -> 1, r2 != 1
 static double f5_1_r2(double r1, double r2) noexcept
 {
-   const double lr22 = std::log(sqr(r2));
+   const double d1 = r1 - 1;
+   const double d2 = r2 - 1;
+   const double d12 = sqr(d1);
+   const double d13 = d12*d1;
+   const double d14 = d13*d1;
+   const double d22 = sqr(d2);
+   const double d23 = d22*d2;
+   const double d24 = d23*d2;
+   const double d25 = d24*d2;
+   const double d26 = d25*d2;
+   const double d27 = d26*d2;
+   const double y = 1 + r2;
+   const double y2 = sqr(y);
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
 
-   return (-0.025*cube(-1. + r1)*(
-              4. - 17.*r2 + 4.*sqr(r2)
-              - 25.*cube(r2)
-              - 20.*quad(r2)
-              + 41.*pow5(r2)
-              + 12.*pow6(r2)
-              + pow7(r2)
-              + (-30.*cube(r2) - 30.*pow5(r2))
-              *lr22))/(pow6(-1. + r2)*sqr(1. + r2))
-      - (0.125*sqr(-1. + r1)*(
-            1. - 4.*r2 + sqr(r2)
-            - 4.*cube(r2)
-            - 5.*quad(r2)
-            + 8.*pow5(r2)
-            + 3.*pow6(r2)
-            + (-6.*cube(r2) - 6.*pow5(r2))
-            *lr22))/(pow5(-1. + r2)*sqr(1. + r2))
-      + (0.75*(-1 + r2 + 2*sqr(r2)
-               - quad(r2)
-               - pow5(r2)
-               + (cube(r2) + pow5(r2))
-               *lr22))/(cube(-1 + r2)*sqr(1 + r2))
-      + (0.25*(-1. + r1)*(
-            1. - r2 - 2.*sqr(r2) + 8.*cube(r2)
-            + quad(r2) - 7.*pow5(r2)
-            + (3.*cube(r2) + 3.*pow5(r2))
-            *lr22))/(quad(-1. + r2)*sqr(1. + r2))
-      + (0.05*quad(-1. + r1)*(
-            -1. + 4.5*r2 + 2.*sqr(r2)
-            + 16.5*cube(r2) - 16.5*pow5(r2) - 2.*pow6(r2)
-            - 4.5*pow7(r2) + pow8(r2)
-            + (15.*cube(r2) + 15.*pow5(r2))
-            *lr22))/(pow7(-1. + r2)*sqr(1. + r2));
+   return
+      + (-3 + r2*(3 + r2*(6 + r2*(3*lr22 + r2*(-3 + (-3 + 3*lr22)*r2)))))/(4.*d23*y2)
+      + d1*(1 + r2*(-1 + r2*(-2 + r2*(8 + 3*lr22 + r2*(1 + (-7 + 3*lr22)*r2)))))/(4.*d24*y2)
+      + d12*(-1 + r2*(4 + r2*(-1 + r2*(4 + 6*lr22 + r2*(5 + (-8 + 6*lr22 - 3*r2)*r2)))))/(8.*d25*y2)
+      + d13*(-4 + r2*(17 + r2*(-4 + r2*(25 + 30*lr22 + r2*(20 + r2*(-41 + 30*lr22 + (-12 - r2)*r2))))))/(40.*d26*y2)
+      + d14*(-2 + r2*(9 + r2*(4 + r2*(33 + 30*lr22 + r22*(-33 + 30*lr22 + r2*(-4 + r2*(-9 + 2*r2)))))))/(40.*d27*y2);
 }
 
 /// f5(r1,r2) in the limit r1 -> 0
