@@ -710,9 +710,20 @@ static double f6_1_1(double r1, double r2) noexcept
          + (5*quad(-1 + r1))/3234.)*quad(-1 + r2);
 }
 
+/// f6(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f6_0_1(double, double r2) noexcept
+{
+   return 6./7.*(0.5 + (2*(-1 + r2))/3. - cube(-1 + r2)/15.
+                 + quad(-1 + r2)/20.);
+}
+
 /// f6(r1,r2) in the limit r1 -> 1
 static double f6_1_r2(double r1, double r2) noexcept
 {
+   if (is_zero(r2, 1e-4)) {
+      return f6_0_1(r2, r1);
+   }
+
    const double r22 = sqr(r2);
 
    return ((-1 + r22)*(
@@ -776,13 +787,6 @@ static double f6_r1_r2(double r1, double r2) noexcept
     (6.*pow6(-1 + r22));
 }
 
-/// f6(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f6_0_1(double, double r2) noexcept
-{
-   return 6./7.*(0.5 + (2*(-1 + r2))/3. - cube(-1 + r2)/15.
-                 + quad(-1 + r2)/20.);
-}
-
 double f6(double r1, double r2) noexcept
 {
    if (is_zero(r1, 1e-5) && is_zero(r2, 1e-5))
@@ -795,16 +799,10 @@ double f6(double r1, double r2) noexcept
       return f6_1_1(-r1, -r2);
 
    if (is_equal(r1, 1., 0.001)) {
-      if (is_zero(r2, 0.0001))
-         return f6_0_1(r2, r1);
-
       return f6_1_r2(r1, r2);
    }
 
    if (is_equal(r2, 1., 0.001)) {
-      if (is_zero(r1, 0.0001))
-         return f6_0_1(r1, r2);
-
       return f6_1_r2(r2, r1);
    }
 
@@ -846,9 +844,20 @@ static double f7_1_1(double r1, double r2) noexcept
       /2310.;
 }
 
+/// f7(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f7_0_1(double, double r2) noexcept
+{
+   return 6.*(0.5 + (1 - r2)/3. + sqr(-1 + r2)/6. - cube(-1 + r2)/15.
+              + quad(-1 + r2)/60.);
+}
+
 /// f7(r1,r2) in the limit r1 -> 1
 static double f7_1_r2(double r1, double r2) noexcept
 {
+   if (is_zero(r2, 0.0001)) {
+      return f7_0_1(r2, r1);
+   }
+
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
 
@@ -881,13 +890,6 @@ static double f7_0_r2(double r1, double r2) noexcept
    return -((r1*r2*(-1 + r22 - lr22))/sqr(-1 + r22)) +
       (sqr(r1)*(1 - r22 + lr22))/sqr(-1 + r22) +
       (1 - r22 + r22*lr22)/sqr(-1 + r22);
-}
-
-/// f7(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f7_0_1(double, double r2) noexcept
-{
-   return 6.*(0.5 + (1 - r2)/3. + sqr(-1 + r2)/6. - cube(-1 + r2)/15.
-              + quad(-1 + r2)/60.);
 }
 
 /// f7(r1,r2) in the limit r1 -> r2
@@ -929,16 +931,10 @@ double f7(double r1, double r2) noexcept
       return f7_1_1(-r1, -r2);
 
    if (is_equal(r1, 1., 0.01)) {
-      if (is_zero(r2, 0.0001))
-         return f7_0_1(r2, r1);
-
       return f7_1_r2(r1, r2);
    }
 
    if (is_equal(r2, 1., 0.01)) {
-      if (is_zero(r1, 0.0001))
-         return f7_0_1(r1, r2);
-
       return f7_1_r2(r2, r1);
    }
 
@@ -955,9 +951,9 @@ double f7(double r1, double r2) noexcept
    const double r22 = sqr(r2);
 
    const double result
-      = (1+r1*r2)/((r12-1)*(r22-1))
-      + (cube(r1)*std::log(r12))/(sqr(r12-1)*(r1-r2))
-      - (cube(r2)*std::log(r22))/((r1-r2)*sqr(r22-1));
+      = (1 + r1*r2)/((r12 - 1)*(r22 - 1))
+      + (cube(r1)*std::log(r12))/(sqr(r12 - 1)*(r1 - r2))
+      - (cube(r2)*std::log(r22))/((r1 - r2)*sqr(r22 - 1));
 
    return 6. * result;
 }
@@ -981,9 +977,20 @@ static double f8_1_1(double r1, double r2) noexcept
          - quad(-1 + r1)/1155.)*quad(-1 + r2);
 }
 
+/// f8(r1,r2) in the limit r1 -> 0 and r2 -> 1
+static double f8_0_1(double, double r2) noexcept
+{
+   return 1.5*(0.5 + (-1 + r2)/6. - sqr(-1 + r2)/6. + cube(-1 + r2)/10.
+               - quad(-1 + r2)/20.);
+}
+
 /// f8(r1,r2) in the limit r1 -> 1
 static double f8_1_r2(double r1, double r2) noexcept
 {
+   if (is_zero(r2, 1e-4)) {
+      return f8_0_1(r2, r1);
+   }
+
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
 
@@ -1018,13 +1025,6 @@ static double f8_0_r2(double r1, double r2) noexcept
    return -((sqr(r1)*r2*(-1 + r22 - lr22))/sqr(-1 + r22)) +
       (r1*(1 - r22 + r22*lr22))/sqr(-1 + r22) +
       (r2 - cube(r2) + cube(r2)*lr22)/sqr(-1 + r22);
-}
-
-/// f8(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f8_0_1(double, double r2) noexcept
-{
-   return 1.5*(0.5 + (-1 + r2)/6. - sqr(-1 + r2)/6. + cube(-1 + r2)/10.
-               - quad(-1 + r2)/20.);
 }
 
 /// f8(r1,r2) in the limit r1 -> r2
@@ -1063,16 +1063,10 @@ double f8(double r1, double r2) noexcept
       return -1.;
 
    if (is_equal(r1, 1., 0.01)) {
-      if (is_zero(r2, 0.0001))
-         return f8_0_1(r2, r1);
-
       return f8_1_r2(r1, r2);
    }
 
    if (is_equal(r2, 1., 0.01)) {
-      if (is_zero(r1, 0.0001))
-         return f8_0_1(r1, r2);
-
       return f8_1_r2(r2, r1);
    }
 
@@ -1089,9 +1083,9 @@ double f8(double r1, double r2) noexcept
    const double r22 = sqr(r2);
 
    const double result
-      = (r1+r2)/((r12-1)*(r22-1))
-      + (quad(r1)*std::log(r12))/(sqr(r12-1)*(r1-r2))
-      - (quad(r2)*std::log(r22))/((r1-r2)*sqr(r22-1));
+      = (r1 + r2)/((r12 - 1)*(r22 - 1))
+      + (quad(r1)*std::log(r12))/(sqr(r12 - 1)*(r1 - r2))
+      - (quad(r2)*std::log(r22))/((r1 - r2)*sqr(r22 - 1));
 
    return 1.5 * result;
 }
