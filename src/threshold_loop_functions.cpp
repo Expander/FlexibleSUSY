@@ -73,6 +73,15 @@ namespace {
       return is_zero(a - b, prec*(1.0 + max));
    }
 
+   double logx(double x)
+   {
+      if (is_zero(x, 10.0*std::numeric_limits<double>::epsilon())) {
+         return 0.;
+      }
+
+      return std::log(x);
+   }
+
    double xlogx(double x)
    {
       if (is_zero(x, 1e-14)) {
@@ -523,6 +532,30 @@ double f4(double r) noexcept
    return 2*(5*r4 + 25*r2 + 6)/(7*d2) + 2*(r4 - 19*r2 - 18)*r2*std::log(r2)/(7*d3);
 }
 
+/// f5(r1,r2) in the limit r1 -> 0, r2 -> 0
+static double f5_0_0(double r1, double r2) noexcept
+{
+   if (std::abs(r1) > std::abs(r2)) {
+      std::swap(r1, r2);
+   }
+
+   const double r12 = sqr(r1);
+   const double r22 = sqr(r2);
+   const double r2lr2 = xlogx(r2);
+   const double lr2 = logx(r2);
+
+   // expansion of f5 in
+   //   r1 up to (including) r1^2
+   //   r2 up to (including) r1^3
+   return 0.75*(
+      + 1
+      + 2*r1*(r2 + r2lr2)
+      + 2*r22 + 2*r2*r2lr2
+      + r12*(2 + 2*lr2 + r2*(2*r2 + 6*r2lr2))
+      + r1*r22*(6*r2lr2 + 2*r2)
+   );
+}
+
 /// f5(r1,r2) in the limit r1 -> 1 and r2 -> 1
 static double f5_1_1(double r1, double r2) noexcept
 {
@@ -608,30 +641,6 @@ static double f5_r1_r2(double r1, double r2) noexcept
       + d*r2*(11 + 3*lr22 + r22*(3 + 18*lr22 + r22*(-15 + 3*lr22 + r22)))/y4
       + d2*(-17 - 3*lr22 + r22*(-116 - 75*lr22 + r22*(90 - 105*lr22 + r22*(44 - 9*lr22 - r22))))/(3.*y5)
       + d3*(3 + r22*(273 + 90*lr22 + r22*(314 + 510*lr22 + r22*(-498 + 342*lr22 + r22*(-93 + 18*lr22 + r22)))))/(6.*r2*y6);
-}
-
-/// f5(r1,r2) in the limit r1 -> 0, r2 -> 0
-static double f5_0_0(double r1, double r2) noexcept
-{
-   if (std::abs(r1) > std::abs(r2)) {
-      std::swap(r1, r2);
-   }
-
-   const double r12 = sqr(r1);
-   const double r22 = sqr(r2);
-   const double r2lr2 = xlogx(r2);
-   const double lr2 = std::log(r2);
-
-   // expansion of f5 in
-   //   r1 up to (including) r1^2
-   //   r2 up to (including) r1^3
-   return 0.75*(
-      + 1
-      + 2*r1*(r2 + r2lr2)
-      + 2*r22 + 2*r2*r2lr2
-      + r12*(2 + 2*lr2 + r2*(2*r2 + 6*r2lr2))
-      + r1*r22*(6*r2lr2 + 2*r2)
-   );
 }
 
 double f5(double r1, double r2) noexcept
