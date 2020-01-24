@@ -73,6 +73,15 @@ namespace {
       return is_zero(a - b, prec*(1.0 + max));
    }
 
+   double xlogx(double x)
+   {
+      if (is_zero(x, 1e-14)) {
+         return 0.;
+      }
+
+      return x * std::log(x);
+   }
+
 } // anonymous namespace
 
 double F1(double x) noexcept
@@ -608,18 +617,50 @@ static double f5_r1_r2(double r1, double r2) noexcept
     (6.*r2*pow6(-1 + r22));
 }
 
+/// f5(r1,r2) in the limit r1 -> 0, r2 -> 0
+static double f5_0_0(double r1, double r2) noexcept
+{
+   if (std::abs(r1) > std::abs(r2)) {
+      std::swap(r1, r2);
+   }
+
+   const double r12 = sqr(r1);
+   const double r22 = sqr(r2);
+   const double r2lr2 = xlogx(r2);
+   const double lr2 = std::log(r2);
+
+   // expansion of f5 in
+   //   r1 up to (including) r1^2
+   //   r2 up to (including) r1^3
+   return 0.75*(
+      + 1
+      + 2*r1*(r2 + r2lr2)
+      + 2*r22 + 2*r2*r2lr2
+      + r12*(2 + 2*lr2 + r2*(2*r2 + 6*r2lr2))
+      + r1*r22*(6*r2lr2 + 2*r2)
+   );
+}
+
 double f5(double r1, double r2) noexcept
 {
-   if (is_zero(r1, 1e-5) && is_zero(r2, 1e-5))
+   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
       return 0.75;
+   }
 
-   if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01))
+   const double eps_zero = 1e-4;
+   const double eps_one = 1e-2;
+
+   if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {
+      return f5_0_0(r1, r2);
+   }
+
+   if (is_equal(r1, 1., eps_one) && is_equal(r2, 1., eps_one))
       return f5_1_1(r1, r2);
 
-   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01))
+   if (is_equal(r1, -1., eps_one) && is_equal(r2, -1., eps_one))
       return f5_1_1(-r1, -r2);
 
-   if (is_equal(r1, 1., 0.01)) {
+   if (is_equal(r1, 1., eps_one)) {
       return f5_1_r2(r1, r2);
    }
 
@@ -627,10 +668,10 @@ double f5(double r1, double r2) noexcept
       return f5_1_r2(r2, r1);
    }
 
-   if (is_zero(r1, 0.0001))
+   if (is_zero(r1, eps_zero))
       return f5_0_r2(r1, r2);
 
-   if (is_zero(r2, 0.0001))
+   if (is_zero(r2, eps_zero))
       return f5_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))

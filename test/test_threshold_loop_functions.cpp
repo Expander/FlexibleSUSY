@@ -922,7 +922,7 @@ BOOST_AUTO_TEST_CASE(test_f5_data)
    using namespace flexiblesusy::threshold_loop_functions;
 
    // @todo increase test precision
-   test_2("f5", [] (double x, double y) { return f5(x, y); }, 1e-8);
+   test_2("f5", [] (double x, double y) { return f5(x, y); }, 3e-10);
 }
 
 BOOST_AUTO_TEST_CASE(test_f6)
