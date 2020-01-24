@@ -46,13 +46,13 @@ namespace {
    }
 
    template <typename T>
-   bool is_equal(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
+   bool is_equal(T a, T b, T prec) noexcept
    {
       return is_zero(a - b, prec);
    }
 
    template <typename T>
-   bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
+   bool is_equal_rel(T a, T b, T prec) noexcept
    {
       if (is_equal(a, b, std::numeric_limits<T>::epsilon())) {
          return true;
@@ -1147,11 +1147,11 @@ double fth1(double y) noexcept
       return 0.;
    }
 
-   if (is_equal(std::abs(y), 1.)) {
+   if (is_equal(std::abs(y), 1.0, eps)) {
       return -1.;
    }
 
-   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
+   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.0, eps)) {
       const double y2 = sqr(y);
 
       return y2*std::log(y2) / (1. - y2);
@@ -1168,11 +1168,11 @@ double fth2(double y) noexcept
       return 0.;
    }
 
-   if (is_equal(std::abs(y), 1.)) {
+   if (is_equal(std::abs(y), 1.0, eps)) {
       return 0.5;
    }
 
-   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
+   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.0, eps)) {
       const double y2 = sqr(y);
 
       return (1. + y2*std::log(y2) / (1. - y2)) / (1 - y2);
@@ -1190,11 +1190,11 @@ double fth3(double y) noexcept
       return z2;
    }
 
-   if (is_equal(std::abs(y), 1.)) {
+   if (is_equal(std::abs(y), 1.0, eps)) {
       return -9./4.;
    }
 
-   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.)) {
+   if (!is_zero(y, eps) && !is_equal(std::abs(y), 1.0, eps)) {
       const double y2 = sqr(y);
       const double y4 = sqr(y2);
       const double ly = std::log(y2);
