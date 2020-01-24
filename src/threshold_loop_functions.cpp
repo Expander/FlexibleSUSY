@@ -684,9 +684,9 @@ double f5(double r1, double r2) noexcept
    const double r22 = sqr(r2);
 
    const double result
-      = (1+sqr(r1+r2)-r12*r22)/((r12-1)*(r22-1))
-      + (cube(r1)*(r12+1)*std::log(r12))/(sqr(r12-1)*(r1-r2))
-      - (cube(r2)*(r22+1)*std::log(r22))/((r1-r2)*sqr(r22-1));
+      = (1 + sqr(r1 + r2) - r12*r22)/((r12 - 1)*(r22 - 1))
+      + (cube(r1)*(r12 + 1)*std::log(r12))/(sqr(r12 - 1)*(r1 - r2))
+      - (cube(r2)*(r22 + 1)*std::log(r22))/((r1 - r2)*sqr(r22 - 1));
 
    return 0.75 * result;
 }
