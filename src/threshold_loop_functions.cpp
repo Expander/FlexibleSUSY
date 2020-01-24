@@ -67,13 +67,13 @@ namespace {
       return is_equal(a, b, prec*max);
    }
 
-   bool is_close(double a, double b, double prec)
+   bool is_close(double a, double b, double prec) noexcept
    {
       const double max = std::max(std::abs(a), std::abs(b));
       return is_zero(a - b, prec*(1.0 + max));
    }
 
-   double logx(double x)
+   double logx(double x) noexcept
    {
       if (is_zero(x, 10.0*std::numeric_limits<double>::epsilon())) {
          return 0.;
@@ -82,7 +82,7 @@ namespace {
       return std::log(x);
    }
 
-   double xlogx(double x)
+   double xlogx(double x) noexcept
    {
       if (is_zero(x, 1e-14)) {
          return 0.;
