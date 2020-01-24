@@ -29,8 +29,6 @@ namespace flexiblesusy {
 namespace threshold_loop_functions {
 
 namespace {
-   const double Pi = 3.1415926535897932384626433832795;
-
    template <typename T> T sqr(T x) noexcept { return x*x; }
    template <typename T> T cube(T x) noexcept { return x*x*x; }
    template <typename T> T quad(T x) noexcept { return x*x*x*x; }
@@ -1131,7 +1129,7 @@ double fth2(double y) noexcept
 double fth3(double y) noexcept
 {
    const double eps = 10.*std::numeric_limits<double>::epsilon();
-   const double z2 = sqr(Pi) / 6.;
+   const double z2 = 1.644934066848226;
 
    if (is_zero(y, eps))
       return z2;
@@ -1777,6 +1775,7 @@ namespace {
    /// u < 1 && v < 1, lambda^2(u,v) > 0
    double phi_pos(double u, double v) noexcept
    {
+      const double Pi = 3.141592653589793;
       const auto lambda = std::sqrt(lambda_2(u,v));
 
       return (-(std::log(u)*std::log(v))
