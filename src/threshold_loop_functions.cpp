@@ -18,9 +18,9 @@
 
 #include "threshold_loop_functions.hpp"
 #include "dilog.hpp"
-#include "pv.hpp"
 #include "logger.hpp"
 #include "numerics.h"
+#include "pv.hpp"
 
 #include <cmath>
 #include <limits>
@@ -403,7 +403,7 @@ static double F9_1_x2(double x1, double x2) noexcept
 }
 
 /// F9(x1,x2) in the limit x1 -> 0, x2 != 1, x2 != 0
-static double F9_0_x2(double, double x2) noexcept
+static double F9_0_x2(double /* x1 */, double x2) noexcept
 {
    const double x22 = sqr(x2);
 
@@ -882,7 +882,7 @@ static double f7_1_1(double r1, double r2) noexcept
 }
 
 /// f7(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f7_0_1(double, double r2) noexcept
+static double f7_0_1(double /* r1 */, double r2) noexcept
 {
    return 6.*(0.5 + (1 - r2)/3. + sqr(-1 + r2)/6. - cube(-1 + r2)/15.
               + quad(-1 + r2)/60.);
@@ -1021,7 +1021,7 @@ static double f8_1_1(double r1, double r2) noexcept
 }
 
 /// f8(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f8_0_1(double, double r2) noexcept
+static double f8_0_1(double /* r1 */, double r2) noexcept
 {
    return 1.5*(0.5 + (-1 + r2)/6. - sqr(-1 + r2)/6. + cube(-1 + r2)/10.
                - quad(-1 + r2)/20.);
