@@ -54,11 +54,13 @@ namespace {
    template <typename T>
    bool is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
    {
-      if (is_equal(a, b, std::numeric_limits<T>::epsilon()))
+      if (is_equal(a, b, std::numeric_limits<T>::epsilon())) {
          return true;
+      }
 
-      if (std::fabs(a) < std::numeric_limits<T>::epsilon())
+      if (std::fabs(a) < std::numeric_limits<T>::epsilon()) {
          return is_equal(a, b, prec);
+      }
 
       const double max = std::max(std::fabs(a), std::fabs(b));
 
@@ -95,8 +97,9 @@ double F1(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return 0.;
+   }
 
    if (is_equal(x, 1., 0.01)) {
       const double d = x - 1;
@@ -113,8 +116,9 @@ double F2(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return 0.;
+   }
 
    if (is_equal(x, 1., 0.01)) {
       const double d = (x - 1)*(x + 1);
@@ -131,8 +135,9 @@ double F3(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return 0.;
+   }
 
    if (is_equal(x, 1., 0.01)) {
       const double d = x - 1;
@@ -148,8 +153,9 @@ double F4(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return 0.;
+   }
 
    if (is_equal(x, 1., 0.01)) {
       const double d = x - 1;
@@ -166,8 +172,9 @@ double F5(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return 0.;
+   }
 
    if (is_equal(x, 1., 0.01)) {
       const double d = x - 1;
@@ -191,8 +198,9 @@ double F6(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return -0.75;
+   }
 
    const double x2 = sqr(x);
 
@@ -208,8 +216,9 @@ double F7(double x) noexcept
 {
    const double eps = std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x, eps))
+   if (is_zero(x, eps)) {
       return -1.5;
+   }
 
    const double x2 = sqr(x);
 
@@ -247,8 +256,9 @@ static double F8_1_x2(double x1, double x2) noexcept
    const double x22 = sqr(x2);
    const double d = (x1 - 1)*(x1 + 1);
 
-   if (is_zero(x2, 0.01))
+   if (is_zero(x2, 0.01)) {
       return 2*x22 + d*(1 - x22 + d*(-1/3. + 2/3.*x22));
+   }
 
    const double d2 = sqr(d);
    const double d3 = d*d2;
@@ -304,29 +314,36 @@ double F8(double x1, double x2) noexcept
 {
    const double eps = 10.*std::numeric_limits<double>::epsilon();
 
-   if (is_zero(x1, eps) && is_zero(x2, eps))
+   if (is_zero(x1, eps) && is_zero(x2, eps)) {
       return -2.;
+   }
 
    const double ax1 = std::fabs(x1);
    const double ax2 = std::fabs(x2);
 
-   if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
+   if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01)) {
       return F8_1_1(x1, x2);
+   }
 
-   if (is_equal(ax1, 1., 0.01))
+   if (is_equal(ax1, 1., 0.01)) {
       return F8_1_x2(x1, x2);
+   }
 
-   if (is_equal(ax2, 1., 0.01))
+   if (is_equal(ax2, 1., 0.01)) {
       return F8_1_x2(x2, x1);
+   }
 
-   if (is_zero(x1, 0.00001))
+   if (is_zero(x1, 0.00001)) {
       return F8_0_x2(x1, x2);
+   }
 
-   if (is_zero(x2, 0.00001))
+   if (is_zero(x2, 0.00001)) {
       return F8_0_x2(x2, x1);
+   }
 
-   if (is_equal(ax1, ax2, 0.00001))
+   if (is_equal(ax1, ax2, 0.00001)) {
       return F8_x1_x2(x1, x2);
+   }
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -373,8 +390,9 @@ static double F9_1_x2(double x1, double x2) noexcept
    const double y6 = sqr(y3);
    const double lx22 = std::log(x22);
 
-   if (is_zero(x2, 0.01))
+   if (is_zero(x2, 0.01)) {
       return 2 + d;
+   }
 
    return
       + 2*(1 + x22*(-1 + lx22))/y2
@@ -418,23 +436,29 @@ double F9(double x1, double x2) noexcept
    const double ax1 = std::fabs(x1);
    const double ax2 = std::fabs(x2);
 
-   if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01))
+   if (is_equal(ax1, 1., 0.01) && is_equal(ax2, 1., 0.01)) {
       return F9_1_1(x1, x2);
+   }
 
-   if (is_equal(ax1, 1., 0.01))
+   if (is_equal(ax1, 1., 0.01)) {
       return F9_1_x2(x1, x2);
+   }
 
-   if (is_equal(ax2, 1., 0.01))
+   if (is_equal(ax2, 1., 0.01)) {
       return F9_1_x2(x2, x1);
+   }
 
-   if (is_zero(x1, 0.0001))
+   if (is_zero(x1, 0.0001)) {
       return F9_0_x2(x1, x2);
+   }
 
-   if (is_zero(x2, 0.0001))
+   if (is_zero(x2, 0.0001)) {
       return F9_0_x2(x2, x1);
+   }
 
-   if (is_equal(ax1, ax2, 0.00001))
+   if (is_equal(ax1, ax2, 0.00001)) {
       return F9_x1_x2(x1, x2);
+   }
 
    const double x12 = sqr(x1);
    const double x22 = sqr(x2);
@@ -458,8 +482,9 @@ double f1(double r) noexcept
 {
    const double r2 = sqr(r);
 
-   if (is_zero(r, 0.01))
+   if (is_zero(r, 0.01)) {
       return 18./7.*r2;
+   }
 
    const double d = r2 - 1;
 
@@ -477,8 +502,9 @@ double f2(double r) noexcept
 {
    const double r2 = sqr(r);
 
-   if (is_zero(r, 0.01))
+   if (is_zero(r, 0.01)) {
       return 22./9.*r2;
+   }
 
    const double d = r2 - 1;
 
@@ -494,8 +520,9 @@ double f2(double r) noexcept
 
 double f3(double r) noexcept
 {
-   if (is_zero(r, 1e-6))
+   if (is_zero(r, 1e-6)) {
       return 4./3.;
+   }
 
    const double r2 = sqr(r);
    const double d = r2 - 1;
@@ -513,8 +540,9 @@ double f3(double r) noexcept
 
 double f4(double r) noexcept
 {
-   if (is_zero(r, 1e-6))
+   if (is_zero(r, 1e-6)) {
       return 12./7.;
+   }
 
    const double r2 = sqr(r);
    const double d = r2 - 1;
@@ -655,11 +683,13 @@ double f5(double r1, double r2) noexcept
       return f5_0_0(r1, r2);
    }
 
-   if (is_equal(r1, 1., eps_one) && is_equal(r2, 1., eps_one))
+   if (is_equal(r1, 1., eps_one) && is_equal(r2, 1., eps_one)) {
       return f5_1_1(r1, r2);
+   }
 
-   if (is_equal(r1, -1., eps_one) && is_equal(r2, -1., eps_one))
+   if (is_equal(r1, -1., eps_one) && is_equal(r2, -1., eps_one)) {
       return f5_1_1(-r1, -r2);
+   }
 
    if (is_equal(r1, 1., eps_one)) {
       return f5_1_r2(r1, r2);
@@ -669,14 +699,17 @@ double f5(double r1, double r2) noexcept
       return f5_1_r2(r2, r1);
    }
 
-   if (is_zero(r1, eps_zero))
+   if (is_zero(r1, eps_zero)) {
       return f5_0_r2(r1, r2);
+   }
 
-   if (is_zero(r2, eps_zero))
+   if (is_zero(r2, eps_zero)) {
       return f5_0_r2(r2, r1);
+   }
 
-   if (is_equal(r1, r2, 0.0001))
+   if (is_equal(r1, r2, 0.0001)) {
       return f5_r1_r2(r2, r1);
+   }
 
    const double r12 = sqr(r1);
    const double r22 = sqr(r2);
