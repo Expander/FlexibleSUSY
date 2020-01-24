@@ -737,10 +737,17 @@ static double f6_1_1(double r1, double r2) noexcept
 }
 
 /// f6(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f6_0_1(double, double r2) noexcept
+static double f6_0_1(double r1, double r2) noexcept
 {
-   return 6./7.*(0.5 + (2*(-1 + r2))/3. - cube(-1 + r2)/15.
-                 + quad(-1 + r2)/20.);
+   const double d2 = r2 - 1;
+   const double d22 = sqr(d2);
+
+   return
+      + 3./7 + d2*(4./7 + (-2./35 + 3.*d2/70)*d22)
+      + r1*(3./7 + d2*(1./7 + d2*(-1./7 + (3./35 - 3.*d2/70)*d2))
+      + r1*(3./7 + d2*(-2./7 + d2*(1./7 + (-2./35 + d2/70)*d2))
+      + r1*(-3./7 + d2*(1./7 + (-2./35 + d2/14)*d22)
+      + r1*(-3./7 + d2*(4./7 + d2*(-4./7 + (18./35 - 31.*d2/70)*d2))))));
 }
 
 /// f6(r1,r2) in the limit r1 -> 1
