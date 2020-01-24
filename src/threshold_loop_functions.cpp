@@ -636,11 +636,12 @@ static double f5_r1_r2(double r1, double r2) noexcept
    const double y6 = y5*y;
    const double lr22 = std::log(r22);
 
-   return
+   return 0.75*(
       + (-1 + r22*(-5 - 3*lr22 + r22*(5 - 6*lr22 + (1 + lr22)*r22)))/y3
       + d*r2*(11 + 3*lr22 + r22*(3 + 18*lr22 + r22*(-15 + 3*lr22 + r22)))/y4
       + d2*(-17 - 3*lr22 + r22*(-116 - 75*lr22 + r22*(90 - 105*lr22 + r22*(44 - 9*lr22 - r22))))/(3.*y5)
-      + d3*(3 + r22*(273 + 90*lr22 + r22*(314 + 510*lr22 + r22*(-498 + 342*lr22 + r22*(-93 + 18*lr22 + r22)))))/(6.*r2*y6);
+      + d3*(3 + r22*(273 + 90*lr22 + r22*(314 + 510*lr22 + r22*(-498 + 342*lr22 + r22*(-93 + 18*lr22 + r22)))))/(6.*r2*y6)
+   );
 }
 
 double f5(double r1, double r2) noexcept
@@ -677,7 +678,7 @@ double f5(double r1, double r2) noexcept
       return f5_0_r2(r2, r1);
 
    if (is_equal(r1, r2, 0.0001))
-      return 0.75 * f5_r1_r2(r2, r1);
+      return f5_r1_r2(r2, r1);
 
    const double r12 = sqr(r1);
    const double r22 = sqr(r2);
