@@ -758,29 +758,27 @@ static double f6_1_r2(double r1, double r2) noexcept
    }
 
    const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+   const double y = 1 + r2;
+   const double y2 = sqr(y);
+   const double z = r2 - 1;
+   const double z2 = sqr(z);
+   const double z3 = z2*z;
+   const double z4 = z3*z;
+   const double z5 = z4*z;
+   const double z6 = z5*z;
+   const double z7 = z6*z;
+   const double d = r1 - 1;
+   const double d2 = sqr(d);
+   const double d3 = d2*d;
+   const double d4 = d3*d;
 
-   return ((-1 + r22)*(
-              -3 + 16*r2 + 33*r22 - 332*cube(r2)
-              + 573*quad(r2) - 584*pow5(r2) + 297*pow6(r2)
-              - 60*pow7(r2) - 2*cube(r1)*(
-                 8 - 49*r2 + 121*r22 - 129*cube(r2)
-                 - 99*quad(r2) + 28*pow5(r2))
-              + quad(r1)*(
-                 3 - 18*r2 + 43*r22 - 42*cube(r2)
-                 - 47*quad(r2) + pow6(r2))
-              - 2*r1*(-8 + 10*r2 + 106*r22 - 359*cube(r2)
-                      + 211*quad(r2) - 101*pow5(r2)
-                      + 21*pow6(r2))
-              - 2*sqr(r1)*(-15 + 98*r2 - 264*r22
-                                  + 331*cube(r2) + 106*quad(r2)
-                                  - 99*pow5(r2) + 23*pow6(r2)))
-           + 60*pow5(r2)*(5 + quad(r1) + cube(r1)*(-5 + r2)
-                                - 10*r2 + 10*r22 - 5*cube(r2)
-                                + quad(r2) + sqr(r1)*(
-                                   10 - 5*r2 + r22)
-                                + r1*(-10 + 10*r2 - 5*r22
-                                      + cube(r2)))*std::log(r22))
-      /(70.*pow7(-1 + r2)*sqr(1 + r2));
+   return
+      (-3 + r22*(6 + r2*(6 + r2*(-3 + r2*(-6 + 6*lr22)))))/(7.*z3*y2)
+      + d*(4 + r2*(-7 + r2*(-8 + r2*(20 + r2*(4 + r2*(-13 + 6*lr22))))))/(7.*z4*y2)
+      + d2*r2*(1 + r2*(-4 + r2*(4 + r2*(8 + r2*(-5 - 4*r2 + 6*lr22)))))/(7.*z5*y2)
+      + d3*(-2 + r2*(11 + r2*(-22 + r2*(10 + r2*(50 + r2*(-23 + r2*(-26 + 2*r2) + 30*lr22))))))/(35.*z6*y2)
+      + d4*(-3 + r2*(18 + r2*(-40 + r2*(24 + r2*(90 + r2*(-42 + r2*(-48 + r22) + 60*lr22))))))/(70.*z7*y2);
 }
 
 /// f6(r1,r2) in the limit r1 -> 0
