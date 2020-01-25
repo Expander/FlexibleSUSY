@@ -28,7 +28,7 @@ jobs:
 
     strategy:
       matrix:
-        CXXCOMPILER: [g++, clang++]
+        CXXCOMPILER: [g++]
         LOOPLIBRARY: [internal, looptools]
 
     env:
