@@ -1008,11 +1008,11 @@ double f7(double r1, double r2) noexcept
       return f7_1_r2(r2, r1);
    }
 
-   if (is_zero(r1, 0.0001)) {
+   if (is_zero(r1, eps_zero)) {
       return f7_0_r2(r1, r2);
    }
 
-   if (is_zero(r2, 0.0001)) {
+   if (is_zero(r2, eps_zero)) {
       return f7_0_r2(r2, r1);
    }
 
