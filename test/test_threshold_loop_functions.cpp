@@ -1002,8 +1002,7 @@ BOOST_AUTO_TEST_CASE(test_f6_data)
       return std::abs(f) > 1e-6;
    };
 
-   // @todo increase test precision
-   test_2("f6", [] (double x, double y) { return f6(x, y); }, 1e-7, filter_small);
+   test_2("f6", [] (double x, double y) { return f6(x, y); }, 1e-11, filter_small);
 }
 
 BOOST_AUTO_TEST_CASE(test_f7)
