@@ -930,9 +930,10 @@ static double f7_0_r2(double r1, double r2) noexcept
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
 
-   return -((r1*r2*(-1 + r22 - lr22))/sqr(-1 + r22)) +
-      (sqr(r1)*(1 - r22 + lr22))/sqr(-1 + r22) +
-      (1 - r22 + r22*lr22)/sqr(-1 + r22);
+   return
+      6*(1 + (-1 + lr22)*r22
+         + r1*(r1*(1 + lr22 - r22) + r2*(1 + lr22 - r22)))
+      /sqr(-1 + r22);
 }
 
 /// f7(r1,r2) in the limit r1 -> r2
@@ -985,11 +986,11 @@ double f7(double r1, double r2) noexcept
    }
 
    if (is_zero(r1, 0.0001)) {
-      return 6. * f7_0_r2(r1, r2);
+      return f7_0_r2(r1, r2);
    }
 
    if (is_zero(r2, 0.0001)) {
-      return 6. * f7_0_r2(r2, r1);
+      return f7_0_r2(r2, r1);
    }
 
    if (is_equal(r1, r2, 0.0001)) {
