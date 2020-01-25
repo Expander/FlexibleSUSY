@@ -843,15 +843,15 @@ double f6(double r1, double r2) noexcept
       return f6_1_r2(r2, r1);
    }
 
-   if (is_zero(r1, 0.0001)) {
+   if (is_zero(r1, 1e-4)) {
       return f6_0_r2(r1, r2);
    }
 
-   if (is_zero(r2, 0.0001)) {
+   if (is_zero(r2, 1e-4)) {
       return f6_0_r2(r2, r1);
    }
 
-   if (is_equal(r1, r2, 0.0001)) {
+   if (is_equal(r1, r2, 1e-4)) {
       return f6_r1_r2(r2, r1);
    }
 

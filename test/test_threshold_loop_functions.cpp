@@ -999,7 +999,7 @@ BOOST_AUTO_TEST_CASE(test_f6_data)
    using namespace flexiblesusy::threshold_loop_functions;
 
    auto filter_small = [](double x, double y, double f) {
-      return std::abs(f) > 1e-6;
+      return std::abs(f) > 1e-9;
    };
 
    test_2("f6", [] (double x, double y) { return f6(x, y); }, 1e-11, filter_small);
