@@ -1083,7 +1083,7 @@ BOOST_AUTO_TEST_CASE(test_f7_data)
    };
 
    // @todo increase test precision
-   test_2("f7", [] (double x, double y) { return f7(x, y); }, 1e-8, filter_small);
+   test_2("f7", [] (double x, double y) { return f7(x, y); }, 1e-9, filter_small);
 }
 
 BOOST_AUTO_TEST_CASE(test_f8)

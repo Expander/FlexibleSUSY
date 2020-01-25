@@ -866,6 +866,23 @@ double f6(double r1, double r2) noexcept
    return 6./7. * result;
 }
 
+/// f7(r1,r2) in the limit r1 -> 0, r2 -> 0
+static double f7_0_0(double r1, double r2) noexcept
+{
+   if (std::abs(r1) > std::abs(r2)) {
+      std::swap(r1, r2);
+   }
+
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   const double res =
+      1 + (1 + lr22)*r22
+      + r1*((1 + lr22)*r2 + r1*(1 + lr22 + (1 + 2*lr22)*r22));
+
+   return 6*res;
+}
+
 /// f7(r1,r2) in the limit r1 -> 1 and r2 -> 1
 static double f7_1_1(double r1, double r2) noexcept
 {
@@ -967,6 +984,12 @@ double f7(double r1, double r2) noexcept
 {
    if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
       return 6.;
+   }
+
+   const double eps_zero = 1e-4;
+
+   if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {
+      return f7_0_0(r1, r2);
    }
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01)) {
