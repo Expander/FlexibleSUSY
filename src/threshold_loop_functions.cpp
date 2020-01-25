@@ -869,19 +869,15 @@ double f6(double r1, double r2) noexcept
 /// f7(r1,r2) in the limit r1 -> 1 and r2 -> 1
 static double f7_1_1(double r1, double r2) noexcept
 {
-   const double r22 = sqr(r2);
+   const double d1 = r1 - 1;
+   const double d2 = r2 - 1;
 
-   return (15700 - 14411*r2 + 7850*r22 - 2498*cube(r2)
-           + 355*quad(r2)
-           + sqr(r1)*(7850 - 2558*r2 - 750*r22 + 940*cube(r2)
-                      - 235*quad(r2))
-           + quad(r1)*(355 + 65*r2 - 235*r22 + 142*cube(r2)
-                             - 30*quad(r2))
-           + r1*(-14411 + 8375*r2 - 2558*r22 + 180*cube(r2)
-                 + 65*quad(r2))
-           + cube(r1)*(-2498 + 180*r2 + 940*r22
-                             - 645*cube(r2) + 142*quad(r2)))
-      /2310.;
+   return
+      1 + d2*(-1 + d2*(3./5 + (-3./10 + 9.*d2/70)*d2))
+      + d1*(-1 + d2*(3./5 + d2*(-3./10 + (9./70 - 3.*d2/70)*d2))
+      + d1*(3./5 + d2*(-3./10 + d2*(9./70 + (-3./70 + d2/210)*d2))
+      + d1*(-3./10 + d2*(9./70 + d2*(-3./70 + (1./210 + d2/105)*d2))
+      + d1*(9./70 + d2*(-3./70 + d2*(1./210 + (1./105 - d2/77)*d2))))));
 }
 
 /// f7(r1,r2) in the limit r1 -> 0 and r2 -> 1
