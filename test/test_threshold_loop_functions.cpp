@@ -1078,12 +1078,7 @@ BOOST_AUTO_TEST_CASE(test_f7_data)
 {
    using namespace flexiblesusy::threshold_loop_functions;
 
-   auto filter_small = [](double x, double y, double f) {
-      return std::abs(f) > 1e-6;
-   };
-
-   // @todo increase test precision
-   test_2("f7", [] (double x, double y) { return f7(x, y); }, 5e-10, filter_small);
+   test_2("f7", [] (double x, double y) { return f7(x, y); }, 5e-10);
 }
 
 BOOST_AUTO_TEST_CASE(test_f8)
