@@ -722,6 +722,26 @@ double f5(double r1, double r2) noexcept
    return 0.75 * result;
 }
 
+/// f6(r1,r2) in the limit r1 -> 0 and r2 -> 0
+static double f6_0_0(double r1, double r2) noexcept
+{
+   if (is_zero(r1, 1e-10) && is_zero(r2, 1e-10)) {
+      return 0.;
+   }
+
+   const double r22 = sqr(r2);
+   const double lr22 = std::log(r22);
+
+   const double res =
+      r22*(1 + (1 + lr22)*r22)
+      + r1*(r2*(1 + (1 + lr22)*r22)
+      + r1*(1 + r22*(1 + lr22 + (1 + 2*lr22)*r22)
+      + r1*(r2*(1 + lr22 + (1 + 2*lr22)*r22)
+      + r1*(1 + lr22 + r22*(1 + 2*lr22 + (1 + 3*lr22)*r22)))));
+
+   return 6./7.*res;
+}
+
 /// f6(r1,r2) in the limit r1 -> 1 and r2 -> 1
 static double f6_1_1(double r1, double r2) noexcept
 {
@@ -823,8 +843,10 @@ static double f6_r1_r2(double r1, double r2) noexcept
 
 double f6(double r1, double r2) noexcept
 {
-   if (is_zero(r1, 1e-5) && is_zero(r2, 1e-5)) {
-      return 0.;
+   const double eps_zero = 1e-4;
+
+   if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {
+      return f6_0_0(r1, r2);
    }
 
    if (is_equal(r1, 1., 0.02) && is_equal(r2, 1., 0.02)) {
@@ -843,11 +865,11 @@ double f6(double r1, double r2) noexcept
       return f6_1_r2(r2, r1);
    }
 
-   if (is_zero(r1, 1e-4)) {
+   if (is_zero(r1, eps_zero)) {
       return f6_0_r2(r1, r2);
    }
 
-   if (is_zero(r2, 1e-4)) {
+   if (is_zero(r2, eps_zero)) {
       return f6_0_r2(r2, r1);
    }
 
