@@ -944,13 +944,18 @@ static double f7_1_r2(double r1, double r2) noexcept
 /// f7(r1,r2) in the limit r1 -> 0
 static double f7_0_r2(double r1, double r2) noexcept
 {
+   const double r12 = sqr(r1);
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
+   const double r12lr12 = xlogx(r12);
 
    return
-      6*(1 + (-1 + lr22)*r22
-         + r1*(r1*(1 + lr22 - r22) + r2*(1 + lr22 - r22)))
-      /sqr(-1 + r22);
+      6*(
+         + r22*(1 + (-1 + lr22)*r22)
+         + r1*(r2*(-r12lr12 + r22*(1 + lr22 + 2*r12lr12 + (-1 - r12lr12)*r22))
+         + r1*(-r12lr12 + r22*(1 + lr22 + 2*r12lr12 + (-1 - r12lr12)*r22)
+         + r1*(r1*(lr22 + r22*(1 - r22)) + r2*(lr22 + r22*(1 - r22)))))
+         )/(r22*sqr(-1 + r22));
 }
 
 /// f7(r1,r2) in the limit r1 -> r2
