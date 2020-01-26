@@ -561,6 +561,10 @@ double f4(double r) noexcept
 /// f5(r1,r2) in the limit r1 -> 0, r2 -> 0
 static double f5_0_0(double r1, double r2) noexcept
 {
+   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
+      return 0.75;
+   }
+
    if (std::abs(r1) > std::abs(r2)) {
       std::swap(r1, r2);
    }
@@ -672,10 +676,6 @@ static double f5_r1_r2(double r1, double r2) noexcept
 
 double f5(double r1, double r2) noexcept
 {
-   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
-      return 0.75;
-   }
-
    const double eps_zero = 1e-4;
    const double eps_one = 1e-2;
 
@@ -891,6 +891,10 @@ double f6(double r1, double r2) noexcept
 /// f7(r1,r2) in the limit r1 -> 0, r2 -> 0
 static double f7_0_0(double r1, double r2) noexcept
 {
+   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
+      return 6.;
+   }
+
    if (std::abs(r1) > std::abs(r2)) {
       std::swap(r1, r2);
    }
@@ -1009,10 +1013,6 @@ static double f7_r1_r2(double r1, double r2) noexcept
 
 double f7(double r1, double r2) noexcept
 {
-   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
-      return 6.;
-   }
-
    const double eps_zero = 1e-4;
    const double eps_one = 2e-2;
 
