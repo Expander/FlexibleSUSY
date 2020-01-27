@@ -1066,10 +1066,21 @@ static double f8_0_0(double r1, double r2) noexcept
       return 0.;
    }
 
+   if (std::abs(r1) > std::abs(r2)) {
+      std::swap(r1, r2);
+   }
+
    const double r22 = sqr(r2);
    const double lr22 = logx(r22);
-   const double r2lr22 = 2*xlogx(std::abs(r2));
+   const double r2lr22 = r2*lr22;
    const double r22lr22 = r2*r2lr22;
+
+   if (is_zero(r1, 1e-8) && is_zero(r2, 1e-8)) {
+      return
+         (3*r2)/2.
+         + r1*(1.5 + (3*r22)/2. + (3*r22lr22)/2.
+         + r1*((3*r2)/2. + (3*r2lr22)/2.));
+   }
 
    return
       r2*(1.5 + (3*r22)/2. + (3*r22lr22)/2.)
@@ -1173,7 +1184,7 @@ static double f8_r1_r2(double r1, double r2) noexcept
 
 double f8(double r1, double r2) noexcept
 {
-   const double eps_zero = 2e-5;
+   const double eps_zero = 5e-5;
    const double eps_one = 1e-2;
 
    if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {

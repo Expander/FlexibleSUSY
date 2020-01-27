@@ -1159,7 +1159,7 @@ BOOST_AUTO_TEST_CASE(test_f8_data)
    };
 
    // @todo increase test precision
-   test_2("f8", [] (double x, double y) { return f8(x, y); }, 1e-8, filter_small);
+   test_2("f8", [] (double x, double y) { return f8(x, y); }, 3e-10, filter_small);
 }
 
 namespace {
