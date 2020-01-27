@@ -1174,24 +1174,25 @@ static double f8_r1_r2(double r1, double r2) noexcept
 double f8(double r1, double r2) noexcept
 {
    const double eps_zero = 1e-4;
+   const double eps_one = 1e-2;
 
    if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {
       return f8_0_0(r1, r2);
    }
 
-   if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01)) {
+   if (is_equal(r1, 1., eps_one) && is_equal(r2, 1., eps_one)) {
       return f8_1_1(r1, r2);
    }
 
-   if (is_equal(r1, -1., 0.01) && is_equal(r2, -1., 0.01)) {
+   if (is_equal(r1, -1., eps_one) && is_equal(r2, -1., eps_one)) {
       return -1.;
    }
 
-   if (is_equal(r1, 1., 0.01)) {
+   if (is_equal(r1, 1., eps_one)) {
       return f8_1_r2(r1, r2);
    }
 
-   if (is_equal(r2, 1., 0.01)) {
+   if (is_equal(r2, 1., eps_one)) {
       return f8_1_r2(r2, r1);
    }
 
