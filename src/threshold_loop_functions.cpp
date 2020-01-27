@@ -1059,6 +1059,25 @@ double f7(double r1, double r2) noexcept
    return 6. * result;
 }
 
+/// f8(r1,r2) in the limit r1 -> 0 and r2 -> 0
+static double f8_0_0(double r1, double r2) noexcept
+{
+   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
+      return 0.;
+   }
+
+   const double r22 = sqr(r2);
+   const double lr22 = logx(r22);
+   const double r2lr22 = 2*xlogx(std::abs(r2));
+   const double r22lr22 = r2*r2lr22;
+
+   return
+      r2*(1.5 + (3*r22)/2. + (3*r22lr22)/2.)
+      + r1*(1.5 + (3*r22)/2. + (3*r22lr22)/2.
+      + r1*(r2*(1.5 + (3*r22)/2. + 3*r22lr22)
+      + r1*(1.5 + (3*lr22)/2. + (3*r22)/2. + 3*r22lr22) + (3*r2lr22)/2.));
+}
+
 /// f8(r1,r2) in the limit r1 -> 1 and r2 -> 1
 static double f8_1_1(double r1, double r2) noexcept
 {
@@ -1115,12 +1134,16 @@ static double f8_1_r2(double r1, double r2) noexcept
 /// f8(r1,r2) in the limit r1 -> 0
 static double f8_0_r2(double r1, double r2) noexcept
 {
+   const double r12 = sqr(r1);
    const double r22 = sqr(r2);
    const double lr22 = std::log(r22);
+   const double r12lr12 = xlogx(r12);
 
-   return -((sqr(r1)*r2*(-1 + r22 - lr22))/sqr(-1 + r22)) +
-      (r1*(1 - r22 + r22*lr22))/sqr(-1 + r22) +
-      (r2 - cube(r2) + cube(r2)*lr22)/sqr(-1 + r22);
+   return
+      (r22*(3 + (-3 + 3*lr22)*r22)
+      + r1*(r2*(3 + (-3 + 3*lr22)*r22)
+      + r1*(-3*r12lr12 + r22*(3 + 3*lr22 + 6*r12lr12 + (-3 - 3*r12lr12)*r22)
+      + r1*(r2*(3 + 3*lr22 - 3*r22) + r1*(3*lr22 + r22*(3 - 3*r22))))))/(2*r2*sqr(-1 + r22));
 }
 
 /// f8(r1,r2) in the limit r1 -> r2
@@ -1149,8 +1172,10 @@ static double f8_r1_r2(double r1, double r2) noexcept
 
 double f8(double r1, double r2) noexcept
 {
-   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
-      return 0.;
+   const double eps_zero = 1e-4;
+
+   if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {
+      return f8_0_0(r1, r2);
    }
 
    if (is_equal(r1, 1., 0.01) && is_equal(r2, 1., 0.01)) {
@@ -1169,12 +1194,12 @@ double f8(double r1, double r2) noexcept
       return f8_1_r2(r2, r1);
    }
 
-   if (is_zero(r1, 0.0001)) {
-      return 1.5 * f8_0_r2(r1, r2);
+   if (is_zero(r1, eps_zero)) {
+      return f8_0_r2(r1, r2);
    }
 
-   if (is_zero(r2, 0.0001)) {
-      return 1.5 * f8_0_r2(r2, r1);
+   if (is_zero(r2, eps_zero)) {
+      return f8_0_r2(r2, r1);
    }
 
    if (is_equal(r1, r2, 0.0001)) {
