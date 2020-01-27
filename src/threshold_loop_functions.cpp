@@ -1105,10 +1105,15 @@ static double f8_1_1(double r1, double r2) noexcept
 }
 
 /// f8(r1,r2) in the limit r1 -> 0 and r2 -> 1
-static double f8_0_1(double /* r1 */, double r2) noexcept
+static double f8_0_1(double r1, double r2) noexcept
 {
-   return 1.5*(0.5 + (-1 + r2)/6. - sqr(-1 + r2)/6. + cube(-1 + r2)/10.
-               - quad(-1 + r2)/20.);
+   const double r12 = sqr(r1);
+   const double d2 = r2 - 1;
+
+   return 0.75 + r1*(0.75 + r1*(-0.75 + r1*(-1.75 + r2)))
+      + d2*(0.25 + (-0.5 + r1/4.)*r1
+      + d2*(-0.25 + r1*(0.25 - r12)
+      + d2*(0.15 + r1*(-0.1 + (-0.1 + (9*r1)/10.)*r1))));
 }
 
 /// f8(r1,r2) in the limit r1 -> 1
