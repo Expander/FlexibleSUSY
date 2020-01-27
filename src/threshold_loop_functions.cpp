@@ -37,7 +37,6 @@ namespace {
    template <typename T> T pow7(T x) noexcept { return x*x*x*x*x*x*x; }
    template <typename T> T pow8(T x) noexcept { return x*x*x*x*x*x*x*x; }
    template <typename T> T pow9(T x) noexcept { return x*x*x*x*x*x*x*x*x; }
-   template <typename T> T power10(T x) noexcept { return x*x*x*x*x*x*x*x*x*x; }
 
    template <typename T>
    bool is_zero(T a, T prec) noexcept
