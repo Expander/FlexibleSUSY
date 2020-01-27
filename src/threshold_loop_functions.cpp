@@ -1062,7 +1062,7 @@ double f7(double r1, double r2) noexcept
 /// f8(r1,r2) in the limit r1 -> 0 and r2 -> 0
 static double f8_0_0(double r1, double r2) noexcept
 {
-   if (is_zero(r1, 1e-6) && is_zero(r2, 1e-6)) {
+   if (is_zero(r1, 1e-10) && is_zero(r2, 1e-10)) {
       return 0.;
    }
 
@@ -1173,7 +1173,7 @@ static double f8_r1_r2(double r1, double r2) noexcept
 
 double f8(double r1, double r2) noexcept
 {
-   const double eps_zero = 1e-4;
+   const double eps_zero = 2e-5;
    const double eps_one = 1e-2;
 
    if (is_zero(r1, eps_zero) && is_zero(r2, eps_zero)) {
