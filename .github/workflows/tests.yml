@@ -90,7 +90,7 @@ jobs:
           LOOPLIBRARY: ${{ matrix.LOOPLIBRARY }}
 
       - name: Make
-        run: docker exec builder bash -c 'cd FlexibleSUSY && VERBOSE=1 make'
+        run: docker exec builder bash -c 'cd FlexibleSUSY && VERBOSE=1 make -j2'
 
       - name: Make and run tests
         run: docker exec builder bash -c 'cd FlexibleSUSY && VERBOSE=1 make -j2 all-test'
