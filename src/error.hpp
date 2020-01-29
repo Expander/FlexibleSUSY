@@ -141,7 +141,7 @@ public:
       return "NonPerturbativeRunningError: non-perturbative running of parameter "
          + std::to_string(parameter_index) + " to scale " + std::to_string(scale);
    }
-   std::string what(const std::string& parameter_name) const {
+   std::string what_parameter(const std::string& parameter_name) const {
       return "NonPerturbativeRunningError: non-perturbative running"
          " of " + parameter_name + " = " + std::to_string(value)
          + " to scale " + std::to_string(scale);
