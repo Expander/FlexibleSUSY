@@ -622,6 +622,11 @@ directory configure via
        --with-looptools-libdir=$LOOPTOOLS_DIR
 
 Note: LoopTools 2.8 or higher is required.
+Also, if FlexibleSUSY is compiled with LibraryLink (default) then LoopTools has to be compiled with ``-fPIC`` option.
+This is achieved by setting the ``FFLAGS`` variable during LoopTools configuration as
+::
+
+    FFLAGS=-fPIC ./configure
 
 
 TSIL support
