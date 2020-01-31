@@ -191,6 +191,7 @@ as a list of Strings representing the lines in the file.
 Warning: This function may ignore empty lines.";
 
 FSReIm::usage = "FS replacement for the mathematica's function ReIm";
+FSBooleanQ::usage = "FS replacement for the mathematica's function BooleanQ";
 MathIndexToCPP::usage = "Converts integer-literal index from mathematica to c/c++ convention";
 
 Begin["`Private`"];
@@ -470,14 +471,14 @@ SetAttributes[internalOrQuitInputCheck,{HoldFirst,Locked,Protected}];
 ReadLinesInFile[fileName_String] :=
 	Module[{fileHandle, lines = {}, line},
 		fileHandle = OpenRead[fileName, BinaryFormat -> True];
-		
+
 		While[(line = Read[fileHandle, String]) =!= EndOfFile,
 			AssertWithMessage[line =!= $Failed,
 				"Utils`ReadLinesInFile[]: Unable to read line from file '" <>
 				fileName <> "'"];
 			AppendTo[lines, line];
 			];
-		
+
     Close[fileHandle];
     lines
 	]
@@ -486,6 +487,12 @@ FSReIm[z_] := If[$VersionNumber >= 10.1,
    ReIm[z],
    {Re[z], Im[z]}
 ];
+
+FSBooleanQ[b_] :=
+   If[$VersionNumber >= 10.0,
+      BooleanQ[b],
+      If[b === True || b === False, True, False]
+   ];
 
 (* MathIndexToCPP *)
 
