@@ -24,7 +24,11 @@ jobs:
 
   build:
 
-    if: github.repository == 'FlexibleSUSY/FlexibleSUSY'
+    # Pull requests don't share secrets with a fork so we run tests only on PRs
+    # comming from the FlexibleSUSY/FlexibleSUSY repo.
+    # For non PR triggers we check for the name of the repo so that if someone
+    # forks FS github doesn't try to run tests on their code.
+    if: (!github.event.pull_request && github.repository == 'FlexibleSUSY/FlexibleSUSY') || github.event.pull_request.head.repo.url == 'https://api.github.com/repos/FlexibleSUSY/FlexibleSUSY'
     runs-on: ubuntu-18.04
 
     strategy:
