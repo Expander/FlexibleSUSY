@@ -200,7 +200,6 @@ endif
 
 ifeq ($(WITH_CMSSMCKM),yes)
 TEST_SRC += \
-		$(DIR)/test_CMSSMCKM_b_to_s_gamma.cpp \
 		$(DIR)/test_CMSSMCKM_b_to_s_gamma_internal_spectrum.cpp
 endif
 
@@ -884,8 +883,6 @@ $(DIR)/test_MRSSM2_mw_calculation.x: $(LIBMRSSM2)
 $(DIR)/test_MRSSM2_l_to_lgamma.x: $(LIBMRSSM2)
 
 $(DIR)/test_MRSSM2CKM_b_to_s_gamma.x: $(LIBMRSSM2CKM)
-
-$(DIR)/test_CMSSMCKM_b_to_s_gamma.x: $(LIBCMSSMCKM)
 
 $(DIR)/test_CMSSMCKM_b_to_s_gamma_internal_spectrum.x: $(LIBCMSSMCKM)
 
