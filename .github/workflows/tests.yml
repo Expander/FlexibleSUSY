@@ -61,7 +61,7 @@ jobs:
         run: |
           docker exec builder bash -c "mkdir /root/.WolframEngine && mkdir /root/.WolframEngine/Licensing && echo $MATHPASS > /root/.WolframEngine/Licensing/mathpass"
           docker exec builder bash -c 'printf "Checking if wolframscript command is workings... "; if [ $(wolframscript -code 1+2) -eq 3 ]; then echo OK; else echo fail && exit 1; fi'
-          docker exec builder bash -c 'printf "Checking if math command is workings... "; if [[ $(/usr/local/Wolfram/WolframEngine/12.0/Executables/math -run \'Print[7 673, $SystemID]; Exit[]\' < /dev/null) =~ 4711([^$\'\r\n\']*) ]]; then echo OK; else echo fail && exit 1; fi'
+          docker exec builder bash -c 'printf "Checking if math command is workings... "; if [[ $(/usr/local/Wolfram/WolframEngine/12.0/Executables/math -run "Print[7 673, $SystemID]; Exit[]" < /dev/null) =~ 4711([^$\'\r\n\']*) ]]; then echo OK; else echo fail && exit 1; fi'
         env:
           MATHPASS: ${{ secrets.MATHPASS }}
 
