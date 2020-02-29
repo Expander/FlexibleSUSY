@@ -192,10 +192,10 @@ Block MSOFTIN
    CMSSMCKM_slha<CMSSMCKM<Two_scale>> model = setup_CMSSMCKM(input, qedqcd, settings);
 
    const auto calculated_value = CMSSMCKM_b_to_s_gamma::calculate_b_to_s_gamma(model, qedqcd);
-   constexpr std::complex<double> C7NP  {-0.0053094403651418459, -9.7026371001229347e-05};
-   constexpr std::complex<double> C7pNP {-0.0001236629672969777, -2.2598596600650199e-06};
-   constexpr std::complex<double> C8NP  {0.01649195565906713,     0.00030123400127746679};
-   constexpr std::complex<double> C8pNP {0.00038603842091810788,  7.0511860957711629e-06};
+   constexpr std::complex<double> C7NP  {-0.0053094128952261635,  -9.7025869191383121e-05};
+   constexpr std::complex<double> C7pNP {-0.00012366231966027145, -2.2598442848446435e-06};
+   constexpr std::complex<double> C8NP  {0.016491993833256832,     0.00030123469860007075};
+   constexpr std::complex<double> C8pNP {0.00038603929508783667,   7.0512140866869945e-06};
 
    TEST_COMPLEX_EQUALITY(C7NP, calculated_value[0]);
    TEST_COMPLEX_EQUALITY(C7pNP, calculated_value[1]);
