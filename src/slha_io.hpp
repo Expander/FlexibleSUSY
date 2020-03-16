@@ -213,7 +213,6 @@ private:
    Modsel modsel{};            ///< data from block MODSEL
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
-   static std::string to_lower(const std::string&); ///< string to lower case
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
@@ -261,11 +260,11 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         if (!line.is_data_line()) {
+         if (line.is_block_def()) {
             // read scale from block definition
-            if (line.size() > 3 &&
-                to_lower(line[0]) == "block" && line[2] == "Q=")
+            if (line.size() > 3 && line[2] == "Q=") {
                scale = convert_to<double>(line[3]);
+            }
             continue;
          }
 
@@ -306,11 +305,11 @@ double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Der
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         if (!line.is_data_line()) {
+         if (line.is_block_def()) {
             // read scale from block definition
-            if (line.size() > 3 &&
-                to_lower(line[0]) == "block" && line[2] == "Q=")
+            if (line.size() > 3 && line[2] == "Q=") {
                scale = convert_to<double>(line[3]);
+            }
             continue;
          }
 
