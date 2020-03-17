@@ -332,18 +332,21 @@ double SLHA_io::read_scale(const std::string& block_name) const
 
 void SLHA_io::set_block(const std::ostringstream& lines, Position position)
 {
-   SLHAea::Block block;
-   block.str(lines.str());
-   data.erase(block.name());
-   if (position == front)
-      data.push_front(block);
-   else
-      data.push_back(block);
+   set_block(lines.str(), position);
 }
 
 void SLHA_io::set_block(const std::string& lines, Position position)
 {
-   set_block(std::ostringstream(lines), position);
+   SLHAea::Block block;
+   block.str(lines);
+
+   data.erase(block.name());
+
+   if (position == front) {
+      data.push_front(block);
+   } else {
+      data.push_back(block);
+   }
 }
 
 void SLHA_io::set_blocks(const std::vector<std::string>& blocks, Position position)
