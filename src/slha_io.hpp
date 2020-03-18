@@ -19,19 +19,21 @@
 #ifndef SLHA_IO_H
 #define SLHA_IO_H
 
-#include <string>
-#include <sstream>
+#include "error.hpp"
+#include "logger.hpp"
+#include "numerics2.hpp"
+#include "pmns.hpp"
+#include "slhaea.h"
+#include "wrappers.hpp"
+
 #include <iosfwd>
+#include <sstream>
+#include <string>
 #include <vector>
+
 #include <Eigen/Core>
 #include <boost/format.hpp>
 #include <boost/function.hpp>
-#include "slhaea.h"
-#include "logger.hpp"
-#include "error.hpp"
-#include "wrappers.hpp"
-#include "numerics2.hpp"
-#include "pmns.hpp"
 
 namespace softsusy {
    class QedQcd;
@@ -251,9 +253,11 @@ Scalar SLHA_io::convert_to(const std::string& str)
 template <class Derived>
 double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
 {
-   if (matrix.cols() <= 1) throw SetupError("Matrix has less than 2 columns");
+   if (matrix.cols() <= 1) {
+      throw SetupError("Matrix has less than 2 columns");
+   }
 
-   auto block = data.find(data.cbegin(), data.cend(), block_name);
+   auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
 
    const int cols = matrix.cols(), rows = matrix.rows();
    double scale = 0.;
@@ -278,7 +282,7 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
       }
 
       ++block;
-      block = data.find(block, data.cend(), block_name);
+      block = SLHAea::Coll::find(block, data.cend(), block_name);
    }
 
    return scale;
@@ -295,9 +299,11 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
 template <class Derived>
 double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Derived>& vector) const
 {
-   if (vector.cols() != 1) throw SetupError("Vector has more than 1 column");
+   if (vector.cols() != 1) {
+      throw SetupError("Vector has more than 1 column");
+   }
 
-   auto block = data.find(data.cbegin(), data.cend(), block_name);
+   auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
 
    const int rows = vector.rows();
    double scale = 0.;
@@ -321,7 +327,7 @@ double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Der
       }
 
       ++block;
-      block = data.find(block, data.cend(), block_name);
+      block = SLHAea::Coll::find(block, data.cend(), block_name);
    }
 
    return scale;
@@ -350,8 +356,11 @@ void SLHA_io::set_block(const std::string& name,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n';
 
    for (int i = 1; i <= NRows; ++i) {
@@ -369,8 +378,11 @@ void SLHA_io::set_block(const std::string& name,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n';
 
    for (int i = 1; i <= NRows; ++i) {
@@ -392,8 +404,11 @@ void SLHA_io::set_block_imag(const std::string& name,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n';
 
    for (int i = 1; i <= NRows; ++i) {
@@ -411,8 +426,11 @@ void SLHA_io::set_block_imag(const std::string& name,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n';
 
    for (int i = 1; i <= NRows; ++i) {
@@ -434,8 +452,11 @@ void SLHA_io::set_block(const std::string& name,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n';
 
    const int rows = matrix.rows();
@@ -462,8 +483,11 @@ void SLHA_io::set_block_imag(const std::string& name,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n';
 
    const int rows = matrix.rows();
