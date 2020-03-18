@@ -94,10 +94,11 @@ bool SLHA_io::block_exists(const std::string& block_name) const
  */
 void SLHA_io::read_from_source(const std::string& source)
 {
-   if (source == "-")
+   if (source == "-") {
       read_from_stream(std::cin);
-   else
+   } else {
       read_from_file(source);
+   }
 }
 
 /**
@@ -265,8 +266,9 @@ double SLHA_io::read_block(const std::string& block_name, double& entry) const
             continue;
          }
 
-         if (line.size() >= 1)
+         if (line.size() >= 1) {
             entry = convert_to<double>(line[0]);
+         }
       }
 
       ++block;
@@ -351,8 +353,9 @@ void SLHA_io::set_block(const std::string& lines, Position position)
 
 void SLHA_io::set_blocks(const std::vector<std::string>& blocks, Position position)
 {
-   for (const auto& block: blocks)
+   for (const auto& block: blocks) {
       set_block(block, position);
+   }
 }
 
 /**
@@ -365,8 +368,11 @@ void SLHA_io::set_block(const std::string& name, double value,
 {
    std::ostringstream ss;
    ss << "Block " << name;
-   if (scale != 0.)
+
+   if (scale != 0.) {
       ss << " Q= " << FORMAT_SCALE(scale);
+   }
+
    ss << '\n'
       << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
 
@@ -449,10 +455,11 @@ void SLHA_io::write_to_file(const std::string& file_name) const
 
 void SLHA_io::write_to_stream(std::ostream& ostr) const
 {
-   if (ostr.good())
+   if (ostr.good()) {
       ostr << data;
-   else
+   } else {
       ERROR("cannot write SLHA file");
+   }
 }
 
 /**
@@ -477,8 +484,9 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
    {
       const int ivalue = Round(value);
 
-      if (ivalue < 0 || ivalue > 3)
+      if (ivalue < 0 || ivalue > 3) {
          WARNING("Value " << ivalue << " in MODSEL block entry 6 out of range");
+      }
 
       modsel.quark_flavour_violated = ivalue & 0x1;
       modsel.lepton_flavour_violated = ivalue & 0x2;
