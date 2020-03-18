@@ -17,14 +17,14 @@
 // ====================================================================
 
 #include "slha_io.hpp"
-#include "wrappers.hpp"
-#include "lowe.h"
 #include "ew_input.hpp"
+#include "lowe.h"
 #include "physical_input.hpp"
 #include "spectrum_generator_settings.hpp"
+#include "wrappers.hpp"
 
-#include <fstream>
 #include <algorithm>
+#include <fstream>
 #include <string>
 
 namespace flexiblesusy {
@@ -35,8 +35,8 @@ void SLHA_io::clear()
    modsel.clear();
 }
 
-void SLHA_io::convert_symmetric_fermion_mixings_to_slha(double&,
-                                                        Eigen::Matrix<double, 1, 1>&)
+void SLHA_io::convert_symmetric_fermion_mixings_to_slha(double& /*unused*/,
+                                                        Eigen::Matrix<double, 1, 1>& /*unused*/)
 {
 }
 
@@ -61,8 +61,8 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_slha(double& m,
    }
 }
 
-void SLHA_io::convert_symmetric_fermion_mixings_to_hk(double&,
-                                                      Eigen::Matrix<double, 1, 1>&)
+void SLHA_io::convert_symmetric_fermion_mixings_to_hk(double& /*unused*/,
+                                                      Eigen::Matrix<double, 1, 1>& /*unused*/)
 {
 }
 
@@ -216,7 +216,7 @@ void SLHA_io::fill(Spectrum_generator_settings& settings) const
  */
 double SLHA_io::read_block(const std::string& block_name, const Tuple_processor& processor) const
 {
-   auto block = data.find(data.cbegin(), data.cend(), block_name);
+   auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
    double scale = 0.;
 
    while (block != data.cend()) {
@@ -237,7 +237,7 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
       }
 
       ++block;
-      block = data.find(block, data.cend(), block_name);
+      block = SLHAea::Coll::find(block, data.cend(), block_name);
    }
 
    return scale;
@@ -253,7 +253,7 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
  */
 double SLHA_io::read_block(const std::string& block_name, double& entry) const
 {
-   auto block = data.find(data.cbegin(), data.cend(), block_name);
+   auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
    double scale = 0.;
 
    while (block != data.cend()) {
@@ -266,13 +266,13 @@ double SLHA_io::read_block(const std::string& block_name, double& entry) const
             continue;
          }
 
-         if (line.size() >= 1) {
+         if (!line.empty()) {
             entry = convert_to<double>(line[0]);
          }
       }
 
       ++block;
-      block = data.find(block, data.cend(), block_name);
+      block = SLHAea::Coll::find(block, data.cend(), block_name);
    }
 
    return scale;
@@ -280,12 +280,12 @@ double SLHA_io::read_block(const std::string& block_name, double& entry) const
 
 double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
-   auto block = data.find(data.cbegin(), data.cend(), block_name);
+   auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
    double entry = 0.;
    const SLHAea::Block::key_type keys(1, ToString(key));
 
    while (block != data.cend()) {
-      SLHAea::Block::const_iterator line = block->find(keys);
+      auto line = block->find(keys);
 
       while (line != block->end()) {
          if (line->is_data_line() && line->size() > 1) {
@@ -297,7 +297,7 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
       }
 
       ++block;
-      block = data.find(block, data.cend(), block_name);
+      block = SLHAea::Coll::find(block, data.cend(), block_name);
    }
 
    return entry;
@@ -313,7 +313,7 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
 double SLHA_io::read_scale(const std::string& block_name) const
 {
    double scale = 0.;
-   auto block = data.find(data.cbegin(), data.cend(), block_name);
+   auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
@@ -382,8 +382,8 @@ void SLHA_io::set_block(const std::string& name, double value,
 void SLHA_io::set_modsel(const Modsel& modsel_)
 {
    modsel = modsel_;
-   const int qfv = modsel.quark_flavour_violated;
-   const int lfv = 2 * modsel.lepton_flavour_violated;
+   const auto qfv = static_cast<unsigned>(modsel.quark_flavour_violated);
+   const auto lfv = 2u * static_cast<unsigned>(modsel.lepton_flavour_violated);
 
    std::ostringstream ss;
    ss << "Block MODSEL\n";
@@ -395,7 +395,7 @@ void SLHA_io::set_modsel(const Modsel& modsel_)
 
 void SLHA_io::set_physical_input(const Physical_input& input)
 {
-   const auto& names = input.get_names();
+   const auto& names = flexiblesusy::Physical_input::get_names();
 
    std::ostringstream ss;
    ss << "Block FlexibleSUSYInput\n";
@@ -486,10 +486,11 @@ void SLHA_io::process_modsel_tuple(Modsel& modsel, int key, double value)
 
       if (ivalue < 0 || ivalue > 3) {
          WARNING("Value " << ivalue << " in MODSEL block entry 6 out of range");
+      } else {
+         const auto uvalue = static_cast<unsigned>(ivalue);
+         modsel.quark_flavour_violated = ((uvalue & 0x1u) != 0);
+         modsel.lepton_flavour_violated = ((uvalue & 0x2u) != 0);
       }
-
-      modsel.quark_flavour_violated = ivalue & 0x1;
-      modsel.lepton_flavour_violated = ivalue & 0x2;
    }
       break;
    case 12:
@@ -583,7 +584,7 @@ void SLHA_io::process_flexiblesusy_tuple(Spectrum_generator_settings& settings,
                                          int key, double value)
 {
    if (0 <= key && key < static_cast<int>(Spectrum_generator_settings::NUMBER_OF_OPTIONS)) {
-      settings.set((Spectrum_generator_settings::Settings)key, value);
+      settings.set(static_cast<Spectrum_generator_settings::Settings>(key), value);
    } else {
       WARNING("Unrecognized entry in block FlexibleSUSY: " << key);
    }
@@ -594,7 +595,7 @@ void SLHA_io::process_flexiblesusyinput_tuple(
    int key, double value)
 {
    if (0 <= key && key < static_cast<int>(Physical_input::NUMBER_OF_INPUT_PARAMETERS)) {
-      input.set((Physical_input::Input)key, value);
+      input.set(static_cast<Physical_input::Input>(key), value);
    } else {
       WARNING("Unrecognized entry in block FlexibleSUSYInput: " << key);
    }
