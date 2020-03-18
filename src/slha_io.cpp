@@ -141,6 +141,24 @@ void SLHA_io::read_from_stream(std::istream& istr)
    read_modsel();
 }
 
+/**
+ * Reads the scale from the line, if the line is a block head and
+ * contains a scale definition.  Otherwise, the scale is not read.
+ *
+ * @param line the line
+ * @param scale the scale to write the value to
+ *
+ * @return true if scale has been read; false otherwise
+ */
+bool SLHA_io::read_scale(const SLHAea::Line& line, double& scale)
+{
+   if (line.is_block_def() && line.size() > 3 && line[2] == "Q=") {
+      scale = convert_to<double>(line[3]);
+      return true;
+   }
+   return false;
+}
+
 void SLHA_io::read_modsel()
 {
    Tuple_processor modsel_processor = [this] (int key, double value) {
@@ -236,15 +254,9 @@ double SLHA_io::read_block(const std::string& block_name, const Tuple_processor&
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         if (line.is_block_def()) {
-            // read scale from block definition
-            if (line.size() > 3 && line[2] == "Q=") {
-               scale = convert_to<double>(line[3]);
-            }
-            continue;
-         }
+         read_scale(line, scale);
 
-         if (line.size() >= 2) {
+         if (line.is_data_line() && line.size() >= 2) {
             const auto key = convert_to<int>(line[0]);
             const auto value = convert_to<double>(line[1]);
             processor(key, value);
@@ -273,15 +285,9 @@ double SLHA_io::read_block(const std::string& block_name, double& entry) const
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         if (line.is_block_def()) {
-            // read scale from block definition
-            if (line.size() > 3 && line[2] == "Q=") {
-               scale = convert_to<double>(line[3]);
-            }
-            continue;
-         }
+         read_scale(line, scale);
 
-         if (!line.empty()) {
+         if (line.is_data_line()) {
             entry = convert_to<double>(line[0]);
          }
       }
@@ -332,12 +338,7 @@ double SLHA_io::read_scale(const std::string& block_name) const
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         // read scale from block definition
-         if (line.is_block_def() &&
-             line.size() > 3 &&
-             line[2] == "Q=") {
-            scale = convert_to<double>(line[3]);
-         }
+         read_scale(line, scale);
       }
 
       ++block;

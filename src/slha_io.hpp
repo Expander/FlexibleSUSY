@@ -213,15 +213,19 @@ public:
 private:
    SLHAea::Coll data{};        ///< SHLA data
    Modsel modsel{};            ///< data from block MODSEL
+
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
    static std::string block_head(const std::string& name, double scale);
+   static bool read_scale(const SLHAea::Line& line, double& scale);
+
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
    static void process_upmnsin_tuple(PMNS_parameters&, int, double);
    static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
    static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
+
    void read_modsel();
    template <class Derived>
    double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
@@ -265,15 +269,9 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         if (line.is_block_def()) {
-            // read scale from block definition
-            if (line.size() > 3 && line[2] == "Q=") {
-               scale = convert_to<double>(line[3]);
-            }
-            continue;
-         }
+         read_scale(line, scale);
 
-         if (line.size() >= 3) {
+         if (line.is_data_line() && line.size() >= 3) {
             const int i = convert_to<int>(line[0]) - 1;
             const int k = convert_to<int>(line[1]) - 1;
             if (0 <= i && i < rows && 0 <= k && k < cols) {
@@ -311,15 +309,9 @@ double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Der
 
    while (block != data.cend()) {
       for (const auto& line: *block) {
-         if (line.is_block_def()) {
-            // read scale from block definition
-            if (line.size() > 3 && line[2] == "Q=") {
-               scale = convert_to<double>(line[3]);
-            }
-            continue;
-         }
+         read_scale(line, scale);
 
-         if (line.size() >= 2) {
+         if (line.is_data_line() && line.size() >= 2) {
             const int i = convert_to<int>(line[0]) - 1;
             if (0 <= i && i < rows) {
                vector(i) = convert_to<double>(line[1]);
