@@ -215,6 +215,7 @@ private:
    Modsel modsel{};            ///< data from block MODSEL
    template <class Scalar>
    static Scalar convert_to(const std::string&); ///< convert string
+   static std::string block_head(const std::string& name, double scale);
    static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
    static void process_modsel_tuple(Modsel&, int, double);
    static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
@@ -355,13 +356,7 @@ void SLHA_io::set_block(const std::string& name,
                         const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n';
+   ss << block_head(name, scale);
 
    for (int i = 1; i <= NRows; ++i) {
       ss << boost::format(vector_formatter) % i % Re(matrix(i-1,0))
@@ -377,13 +372,7 @@ void SLHA_io::set_block(const std::string& name,
                         const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n';
+   ss << block_head(name, scale);
 
    for (int i = 1; i <= NRows; ++i) {
       for (int k = 1; k <= NCols; ++k) {
@@ -403,13 +392,7 @@ void SLHA_io::set_block_imag(const std::string& name,
                              const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n';
+   ss << block_head(name, scale);
 
    for (int i = 1; i <= NRows; ++i) {
       ss << boost::format(vector_formatter) % i % Im(matrix(i-1,0))
@@ -425,13 +408,7 @@ void SLHA_io::set_block_imag(const std::string& name,
                              const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n';
+   ss << block_head(name, scale);
 
    for (int i = 1; i <= NRows; ++i) {
       for (int k = 1; k <= NCols; ++k) {
@@ -451,13 +428,7 @@ void SLHA_io::set_block(const std::string& name,
                         const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n';
+   ss << block_head(name, scale);
 
    const int rows = matrix.rows();
    const int cols = matrix.cols();
@@ -482,13 +453,7 @@ void SLHA_io::set_block_imag(const std::string& name,
                              const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n';
+   ss << block_head(name, scale);
 
    const int rows = matrix.rows();
    const int cols = matrix.cols();

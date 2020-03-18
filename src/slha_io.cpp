@@ -79,6 +79,21 @@ void SLHA_io::convert_symmetric_fermion_mixings_to_hk(double& m,
    }
 }
 
+std::string SLHA_io::block_head(const std::string& name, double scale)
+{
+   const double eps = std::numeric_limits<double>::epsilon();
+
+   std::string result("Block " + name);
+
+   if (!is_zero(scale, eps)) {
+      result += " Q= " + (FORMAT_SCALE(scale)).str();
+   }
+
+   result += '\n';
+
+   return result;
+}
+
 bool SLHA_io::block_exists(const std::string& block_name) const
 {
    return data.find(block_name) != data.cend();
@@ -367,14 +382,8 @@ void SLHA_io::set_block(const std::string& name, double value,
                         const std::string& symbol, double scale)
 {
    std::ostringstream ss;
-   ss << "Block " << name;
-
-   if (scale != 0.) {
-      ss << " Q= " << FORMAT_SCALE(scale);
-   }
-
-   ss << '\n'
-      << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
+   ss << block_head(name, scale);
+   ss << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
 
    set_block(ss);
 }
@@ -386,7 +395,7 @@ void SLHA_io::set_modsel(const Modsel& modsel_)
    const auto lfv = 2u * static_cast<unsigned>(modsel.lepton_flavour_violated);
 
    std::ostringstream ss;
-   ss << "Block MODSEL\n";
+   ss << block_head("MODSEL", 0.0);
    ss << FORMAT_ELEMENT(6 , qfv | lfv, "quark/lepton flavour violation");
    ss << FORMAT_ELEMENT(12, modsel.parameter_output_scale, "running parameter output scale (GeV)");
 
@@ -398,7 +407,7 @@ void SLHA_io::set_physical_input(const Physical_input& input)
    const auto& names = flexiblesusy::Physical_input::get_names();
 
    std::ostringstream ss;
-   ss << "Block FlexibleSUSYInput\n";
+   ss << block_head("FlexibleSUSYInput", 0.0);
 
    for (std::size_t i = 0; i < names.size(); i++) {
       ss << FORMAT_ELEMENT(i, input.get(static_cast<Physical_input::Input>(i)),
@@ -411,7 +420,7 @@ void SLHA_io::set_physical_input(const Physical_input& input)
 void SLHA_io::set_settings(const Spectrum_generator_settings& settings)
 {
    std::ostringstream ss;
-   ss << "Block FlexibleSUSY\n";
+   ss << block_head("FlexibleSUSY", 0.0);
 
    for (int i = 0; i < Spectrum_generator_settings::NUMBER_OF_OPTIONS; i++) {
       ss << FORMAT_ELEMENT(i, settings.get(static_cast<Spectrum_generator_settings::Settings>(i)),
@@ -425,7 +434,7 @@ void SLHA_io::set_sminputs(const softsusy::QedQcd& qedqcd)
 {
    std::ostringstream ss;
 
-   ss << "Block SMINPUTS\n";
+   ss << block_head("SMINPUTS", 0.0);
    ss << FORMAT_ELEMENT( 1, 1./qedqcd.displayAlphaEmInput()  , "alpha_em^(-1)(MZ) SM(5) MSbar");
    ss << FORMAT_ELEMENT( 2, qedqcd.displayFermiConstant()    , "G_Fermi");
    ss << FORMAT_ELEMENT( 3, qedqcd.displayAlphaSInput()      , "alpha_s(MZ) SM(5) MSbar");
