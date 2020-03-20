@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef linalg2_hpp
-#define linalg2_hpp
+#ifndef LINALG2_H
+#define LINALG2_H
 
 #include <cstdint>
 #include <limits>
@@ -29,7 +29,6 @@
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
 #include <unsupported/Eigen/MatrixFunctions>
-#include "config.h"
 
 namespace flexiblesusy {
 
@@ -1468,4 +1467,4 @@ void fs_diagonalize_hermitian
 
 } // namespace flexiblesusy
 
-#endif // linalg2_hpp
+#endif // LINALG2_H
