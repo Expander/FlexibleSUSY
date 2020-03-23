@@ -121,7 +121,7 @@ void GM2Calc_data::initialize()
    MChi  = model.get_MChi();
 
    scale = model.get_scale();
-   TB    = model.get_TB();
+   // TB    = model.get_TB();
    Mu    = model.get_Mu();
    M1    = model.get_MassB();
    M2    = model.get_MassWB();
