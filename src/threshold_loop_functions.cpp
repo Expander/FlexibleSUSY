@@ -1948,12 +1948,13 @@ namespace {
    double phi_pos(double u, double v) noexcept
    {
       const double eps = 1.0e-6;
-      const double Pi = 3.141592653589793;
-      const auto lambda = std::sqrt(lambda_2(u,v));
 
       if (is_equal(u, 1.0, eps) && is_equal(v, 1.0, eps)) {
          return 2.343907238689459;
       }
+
+      const double Pi = 3.141592653589793;
+      const auto lambda = std::sqrt(lambda_2(u,v));
 
       if (is_equal(u, v, eps)) {
          return (-(sqr(std::log(u)))
@@ -1980,11 +1981,12 @@ namespace {
    double phi_neg(double u, double v) noexcept
    {
       const double eps = 1.0e-6;
-      const auto lambda = std::sqrt(-lambda_2(u,v));
 
       if (is_equal(u, 1.0, eps) && is_equal(v, 1.0, eps)) {
          return 2.343907238689459;
       }
+
+      const auto lambda = std::sqrt(-lambda_2(u,v));
 
       if (is_equal(u, 1.0, eps)) {
          return phi_neg_1v(v, lambda);
