@@ -89,6 +89,9 @@ AtomQ[] and return the result.";
 CreateUnitCharge::usage="Creates the c++ code for a function that returns the \
 numerical value of the electrical charge of the electron.";
 
+ColorFactorForDiagram::usage = "Given topology and diagram returns the color factors for the diagram";
+ExtractColourFactor::usage = "Drop colour generator from the colour factor";
+
 Begin["`Private`"];
 
 LeftChiralVertex::usage="A left projector part of a vertex";
@@ -1407,6 +1410,20 @@ StripColourIndices[p_] :=
 		If[Length[remainingIndices] === 0, Head[p],
 			Head[p][remainingIndices]]
 	]
+
+ColorFactorForDiagram[topology_, diagram_] :=
+   ColourFactorForIndexedDiagramFromGraph[
+      CXXDiagrams`IndexDiagramFromGraph[diagram, topology], topology
+   ];
+
+(* TODO: generalize the Extraction *)
+ExtractColourFactor[colourfactor_ * SARAH`Lam[ctIndex1_, ctIndex2_, ctIndex3_] /; NumericQ[colourfactor]] := 2*colourfactor;
+ExtractColourFactor[SARAH`Lam[ctIndex1_, ctIndex2_, ctIndex3_]] := 2;
+ExtractColourFactor[colourfactor_ * SARAH`Delta[ctIndex1_, ctIndex2_] /; NumericQ[colourfactor]] := colourfactor;
+ExtractColourFactor[SARAH`Delta[ctIndex1_, ctIndex2_]] := 1;
+ExtractColourFactor[colourfactor_ /; NumericQ[colourfactor]] := colourfactor;
+ExtractColourFactor[args___] :=
+   (Print["Error: ExtractColourFactor cannot convert argument ", args]; Quit[1]);
 
 End[];
 EndPackage[];
