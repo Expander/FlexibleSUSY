@@ -8,9 +8,11 @@ compiler:
 addons:
   apt:
     packages:
+      - libboost-dev
       - libgsl0-dev
   homebrew:
     packages:
+      - boost
       - gsl
     update: true
 install:
