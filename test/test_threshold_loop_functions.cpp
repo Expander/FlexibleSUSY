@@ -1492,6 +1492,27 @@ std::vector<XYZ> generate_random_triples(
    return v;
 }
 
+BOOST_AUTO_TEST_CASE(test_phi_random)
+{
+   const unsigned N = 1000000;
+   const auto triples = generate_random_triples(N, 1.0, 1000.0);
+
+   auto phi_fs = [](const XYZ& t) {
+      return flexiblesusy::threshold_loop_functions::phi_xyz(t.x, t.y, t.z);
+   };
+
+   auto phi_eb = [](const XYZ& t) {
+      return phixyz(t.x, t.y, t.z);
+   };
+
+   // low testing precision since phi_xyz becomes unstable when lambda ~ 0
+   const double prec = 1e-7;
+
+   for (const auto t: triples) {
+      BOOST_CHECK_CLOSE_FRACTION(phi_fs(t), phi_eb(t), prec);
+   }
+}
+
 BOOST_AUTO_TEST_CASE(bench_phi)
 {
    const unsigned N = 1000000;
