@@ -1173,6 +1173,10 @@ double phixyz(double x, double y, double z)
    const double eps = 0.0000001;
    const double PI = M_PI;
 
+   if (std::abs(sqr(1 - u - v) - 4*u*v) <= std::numeric_limits<double>::epsilon()) {
+      return 0.0;
+   }
+
    // The defintion that we implement is valid when x/z < 1 and y/z < 1.
    // We have to reshuffle the arguments to obtain the other branches
    // u > 1 && v < 1 --> x > z && z > y -> y < z < x -> we want x as
@@ -1421,6 +1425,14 @@ BOOST_AUTO_TEST_CASE(test_phixyz)
       {2, 1, 2},
 
       {862.132647151542, 862.132267190459, 684.729637476883},
+
+      // lambda = 0
+      {1, 0, 1},
+      {4, 1, 1},
+
+      // lambda ~ 0
+      // {4, 1 + 1e-5, 1},
+      // {200.220790830763, 599.56612604427, 106.834963457636},
 
       {1, 1, 1}
    };
