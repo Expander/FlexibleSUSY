@@ -25,6 +25,8 @@
 (*** This module generates c++ code capable of representing fields, vertices and diagrams. ***)
 BeginPackage["CXXDiagrams`", {"SARAH`", "TextFormatting`", "TreeMasses`", "Vertices`", "Parameters`", "CConversion`", "ColorMath`", "Utils`"}];
 
+CreateFieldTraitsDefinitions::usage="";
+
 (*** Public interfaces that model fields ***)
 CreateFields::usage="Creates c++ code that makes all fields and their properties \
 available as c++ types.";
@@ -113,6 +115,39 @@ VertexTypes[] := {
 	InverseMetricVertex
 };
 
+CreateSelfConjugateFieldDefinition[field_, namespacePrefix_] := "";
+IsLorentzSelfConjugate[field_] := field === LorentzConjugate[field];
+CreateSelfConjugateFieldDefinition[field_?IsLorentzSelfConjugate, namespacePrefix_] :=
+    Module[{fieldName},
+           fieldName = TreeMasses`CreateFieldClassName[field, prefixNamespace -> namespacePrefix];
+           "template<> struct " <> FlexibleSUSY`FSModelName <>  "_cxx_diagrams::fields::" <> LorentzConjugateOperation[field] <> "<" <> fieldName <> ">" <>
+           " { using type = " <> fieldName <> "; };"
+          ];
+
+CreateSelfConjugateFieldsDefinitions[fields_List, namespacePrefix_:""] :=
+    Utils`StringJoinWithSeparator[CreateSelfConjugateFieldDefinition[#, namespacePrefix]& /@ Select[fields, IsLorentzSelfConjugate   ], "\n"] <>
+ "\n";
+
+CreateFieldTypeTraitDefinition[field_?TreeMasses`IsScalar, namespacePrefix_] :=
+    "template<>\nstruct is_scalar<" <> TreeMasses`CreateFieldClassName[field, prefixNamespace -> namespacePrefix] <> " > : public std::true_type {};";
+CreateFieldTypeTraitDefinition[field_?TreeMasses`IsFermion, namespacePrefix_] :=
+    "template<>\nstruct is_fermion<" <> TreeMasses`CreateFieldClassName[field, prefixNamespace -> namespacePrefix] <> " > : public std::true_type {};";
+CreateFieldTypeTraitDefinition[field_?TreeMasses`IsVector, namespacePrefix_] :=
+    "template<>\nstruct is_vector<" <> TreeMasses`CreateFieldClassName[field, prefixNamespace -> namespacePrefix] <> " > : public std::true_type {};";
+CreateFieldTypeTraitDefinition[field_?TreeMasses`IsGhost, namespacePrefix_] :=
+    "template<>\nstruct is_ghost<" <> TreeMasses`CreateFieldClassName[field, prefixNamespace -> namespacePrefix] <> " > : public std::true_type {};";
+CreateFieldTraitsDefinition[field_, namespacePrefix_] :=
+    Module[{fieldTypeTraitDefinition = ""},
+           fieldTypeTraitDefinition = CreateFieldTypeTraitDefinition[field, namespacePrefix];
+           fieldTypeTraitDefinition <> "\n"
+          ];
+
+CreateFieldTraitsDefinitions[fields_, namespacePrefix_:""] :=
+    StringJoin[CreateFieldTraitsDefinition[#, namespacePrefix]& /@ fields];
+
+(* Return a string corresponding to the c++ class name of the field.
+ Note that "bar" and "conj" get turned into bar<...>::type and
+ conj<...>::type respectively! *)
 (** \brief Returns the name of the c++ type corresponding to a
  * (possibly conjugate) field.
  * Note that `bar` and `conj` get turned into `typename bar<...>::type`
@@ -129,11 +164,11 @@ CXXNameOfField[p_, OptionsPattern[{prefixNamespace -> False}]] :=
      OptionValue[prefixNamespace] <> "::",
      ""] <> SymbolName[p];
 CXXNameOfField[SARAH`bar[p_], OptionsPattern[{prefixNamespace -> False}]] :=
-  "typename bar<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
+  "typename " <> If[OptionValue[prefixNamespace] === False, "", OptionValue[prefixNamespace]<>"::"]  <> "bar<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
   ">::type";
 CXXNameOfField[Susyno`LieGroups`conj[p_],
                OptionsPattern[{prefixNamespace -> False}]] :=
-  "typename conj<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
+  "typename " <> If[OptionValue[prefixNamespace] === False, "", OptionValue[prefixNamespace]<>"::"] <> "conj<" <> CXXNameOfField[p, prefixNamespace -> OptionValue[prefixNamespace]] <>
   ">::type";
 
 (** \brief Returns the name of the c++ type corresponding to a
@@ -184,6 +219,17 @@ RemoveLorentzConjugation[Susyno`LieGroups`conj[p_]] := p
  **)
 AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
 
+ParticleTypeAsString::argx = "Unknown type of particle `1`. Supported types are scalar, fermion, vector and ghost.";
+ParticleTypeAsString[part_] := Module[
+   {},
+   If[TreeMasses`IsScalar[part],    Return["scalar"]];
+   If[TreeMasses`IsVector[part],    Return["vector"]];
+   If[TreeMasses`IsFermion[part],   Return["fermion"]];
+   If[TreeMasses`IsGhost[part],   Return["ghost"]];
+
+   Message[ParticleTypeAsString::argx, part]; Abort[];
+];
+
 (** \brief Creates c++ code that makes all fields and their properties
  * available as c++ types. Also creates two using declarations for
  * the following fields:
@@ -198,6 +244,18 @@ AtomHead[x_] := If[AtomQ[x], x, AtomHead[Head[x]]]
  * - ghosts
  * \returns the corresponding c++ code.
  **)
+ParticleColorRepAsString::argx = "Unknown color representation `1` for particle `2`. Supported representations are singlet, (anti-)triplet and octet.";
+ParticleColorRepAsString[part_] :=
+   Module[{rep = TreeMasses`GetColorRepresentation[part]},
+      Switch[rep,
+         S, "singlet",
+         T, "triplet",
+         -T, "anti_triplet",
+         O, "octet",
+         _, Message[ParticleColorRepAsString::argx, rep, part]; Abort[];
+      ]
+   ];
+
 CreateFields[] :=
   Module[{fields, scalars, fermions, vectors, ghosts},
        fields = TreeMasses`GetParticles[];
@@ -209,6 +267,9 @@ CreateFields[] :=
        StringJoin @ Riffle[
          ("struct " <> CXXNameOfField[#] <> " {\n" <>
             TextFormatting`IndentText[
+              "static constexpr auto particle_type = ParticleType::" <> ParticleTypeAsString[#] <> ";\n" <>
+              "static constexpr auto color_rep = ParticleColorRep::" <> ParticleColorRepAsString[#] <> ";\n" <>
+              "static constexpr auto massless = " <> CConversion`CreateCBoolValue @ TreeMasses`IsMassless[#] <> ";\n" <>
               "using index_bounds = boost::mpl::pair<\n" <>
               "  boost::mpl::vector_c<int" <>
                    StringJoin[", " <> ToString[#] & /@
