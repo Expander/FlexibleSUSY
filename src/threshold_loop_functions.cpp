@@ -1947,7 +1947,7 @@ namespace {
    /// u < 1 && v < 1, lambda^2(u,v) > 0; note: phi_pos(u,v) = phi_pos(v,u)
    double phi_pos(double u, double v) noexcept
    {
-      const double eps = 1.0e-6;
+      const double eps = 1.0e-7;
 
       if (is_equal(u, 1.0, eps) && is_equal(v, 1.0, eps)) {
          return 2.343907238689459;
@@ -1980,7 +1980,7 @@ namespace {
    /// lambda^2(u,v) < 0; note: phi_neg(u,v) = phi_neg(v,u)
    double phi_neg(double u, double v) noexcept
    {
-      const double eps = 1.0e-6;
+      const double eps = 1.0e-7;
 
       if (is_equal(u, 1.0, eps) && is_equal(v, 1.0, eps)) {
          return 2.343907238689459;
