@@ -429,19 +429,25 @@ ContractionsBetweenVerticesForDiagramFromGraph[v1_Integer, v2_Integer,
 
 (** \brief Convert color structures to the ColorMath convention **)
 ConvertColourStructureToColorMathConvention[fields_List,
-	ZeroColouredVertex] := 0
+	ZeroColouredVertex] := 0;
 
 ConvertColourStructureToColorMathConvention[fields_List,
-	UncolouredVertex] := 1
+	UncolouredVertex] := 1;
 
 ConvertColourStructureToColorMathConvention[fields_List,
 	GellMannVertex[cIndex1_, cIndex2_, cIndex3_]] :=
-(* FIXME: Factor of two? *)
-	2 ColorMath`CMt[{cIndex1}, cIndex2, cIndex3]
+	(* FIXME: Factor of two? *)
+	2 ColorMath`CMt[{cIndex1}, cIndex2, cIndex3];
+
+ConvertColourStructureToColorMathConvention[fields_List,
+	GellMannVertex[cIndex1_, cIndex2_, cIndex3_] GellMannVertex[cIndex4_, cIndex5_, cIndex6_] +
+			GellMannVertex[cIndex7_, cIndex8_, cIndex9_] GellMannVertex[cIndex10_, cIndex11_, cIndex12_]] :=
+       (4 ColorMath`CMt[{cIndex1}, cIndex2, cIndex3] ColorMath`CMt[{cIndex4}, cIndex5, cIndex6] +
+				4 ColorMath`CMt[{cIndex7}, cIndex8, cIndex9] ColorMath`CMt[{cIndex10}, cIndex11, cIndex12]);
 
 ConvertColourStructureToColorMathConvention[fields_List,
 	AdjointlyColouredVertex[cIndex1_, cIndex2_, cIndex3_]] :=
-	ColorMath`CMf[cIndex1, cIndex2, cIndex3]
+	ColorMath`CMf[cIndex1, cIndex2, cIndex3];
 
 ConvertColourStructureToColorMathConvention[indexedFields_List,
 	KroneckerDeltaColourVertex[cIndex1_, cIndex2_]] :=
@@ -480,7 +486,11 @@ ConvertColourStructureToColorMathConvention[indexedFields_List,
 				ToString[{colourRep1, colourRep2}]];
 			Quit[1];
 		]
-	]
+	];
+
+ConvertColourStructureToColorMathConvention[fields_List,
+   AdjointlyColouredVertex[cIndex1_, cIndex2_, cIndex3_]  GellMannVertex[cIndex3_, cIndex4_, cIndex5_]] :=
+   ColorMath`CMf[cIndex1, cIndex2, cIndex3] * 2 ColorMath`CMt[{cIndex3}, cIndex4, cIndex5];
 
 (* FIXME: Are these correct? *)
 ColorMathToSARAHConvention[expr_] :=
@@ -488,11 +498,12 @@ ColorMathToSARAHConvention[expr_] :=
 		Subscript[Superscript[CM\[Delta], cIndex1_], cIndex2_] :>
 			SARAH`Delta[cIndex1, cIndex2],
 		Superscript[CM\[Delta], {indices__}] :> SARAH`Delta[indices],
+		Superscript[CM\[CapitalDelta], {indices__}] :> SARAH`Delta[indices],
 		Subscript[Superscript[Superscript[ColorMath`CMt, {cIndex1_}], cIndex2_], cIndex3_] :>
 			1 / 2 * SARAH`Lam[cIndex1, cIndex2, cIndex3],
 		ColorMath`Nc -> 3,
 		ColorMath`TR -> 1/2
-	}
+	};
 
 (** \brief Fully index all fields in a given diagram such that
  * contracted fields share the same indices.
