@@ -34,7 +34,7 @@
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE( test_b_to_s_gamma_internal_spectrum, * boost::unit_test::tolerance(3e-6) )
+BOOST_AUTO_TEST_CASE( test_b_to_s_gamma_internal_spectrum, * boost::unit_test::tolerance(1e-5) )
 {
    char const * const slha_input = R"(
 Block MODSEL                 # Select model
