@@ -124,10 +124,6 @@ CreateSelfConjugateFieldDefinition[field_?IsLorentzSelfConjugate, namespacePrefi
            " { using type = " <> fieldName <> "; };"
           ];
 
-CreateSelfConjugateFieldsDefinitions[fields_List, namespacePrefix_:""] :=
-    Utils`StringJoinWithSeparator[CreateSelfConjugateFieldDefinition[#, namespacePrefix]& /@ Select[fields, IsLorentzSelfConjugate   ], "\n"] <>
- "\n";
-
 CreateFieldTypeTraitDefinition[field_?TreeMasses`IsScalar, namespacePrefix_] :=
     "template<>\nstruct is_scalar<" <> TreeMasses`CreateFieldClassName[field, prefixNamespace -> namespacePrefix] <> " > : public std::true_type {};";
 CreateFieldTypeTraitDefinition[field_?TreeMasses`IsFermion, namespacePrefix_] :=
