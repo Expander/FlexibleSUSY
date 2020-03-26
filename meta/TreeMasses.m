@@ -269,6 +269,8 @@ CallDiagonalizeHermitianFunction::usage="";
 FlagPoleTachyon::usage = "";
 FlagRunningTachyon::usage = "";
 
+GetStrongCoupling::usage = "Returns the name of the QCD coupling, e.g. g3. If not present returns Null."
+
 Begin["`Private`"];
 
 unrotatedParticles = {};
@@ -2303,6 +2305,9 @@ GetChargedHiggsBoson[] :=
 
 GetPseudoscalarHiggsBoson[] :=
    If[ValueQ[SARAH`PseudoScalarBoson], SARAH`PseudoScalarBoson];
+
+GetStrongCoupling[] :=
+   If[ValueQ[SARAH`strongCoupling], SARAH`strongCoupling];
 
 End[];
 
