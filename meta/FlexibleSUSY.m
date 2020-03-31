@@ -442,15 +442,16 @@ ReplaceSymbolsInUserInput[rules_] :=
            FlexibleSUSY`FSVertexRules           = FlexibleSUSY`FSVertexRules             /. rules;
            FlexibleSUSY`FSBetaFunctionRules     = FlexibleSUSY`FSBetaFunctionRules       /. rules;
            SetAttributes[CheckParticleInPrecision, HoldFirst];
+
            CheckParticleInPrecision[precision_] :=
               If[!SubsetQ[TreeMasses`GetParticles[], precision],
                  Print["Warning: Particle(s) ", Complement[precision, TreeMasses`GetParticles[]],
-                 " cannot be used in ", HoldForm@precision, " as it is not part of ", FSModelName, ". Removing it/them."];
-                 Intersection[precision, TreeMasses`GetParticles[]]
+                 " cannot be used in ", Unevaluated@precision, " as it is not part of ", FSModelName, ". Removing it/them."];
+                 precision = Intersection[precision, TreeMasses`GetParticles[]]
               ];
-           With[{list = Unevaluated@{FlexibleSUSY`HighPoleMassPrecision, FlexibleSUSY`MediumPoleMassPrecision, FlexibleSUSY`LowPoleMassPrecision}},
-              Thread[list = CheckParticleInPrecision /@ list]
-           ];
+           CheckParticleInPrecision /@
+              {Unevaluated@FlexibleSUSY`HighPoleMassPrecision, Unevaluated@FlexibleSUSY`MediumPoleMassPrecision, Unevaluated@FlexibleSUSY`LowPoleMassPrecision};
+
           ];
 
 CheckSARAHVersion[] :=
