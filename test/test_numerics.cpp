@@ -62,7 +62,7 @@ std::array<std::complex<double>, N> make_logs()
 
 BOOST_AUTO_TEST_CASE(test_complex_log)
 {
-   const auto vals = make_logs<100000>();
+   const auto vals = make_logs<10000>();
 
    for (auto v: vals) {
       BOOST_CHECK_CLOSE_FRACTION(std::real(std::log(v)), std::real(fast_log(v)), 1e-9);
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(test_complex_log)
 
 BOOST_AUTO_TEST_CASE(test_complex_log_bench)
 {
-   const auto vals = make_logs<100000>();
+   const auto vals = make_logs<10000>();
 
    Stopwatch sw;
 
