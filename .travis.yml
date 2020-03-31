@@ -25,3 +25,4 @@ script:
   - make showbuild
   - make VERBOSE=1
   - make VERBOSE=1 -k all-test
+  - test/test_ckm.x --log_level=test_suite
