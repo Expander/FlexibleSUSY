@@ -2,7 +2,7 @@
 
 # directory of this script
 BASEDIR=$(dirname $0 | sed 's|^./||')
-HOMEDIR=$(readlink -f "${BASEDIR}/../")
+HOMEDIR="${BASEDIR}/.."
 FSCONFIG="${HOMEDIR}/flexiblesusy-config"
 CXX=$($FSCONFIG --cxx)
 DEPGEN="${HOMEDIR}/config/depgen.x"
