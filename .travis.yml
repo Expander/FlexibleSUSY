@@ -26,3 +26,7 @@ script:
   - make VERBOSE=1
   - make VERBOSE=1 -k all-test
   - test/test_ckm.x --log_level=test_suite
+  - test/test_numerics.x --log_level=test_suite
+  - test/test_threshold_loop_functions.x --log_level=test_suite
+  - test/test_run_all_spectrum_generators.x --log_level=test_suite
+  - test/test_space_dir.x --log_level=test_suite
