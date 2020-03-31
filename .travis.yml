@@ -25,7 +25,5 @@ script:
   - make showbuild
   - make VERBOSE=1
   - make VERBOSE=1 -k all-test
-  - test/test_ckm.x --log_level=test_suite
-  - test/test_numerics.x --log_level=test_suite
   - test/test_threshold_loop_functions.x
   - test/test_depgen.sh
