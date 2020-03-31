@@ -26,11 +26,22 @@
 #include "numerics.h"
 #include "dilog.hpp"
 #include "logger.hpp"
-#include "read_data.hpp"
 #include "benchmark.hpp"
 
 #include <cmath>
+#include <fstream>
+#include <iterator>
 #include <limits>
+#include <sstream>
+#include <string>
+#include <vector>
+
+const char PATH_SEPARATOR =
+#ifdef _WIN32
+   '\\';
+#else
+   '/';
+#endif
 
 using namespace flexiblesusy;
 
@@ -80,13 +91,22 @@ namespace {
    void test_1(const char* func_name, T func, double eps,
                std::function<bool(double, double)> filter = pass_all_1)
    {
-      const std::string filename(std::string(TEST_DATA_DIR) +
-                                 flexiblesusy::test::PATH_SEPARATOR +
+      const std::string filename(std::string(TEST_DATA_DIR) + PATH_SEPARATOR +
                                  func_name + ".txt");
       BOOST_TEST_MESSAGE("reading file " << filename);
-      const auto data = flexiblesusy::test::read_from_file<double>(filename);
 
-      for (const auto v: data) {
+      std::ifstream fstr(filename);
+      std::string line;
+      std::istringstream iss;
+      std::vector<double> v(2, 0.0);
+
+      while (std::getline(fstr, line)) {
+         iss.clear();
+         iss.str(line);
+
+         v.assign(std::istream_iterator<double>(iss),
+                  std::istream_iterator<double>());
+
          if (v.size() < 2) {
             continue;
          }
@@ -113,13 +133,22 @@ namespace {
    void test_2(const char* func_name, T func, double eps,
                std::function<bool(double, double, double)> filter = pass_all_2)
    {
-      const std::string filename(std::string(TEST_DATA_DIR) +
-                                 flexiblesusy::test::PATH_SEPARATOR +
+      const std::string filename(std::string(TEST_DATA_DIR) + PATH_SEPARATOR +
                                  func_name + ".txt");
       BOOST_TEST_MESSAGE("reading file " << filename);
-      const auto data = flexiblesusy::test::read_from_file<double>(filename);
 
-      for (const auto v: data) {
+      std::ifstream fstr(filename);
+      std::string line;
+      std::istringstream iss;
+      std::vector<double> v(2, 0.0);
+
+      while (std::getline(fstr, line)) {
+         iss.clear();
+         iss.str(line);
+
+         v.assign(std::istream_iterator<double>(iss),
+                  std::istream_iterator<double>());
+
          if (v.size() < 3) {
             continue;
          }
