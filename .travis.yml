@@ -26,4 +26,3 @@ script:
   - make VERBOSE=1
   - make VERBOSE=1 -k all-test
   - test/test_threshold_loop_functions.x
-  - test/test_depgen.sh
