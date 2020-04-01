@@ -1523,7 +1523,7 @@ std::vector<XYZ> generate_random_triples(
 
 BOOST_AUTO_TEST_CASE(test_phi_random)
 {
-   const unsigned N = 1000000;
+   const unsigned N = 10000;
    const auto triples = generate_random_triples(N, 1.0, 1000.0);
 
    auto phi_fs = [](const XYZ& t) {
@@ -1544,7 +1544,7 @@ BOOST_AUTO_TEST_CASE(test_phi_random)
 
 BOOST_AUTO_TEST_CASE(bench_phi)
 {
-   const unsigned N = 1000000;
+   const unsigned N = 10000;
    const auto triples = generate_random_triples(N, 1.0, 1000.0);
 
    auto phi_fs = [](const XYZ& t) {
