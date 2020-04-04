@@ -3009,6 +3009,8 @@ add_metaflags() {
    for m in ${MODELS}; do
       fs_="${m}/FlexibleSUSY.m"
 
+      [ ! -e "$fs_" ] && continue
+
       grep -q "$tlib_" $fs_ && sed -i "s/${tlib_}.*/${lib_}/g" $fs_ || echo "$lib_" >> $fs_
       grep -q "$tfa_" $fs_ && sed -i "s/${tfa_}.*/${fa_}/g" $fs_ || echo "$fa_" >> $fs_
       grep -q "$tfc_" $fs_ && sed -i "s/${tfc_}.*/${fc_}/g" $fs_ || echo "$fc_" >> $fs_
