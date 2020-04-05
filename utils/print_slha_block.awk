@@ -20,6 +20,10 @@ BEGIN {
    pattern     = "^block[[:blank:]]*" tolower(block) "([^[:graph:]].*)?$"
    not_pattern = "^block[[:blank:]]*.*$"
 
+   # line is a comment
+   if ($0 ~ "^[[:blank:]]*#")
+       next
+
    if (tolower($0) ~ pattern) {
       is_block = 1
    } else if (tolower($0) ~ not_pattern) {
