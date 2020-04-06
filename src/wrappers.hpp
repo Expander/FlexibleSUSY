@@ -29,12 +29,12 @@
 #include <utility>
 #include <vector>
 #include <Eigen/Core>
-#include <boost/lexical_cast.hpp>
 
 #include "eigen_tensor.hpp"
 #include "error.hpp"
 #include "logger.hpp"
 #include "if.hpp"
+#include "string_utils.hpp"
 #include "sum.hpp"
 #include "which.hpp"
 
@@ -672,7 +672,7 @@ Eigen::Matrix<Scalar,M,N> ToMatrix(const Eigen::Matrix<Scalar,M,N>& a) noexcept
 template <typename T>
 std::string ToString(T a)
 {
-   return boost::lexical_cast<std::string>(a);
+   return flexiblesusy::to_string(a);
 }
 
 double Total(double) noexcept;

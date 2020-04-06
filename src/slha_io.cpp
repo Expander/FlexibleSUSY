@@ -305,7 +305,7 @@ double SLHA_io::read_entry(const std::string& block_name, int key) const
 {
    auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
    double entry = 0.;
-   const SLHAea::Block::key_type keys(1, ToString(key));
+   const SLHAea::Block::key_type keys(1, flexiblesusy::to_string(key));
 
    while (block != data.cend()) {
       auto line = block->find(keys);
