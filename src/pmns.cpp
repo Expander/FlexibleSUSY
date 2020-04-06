@@ -148,7 +148,7 @@ void PMNS_parameters::to_pdg_convention(
 namespace {
 
 template<typename T>
-std::complex<T> phase(const std::complex<T>& z)
+std::complex<T> phase(const std::complex<T>& z) noexcept
 {
    T r = std::abs(z);
    return r == 0 ? 1 : z/r;
@@ -162,7 +162,7 @@ void calc_phase_factors(
 {
    o = std::conj(phase(p * pmns(0,2)));
    l.diagonal().bottomRightCorner<2,1>() = (o * pmns.bottomRightCorner<2,1>()).
-      unaryExpr(std::ptr_fun(phase<double>)).conjugate();
+      unaryExpr([] (const std::complex<double>& z) { return phase<double>(z); }).conjugate();
 }
 
 /// restrict sin or cos to interval [-1,1]

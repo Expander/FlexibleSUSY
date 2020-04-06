@@ -213,7 +213,7 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& 
 namespace {
 
 template<typename T>
-std::complex<T> phase(const std::complex<T>& z)
+std::complex<T> phase(const std::complex<T>& z) noexcept
 {
    T r = std::abs(z);
    return r == 0 ? 1 : z/r;
@@ -228,9 +228,9 @@ void calc_phase_factors
 {
    o = std::conj(phase(p * ckm(0,2)));
    l.diagonal().bottomRightCorner<2,1>() = (o * ckm.bottomRightCorner<2,1>()).
-      unaryExpr(std::ptr_fun(phase<double>)).conjugate();
+      unaryExpr([] (const std::complex<double>& z) { return phase<double>(z); }).conjugate();
    r.diagonal().topLeftCorner<2,1>() = (o * ckm.topLeftCorner<1,2>()).
-      unaryExpr(std::ptr_fun(phase<double>)).adjoint();
+      unaryExpr([] (const std::complex<double>& z) { return phase<double>(z); }).adjoint();
 }
 
 /// restrict sin or cos to interval [-1,1]
@@ -257,7 +257,7 @@ void CKM_parameters::to_pdg_convention(Eigen::Matrix<std::complex<double>,3,3>& 
    if (is_zero(c13_sq)) {
       o = std::conj(phase(ckm(0,2)));
       r.diagonal().block<2,1>(0,0) = (o * ckm.block<1,2>(1,0)).unaryExpr(
-                                         std::ptr_fun(phase<double>)).adjoint();
+         [] (const std::complex<double>& z) { return phase<double>(z); }).adjoint();
       l.diagonal()[2] = std::conj(phase(o * r.diagonal()[1] * ckm(2,1)));
    } else {
       const double c13 = std::sqrt(c13_sq);
