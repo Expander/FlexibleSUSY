@@ -439,63 +439,55 @@ constexpr Base Power3(Base b) noexcept
 template <typename Base>
 constexpr Base Power4(Base b) noexcept
 {
-   return b * b * b * b;
+   return Power2(Power2(b));
 }
 
 template <typename Base>
 constexpr Base Power5(Base b) noexcept
 {
-   return b * b * b * b * b;
+   return Power4(b) * b;
 }
 
 template <typename Base>
 constexpr Base Power6(Base b) noexcept
 {
-   return b * b * b * b * b * b;
+   return Power4(b) * Power2(b);
 }
 
 template <typename Base>
 constexpr Base Power7(Base b) noexcept
 {
-   return b * b * b * b * b *
-          b * b;
+   return Power6(b) * b;
 }
 
 template <typename Base>
 constexpr Base Power8(Base b) noexcept
 {
-   return b * b * b * b * b *
-          b * b * b;
+   return Power2(Power4(b));
 }
 
 template <typename Base>
 constexpr Base Power9(Base b) noexcept
 {
-   return b * b * b * b * b *
-          b * b * b * b;
+   return Power8(b) * b;
 }
 
 template <typename Base>
 constexpr Base Power10(Base b) noexcept
 {
-   return b * b * b * b * b *
-          b * b * b * b * b;
+   return Power8(b) * Power2(b);
 }
 
 template <typename Base>
 constexpr Base Power11(Base b) noexcept
 {
-   return b * b * b * b * b *
-          b * b * b * b * b *
-          b;
+   return Power10(b) * b;
 }
 
 template <typename Base>
 constexpr Base Power12(Base b) noexcept
 {
-   return b * b * b * b * b *
-          b * b * b * b * b *
-          b * b;
+   return Power2(Power6(b));
 }
 
 double Re(double) noexcept;
