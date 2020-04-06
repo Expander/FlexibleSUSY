@@ -20,9 +20,7 @@
 #define SLHA_IO_H
 
 #include "error.hpp"
-#include "logger.hpp"
 #include "numerics2.hpp"
-#include "pmns.hpp"
 #include "slhaea.h"
 #include "wrappers.hpp"
 
@@ -43,6 +41,7 @@ namespace flexiblesusy {
 
    class Spectrum_generator_settings;
    class Physical_input;
+   struct PMNS_parameters;
 
    namespace {
       /// SLHA line formatter for the MASS block entries

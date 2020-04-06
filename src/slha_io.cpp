@@ -18,8 +18,10 @@
 
 #include "slha_io.hpp"
 #include "ew_input.hpp"
+#include "logger.hpp"
 #include "lowe.h"
 #include "physical_input.hpp"
+#include "pmns.hpp"
 #include "spectrum_generator_settings.hpp"
 #include "wrappers.hpp"
 
