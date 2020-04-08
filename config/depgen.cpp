@@ -234,7 +234,7 @@ std::vector<std::string> prepend(const std::string& str,
    std::vector<std::string> result;
    result.reserve(strings.size());
 
-   for (auto& s: strings) {
+   for (const auto& s: strings) {
       result.push_back(str + s);
    }
 
