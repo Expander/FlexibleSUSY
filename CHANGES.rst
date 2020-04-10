@@ -1,4 +1,4 @@
-FlexibleSUSY 2.4.2 [not released yet]
+FlexibleSUSY 2.5.0 [not released yet]
 =====================================
 
 New features
@@ -31,6 +31,9 @@ Changes
 * When installing the dependencies with Conan_, the `Eigen 3`_ library
   from the Conan repository is preferred over the one installed in the
   system directories.
+
+FlexibleSUSY 2.4.2 [April, 10 2020]
+===================================
 
 Fixed bugs
 ----------
