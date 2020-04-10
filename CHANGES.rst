@@ -1,5 +1,5 @@
-FlexibleSUSY 2.4.2 [not released yet]
-=====================================
+FlexibleSUSY 2.4.2 [April, 10 2020]
+===================================
 
 Fixed bugs
 ----------
