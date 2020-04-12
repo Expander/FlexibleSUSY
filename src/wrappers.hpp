@@ -19,6 +19,7 @@
 #ifndef WRAPPERS_H
 #define WRAPPERS_H
 
+#include <algorithm>
 #include <cmath>
 #include <complex>
 #include <limits>
@@ -343,28 +344,24 @@ double PrintWARNING(Ts&&... vs)
 double Log(double a) noexcept;
 
 double MaxRelDiff(double, double);
+
 double MaxRelDiff(const std::complex<double>&, const std::complex<double>&);
 
 template <class Derived>
-double MaxRelDiff(const Eigen::MatrixBase<Derived>& a,
-                  const Eigen::MatrixBase<Derived>& b)
+double MaxRelDiff(const Eigen::PlainObjectBase<Derived>& a,
+                  const Eigen::PlainObjectBase<Derived>& b)
 {
-   typename Eigen::MatrixBase<Derived>::PlainObject sumTol(a.rows());
+   if (a.rows() != b.rows() || a.cols() != b.cols()) {
+      throw SetupError("MaxRelDiff: Matrices/Vectors have different size!");
+   }
 
-   if (a.rows() != b.rows())
-      throw SetupError("MaxRelDiff: vectors have different size!");
+   std::vector<typename Derived::Scalar> v(a.size(), 0.0);
 
-   for (int i = 0; i < a.rows(); i++)
-      sumTol(i) = MaxRelDiff(a(i), b(i));
+   for (int i = 0; i < v.size(); i++) {
+      v[i] = MaxRelDiff(a.data()[i], b.data()[i]);
+   }
 
-   return sumTol.maxCoeff();
-}
-
-template <class Derived>
-double MaxRelDiff(const Eigen::ArrayBase<Derived>& a,
-                  const Eigen::ArrayBase<Derived>& b)
-{
-   return MaxRelDiff(a.matrix(), b.matrix());
+   return *std::max_element(std::cbegin(v), std::cend(v));
 }
 
 double MaxAbsValue(double x) noexcept;
