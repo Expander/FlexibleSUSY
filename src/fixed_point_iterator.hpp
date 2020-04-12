@@ -45,7 +45,7 @@ public:
       : precision(precision_)
    {}
 
-   std::string name() const { return "Convergence_tester_absolute"; }
+   char const * const name() const { return "Convergence_tester_absolute"; }
 
    /**
     * Test whether the absolute value of the residual, defined by
@@ -75,7 +75,7 @@ public:
       : precision(precision_)
    {}
 
-   std::string name() const { return "Convergence_tester_relative"; }
+   char const * const name() const { return "Convergence_tester_relative"; }
 
    /**
     * Test whether the relative difference is less than the set
@@ -108,7 +108,7 @@ public:
       , tadpole_function(tadpole_function_)
    {}
 
-   std::string name() const { return "Convergence_tester_tadpole"; }
+   char const * const name() const { return "Convergence_tester_tadpole"; }
 
    /**
     * Test whether the relative difference is less than the set
@@ -187,7 +187,7 @@ public:
    int find_fixed_point(const Eigen::VectorXd&);
 
    // EWSB_solver interface methods
-   virtual std::string name() const override { return "Fixed_point_iterator<" + convergence_tester.name() + ">"; }
+   virtual std::string name() const override { return std::string("Fixed_point_iterator<") + convergence_tester.name() + ">"; }
    virtual int solve(const Eigen::VectorXd& start) override { return find_fixed_point(start); }
    virtual Eigen::VectorXd get_solution() const override { return fixed_point; }
 
