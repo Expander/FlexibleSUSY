@@ -2103,6 +2103,12 @@ check_looptools_libs() {
         else
             LOOPTOOLSLIBS="-L$looptools_lib_dir $LOOPTOOLSLIBS_"
         fi
+
+        # check dependency on libquadmath by searching for cabsq in liblooptools
+        check_symbol "cabsq" "$found_lib" "$found_dir"
+        if test -n "$found_lib" ; then
+            LOOPTOOLSLIBS="$LOOPTOOLSLIBS -lquadmath"
+        fi
     fi
 }
 
