@@ -170,20 +170,24 @@ double MaxAbsValue(const std::complex<double>& x) noexcept
 
 double MaxRelDiff(double a, double b)
 {
-   const double sTin = std::abs(a);
-   const double sTout = std::abs(b);
-   const double maxx = std::max(sTin, sTout);
-   const double underflow = 1.0e-20;
+   const double max = std::max(std::abs(a), std::abs(b));
 
-   if (maxx < underflow)
+   if (max < 1.0e-20) {
       return 0.0;
+   }
 
-   return std::abs((a - b) / maxx);
+   return std::abs((a - b) / max);
 }
 
 double MaxRelDiff(const std::complex<double>& a, const std::complex<double>& b)
 {
-   return MaxRelDiff(std::abs(a), std::abs(b));
+   const double max = std::max(std::abs(a), std::abs(b));
+
+   if (max < 1.0e-20) {
+      return 0.0;
+   }
+
+   return std::abs((a - b) / max);
 }
 
 double PolyLog(int n, double z)

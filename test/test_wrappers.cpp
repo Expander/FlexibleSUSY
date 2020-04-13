@@ -254,6 +254,20 @@ BOOST_AUTO_TEST_CASE(test_MaxRelDiff)
    BOOST_CHECK_CLOSE(MaxRelDiff(M1,M2), 2. , 1e-10);
 }
 
+
+BOOST_AUTO_TEST_CASE(test_MaxRelDiff_complex)
+{
+   const std::complex<double> unit(1.0, 0.0);
+
+   BOOST_CHECK_CLOSE(MaxRelDiff( 0.0*unit,  0.0*unit), 0.0, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff( 1.0*unit,  0.0*unit), 1.0, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1.0*unit,  0.0*unit), 1.0, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff( 1.0*unit, -1.0*unit), 2.0, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1.0*unit, -1.0*unit), 0.0, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff(-1.0*unit, -2.0*unit), 0.5, 1e-10);
+   BOOST_CHECK_CLOSE(MaxRelDiff( 1.0*unit,  2.0*unit), 0.5, 1e-10);
+}
+
 BOOST_AUTO_TEST_CASE(test_MaxRelDiff_array)
 {
    Eigen::Array<double,2,2> M1, M2;
