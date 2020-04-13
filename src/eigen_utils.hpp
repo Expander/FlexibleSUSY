@@ -22,6 +22,7 @@
 #include <Eigen/Core>
 #include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <complex>
 #include <string>
 #include <limits>
