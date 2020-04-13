@@ -35,7 +35,6 @@
 #include "error.hpp"
 #include "logger.hpp"
 #include "if.hpp"
-#include "string_utils.hpp"
 #include "sum.hpp"
 #include "which.hpp"
 
@@ -690,11 +689,26 @@ Eigen::Matrix<Scalar,M,N> ToMatrix(const Eigen::Matrix<Scalar,M,N>& a) noexcept
    return a;
 }
 
-template <typename T>
-std::string ToString(T a)
-{
-   return flexiblesusy::to_string(a);
-}
+// ToString ////////////////////////////////////////////////////////////
+
+std::string ToString(char);
+
+std::string ToString(unsigned char);
+std::string ToString(unsigned short);
+std::string ToString(unsigned int);
+std::string ToString(unsigned long);
+std::string ToString(unsigned long long);
+
+std::string ToString(signed char);
+std::string ToString(signed short);
+std::string ToString(signed int);
+std::string ToString(signed long);
+std::string ToString(signed long long);
+
+std::string ToString(double);
+std::string ToString(const std::complex<double>&);
+
+// Total ///////////////////////////////////////////////////////////////
 
 double Total(double) noexcept;
 std::complex<double> Total(const std::complex<double>&) noexcept;

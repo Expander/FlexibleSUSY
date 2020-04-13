@@ -19,6 +19,7 @@
 #include "wrappers.hpp"
 #include "dilog.hpp"
 #include "numerics2.hpp"
+#include "string_utils.hpp"
 #include "trilog.hpp"
 
 #include <complex>
@@ -246,6 +247,26 @@ double SignedAbsSqrt(double a) noexcept
 {
    return Sign(a) * AbsSqrt(a);
 }
+
+#define DEFINE_ToString(type)                   \
+   std::string ToString(type a)                 \
+   {                                            \
+      return flexiblesusy::to_string(a);        \
+   }
+
+DEFINE_ToString(char)
+DEFINE_ToString(unsigned char)
+DEFINE_ToString(unsigned short)
+DEFINE_ToString(unsigned int)
+DEFINE_ToString(unsigned long)
+DEFINE_ToString(unsigned long long)
+DEFINE_ToString(signed char)
+DEFINE_ToString(signed short)
+DEFINE_ToString(signed int)
+DEFINE_ToString(signed long)
+DEFINE_ToString(signed long long)
+DEFINE_ToString(double)
+DEFINE_ToString(const std::complex<double>&)
 
 double Total(double a) noexcept
 {
