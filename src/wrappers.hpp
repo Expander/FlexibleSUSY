@@ -350,14 +350,17 @@ double MaxRelDiff(double, double);
 double MaxRelDiff(const std::complex<double>&, const std::complex<double>&);
 
 template <class Derived>
-double MaxRelDiff(const Eigen::PlainObjectBase<Derived>& a,
-                  const Eigen::PlainObjectBase<Derived>& b)
+auto MaxRelDiff(const Eigen::PlainObjectBase<Derived>& a,
+                const Eigen::PlainObjectBase<Derived>& b)
+   -> decltype(MaxRelDiff(a.data()[0], b.data()[0]))
 {
    if (a.rows() != b.rows() || a.cols() != b.cols()) {
       throw SetupError("MaxRelDiff: Matrices/Vectors have different size!");
    }
 
-   std::vector<typename Derived::Scalar> v(a.size(), 0.0);
+   using Scalar_t = decltype(MaxRelDiff(a.data()[0], b.data()[0]));
+
+   std::vector<Scalar_t> v(a.size(), 0.0);
 
    for (int i = 0; i < v.size(); i++) {
       v[i] = MaxRelDiff(a.data()[i], b.data()[i]);

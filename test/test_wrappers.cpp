@@ -272,6 +272,15 @@ BOOST_AUTO_TEST_CASE(test_MaxRelDiff_matrix)
    BOOST_CHECK_CLOSE(MaxRelDiff(M1,M2), 2.0, 1e-10);
 }
 
+BOOST_AUTO_TEST_CASE(test_MaxRelDiff_matrix_complex)
+{
+   Eigen::Matrix<std::complex<double>,2,2> M1, M2;
+   M1 << +1.0, +1.0, +1.0, +1.0;
+   M2 << -1.0, -2.0, -3.0, -4.0;
+
+   BOOST_CHECK_CLOSE(MaxRelDiff(M1,M2), 2.0, 1e-10);
+}
+
 BOOST_AUTO_TEST_CASE(test_MaxAbsValue)
 {
    BOOST_CHECK_CLOSE(MaxAbsValue(0.)  , 0. , 1e-10);
