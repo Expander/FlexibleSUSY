@@ -255,15 +255,17 @@ double FiniteLog(double a) noexcept;
  * @param m matrix
  */
 template <typename Derived>
-void Hermitianize(Eigen::MatrixBase<Derived>& m) noexcept
+void Hermitianize(Eigen::PlainObjectBase<Derived>& m) noexcept
 {
-   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
-                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+   static_assert(Eigen::PlainObjectBase<Derived>::RowsAtCompileTime ==
+                 Eigen::PlainObjectBase<Derived>::ColsAtCompileTime,
                  "Hermitianize is only defined for squared matrices");
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
-      for (int k = 0; k < i; k++)
+   for (int i = 0; i < Eigen::PlainObjectBase<Derived>::RowsAtCompileTime; i++) {
+      for (int k = 0; k < i; k++) {
          m(i,k) = Conj(m(k,i));
+      }
+   }
 }
 
 ///////////////////////// logger commands /////////////////////////
@@ -636,15 +638,17 @@ DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(-)
  * @param m matrix
  */
 template <typename Derived>
-void Symmetrize(Eigen::MatrixBase<Derived>& m)
+void Symmetrize(Eigen::PlainObjectBase<Derived>& m)
 {
-   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
-                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
+   static_assert(Eigen::PlainObjectBase<Derived>::RowsAtCompileTime ==
+                 Eigen::PlainObjectBase<Derived>::ColsAtCompileTime,
                  "Symmetrize is only defined for squared matrices");
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; i++)
-      for (int k = 0; k < i; k++)
+   for (int i = 0; i < Eigen::PlainObjectBase<Derived>::RowsAtCompileTime; i++) {
+      for (int k = 0; k < i; k++) {
          m(i,k) = m(k,i);
+      }
+   }
 }
 
 #define UNITMATRIX(rows)             Eigen::Matrix<double,rows,rows>::Identity()
