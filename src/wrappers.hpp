@@ -343,6 +343,8 @@ double PrintWARNING(Ts&&... vs)
 
 double Log(double a) noexcept;
 
+// MaxRelDiff //////////////////////////////////////////////////////////
+
 double MaxRelDiff(double, double);
 
 double MaxRelDiff(const std::complex<double>&, const std::complex<double>&);
@@ -364,14 +366,25 @@ double MaxRelDiff(const Eigen::PlainObjectBase<Derived>& a,
    return *std::max_element(std::cbegin(v), std::cend(v));
 }
 
+// MaxAbsValue /////////////////////////////////////////////////////////
+
 double MaxAbsValue(double x) noexcept;
+
 double MaxAbsValue(const std::complex<double>& x) noexcept;
 
 template <class Derived>
-double MaxAbsValue(const Eigen::MatrixBase<Derived>& x)
+auto MaxAbsValue(const Eigen::MatrixBase<Derived>& x) -> decltype(x.cwiseAbs().maxCoeff())
 {
    return x.cwiseAbs().maxCoeff();
 }
+
+template <class Derived>
+auto MaxAbsValue(const Eigen::ArrayBase<Derived>& x) -> decltype(x.cwiseAbs().maxCoeff())
+{
+   return x.cwiseAbs().maxCoeff();
+}
+
+// Max /////////////////////////////////////////////////////////////////
 
 template<typename T>
 T Max(T&&t)

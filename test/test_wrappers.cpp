@@ -272,6 +272,50 @@ BOOST_AUTO_TEST_CASE(test_MaxRelDiff_matrix)
    BOOST_CHECK_CLOSE(MaxRelDiff(M1,M2), 2.0, 1e-10);
 }
 
+BOOST_AUTO_TEST_CASE(test_MaxAbsValue)
+{
+   BOOST_CHECK_CLOSE(MaxAbsValue(0.)  , 0. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxAbsValue(1.)  , 1. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxAbsValue(-1.) , 1. , 1e-10);
+   BOOST_CHECK_CLOSE(MaxAbsValue(std::complex<double>(0.,1.)), 1. , 1e-10);
+
+   {
+      Eigen::Matrix<double,3,1> M;
+      M << -2.0, 0.0, 1.0;
+      auto M2 = M;
+
+      BOOST_CHECK_CLOSE(MaxAbsValue(M), 2.0, 1e-10);
+      BOOST_CHECK_CLOSE(MaxAbsValue(M + M2), 4.0, 1e-10);
+   }
+
+   {
+      Eigen::Matrix<std::complex<double>,2,1> M;
+      M << std::complex<double>(0,1), std::complex<double>(0,2);
+      auto M2 = M;
+
+      BOOST_CHECK_CLOSE(MaxAbsValue(M), 2.0, 1e-10);
+      BOOST_CHECK_CLOSE(MaxAbsValue(M + M2), 4.0, 1e-10);
+   }
+
+   {
+      Eigen::Array<double,3,1> A;
+      A << -2.0, 0.0, 1.0;
+      auto A2 = A;
+
+      BOOST_CHECK_CLOSE(MaxAbsValue(A), 2.0, 1e-10);
+      BOOST_CHECK_CLOSE(MaxAbsValue(A + A2), 4.0, 1e-10);
+   }
+
+   {
+      Eigen::Array<std::complex<double>,2,1> A;
+      A << std::complex<double>(0,1), std::complex<double>(0,2);
+      auto A2 = A;
+
+      BOOST_CHECK_CLOSE(MaxAbsValue(A), 2.0, 1e-10);
+      BOOST_CHECK_CLOSE(MaxAbsValue(A + A2), 4.0, 1e-10);
+   }
+}
+
 BOOST_AUTO_TEST_CASE(test_Abs_vector)
 {
    std::vector<double> v(3);
