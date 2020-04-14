@@ -254,6 +254,7 @@ LowPoleMassPrecision     = {};
 
 FSEigenstates = SARAH`EWSB;
 FSSolveEWSBTimeConstraint = 120;
+FSFullSimplifyBetaFunctions = False;
 FSSimplifyBetaFunctionsTimeConstraint = 120;
 FSSolveWeinbergAngleTimeConstraint = 120;
 FSCheckPerturbativityOfDimensionlessParameters = True;

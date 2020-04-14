@@ -20,7 +20,7 @@
 
 *)
 
-BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "Traces`", "Utils`"}];
+BeginPackage["BetaFunction`", {"SARAH`", "TextFormatting`", "CConversion`", "Parameters`", "Traces`", "Utils`", "MatMulSimplify`"}];
 
 BetaFunction[];
 
@@ -192,12 +192,17 @@ ConvertExprToC[expr_, type_, target_String] :=
            result
           ];
 
+BetaFunctionCreateSimpRepDecl[simpRep_List] :=
+    StringJoin[("const auto " <>
+                CConversion`ToValidCSymbolString[First[#]] <> " = (" <>
+                CConversion`RValueToCFormString[Last[#]] <> ").eval();\n")& /@ simpRep]
+
 (*
  * Create one-loop and two-loop beta function assignments and local definitions.
  *)
 CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_List] :=
      Module[{beta, betaName, name, betaStr,
-             type = ErrorType, localDecl, traceRules, expr},
+             type = ErrorType, localDecl, traceRules, expr, simpRep},
             name      = ToValidCSymbolString[GetName[betaFunction]];
             betaName  = "beta_" <> name;
             type = GetType[betaFunction];
@@ -220,10 +225,15 @@ CreateBetaFunction[betaFunction_BetaFunction, loopOrder_Integer, sarahTraces_Lis
             (* replace SARAH traces in expr *)
             traceRules = Rule[#,ToValidCSymbol[#]]& /@ (Traces`FindSARAHTraces[expr, sarahTraces]);
             beta = beta /. traceRules;
-            (* collecting complicated matrix multiplications *)
-            beta = CollectMatMul[beta];
             (* declare SARAH traces locally *)
             localDecl  = localDecl <> Traces`CreateLocalCopiesOfSARAHTraces[expr, sarahTraces, "TRACE_STRUCT"];
+            (* collecting (expensive) matrix multiplications *)
+            beta = CollectMatMul[beta];
+            (* extract repeated/nested matrix products *)
+            If[FlexibleSUSY`FSFullSimplifyBetaFunctions,
+               { beta, simpRep } = MatMulSimplify`MatMulSimplify[beta, SARAH`MatMul];
+               localDecl  = localDecl <> BetaFunctionCreateSimpRepDecl[simpRep];
+            ];
             If[beta == 0,
                beta = CConversion`CreateZero[type];
               ];

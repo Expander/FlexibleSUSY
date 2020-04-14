@@ -16,6 +16,13 @@ New features
 
   Thanks to Markus Bach.
 
+* New FlexibleSUSY model file flag ``FSFullSimplifyBetaFunctions`` to
+  perform a more sophisticated optimization of the beta functions
+  (default: ``False``).  If set to ``True``, repeated matrix products
+  in the beta functions are extracted to local variables to avoid
+  (potentially expensive) re-evaluation.  Note: May lead to longer
+  compile time and more memory consumption during compilation.
+
 Changes
 -------
 
