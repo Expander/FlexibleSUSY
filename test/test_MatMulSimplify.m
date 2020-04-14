@@ -27,6 +27,7 @@ Needs["MatMulSimplify`", "MatMulSimplify.m"];
 MM = SARAH`MatMul;
 
 MMS[expr_] := MatMulSimplify`MatMulSimplify[expr, MM];
+MMR[expr_] := MatMulSimplify`MatMulRefine[expr, MM];
 
 Print["testing number of replacement rules ..."];
 
@@ -101,5 +102,12 @@ For[l = 1, l <= 3, l++,
     CheckExpr[Get[FileNameJoin[{betaDir, "beta_Ye.m"  }]][[l]]];
     CheckExpr[Get[FileNameJoin[{betaDir, "beta_Yu.m"  }]][[l]]];
 ];
+
+Print["testing MatMulRefine ..."];
+
+TestEquality[MMR[MM[a]], a];
+TestEquality[MMR[MM[2]], 2];
+TestEquality[MMR[MM[a] + MM[a,2]], 3 a];
+TestEquality[MMR[MM[a] + MM[a,2,c]],a + 2 MM[a,c]];
 
 PrintTestSummary[];

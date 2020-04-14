@@ -77,10 +77,11 @@ MatMulReplaceNested[expr_, head_, {nMin_, nMax_}, ruleSymb_] :=
 
 MatMulRefine[expr_, head_] :=
     expr //. {
+	head[a_] :> a,
 	head[a__, n_?NumericQ, b___] :> head[n, a, b],
 	head[n_?NumericQ, a___] :> n head[a],
 	head[a___, head[m__], b___] :> head[a, m, b]
-    } /. { head[a_] :> a }
+    }
 
 MatMulSimplify[expr_, head_, ruleSymb_:"mat"] :=
     MatMulReplaceNested[MatMulRefine[expr, head], head, {2, Infinity}, ruleSymb]
