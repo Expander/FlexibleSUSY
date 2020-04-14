@@ -26,13 +26,21 @@ MatMulSimplify::usage =
 "MatMulSimplify[expr] returns the tuple { simpExpr, simpRules }, where
 simpExpr is a simplified expression where all (nested) appearances of
 MatMul[___] are replaced by unique symbols.  simpRules contains the
-replacement rules for these symbols to restore the expression";
+replacement rules for these symbols to restore the expression
+
+Example:
+
+    MatMulSimplify[MatMul[a,b] + MatMul[a,b,c] + MatMul[a,b,c,d], MatMul]
+";
 
 MatMulRefine::usage =
 "MatMulRefine[expr] refines all MatMul[___] expressions in expr by
-pulling out numerical terms.";
+pulling out numerical terms.
 
-MatMul;
+Example:
+
+    MatMulRefine[MatMul[a] + MatMul[a,2], MatMul]
+";
 
 Begin["`Private`"];
 
@@ -43,7 +51,7 @@ MatMulFindPattern[expr_, patt_] :=
 (* replace rules in expressions, including nestings of the form head[___, term, ___] *)
 MatMulReplaceSubExpr[expr_, rules_, head_] :=
     Module[{a, b},
-           expr //. rules //. MatMulRefine[Rule[head[a___, PatternSequence @@ First[#], b___], head[a, Last[#], b]]& /@ rules]
+           expr //. rules //. MatMulRefine[Rule[head[a___, PatternSequence @@ First[#], b___], head[a, Last[#], b]]& /@ rules, head]
     ]
 
 (* creates pattern of the form head[_,...,_] with n blanks *)
@@ -51,12 +59,12 @@ MatMulMakePattern[n_Integer, head_] :=
     head[PatternSequence @@ Array[Blank[]&, n]]
 
 (* returns tuple of simplified expr and replacement rules *)
-MatMulReplaceNested[expr_, head_, {nMin_, nMax_}] :=
+MatMulReplaceNested[expr_, head_, {nMin_, nMax_}, ruleSymb_] :=
     Module[{simpRep = {}, simpExpr = expr, rules, patt, m},
            While[!FreeQ[simpExpr, head],
                  For[m = nMin, !FreeQ[simpExpr, head] && m <= nMax, m++,
                      patt = MatMulMakePattern[m, head];
-                     rules = Rule[#, Unique[mat]]& /@ MatMulFindPattern[simpExpr, patt];
+                     rules = Rule[#, Unique[ruleSymb]]& /@ MatMulFindPattern[simpExpr, patt];
                      simpExpr = MatMulReplaceSubExpr[simpExpr, rules, head];
                      simpRep = Join[simpRep, rules];
                      If[rules =!= {},
@@ -64,18 +72,18 @@ MatMulReplaceNested[expr_, head_, {nMin_, nMax_}] :=
                      ];
                  ];
            ];
-           {MatMulRefine[simpExpr], Reverse /@ simpRep}
+           {MatMulRefine[simpExpr, head], Reverse /@ simpRep}
     ]
 
-MatMulRefine[expr_] :=
+MatMulRefine[expr_, head_] :=
     expr //. {
-	MatMul[a__, n_?NumericQ, b___] :> MatMul[n, a, b],
-	MatMul[n_?NumericQ, a___] :> n MatMul[a],
-	MatMul[a___, MatMul[m__], b___] :> MatMul[a, m, b]
-    } /. { MatMul[a_] :> a }
+	head[a__, n_?NumericQ, b___] :> head[n, a, b],
+	head[n_?NumericQ, a___] :> n head[a],
+	head[a___, head[m__], b___] :> head[a, m, b]
+    } /. { head[a_] :> a }
 
-MatMulSimplify[expr_] :=
-    MatMulReplaceNested[MatMulRefine[expr], MatMul, {2, Infinity}]
+MatMulSimplify[expr_, head_, ruleSymb_:"mat"] :=
+    MatMulReplaceNested[MatMulRefine[expr, head], head, {2, Infinity}, ruleSymb]
 
 End[];
 

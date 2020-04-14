@@ -23,7 +23,10 @@
 Needs["TestSuite`", "TestSuite.m"];
 Needs["MatMulSimplify`", "MatMulSimplify.m"];
 
-MMS = MatMulSimplify`MatMulSimplify;
+(* MatMul symbol *)
+MM = SARAH`MatMul;
+
+MMS[expr_] := MatMulSimplify`MatMulSimplify[expr, MM];
 
 Print["testing number of replacement rules ..."];
 
@@ -33,25 +36,25 @@ TestEquality[Length[simpRep], 0];
 {simpEx, simpRep} = MMS[a];
 TestEquality[Length[simpRep], 0];
 
-{simpEx, simpRep} = MMS[MatMul[a]];
+{simpEx, simpRep} = MMS[MM[a]];
 TestEquality[Length[simpRep], 0];
 
-{simpEx, simpRep} = MMS[MatMul[a,b]];
+{simpEx, simpRep} = MMS[MM[a,b]];
 TestEquality[Length[simpRep], 1];
 
-{simpEx, simpRep} = MMS[MatMul[a,b,c]];
+{simpEx, simpRep} = MMS[MM[a,b,c]];
 TestEquality[Length[simpRep], 1];
 
-{simpEx, simpRep} = MMS[MatMul[a,b,c,d]];
+{simpEx, simpRep} = MMS[MM[a,b,c,d]];
 TestEquality[Length[simpRep], 1];
 
-{simpEx, simpRep} = MMS[MatMul[a,b] + MatMul[c,b]];
+{simpEx, simpRep} = MMS[MM[a,b] + MM[c,b]];
 TestEquality[Length[simpRep], 2];
 
-{simpEx, simpRep} = MMS[MatMul[a,b] + MatMul[a,b,c]];
+{simpEx, simpRep} = MMS[MM[a,b] + MM[a,b,c]];
 TestEquality[Length[simpRep], 2];
 
-{simpEx, simpRep} = MMS[MatMul[a,b] + MatMul[a,b,c] + MatMul[a,b,c,d]];
+{simpEx, simpRep} = MMS[MM[a,b] + MM[a,b,c] + MM[a,b,c,d]];
 TestEquality[Length[simpRep], 3];
 
 Print["testing equality of full and simplified expressions ..."];
@@ -59,17 +62,17 @@ Print["testing equality of full and simplified expressions ..."];
 CheckExpr[expr_] :=
     Module[{simpEx, simpRep},
            {simpEx, simpRep} = MMS[expr];
-           TestEquality[MatMulRefine[Expand[expr - (simpEx //. simpRep)]], 0];
+           TestEquality[MatMulRefine[Expand[expr - (simpEx //. simpRep)], MM], 0];
     ];
 
 CheckExpr[1];
 CheckExpr[a];
-CheckExpr[MatMul[a]];
-CheckExpr[MatMul[a,b]];
-CheckExpr[MatMul[a,b,c]];
-CheckExpr[MatMul[a,b,c,d]];
-CheckExpr[MatMul[a,b] + MatMul[c,d]];
-CheckExpr[1 + MatMul[a,b] + MatMul[a,b,c] + MatMul[a,b,c,d]];
+CheckExpr[MM[a]];
+CheckExpr[MM[a,b]];
+CheckExpr[MM[a,b,c]];
+CheckExpr[MM[a,b,c,d]];
+CheckExpr[MM[a,b] + MM[c,d]];
+CheckExpr[1 + MM[a,b] + MM[a,b,c] + MM[a,b,c,d]];
 
 Print["testing equality of full and simplified MSSM 3-loop beta functions ..."];
 
