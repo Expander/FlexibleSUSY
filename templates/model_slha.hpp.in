@@ -27,7 +27,6 @@
 #define @ModelName@_SLHA_H
 
 #include "@ModelName@_input_parameters.hpp"
-#include "@ModelName@_mass_eigenstates.hpp"
 #include "@ModelName@_physical.hpp"
 
 #include "ckm.hpp"
