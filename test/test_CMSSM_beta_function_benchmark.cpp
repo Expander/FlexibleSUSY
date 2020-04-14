@@ -12,12 +12,15 @@
 using namespace flexiblesusy;
 using namespace softsusy;
 
-BOOST_AUTO_TEST_CASE( test_CMSSM_beta_function_calculation_time )
+void bench_loop_order(int loops)
 {
    CMSSM_input_parameters input;
    CMSSM<Two_scale> m;
    MssmSoftsusy s;
    setup_CMSSM(m, s, input);
+
+   m.set_loops(loops);
+   s.setLoops(loops);
 
    const int N_calls = 10000;
 
@@ -36,10 +39,18 @@ BOOST_AUTO_TEST_CASE( test_CMSSM_beta_function_calculation_time )
    stopwatch.stop();
    const double fs_time = stopwatch.get_time_in_seconds();
 
-   BOOST_TEST_MESSAGE("Calcultating the CMSSM beta-functions " << N_calls
-                 << " times with\n"
-                 "Softsusy    : " << ss_time << "s\n"
-                 "FlexibleSUSY: " << fs_time << "s\n");
+   BOOST_TEST_MESSAGE(
+      "Calcultating the CMSSM " << loops << "-loop beta-functions " << N_calls
+      << " times with\n"
+      "Softsusy    : " << ss_time << "s\n"
+      "FlexibleSUSY: " << fs_time << "s\n");
 
    BOOST_CHECK_GT(ss_time, fs_time);
+}
+
+BOOST_AUTO_TEST_CASE( test_CMSSM_beta_function_calculation_time )
+{
+   for (int i = 0; i <= 3; i++) {
+      bench_loop_order(i);
+   }
 }
