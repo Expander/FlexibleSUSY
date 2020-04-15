@@ -243,6 +243,11 @@ double b22(double p,  double m1, double m2, double q) noexcept
    double b22l = B00(p*p, m1*m1, m2*m2).real();
 #endif
 
+   p = std::abs(p);
+   m1 = std::abs(m1);
+   m2 = std::abs(m2);
+   q = std::abs(q);
+
    // protect against infrared divergence
    if (is_zero(p, EPSTOL) && is_zero(m1, EPSTOL) && is_zero(m2, EPSTOL))
       return 0.0;
@@ -251,20 +256,20 @@ double b22(double p,  double m1, double m2, double q) noexcept
    const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2);
    const double pTolerance = 1.0e-10;
 
-   if (p2 < pTolerance * std::max(m12, m22) ) {
+   if (p2 < pTolerance * std::max(m12, m22)) {
       // m1 == m2 with good accuracy
       if (is_close(m1, m2, EPSTOL)) {
-         return -m12 * std::log(sqr(m1 / q)) * 0.5 + m12 * 0.5;
+         return -m12 * std::log(m1/q) + m12 * 0.5;
       }
       // p == 0 limit
-      if (std::abs(m1) > EPSTOL && std::abs(m2) > EPSTOL) {
-         return 0.375 * (m12 + m22) - 0.25 *
-            (sqr(m22) * std::log(sqr(m2 / q)) - sqr(m12) *
-             std::log(sqr(m1 / q))) / (m22 - m12);
+      if (m1 > EPSTOL && m2 > EPSTOL) {
+         return 0.375 * (m12 + m22) - 0.5 *
+            (sqr(m22) * std::log(m2/q) -
+             sqr(m12) * std::log(m1/q)) / (m22 - m12);
       }
-      return (std::abs(m1) < EPSTOL)
-         ? 0.375 * m22 - 0.25 * m22 * std::log(sqr(m2 / q))
-         : 0.375 * m12 - 0.25 * m12 * std::log(sqr(m1 / q));
+      return (m1 < EPSTOL)
+         ? 0.375 * m22 - 0.5 * m22 * std::log(m2/q)
+         : 0.375 * m12 - 0.5 * m12 * std::log(m1/q);
    }
 
    const double b0Save = b0(p, m1, m2, q);
