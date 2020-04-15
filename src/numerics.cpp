@@ -142,44 +142,44 @@ double b0(double p, double m1, double m2, double q) noexcept
    //  return B0(p*p, m1*m1, m2*m2).real();
 #endif
 
+   m1 = std::abs(m1);
+   m2 = std::abs(m2);
+   p = std::abs(p);
+   q = std::abs(q);
+
+   if (m1 > m2) {
+      std::swap(m1, m2);
+   }
+
    // protect against infrared divergence
    if (is_zero(p, EPSTOL) && is_zero(m1, EPSTOL) && is_zero(m2, EPSTOL)) {
       return 0.0;
    }
 
-   const double m12 = sqr(m1);
-   const double m22 = sqr(m2);
-   const double mMinSq = std::min(m12, m22);
-   const double mMaxSq = std::max(m12, m22);
-   const double pSq = sqr(p);
+   // p is not 0
+   if (p > 1.0e-5 * m2) {
+      const double m12 = sqr(m1), m22 = sqr(m2), p2 = sqr(p);
+      const double s = p2 - m22 + m12;
+      const std::complex<double> imin(m12, -EPSTOL);
+      const std::complex<double> x = std::sqrt(sqr(s) - 4.0 * p2 * imin);
+      const std::complex<double> xp  = (s + sign(s)*x) / (2*p2);
+      const std::complex<double> xm = imin / (xp*p2);
 
-   const double pTest = divide_finite(pSq, mMaxSq);
-   /// Decides level at which one switches to p=0 limit of calculations
-   const double pTolerance = 1.0e-10;
-
-   /// p is not 0
-   if (pTest > pTolerance) {
-      const double s = pSq - mMaxSq + mMinSq;
-      const std::complex<double> imin(mMinSq, -EPSTOL);
-      const std::complex<double> x = std::sqrt(sqr(s) - 4.0 * pSq * imin);
-      const std::complex<double> xPlus  = (s + sign(s)*x) / (2*pSq);
-      const std::complex<double> xMinus = imin / (xPlus*pSq);
-
-      return -2.0 * std::log(p / q) - fB(xPlus) - fB(xMinus);
+      return -2.0*std::log(p/q) - fB(xp) - fB(xm);
    }
 
    if (is_close(m1, m2, EPSTOL)) {
-      return -2.0 * std::log(std::abs(m1 / q));
+      return -2.0*std::log(m1/q);
    }
 
-   const double qSq = sqr(q);
-
-   if (mMinSq < 1.0e-30) {
-      return 1.0 - std::log(mMaxSq / qSq);
+   if (m1 < 1.0e-15) {
+      return 1.0 - 2.0*std::log(m2/q);
    }
 
-   return 1.0 - std::log(mMaxSq / qSq) + mMinSq * std::log(mMaxSq / mMinSq)
-      / (mMinSq - mMaxSq);
+   const double m12 = sqr(m1), m22 = sqr(m2);
+
+   return 1.0 - 2.0 * std::log(m2/q)
+        + 2.0 * m12 * std::log(m2/m1) / (m12 - m22);
 }
 
 /// Note that b1 is NOT symmetric in m1 <-> m2!!!
