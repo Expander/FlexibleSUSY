@@ -364,7 +364,7 @@ auto MaxRelDiff(const Eigen::PlainObjectBase<Derived>& a,
 
    std::vector<Scalar_t> v(a.size(), 0.0);
 
-   for (int i = 0; i < v.size(); i++) {
+   for (typename std::vector<Scalar_t>::size_type i = 0; i < v.size(); i++) {
       v[i] = MaxRelDiff(a.data()[i], b.data()[i]);
    }
 
