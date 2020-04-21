@@ -2047,6 +2047,8 @@ check_required_libs() {
             local model_name=$(echo ${m} | sed -e 's|models/||')
             local model_file="models/${model_name}/FlexibleSUSY.m"
 
+            [ -e "${model_file}" ] || continue
+
             mma_symbol_is "${model_file}" "${MATH}" "UseSMYukawa2Loop" "True" && {
                 message "   TSIL is required to build $model_name"
                 enable_tsil=yes
