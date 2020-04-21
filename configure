@@ -2049,6 +2049,10 @@ check_required_libs() {
 
             [ -e "${model_file}" ] || continue
 
+            # early continue to skip expensive Mathematica kernel
+            # calls, if possible
+            grep 'UseSMYukawa2Loop\|UseHiggs3LoopMSSM\|FSHimalayaMh23L' "${model_file}" > /dev/null 2>&1 || continue
+
             mma_symbol_is "${model_file}" "${MATH}" "UseSMYukawa2Loop" "True" && {
                 message "   TSIL is required to build $model_name"
                 enable_tsil=yes
