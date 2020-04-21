@@ -69,8 +69,6 @@ BOOST_AUTO_TEST_CASE( test_UnitStep )
    BOOST_CHECK_EQUAL(UnitStep(2   ), 1);
 }
 
-using namespace std;
-
 BOOST_AUTO_TEST_CASE(test_Diag)
 {
    Eigen::Matrix<double,3,3> m;
