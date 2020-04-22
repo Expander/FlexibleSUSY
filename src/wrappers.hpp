@@ -98,7 +98,7 @@ auto AbsSqr(const Eigen::MatrixBase<Derived>& x) -> decltype(AbsSqr(x.array()).m
    return AbsSqr(x.array()).matrix().eval();
 }
 
-// AbsSqr //////////////////////////////////////////////////////////////
+// AbsSqrt /////////////////////////////////////////////////////////////
 
 double AbsSqrt(double) noexcept;
 
@@ -114,9 +114,12 @@ Derived AbsSqrt(const Eigen::ArrayBase<Derived>& m)
    return m.cwiseAbs().cwiseSqrt();
 }
 
+// ArcTan, ArcSin, ArcCos //////////////////////////////////////////////
+
 double ArcTan(double) noexcept;
 double ArcSin(double) noexcept;
 double ArcCos(double) noexcept;
+
 double Arg(const std::complex<double>&) noexcept;
 
 template <typename T>
