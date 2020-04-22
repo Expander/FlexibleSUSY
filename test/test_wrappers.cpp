@@ -132,6 +132,49 @@ BOOST_AUTO_TEST_CASE( test_AbsSqr )
    }
 }
 
+BOOST_AUTO_TEST_CASE( test_AbsSqrt )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_EQUAL(AbsSqrt(-4), 2);
+   BOOST_CHECK_EQUAL(AbsSqrt( 0), 0);
+   BOOST_CHECK_EQUAL(AbsSqrt( 4), 2);
+
+   BOOST_CHECK_EQUAL(AbsSqrt(-4.0), 2.0);
+   BOOST_CHECK_EQUAL(AbsSqrt( 0.0), 0.0);
+   BOOST_CHECK_EQUAL(AbsSqrt(-0.0), 0.0);
+   BOOST_CHECK_EQUAL(AbsSqrt( 4.0), 2.0);
+
+   BOOST_CHECK_EQUAL(AbsSqrt(i    ), 1.0);
+   BOOST_CHECK_EQUAL(AbsSqrt(i*i  ), 1.0);
+   BOOST_CHECK_CLOSE_FRACTION(AbsSqrt(1 + i), std::sqrt(std::sqrt(2.0)), 1e-15);
+
+   Eigen::Matrix<double,2,2> m;
+   m << -1.0, -2.0, -3.0, -4.0;
+
+   Eigen::Array<double,2,2> a = m.array();
+
+   Eigen::Matrix<std::complex<double>,2,2> cm = m + i*m;
+   Eigen::Array<std::complex<double>,2,2> ca = a + i*a;
+
+   for (int i = 0; i < m.rows(); i++) {
+      for (int k = 0; k < m.cols(); k++) {
+         BOOST_CHECK_EQUAL(AbsSqrt(a)(i,k), AbsSqrt(a(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqrt(m)(i,k), AbsSqrt(m(i,k)));
+
+         BOOST_CHECK_EQUAL(AbsSqrt(ca)(i,k), AbsSqrt(ca(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqrt(cm)(i,k), AbsSqrt(cm(i,k)));
+
+         // test expressions
+         BOOST_CHECK_EQUAL(AbsSqrt(a + a)(i,k), AbsSqrt(a(i,k) + a(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqrt(m + m)(i,k), AbsSqrt(m(i,k) + m(i,k)));
+
+         BOOST_CHECK_EQUAL(AbsSqrt(4*a)(i,k), 2*AbsSqrt(a(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqrt(4*m)(i,k), 2*AbsSqrt(m(i,k)));
+      }
+   }
+}
+
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
    BOOST_CHECK_EQUAL(Delta(0,0), 1);

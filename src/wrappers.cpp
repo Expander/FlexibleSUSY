@@ -27,11 +27,6 @@
 
 namespace flexiblesusy {
 
-double AbsSqrt(double x) noexcept
-{
-   return std::sqrt(std::fabs(x));
-}
-
 double ArcTan(double a) noexcept
 {
    return std::atan(a);
