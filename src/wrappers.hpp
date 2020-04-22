@@ -40,6 +40,8 @@
 
 namespace flexiblesusy {
 
+// Constants ///////////////////////////////////////////////////////////
+
 static constexpr double Pi = M_PI;
 static constexpr double oneOver16PiSqr = 1./(16. * Pi * Pi);
 static constexpr double oneLoop = oneOver16PiSqr;
@@ -48,6 +50,8 @@ static constexpr double threeLoop = oneOver16PiSqr * oneOver16PiSqr * oneOver16P
 static constexpr double fourLoop = twoLoop * twoLoop;
 static constexpr double fiveLoop = oneLoop * fourLoop;
 static constexpr bool True = true;
+
+// Abs /////////////////////////////////////////////////////////////////
 
 template <typename T>
 T Abs(T a) noexcept

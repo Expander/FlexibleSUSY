@@ -36,6 +36,39 @@
 
 using namespace flexiblesusy;
 
+BOOST_AUTO_TEST_CASE( test_Abs )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_EQUAL(Abs(-1), 1);
+   BOOST_CHECK_EQUAL(Abs( 0), 0);
+   BOOST_CHECK_EQUAL(Abs( 1), 1);
+
+   BOOST_CHECK_EQUAL(Abs(-1.0), 1.0);
+   BOOST_CHECK_EQUAL(Abs( 0.0), 0.0);
+   BOOST_CHECK_EQUAL(Abs( 1.0), 1.0);
+
+   BOOST_CHECK_EQUAL(Abs(i    ), 1.0);
+   BOOST_CHECK_EQUAL(Abs(i*i  ), 1.0);
+   BOOST_CHECK_EQUAL(Abs(1 + i), std::sqrt(2.0));
+
+   Eigen::Matrix<double,2,2> m;
+   m << -1.0, -2.0, -3.0, -4.0;
+
+   BOOST_CHECK_EQUAL(Abs(m)(0,0), Abs(m(0,0)));
+   BOOST_CHECK_EQUAL(Abs(m)(0,1), Abs(m(0,1)));
+   BOOST_CHECK_EQUAL(Abs(m)(1,0), Abs(m(1,0)));
+   BOOST_CHECK_EQUAL(Abs(m)(1,1), Abs(m(1,1)));
+
+   Eigen::Array<double,2,2> a;
+   a << -1.0, -2.0, -3.0, -4.0;
+
+   BOOST_CHECK_EQUAL(Abs(a)(0,0), Abs(a(0,0)));
+   BOOST_CHECK_EQUAL(Abs(a)(0,1), Abs(a(0,1)));
+   BOOST_CHECK_EQUAL(Abs(a)(1,0), Abs(a(1,0)));
+   BOOST_CHECK_EQUAL(Abs(a)(1,1), Abs(a(1,1)));
+}
+
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
    BOOST_CHECK_EQUAL(Delta(0,0), 1);
