@@ -28,7 +28,6 @@
 #include <string>
 #include <type_traits>
 #include <utility>
-#include <vector>
 #include <Eigen/Core>
 
 #include "eigen_tensor.hpp"
@@ -75,14 +74,6 @@ template <typename Scalar, int M, int N>
 Eigen::Matrix<Scalar, M, N> Abs(const Eigen::Matrix<Scalar, M, N>& a)
 {
    return a.cwiseAbs();
-}
-
-template <class T>
-std::vector<T> Abs(std::vector<T> v) noexcept
-{
-   for (auto& e: v)
-      e = Abs(e);
-   return v;
 }
 
 double AbsSqr(double) noexcept;
@@ -589,14 +580,6 @@ Eigen::Array<Scalar, M, N> Sqrt(const Eigen::Array<Scalar, M, N>& m)
    return m.unaryExpr([](Scalar a){ return Sqrt(a); });
 }
 
-template <class T>
-std::vector<T> Sqrt(std::vector<T> v)
-{
-   for (auto& e: v)
-      e = Sqrt(e);
-   return v;
-}
-
 template <typename T>
 constexpr T Sqr(T a) noexcept
 {
@@ -607,14 +590,6 @@ template <typename Scalar, int M, int N>
 Eigen::Array<Scalar, M, N> Sqr(const Eigen::Array<Scalar, M, N>& a)
 {
    return a.unaryExpr([](Scalar a){ return Sqr(a); });
-}
-
-template <class T>
-std::vector<T> Sqr(std::vector<T> v)
-{
-   for (auto& e: v)
-      e = Sqr(e);
-   return v;
 }
 
 #define DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(op)                     \
@@ -717,12 +692,6 @@ std::string ToString(const std::complex<double>&);
 double Total(double) noexcept;
 std::complex<double> Total(const std::complex<double>&) noexcept;
 
-template <class T>
-T Total(const std::vector<T>& v)
-{
-   return std::accumulate(v.begin(), v.end(), T(0));
-}
-
 template <typename Scalar, int M, int N>
 Scalar Total(const Eigen::Array<Scalar, M, N>& a)
 {
@@ -733,24 +702,6 @@ template <typename Scalar, int M, int N>
 Scalar Total(const Eigen::Matrix<Scalar, M, N>& a)
 {
    return a.sum();
-}
-
-template <class Scalar, int M, int N>
-Eigen::Array<Scalar,M,N> Total(const std::vector<Eigen::Array<Scalar,M,N> >& v)
-{
-   if (v.empty()) {
-      Eigen::Array<Scalar,M,N> result(0,0);
-      result.setZero();
-      return result;
-   }
-
-   Eigen::Array<Scalar,M,N> result(v[0].rows(), v[0].cols());
-   result.setZero();
-
-   for (std::size_t i = 0; i < v.size(); i++)
-      result += v[i];
-
-   return result;
 }
 
 /// unit vector of length N into direction i
