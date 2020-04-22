@@ -119,8 +119,8 @@ BOOST_AUTO_TEST_CASE( test_AbsSqr )
          BOOST_CHECK_EQUAL(AbsSqr(a)(i,k), AbsSqr(a(i,k)));
          BOOST_CHECK_EQUAL(AbsSqr(m)(i,k), AbsSqr(m(i,k)));
 
-         BOOST_CHECK_EQUAL(AbsSqr(ca)(i,k), AbsSqr(ca(i,k)));
-         BOOST_CHECK_EQUAL(AbsSqr(cm)(i,k), AbsSqr(cm(i,k)));
+         BOOST_CHECK_CLOSE_FRACTION(AbsSqr(ca)(i,k), AbsSqr(ca(i,k)), 1e-15);
+         BOOST_CHECK_CLOSE_FRACTION(AbsSqr(cm)(i,k), AbsSqr(cm(i,k)), 1e-15);
 
          // test expressions
          BOOST_CHECK_EQUAL(AbsSqr(a + a)(i,k), AbsSqr(a(i,k) + a(i,k)));
