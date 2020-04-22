@@ -67,18 +67,21 @@ BOOST_AUTO_TEST_CASE( test_Abs )
    Eigen::Matrix<double,2,2> m;
    m << -1.0, -2.0, -3.0, -4.0;
 
-   BOOST_CHECK_EQUAL(Abs(m)(0,0), Abs(m(0,0)));
-   BOOST_CHECK_EQUAL(Abs(m)(0,1), Abs(m(0,1)));
-   BOOST_CHECK_EQUAL(Abs(m)(1,0), Abs(m(1,0)));
-   BOOST_CHECK_EQUAL(Abs(m)(1,1), Abs(m(1,1)));
+   Eigen::Array<double,2,2> a = m.array();
 
-   Eigen::Array<double,2,2> a;
-   a << -1.0, -2.0, -3.0, -4.0;
+   for (int i = 0; i < m.rows(); i++) {
+      for (int k = 0; k < m.cols(); k++) {
+         BOOST_CHECK_EQUAL(Abs(a)(i,k), Abs(a(i,k)));
+         BOOST_CHECK_EQUAL(Abs(m)(i,k), Abs(m(i,k)));
 
-   BOOST_CHECK_EQUAL(Abs(a)(0,0), Abs(a(0,0)));
-   BOOST_CHECK_EQUAL(Abs(a)(0,1), Abs(a(0,1)));
-   BOOST_CHECK_EQUAL(Abs(a)(1,0), Abs(a(1,0)));
-   BOOST_CHECK_EQUAL(Abs(a)(1,1), Abs(a(1,1)));
+         // test expressions
+         BOOST_CHECK_EQUAL(Abs(a + a)(i,k), Abs(a(i,k)) + Abs(a(i,k)));
+         BOOST_CHECK_EQUAL(Abs(m + m)(i,k), Abs(m(i,k)) + Abs(m(i,k)));
+
+         BOOST_CHECK_EQUAL(Abs(2*a)(i,k), Abs(a(i,k)) + Abs(a(i,k)));
+         BOOST_CHECK_EQUAL(Abs(2*m)(i,k), Abs(m(i,k)) + Abs(m(i,k)));
+      }
+   }
 }
 
 BOOST_AUTO_TEST_CASE( test_Delta )

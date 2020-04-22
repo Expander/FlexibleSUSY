@@ -52,29 +52,29 @@ static constexpr bool True = true;
 
 // Abs /////////////////////////////////////////////////////////////////
 
-template <typename T>
-T Abs(T a) noexcept
-{
-   return std::abs(a);
-}
+inline int         Abs(int x)                              noexcept { return std::abs(x); }
+inline long        Abs(long x)                             noexcept { return std::abs(x); }
+inline long long   Abs(long long x)                        noexcept { return std::abs(x); }
+inline float       Abs(float x)                            noexcept { return std::abs(x); }
+inline double      Abs(double x)                           noexcept { return std::abs(x); }
+inline long double Abs(long double x)                      noexcept { return std::abs(x); }
+inline float       Abs(const std::complex<float>& x)       noexcept { return std::abs(x); }
+inline double      Abs(const std::complex<double>& x)      noexcept { return std::abs(x); }
+inline long double Abs(const std::complex<long double>& x) noexcept { return std::abs(x); }
 
-template <typename T>
-T Abs(const std::complex<T>& z) noexcept
-{
-   return std::abs(z);
-}
-
-template <typename Scalar, int M, int N>
-Eigen::Array<Scalar, M, N> Abs(const Eigen::Array<Scalar, M, N>& a)
+template <typename Derived>
+typename Eigen::ArrayBase<Derived>::PlainObject Abs(const Eigen::ArrayBase<Derived>& a)
 {
    return a.cwiseAbs();
 }
 
-template <typename Scalar, int M, int N>
-Eigen::Matrix<Scalar, M, N> Abs(const Eigen::Matrix<Scalar, M, N>& a)
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject Abs(const Eigen::MatrixBase<Derived>& a)
 {
    return a.cwiseAbs();
 }
+
+// AbsSqr //////////////////////////////////////////////////////////////
 
 double AbsSqr(double) noexcept;
 double AbsSqr(const std::complex<double>&) noexcept;
