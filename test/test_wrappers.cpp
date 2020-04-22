@@ -69,10 +69,16 @@ BOOST_AUTO_TEST_CASE( test_Abs )
 
    Eigen::Array<double,2,2> a = m.array();
 
+   Eigen::Matrix<std::complex<double>,2,2> cm = m + i*m;
+   Eigen::Array<std::complex<double>,2,2> ca = a + i*a;
+
    for (int i = 0; i < m.rows(); i++) {
       for (int k = 0; k < m.cols(); k++) {
          BOOST_CHECK_EQUAL(Abs(a)(i,k), Abs(a(i,k)));
          BOOST_CHECK_EQUAL(Abs(m)(i,k), Abs(m(i,k)));
+
+         BOOST_CHECK_EQUAL(Abs(ca)(i,k), Abs(ca(i,k)));
+         BOOST_CHECK_EQUAL(Abs(cm)(i,k), Abs(cm(i,k)));
 
          // test expressions
          BOOST_CHECK_EQUAL(Abs(a + a)(i,k), Abs(a(i,k)) + Abs(a(i,k)));
@@ -105,10 +111,16 @@ BOOST_AUTO_TEST_CASE( test_AbsSqr )
 
    Eigen::Array<double,2,2> a = m.array();
 
+   Eigen::Matrix<std::complex<double>,2,2> cm = m + i*m;
+   Eigen::Array<std::complex<double>,2,2> ca = a + i*a;
+
    for (int i = 0; i < m.rows(); i++) {
       for (int k = 0; k < m.cols(); k++) {
          BOOST_CHECK_EQUAL(AbsSqr(a)(i,k), AbsSqr(a(i,k)));
          BOOST_CHECK_EQUAL(AbsSqr(m)(i,k), AbsSqr(m(i,k)));
+
+         BOOST_CHECK_EQUAL(AbsSqr(ca)(i,k), AbsSqr(ca(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqr(cm)(i,k), AbsSqr(cm(i,k)));
 
          // test expressions
          BOOST_CHECK_EQUAL(AbsSqr(a + a)(i,k), AbsSqr(a(i,k) + a(i,k)));

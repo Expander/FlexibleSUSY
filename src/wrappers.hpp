@@ -63,15 +63,15 @@ inline double      Abs(const std::complex<double>& x)      noexcept { return std
 inline long double Abs(const std::complex<long double>& x) noexcept { return std::abs(x); }
 
 template <typename Derived>
-typename Eigen::ArrayBase<Derived>::PlainObject Abs(const Eigen::ArrayBase<Derived>& a)
+auto Abs(const Eigen::ArrayBase<Derived>& x) -> decltype(x.cwiseAbs().eval())
 {
-   return a.cwiseAbs();
+   return x.cwiseAbs();
 }
 
 template <typename Derived>
-typename Eigen::MatrixBase<Derived>::PlainObject Abs(const Eigen::MatrixBase<Derived>& a)
+auto Abs(const Eigen::MatrixBase<Derived>& x) -> decltype(x.cwiseAbs().eval())
 {
-   return a.cwiseAbs();
+   return x.cwiseAbs();
 }
 
 // AbsSqr //////////////////////////////////////////////////////////////
@@ -87,15 +87,15 @@ inline double      AbsSqr(const std::complex<double>& x)      noexcept { return 
 inline long double AbsSqr(const std::complex<long double>& x) noexcept { return std::norm(x); }
 
 template <typename Derived>
-typename Eigen::ArrayBase<Derived>::PlainObject AbsSqr(const Eigen::ArrayBase<Derived>& a)
+auto AbsSqr(const Eigen::ArrayBase<Derived>& x) -> decltype(x.cwiseAbs().eval().square().eval())
 {
-   return a.unaryExpr([](double x) { return AbsSqr(x); });
+   return x.eval().cwiseAbs().square();
 }
 
 template <typename Derived>
-typename Eigen::MatrixBase<Derived>::PlainObject AbsSqr(const Eigen::MatrixBase<Derived>& a)
+auto AbsSqr(const Eigen::MatrixBase<Derived>& x) -> decltype(AbsSqr(x.array()).matrix().eval())
 {
-   return a.unaryExpr([](double x) { return AbsSqr(x); });
+   return AbsSqr(x.array()).matrix().eval();
 }
 
 // AbsSqr //////////////////////////////////////////////////////////////
