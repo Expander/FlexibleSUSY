@@ -76,8 +76,30 @@ typename Eigen::MatrixBase<Derived>::PlainObject Abs(const Eigen::MatrixBase<Der
 
 // AbsSqr //////////////////////////////////////////////////////////////
 
-double AbsSqr(double) noexcept;
-double AbsSqr(const std::complex<double>&) noexcept;
+inline int         AbsSqr(int x)                              noexcept { return x*x; }
+inline long        AbsSqr(long x)                             noexcept { return x*x; }
+inline long long   AbsSqr(long long x)                        noexcept { return x*x; }
+inline float       AbsSqr(float x)                            noexcept { return x*x; }
+inline double      AbsSqr(double x)                           noexcept { return x*x; }
+inline long double AbsSqr(long double x)                      noexcept { return x*x; }
+inline float       AbsSqr(const std::complex<float>& x)       noexcept { return std::norm(x); }
+inline double      AbsSqr(const std::complex<double>& x)      noexcept { return std::norm(x); }
+inline long double AbsSqr(const std::complex<long double>& x) noexcept { return std::norm(x); }
+
+template <typename Derived>
+typename Eigen::ArrayBase<Derived>::PlainObject AbsSqr(const Eigen::ArrayBase<Derived>& a)
+{
+   return a.unaryExpr([](double x) { return AbsSqr(x); });
+}
+
+template <typename Derived>
+typename Eigen::MatrixBase<Derived>::PlainObject AbsSqr(const Eigen::MatrixBase<Derived>& a)
+{
+   return a.unaryExpr([](double x) { return AbsSqr(x); });
+}
+
+// AbsSqr //////////////////////////////////////////////////////////////
+
 double AbsSqrt(double) noexcept;
 
 template <typename Derived>

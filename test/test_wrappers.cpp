@@ -84,6 +84,42 @@ BOOST_AUTO_TEST_CASE( test_Abs )
    }
 }
 
+BOOST_AUTO_TEST_CASE( test_AbsSqr )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_EQUAL(AbsSqr(-2), 4);
+   BOOST_CHECK_EQUAL(AbsSqr( 0), 0);
+   BOOST_CHECK_EQUAL(AbsSqr( 2), 4);
+
+   BOOST_CHECK_EQUAL(AbsSqr(-2.0), 4.0);
+   BOOST_CHECK_EQUAL(AbsSqr( 0.0), 0.0);
+   BOOST_CHECK_EQUAL(AbsSqr( 2.0), 4.0);
+
+   BOOST_CHECK_EQUAL(AbsSqr(i    ), 1.0);
+   BOOST_CHECK_EQUAL(AbsSqr(i*i  ), 1.0);
+   BOOST_CHECK_CLOSE_FRACTION(AbsSqr(1 + i), 2.0, 1e-15);
+
+   Eigen::Matrix<double,2,2> m;
+   m << -1.0, -2.0, -3.0, -4.0;
+
+   Eigen::Array<double,2,2> a = m.array();
+
+   for (int i = 0; i < m.rows(); i++) {
+      for (int k = 0; k < m.cols(); k++) {
+         BOOST_CHECK_EQUAL(AbsSqr(a)(i,k), AbsSqr(a(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqr(m)(i,k), AbsSqr(m(i,k)));
+
+         // test expressions
+         BOOST_CHECK_EQUAL(AbsSqr(a + a)(i,k), AbsSqr(a(i,k) + a(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqr(m + m)(i,k), AbsSqr(m(i,k) + m(i,k)));
+
+         BOOST_CHECK_EQUAL(AbsSqr(2*a)(i,k), 4*AbsSqr(a(i,k)));
+         BOOST_CHECK_EQUAL(AbsSqr(2*m)(i,k), 4*AbsSqr(m(i,k)));
+      }
+   }
+}
+
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
    BOOST_CHECK_EQUAL(Delta(0,0), 1);
