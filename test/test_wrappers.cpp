@@ -221,6 +221,9 @@ BOOST_AUTO_TEST_CASE( test_Arg )
 {
    const std::complex<double> i(0.0, 1.0);
 
+   BOOST_CHECK_CLOSE_FRACTION(Arg( 1    ),   0.0, 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(Arg(-1    ),    Pi, 1e-14);
+
    BOOST_CHECK_CLOSE_FRACTION(Arg( 1.0  ),   0.0, 1e-14);
    BOOST_CHECK_CLOSE_FRACTION(Arg( 1.0*i),  Pi/2, 1e-14);
    BOOST_CHECK_CLOSE_FRACTION(Arg(-1.0  ),    Pi, 1e-14);
