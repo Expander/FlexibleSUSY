@@ -116,11 +116,22 @@ auto AbsSqrt(const Eigen::MatrixBase<Derived>& x) -> decltype(x.cwiseAbs().cwise
    return x.cwiseAbs().cwiseSqrt();
 }
 
-// ArcTan, ArcSin, ArcCos //////////////////////////////////////////////
+// ArcCos //////////////////////////////////////////////////////////////
 
-double ArcTan(double) noexcept;
-double ArcSin(double) noexcept;
-double ArcCos(double) noexcept;
+inline double               ArcCos(double x)                      noexcept { return std::acos(x); }
+inline std::complex<double> ArcCos(const std::complex<double>& x) noexcept { return std::acos(x); }
+
+// ArcSin //////////////////////////////////////////////////////////////
+
+inline double               ArcSin(double x)                      noexcept { return std::asin(x); }
+inline std::complex<double> ArcSin(const std::complex<double>& x) noexcept { return std::asin(x); }
+
+// ArcTan //////////////////////////////////////////////////////////////
+
+inline double               ArcTan(double x)                      noexcept { return std::atan(x); }
+inline std::complex<double> ArcTan(const std::complex<double>& x) noexcept { return std::atan(x); }
+
+// Arg /////////////////////////////////////////////////////////////////
 
 double Arg(const std::complex<double>&) noexcept;
 

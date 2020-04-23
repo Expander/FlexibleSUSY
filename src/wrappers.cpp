@@ -27,21 +27,6 @@
 
 namespace flexiblesusy {
 
-double ArcTan(double a) noexcept
-{
-   return std::atan(a);
-}
-
-double ArcSin(double a) noexcept
-{
-   return std::asin(a);
-}
-
-double ArcCos(double a) noexcept
-{
-   return std::acos(a);
-}
-
 double Arg(const std::complex<double>& z) noexcept
 {
    return std::arg(z);

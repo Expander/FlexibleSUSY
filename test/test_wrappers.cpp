@@ -175,6 +175,48 @@ BOOST_AUTO_TEST_CASE( test_AbsSqrt )
    }
 }
 
+BOOST_AUTO_TEST_CASE( test_ArcCos )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_CLOSE_FRACTION(ArcCos(1  ), std::acos(1  ), 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(ArcCos(1.0), std::acos(1.0), 1e-14);
+
+   const std::complex<double> z = 1.0 + i;
+   const std::complex<double> a = ArcCos(z);
+
+   BOOST_CHECK_CLOSE_FRACTION(std::real(a), std::real(std::acos(z)), 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(std::imag(a), std::imag(std::acos(z)), 1e-14);
+}
+
+BOOST_AUTO_TEST_CASE( test_ArcSin )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_CLOSE_FRACTION(ArcSin(1  ), std::asin(1  ), 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(ArcSin(1.0), std::asin(1.0), 1e-14);
+
+   const std::complex<double> z = 1.0 + i;
+   const std::complex<double> a = ArcSin(z);
+
+   BOOST_CHECK_CLOSE_FRACTION(std::real(a), std::real(std::asin(z)), 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(std::imag(a), std::imag(std::asin(z)), 1e-14);
+}
+
+BOOST_AUTO_TEST_CASE( test_ArcTan )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_CLOSE_FRACTION(4*ArcTan(1  ), Pi, 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(4*ArcTan(1.0), Pi, 1e-14);
+
+   const std::complex<double> z = 1.0 + i;
+   const std::complex<double> a = ArcTan(z);
+
+   BOOST_CHECK_CLOSE_FRACTION(std::real(a), std::real(std::atan(z)), 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(std::imag(a), std::imag(std::atan(z)), 1e-14);
+}
+
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
    BOOST_CHECK_EQUAL(Delta(0,0), 1);
