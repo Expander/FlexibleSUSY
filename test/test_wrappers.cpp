@@ -236,6 +236,49 @@ BOOST_AUTO_TEST_CASE( test_Cbrt )
    BOOST_CHECK_CLOSE_FRACTION(Cbrt(-1.0), std::cbrt(-1.0), 1e-14);
 }
 
+BOOST_AUTO_TEST_CASE( test_Conj )
+{
+   const std::complex<double> i(0.0, 1.0);
+
+   BOOST_CHECK_EQUAL(Conj(-4),-4);
+   BOOST_CHECK_EQUAL(Conj( 0), 0);
+   BOOST_CHECK_EQUAL(Conj( 4), 4);
+
+   BOOST_CHECK_EQUAL(Conj(-4.0),-4.0);
+   BOOST_CHECK_EQUAL(Conj( 0.0), 0.0);
+   BOOST_CHECK_EQUAL(Conj(-0.0),-0.0);
+   BOOST_CHECK_EQUAL(Conj( 4.0), 4.0);
+
+   BOOST_CHECK_EQUAL(Conj(i    ), -i  );
+   BOOST_CHECK_EQUAL(Conj(i*i  ), -1.0);
+   BOOST_CHECK_EQUAL(Conj(1 + i),  1.0 - i);
+
+   Eigen::Matrix<double,2,2> m;
+   m << -1.0, -2.0, -3.0, -4.0;
+
+   Eigen::Array<double,2,2> a = m.array();
+
+   Eigen::Matrix<std::complex<double>,2,2> cm = m + i*m;
+   Eigen::Array<std::complex<double>,2,2> ca = a + i*a;
+
+   for (int i = 0; i < m.rows(); i++) {
+      for (int k = 0; k < m.cols(); k++) {
+         BOOST_CHECK_EQUAL(Conj(a)(i,k), Conj(a(i,k)));
+         BOOST_CHECK_EQUAL(Conj(m)(i,k), Conj(m(i,k)));
+
+         BOOST_CHECK_EQUAL(Conj(ca)(i,k), Conj(ca(i,k)));
+         BOOST_CHECK_EQUAL(Conj(cm)(i,k), Conj(cm(i,k)));
+
+         // test expressions
+         BOOST_CHECK_EQUAL(Conj(a + a)(i,k), Conj(a(i,k) + a(i,k)));
+         BOOST_CHECK_EQUAL(Conj(m + m)(i,k), Conj(m(i,k) + m(i,k)));
+
+         BOOST_CHECK_EQUAL(Conj(4*a)(i,k), 4*Conj(a(i,k)));
+         BOOST_CHECK_EQUAL(Conj(4*m)(i,k), 4*Conj(m(i,k)));
+      }
+   }
+}
+
 BOOST_AUTO_TEST_CASE( test_Delta )
 {
    BOOST_CHECK_EQUAL(Delta(0,0), 1);

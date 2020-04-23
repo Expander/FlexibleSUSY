@@ -142,20 +142,31 @@ inline double Cbrt(double x) noexcept { return std::cbrt(x); }
 
 // Conj ////////////////////////////////////////////////////////////////
 
-double Conj(double a) noexcept;
-std::complex<double> Conj(const std::complex<double>& a) noexcept;
+inline int                       Conj(int x)                              noexcept { return x; }
+inline long                      Conj(long x)                             noexcept { return x; }
+inline long long                 Conj(long long x)                        noexcept { return x; }
+inline float                     Conj(float x)                            noexcept { return x; }
+inline double                    Conj(double x)                           noexcept { return x; }
+inline long double               Conj(long double x)                      noexcept { return x; }
+inline std::complex<float>       Conj(const std::complex<float>& x)       noexcept { return std::conj(x); }
+inline std::complex<double>      Conj(const std::complex<double>& x)      noexcept { return std::conj(x); }
+inline std::complex<long double> Conj(const std::complex<long double>& x) noexcept { return std::conj(x); }
 
-template<typename Scalar, int M, int N>
-Eigen::Matrix<Scalar,M,N> Conj(const Eigen::Matrix<Scalar,M,N>& a) noexcept
+template <typename Derived>
+auto Conj(const Eigen::ArrayBase<Derived>& x) -> decltype(x.conjugate())
 {
-   return a.conjugate();
+   return x.conjugate();
 }
 
-template <class T>
-T Conjugate(T a) noexcept
+template <typename Derived>
+auto Conj(const Eigen::MatrixBase<Derived>& x) -> decltype(x.conjugate())
 {
-   return Conj(a);
+   return x.conjugate();
 }
+
+#define Conjugate(x) Conj(x)
+
+// Cube ////////////////////////////////////////////////////////////////
 
 template <typename T>
 constexpr T Cube(T a) noexcept

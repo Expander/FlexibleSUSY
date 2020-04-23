@@ -27,16 +27,6 @@
 
 namespace flexiblesusy {
 
-double Conj(double a) noexcept
-{
-   return a;
-}
-
-std::complex<double> Conj(const std::complex<double>& a) noexcept
-{
-   return std::conj(a);
-}
-
 double Tan(double a) noexcept
 {
    return std::tan(a);
