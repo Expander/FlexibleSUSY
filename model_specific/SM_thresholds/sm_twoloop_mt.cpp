@@ -613,6 +613,8 @@ TSIL_COMPLEXCPP Sigma2SHiggs(TSIL_REAL t, TSIL_REAL h,
    return a;
 }
 
+/*
+
 TSIL_COMPLEXCPP mt_flexiblesusy(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
@@ -627,6 +629,8 @@ TSIL_COMPLEXCPP mt_flexiblesusy(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
 
    return a;
 }
+
+*/
 
 TSIL_COMPLEXCPP deltamt2QCDspheno(TSIL_REAL g3, TSIL_REAL t,
    TSIL_REAL qq)
@@ -696,6 +700,8 @@ TSIL_COMPLEXCPP Sigma2SHiggsspheno(TSIL_REAL t,
    return a;
 }
 
+/*
+
 TSIL_COMPLEXCPP mt_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
    TSIL_REAL yt, TSIL_REAL T, TSIL_REAL qq)
 {
@@ -712,6 +718,8 @@ TSIL_COMPLEXCPP mt_spheno(TSIL_REAL g3, TSIL_REAL t, TSIL_REAL h,
 
    return a;
 }
+
+*/
 
 } // anonymous namespace
 
