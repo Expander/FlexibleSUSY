@@ -133,7 +133,10 @@ inline std::complex<double> ArcTan(const std::complex<double>& x) noexcept { ret
 
 // Arg /////////////////////////////////////////////////////////////////
 
-double Arg(const std::complex<double>&) noexcept;
+inline double Arg(double x)                      noexcept { return std::arg(x); }
+inline double Arg(const std::complex<double>& x) noexcept { return std::arg(x); }
+
+// Cbrt ////////////////////////////////////////////////////////////////
 
 template <typename T>
 constexpr T Cbrt(T a) noexcept

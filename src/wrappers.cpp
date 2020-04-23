@@ -27,11 +27,6 @@
 
 namespace flexiblesusy {
 
-double Arg(const std::complex<double>& z) noexcept
-{
-   return std::arg(z);
-}
-
 double Conj(double a) noexcept
 {
    return a;
