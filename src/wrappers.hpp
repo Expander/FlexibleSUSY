@@ -138,11 +138,9 @@ inline double Arg(const std::complex<double>& x) noexcept { return std::arg(x); 
 
 // Cbrt ////////////////////////////////////////////////////////////////
 
-template <typename T>
-constexpr T Cbrt(T a) noexcept
-{
-   return std::cbrt(a);
-}
+inline double Cbrt(double x) noexcept { return std::cbrt(x); }
+
+// Conj ////////////////////////////////////////////////////////////////
 
 double Conj(double a) noexcept;
 std::complex<double> Conj(const std::complex<double>& a) noexcept;

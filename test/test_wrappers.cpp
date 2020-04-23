@@ -223,11 +223,17 @@ BOOST_AUTO_TEST_CASE( test_Arg )
 
    BOOST_CHECK_CLOSE_FRACTION(Arg( 1    ),   0.0, 1e-14);
    BOOST_CHECK_CLOSE_FRACTION(Arg(-1    ),    Pi, 1e-14);
-
    BOOST_CHECK_CLOSE_FRACTION(Arg( 1.0  ),   0.0, 1e-14);
    BOOST_CHECK_CLOSE_FRACTION(Arg( 1.0*i),  Pi/2, 1e-14);
    BOOST_CHECK_CLOSE_FRACTION(Arg(-1.0  ),    Pi, 1e-14);
    BOOST_CHECK_CLOSE_FRACTION(Arg(-1.0*i), -Pi/2, 1e-14);
+}
+
+BOOST_AUTO_TEST_CASE( test_Cbrt )
+{
+   BOOST_CHECK_CLOSE_FRACTION(Cbrt( 1  ), std::cbrt( 1)  , 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(Cbrt( 1.0), std::cbrt( 1.0), 1e-14);
+   BOOST_CHECK_CLOSE_FRACTION(Cbrt(-1.0), std::cbrt(-1.0), 1e-14);
 }
 
 BOOST_AUTO_TEST_CASE( test_Delta )
