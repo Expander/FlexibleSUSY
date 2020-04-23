@@ -43,6 +43,8 @@ const auto PI2 = PI*PI;
 const auto k  = 1.0L/(16.0L*PI2);
 const auto k2 = k*k;
 
+#ifdef TSIL_SIZE_DOUBLE
+
 /*
  * The following operators need to be defined, if TSIL was compiled
  * with precision -DTSIL_SIZE_DOUBLE instead of -DTSIL_SIZE_LONG.
@@ -85,6 +87,8 @@ std::complex<double> operator-(std::complex<double> b, long double a)
 {
    return b - static_cast<double>(a);
 }
+
+#endif
 
 /**
  * Returns \f$\frac{1}{t} \cdot \delta^{(1)}_{\text{QCD}}\f$ in Eq.(2.1)
