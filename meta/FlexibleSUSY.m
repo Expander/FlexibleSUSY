@@ -2950,7 +2950,7 @@ FSCheckFlags[] :=
               Print["Adding 2-loop SM O(as^2,at*as,at^2) corrections to yt from ",
                     "[arXiv:1604.01134]"];
               Print["Adding 4-loop SM QCD corrections to yt from ",
-                    "[arxiv:1604.01134]"];
+                    "[arxiv:1502.01030, arxiv:1604.01134, arxiv:1606.06754]"];
               References`AddReference["Martin:2016xsp"];
              ];
 

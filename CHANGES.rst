@@ -100,7 +100,9 @@ New features
 
 * Implementation of the 4-loop O(αs^4) contributions to the running
   MS-bar top mass of the Standard Model from [`1604.01134
-  <https://arxiv.org/abs/1604.01134>`_].  The contributions can be
+  <https://arxiv.org/abs/1604.01134>`_, `1502.01030
+  <https://arxiv.org/abs/1502.01030>`_, `1606.06754
+  <https://arxiv.org/abs/1606.06754>`_].  The contributions can be
   enabled in SM-like models by setting the flag::
 
       UseYukawa4LoopQCD = True
