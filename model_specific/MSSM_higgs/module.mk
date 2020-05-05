@@ -6,6 +6,7 @@ LIB_model_specific_MSSM_higgs_MK  := \
 		$(DIR)/module.mk
 
 LIB_model_specific_MSSM_higgs_SRC := \
+		$(DIR)/dilogc.f \
 		$(DIR)/mssm_twoloophiggs.cpp \
 		$(DIR)/mssm_twoloophiggs_impl.f
 

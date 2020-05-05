@@ -14,7 +14,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/composite_convergence_tester.cpp \
 		$(DIR)/database.cpp \
 		$(DIR)/dilog.cpp \
-		$(DIR)/dilogc.f \
 		$(DIR)/effective_couplings.cpp \
 		$(DIR)/global_thread_pool.cpp \
 		$(DIR)/gsl_utils.cpp \
