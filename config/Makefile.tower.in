@@ -53,8 +53,6 @@ GSLLIBS         := @GSLLIBS@
 GSLFLAGS        := @GSLFLAGS@
 LOOPFUNCFLAGS   := @LOOPFUNCFLAGS@
 LOOPFUNCLIBS    := @LOOPFUNCLIBS@
-SQLITEFLAGS     := @SQLITEFLAGS@
-SQLITELIBS      := @SQLITELIBS@
 THREADLIBS      := @THREADLIBS@
 
 TOWER_SRC := \
@@ -106,7 +104,7 @@ $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 $(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(FLIBS) $(SQLITELIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(FLIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -165,8 +163,6 @@ showbuild:
 	@echo "LOOPFUNCFLAGS      = $(LOOPFUNCFLAGS)"
 	@echo "LOOPFUNCLIBS       = $(LOOPFUNCLIBS)"
 	@echo "MODULE_LIBEXT      = $(MODULE_LIBEXT)"
-	@echo "SQLITELIBS         = $(SQLITELIBS)"
-	@echo "SQLITEFLAGS        = $(SQLITEFLAGS)"
 	@echo "THREADLIBS         = $(THREADLIBS)"
 	@echo ""
 	@echo "ENABLE_FFLITE      = $(ENABLE_FFLITE)"

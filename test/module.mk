@@ -882,7 +882,7 @@ $(DIR)/test_pv_looptools.x: $(DIR)/test_pv_crosschecks.cpp $(LIBPV)
 
 $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp $(LIBPV)
 		@$(MSG)
-		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(SQLITELIBS) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(FLIBS)
+		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(GSLLIBS) $(FLIBS)
 endif
 
 $(DIR)/test_CMSSMNoFV_benchmark.x.xml: $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE)
@@ -1203,7 +1203,7 @@ $(PV_DEP_EXE): %.x: %.o $(LIBPV)
 		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
-		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(LIBPV)
+		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(LIBPV)
 ################################################################################
 
 # adding libraries to the end of the list of dependencies
@@ -1214,7 +1214,7 @@ $(DIR)/test_%.x: $(DIR)/test_%.o
 		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) $(BOOSTTHREADLIBS) \
-		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(SQLITELIBS) $(TSILLIBS)
+		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(TSILLIBS)
 
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += -Itest/SOFTSUSY $(MODtest_INC) $(BOOSTFLAGS) $(EIGENFLAGS) $(GSLFLAGS) $(TSILFLAGS)
