@@ -14,8 +14,7 @@ LIBTEST_SRC := \
 		$(DIR)/stopwatch.cpp
 
 LIBTEST_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBTEST_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIBTEST_SRC)))
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBTEST_SRC)))
 
 LIBTEST_DEP := \
 		$(LIBTEST_OBJ:.o=.d)
@@ -27,8 +26,7 @@ LIBPV_SRC := \
 		$(DIR)/pv.cpp
 
 LIBPV_OBJ := \
-		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBPV_SRC))) \
-		$(patsubst %.f, %.o, $(filter %.f, $(LIBPV_SRC)))
+		$(patsubst %.cpp, %.o, $(filter %.cpp, $(LIBPV_SRC)))
 
 LIBPV_DEP := \
 		$(LIBPV_OBJ:.o=.d)
@@ -874,15 +872,15 @@ $(DIR)/test_CMSSM_NMSSM_linking.x: $(LIBCMSSM) $(LIBNMSSM)
 ifeq ($(ENABLE_LOOPTOOLS),yes)
 $(DIR)/test_pv_fflite.x: $(DIR)/test_pv_crosschecks.cpp $(LIBPV) $(LIBFFLITE)
 		@$(MSG)
-		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(FLIBS)
+		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS)
 
 $(DIR)/test_pv_looptools.x: $(DIR)/test_pv_crosschecks.cpp $(LIBPV)
 		@$(MSG)
-		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(LOOPFUNCLIBS) $(BOOSTTESTLIBS) $(FLIBS)
+		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(LOOPFUNCLIBS) $(BOOSTTESTLIBS)
 
 $(DIR)/test_pv_softsusy.x: $(DIR)/test_pv_crosschecks.cpp $(LIBPV)
 		@$(MSG)
-		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(THREADLIBS) $(GSLLIBS) $(FLIBS)
+		$(Q)$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $(call abspathx,$^) $(BOOSTTESTLIBS) $(THREADLIBS) $(GSLLIBS)
 endif
 
 $(DIR)/test_CMSSMNoFV_benchmark.x.xml: $(RUN_CMSSM_EXE) $(RUN_SOFTPOINT_EXE)
@@ -1203,7 +1201,7 @@ $(PV_DEP_EXE): %.x: %.o $(LIBPV)
 		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) \
-		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(LIBPV)
+		$(THREADLIBS) $(GSLLIBS) $(LIBPV)
 ################################################################################
 
 # adding libraries to the end of the list of dependencies
@@ -1214,7 +1212,7 @@ $(DIR)/test_%.x: $(DIR)/test_%.o
 		@$(MSG)
 		$(Q)$(CXX) -o $@ $(call abspathx,$^) \
 		$(filter -%,$(LOOPFUNCLIBS)) $(BOOSTTESTLIBS) \
-		$(THREADLIBS) $(GSLLIBS) $(FLIBS) $(TSILLIBS)
+		$(THREADLIBS) $(GSLLIBS) $(TSILLIBS)
 
 # add boost and eigen flags for the test object files and dependencies
 $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += -Itest/SOFTSUSY $(MODtest_INC) $(BOOSTFLAGS) $(EIGENFLAGS) $(GSLFLAGS) $(TSILFLAGS)
@@ -1222,7 +1220,7 @@ $(TEST_OBJ) $(TEST_DEP): CPPFLAGS += -Itest/SOFTSUSY $(MODtest_INC) $(BOOSTFLAGS
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIBTEST): $(LIBTEST_OBJ)
 		@$(MSG)
-		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(THREADLIBS) $(GSLLIBS) $(FLIBS)
+		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(THREADLIBS) $(GSLLIBS)
 else
 $(LIBTEST): $(LIBTEST_OBJ)
 		@$(MSG)

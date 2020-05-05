@@ -43,7 +43,6 @@ CXX_DEP_GEN     := $(CXX)
 CXXFLAGS_DEP_GEN:= $(CXXFLAGS)
 FC              := @FC@
 FFLAGS          := @FFLAGS@
-FLIBS           := @FLIBS@
 FOR_DEP_GEN     := $(FC)
 BOOSTFLAGS      := @BOOSTFLAGS@
 EIGENFLAGS      := @EIGENFLAGS@
@@ -102,7 +101,7 @@ $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 $(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(THREADLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(THREADLIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -150,7 +149,6 @@ showbuild:
 	@echo "CXXFLAGS_DEP_GEN   = $(CXXFLAGS_DEP_GEN)"
 	@echo "FC                 = $(FC)"
 	@echo "FFLAGS             = $(FFLAGS)"
-	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"
 	@echo "EIGENFLAGS         = $(EIGENFLAGS)"
