@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "error.hpp"
-#include <cstddef>
 #include <string>
 #include <vector>
 #include <Eigen/Core>

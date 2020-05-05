@@ -20,6 +20,7 @@
 #include "logger.hpp"
 #include "config.h"
 
+#include <cstddef>
 #include <limits>
 #include <sstream>
 #include <iomanip>
