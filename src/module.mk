@@ -37,7 +37,6 @@ LIBFLEXI_SRC := \
 		$(DIR)/threshold_corrections.cpp \
 		$(DIR)/threshold_loop_functions.cpp \
 		$(DIR)/trilog.cpp \
-		$(DIR)/weinberg_angle.cpp \
 		$(DIR)/wrappers.cpp
 
 LIBFLEXI_HDR := \
@@ -109,7 +108,6 @@ LIBFLEXI_HDR := \
 		$(DIR)/threshold_corrections.hpp \
 		$(DIR)/threshold_loop_functions.hpp \
 		$(DIR)/trilog.hpp \
-		$(DIR)/weinberg_angle.hpp \
 		$(DIR)/which.hpp \
 		$(DIR)/wrappers.hpp
 
