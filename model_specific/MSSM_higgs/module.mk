@@ -58,7 +58,7 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIB_model_specific_MSSM_higgs_DEP) $(LIB_model_specific_MSSM_higgs_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIB_model_specific_MSSM_higgs_DEP) $(LIB_model_specific_MSSM_higgs_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIB_model_specific_MSSM_higgs_DEP) $(LIB_model_specific_MSSM_higgs_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
@@ -67,7 +67,7 @@ endif
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIB_model_specific_MSSM_higgs): $(LIB_model_specific_MSSM_higgs_OBJ)
 		@$(MSG)
-		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(GSLLIBS) $(FLIBS) $(THREADLIBS)
+		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(FLIBS) $(THREADLIBS)
 else
 $(LIB_model_specific_MSSM_higgs): $(LIB_model_specific_MSSM_higgs_OBJ)
 		@$(MSG)

@@ -60,21 +60,15 @@ clean::         clean-$(MODNAME)
 
 distclean::     distclean-$(MODNAME)
 
-$(LIB_model_specific_MSSM_thresholds_DEP) $(LIB_model_specific_MSSM_thresholds_OBJ): CPPFLAGS += $(GSLFLAGS) $(EIGENFLAGS) $(BOOSTFLAGS)
+$(LIB_model_specific_MSSM_thresholds_DEP) $(LIB_model_specific_MSSM_thresholds_OBJ): CPPFLAGS += $(EIGENFLAGS) $(BOOSTFLAGS)
 
 ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)))
 $(LIB_model_specific_MSSM_thresholds_DEP) $(LIB_model_specific_MSSM_thresholds_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-ifeq ($(ENABLE_SHARED_LIBS),yes)
-$(LIB_model_specific_MSSM_thresholds): $(LIB_model_specific_MSSM_thresholds_OBJ)
-		@$(MSG)
-		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(GSLLIBS)
-else
 $(LIB_model_specific_MSSM_thresholds): $(LIB_model_specific_MSSM_thresholds_OBJ)
 		@$(MSG)
 		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^
-endif
 
 ALLDEP += $(LIB_model_specific_MSSM_thresholds_DEP)
 ALLLIB += $(LIB_model_specific_MSSM_thresholds)
