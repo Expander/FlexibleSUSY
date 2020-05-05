@@ -41,7 +41,6 @@ FC              := @FC@
 FFLAGS          := @FFLAGS@
 FLIBS           := @FLIBS@
 FOR_DEP_GEN     := $(FC)
-BOOSTTESTLIBS   := @BOOSTTESTLIBS@
 BOOSTFLAGS      := @BOOSTFLAGS@
 EIGENFLAGS      := @EIGENFLAGS@
 GSLLIBS         := @GSLLIBS@
@@ -144,7 +143,6 @@ showbuild:
 	@echo "FFLAGS             = $(FFLAGS)"
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
-	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
 	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"
 	@echo "EIGENFLAGS         = $(EIGENFLAGS)"
 	@echo "GSLLIBS            = $(GSLLIBS)"
