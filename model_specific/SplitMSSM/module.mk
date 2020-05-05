@@ -65,7 +65,7 @@ endif
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIB_model_specific_SplitMSSM): $(LIB_model_specific_SplitMSSM_OBJ)
 		@$(MSG)
-		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(GSLLIBS) $(THREADLIBS)
+		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(GSLLIBS)
 else
 $(LIB_model_specific_SplitMSSM): $(LIB_model_specific_SplitMSSM_OBJ)
 		@$(MSG)
