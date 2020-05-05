@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "database.hpp"
+#include "error.hpp"
 #include "logger.hpp"
 #include "config.h"
 
@@ -32,6 +33,20 @@
 
 namespace flexiblesusy {
 namespace database {
+
+class DisabledSQLiteError : Error {
+public:
+   explicit DisabledSQLiteError(const std::string& msg) : Error(msg) {}
+   explicit DisabledSQLiteError(const char* msg) : Error(msg) {}
+   virtual ~DisabledSQLiteError() = default;
+};
+
+class SQLiteReadError : Error {
+public:
+   explicit SQLiteReadError(const std::string& msg) : Error(msg) {}
+   explicit SQLiteReadError(const char* msg) : Error(msg) {}
+   virtual ~SQLiteReadError() = default;
+};
 
 Database::Database(const std::string& file_name)
    : db(open(file_name))

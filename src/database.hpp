@@ -16,7 +16,6 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#include "error.hpp"
 #include <string>
 #include <vector>
 #include <Eigen/Core>
@@ -41,18 +40,6 @@ public:
 
 private:
    using TCallback = int (*)(void*, int, char**, char**);
-
-   class DisabledSQLiteError : Error {
-   public:
-      explicit DisabledSQLiteError(const std::string& msg) : Error(msg) {}
-      virtual ~DisabledSQLiteError() = default;
-   };
-
-   class SQLiteReadError : Error {
-   public:
-      explicit SQLiteReadError(const std::string& msg) : Error(msg) {}
-      virtual ~SQLiteReadError() = default;
-   };
 
    sqlite3* db; ///< pointer to database object
 
