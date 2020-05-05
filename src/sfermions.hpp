@@ -20,7 +20,6 @@
 #define SFERMIONS_H
 
 #include <array>
-#include <Eigen/Core>
 
 namespace flexiblesusy {
 namespace sfermions {
@@ -53,8 +52,8 @@ struct Mass_data {
    double Yr{};       ///< Hypercharge of right-handed sfermion
 };
 
-double diagonalize_sfermions_2x2(const Mass_data&,
-                                 Eigen::Array<double,2,1>&);
+/// returns mixing angle and sets (squared) mass eigenvalues
+double diagonalize_sfermions_2x2(const Mass_data&, double&, double&);
 
 } // namespace sfermions
 } // namespace flexiblesusy

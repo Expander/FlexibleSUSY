@@ -23,21 +23,15 @@
  */
 
 #include "sfermions.hpp"
-#include "config.h"
 #include "linalg2.hpp"
-#include "logger.hpp"
 
 #include <cmath>
+
+#include <Eigen/Core>
 
 namespace flexiblesusy {
 
 namespace {
-
-template <typename Derived>
-Derived abs_sqrt(const Eigen::ArrayBase<Derived>& m)
-{
-   return m.cwiseAbs().cwiseSqrt();
-}
 
 double conj(double x) noexcept { return x; }
 
@@ -65,11 +59,10 @@ const std::array<double, NUMBER_OF_MSSM_SPARTICLES> Hypercharge_right = {
 
 /**
  * Obtains 2 x 2 mass matrix using input parameters in first argument
- * and diagonalises it.  Fills the second argument with the eigenvalues
- * and returns the mixing angle.
+ * and diagonalises it.  Fills the second argument with the (squared)
+ * mass eigenvalues and returns the mixing angle.
  */
-double diagonalize_sfermions_2x2(const Mass_data& pars,
-                                 Eigen::Array<double,2,1>& msf)
+double diagonalize_sfermions_2x2(const Mass_data& pars, double& msf1, double& msf2)
 {
    const double ml2    = pars.ml2;
    const double mr2    = pars.mr2;
@@ -103,16 +96,9 @@ double diagonalize_sfermions_2x2(const Mass_data& pars,
          - 0.5 * Yr * sqr(gY) * vev2;
    }
 
+   Eigen::Array<double,2,1> msf;
    Eigen::Matrix<double, 2, 2> Zf;
    diagonalize_hermitian(mass_matrix, msf, Zf);
-
-#ifdef ENABLE_VERBOSE
-   if (msf.minCoeff() < 0.) {
-      WARNING("diagonalize_sfermions_2x2: sfermion tachyon");
-   }
-#endif
-
-   msf = abs_sqrt(msf);
 
    double theta;
 
@@ -124,6 +110,8 @@ double diagonalize_sfermions_2x2(const Mass_data& pars,
       std::swap(msf(0), msf(1));
    }
 
+   msf1 = msf(0);
+   msf2 = msf(1);
    theta = sign(mass_matrix(0,1) / (mass_matrix(0,0) - mass_matrix(1,1)))
       * std::abs(theta);
 
