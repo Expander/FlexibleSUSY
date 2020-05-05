@@ -63,7 +63,7 @@ endif
 ifeq ($(ENABLE_SHARED_LIBS),yes)
 $(LIB_model_specific_SM_thresholds): $(LIB_model_specific_SM_thresholds_OBJ)
 		@$(MSG)
-		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(BOOSTTHREADLIBS) $(GSLLIBS) $(FLIBS) $(TSILLIBS) $(THREADLIBS)
+		$(Q)$(MODULE_MAKE_LIB_CMD) $@ $^ $(GSLLIBS) $(FLIBS) $(TSILLIBS) $(THREADLIBS)
 else
 $(LIB_model_specific_SM_thresholds): $(LIB_model_specific_SM_thresholds_OBJ)
 		@$(MSG)

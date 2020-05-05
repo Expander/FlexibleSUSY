@@ -42,7 +42,6 @@ FFLAGS          := @FFLAGS@
 FLIBS           := @FLIBS@
 FOR_DEP_GEN     := $(FC)
 BOOSTTESTLIBS   := @BOOSTTESTLIBS@
-BOOSTTHREADLIBS := @BOOSTTHREADLIBS@
 BOOSTFLAGS      := @BOOSTFLAGS@
 EIGENFLAGS      := @EIGENFLAGS@
 GSLLIBS         := @GSLLIBS@
@@ -98,7 +97,7 @@ $(STANDALONE_DEP) $(STANDALONE_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
 $(STANDALONE_EXE): $(STANDALONE_OBJ) $(LIBMODEL) $(LIBSMHO) $(LIBMSSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(BOOSTTHREADLIBS) $(THREADLIBS) $(FLIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(THREADLIBS) $(FLIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
@@ -146,7 +145,6 @@ showbuild:
 	@echo "FLIBS              = $(FLIBS)"
 	@echo "FOR_DEP_GEN        = $(FOR_DEP_GEN)"
 	@echo "BOOSTTESTLIBS      = $(BOOSTTESTLIBS)"
-	@echo "BOOSTTHREADLIBS    = $(BOOSTTHREADLIBS)"
 	@echo "BOOSTFLAGS         = $(BOOSTFLAGS)"
 	@echo "EIGENFLAGS         = $(EIGENFLAGS)"
 	@echo "GSLLIBS            = $(GSLLIBS)"
