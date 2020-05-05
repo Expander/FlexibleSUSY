@@ -43,12 +43,10 @@ private:
 
    sqlite3* db; ///< pointer to database object
 
-   sqlite3* open(const std::string&);
    void execute(const std::string&);
    void execute(const std::string&, TCallback, void*);
-   template <typename T> void create_table(const std::string&, const std::vector<std::string>&);
-
-   static int extract_callback(void*, int, char**, char**);
+   template <typename T>
+   void create_table(const std::string&, const std::vector<std::string>&);
 };
 
 } // namespace database
