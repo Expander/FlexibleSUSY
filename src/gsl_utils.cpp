@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "gsl_utils.hpp"
-#include "gsl_vector.hpp"
 #include <cstddef>
 #include <cmath>
 
@@ -32,13 +31,13 @@ namespace flexiblesusy {
  */
 bool is_finite(const gsl_vector* x)
 {
-   const std::size_t length = x->size;
-   bool is_finite = true;
+   for (std::size_t i = 0; i < x->size; i++) {
+      if (!std::isfinite(gsl_vector_get(x, i))) {
+         return false;
+      }
+   }
 
-   for (std::size_t i = 0; i < length; i++)
-      is_finite = is_finite && std::isfinite(gsl_vector_get(x, i));
-
-   return is_finite;
+   return true;
 }
 
 } // namespace flexiblesusy
