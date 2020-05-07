@@ -103,8 +103,8 @@ ifneq (,$(findstring yes,$(ENABLE_LOOPTOOLS)$(ENABLE_FFLITE)$(ENABLE_COLLIER)))
 $(TOWER_DEP) $(TOWER_OBJ): CPPFLAGS += $(LOOPFUNCFLAGS)
 endif
 
-$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS))
-		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(THREADLIBS) $(FLIBS) $(SQLITELIBS)
+$(TOWER_EXE): $(TOWER_OBJ) $(LIBMODEL1) $(LIBMODEL2) $(LIBSMHO) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(FUTILIBS)
+		$(CXX) -o $@ $(call abspathx,$^) $(filter -%,$(LOOPFUNCLIBS)) $(GSLLIBS) $(THREADLIBS) $(FLIBS) $(FUTILIBS) $(SQLITELIBS)
 
 ifneq ($(MAKECMDGOALS),clean)
 ifneq ($(MAKECMDGOALS),clean-dep)
