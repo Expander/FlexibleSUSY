@@ -8,10 +8,12 @@ compiler:
 addons:
   apt:
     packages:
+      - gfortran
       - libgsl0-dev
       - libsqlite3-dev
   homebrew:
     packages:
+      - gcc
       - gsl
       - sqlite
     update: true
