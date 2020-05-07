@@ -61,25 +61,6 @@ Eigen::Matrix<double,Size,1> to_eigen_vector(const gsl_vector* v)
    return result;
 }
 
-template <int Size>
-Eigen::Matrix<double,Size,1> to_eigen_vector(const GSL_vector& v)
-{
-   if (Size != v.size()) {
-      throw OutOfBoundsError(
-         "Size of GSL_vector does not match size of Eigen vector.");
-   }
-
-   using Result_t = Eigen::Matrix<double,Size,1>;
-   using Index_t = typename Result_t::Index;
-   Result_t result;
-
-   for (Index_t i = 0; i < Size; i++) {
-      result(i) = v[i];
-   }
-
-   return result;
-}
-
 } // namespace flexiblesusy
 
 #endif
