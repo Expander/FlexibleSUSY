@@ -31,10 +31,6 @@ namespace flexiblesusy {
 bool is_finite(const GSL_vector&);
 /// Returns true if GSL vector contains only finite elements, false otherwise
 bool is_finite(const gsl_vector*);
-Eigen::ArrayXd to_eigen_array(const gsl_vector*);
-Eigen::ArrayXd to_eigen_array(const GSL_vector&);
-Eigen::VectorXd to_eigen_vector(const gsl_vector*);
-Eigen::VectorXd to_eigen_vector(const GSL_vector&);
 GSL_vector to_GSL_vector(const gsl_vector*);
 
 template <typename Derived>
@@ -51,7 +47,7 @@ GSL_vector to_GSL_vector(const Eigen::DenseBase<Derived>& v)
 }
 
 template <int Size>
-Eigen::Matrix<double,Size,1> to_eigen_vector_fixed(const gsl_vector* v)
+Eigen::Matrix<double,Size,1> to_eigen_vector(const gsl_vector* v)
 {
    if (Size != v->size) {
       throw OutOfBoundsError("Size of GSL_vector does not match size of Eigen vector.");
@@ -69,7 +65,7 @@ Eigen::Matrix<double,Size,1> to_eigen_vector_fixed(const gsl_vector* v)
 }
 
 template <int Size>
-Eigen::Matrix<double,Size,1> to_eigen_vector_fixed(const GSL_vector& v)
+Eigen::Matrix<double,Size,1> to_eigen_vector(const GSL_vector& v)
 {
    if (Size != v.size()) {
       throw OutOfBoundsError(
@@ -85,32 +81,6 @@ Eigen::Matrix<double,Size,1> to_eigen_vector_fixed(const GSL_vector& v)
    }
 
    return result;
-}
-
-/**
- * Copies values from an Eigen array/matrix to a GSL vector.
- *
- * @param src Eigen array/matrix
- * @param dst GSL vector
- */
-template <typename Derived>
-void copy(const Eigen::DenseBase<Derived>& src, gsl_vector* dst)
-{
-   using Index_t = typename Derived::Index;
-   const auto dim = src.rows();
-
-   if (dst == nullptr) {
-      throw SetupError("Destination GSL_vector is Null.");
-   }
-
-   if (static_cast<decltype(dst->size)>(dim) != dst->size) {
-      throw OutOfBoundsError("Size of destination GSL_vector does not match "
-                             "size of source Eigen vector.");
-   }
-
-   for (Index_t i = 0; i < dim; i++) {
-      gsl_vector_set(dst, i, src(i));
-   }
 }
 
 } // namespace flexiblesusy

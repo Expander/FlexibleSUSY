@@ -59,59 +59,6 @@ bool is_finite(const GSL_vector& v)
    return finite;
 }
 
-/**
- * Returns an Eigen array which contains the elements of the given GSL
- * vector.
- *
- * @param v GSL vector
- * @return Eigen array
- */
-Eigen::ArrayXd to_eigen_array(const gsl_vector* v)
-{
-   return to_eigen_vector(v);
-}
-
-/**
- * Returns an Eigen array which contains the elements of the given GSL
- * vector.
- *
- * @param v GSL vector
- * @return Eigen array
- */
-Eigen::ArrayXd to_eigen_array(const GSL_vector& v)
-{
-   return to_eigen_vector(v);
-}
-
-/**
- * Returns an Eigen array which contains the elements of the given GSL
- * vector.
- *
- * @param v GSL vector
- * @return Eigen vector
- */
-Eigen::VectorXd to_eigen_vector(const gsl_vector* v)
-{
-   return to_eigen_vector(GSL_vector(v));
-}
-
-/**
- * Returns an Eigen array which contains the elements of the given GSL
- * vector.
- *
- * @param v GSL vector
- * @return Eigen vector
- */
-Eigen::VectorXd to_eigen_vector(const GSL_vector& v)
-{
-   Eigen::VectorXd v2(v.size());
-
-   for (std::size_t i = 0; i < v.size(); i++)
-      v2(i) = v[i];
-
-   return v2;
-}
-
 GSL_vector to_GSL_vector(const gsl_vector* v)
 {
    return GSL_vector(v);
