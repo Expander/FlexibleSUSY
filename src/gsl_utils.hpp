@@ -27,11 +27,8 @@
 
 namespace flexiblesusy {
 
-/// Returns true if GSL_vector contains only finite elements, false otherwise
-bool is_finite(const GSL_vector&);
 /// Returns true if GSL vector contains only finite elements, false otherwise
 bool is_finite(const gsl_vector*);
-GSL_vector to_GSL_vector(const gsl_vector*);
 
 template <typename Derived>
 GSL_vector to_GSL_vector(const Eigen::DenseBase<Derived>& v)
