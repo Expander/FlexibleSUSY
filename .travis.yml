@@ -22,7 +22,15 @@ install:
   - conan remote add conan-hep https://api.bintray.com/conan/expander/conan-hep
   - conan install . --build=missing
 script:
-  - ./configure --with-models= --with-optional-modules=test --with-addons=GM2Calc --disable-meta
+  - ./configure --with-cxxflags="-std=c++14 -fPIC" --with-optional-modules=test --with-addons=GM2Calc --disable-meta
   - make showbuild
-  - make
-  - make -k all-test
+  - make -j2
+  - make -j2 -k all-test
+before_cache:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew cleanup ; fi
+cache:
+  pip: true
+  directories:
+    - $HOME/.conan
+    - $HOME/Library/Caches/Homebrew
+    - /usr/local/Homebrew
