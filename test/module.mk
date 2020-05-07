@@ -1201,7 +1201,7 @@ $(PV_DEP_EXE): %.x: %.o $(LIBPV)
 ################################################################################
 
 # adding libraries to the end of the list of dependencies
-$(TEST_EXE): $(LIBSOFTSUSY) $(MODtest_LIB) $(LIBTEST) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(FUTILIBS)
+$(TEST_EXE): $(LIBSOFTSUSY) $(MODtest_LIB) $(LIBTEST) $(LIBFLEXI) $(filter-out -%,$(LOOPFUNCLIBS)) $(FUTILIBS) $(LIBPV)
 
 # general test rule
 $(DIR)/test_%.x: $(DIR)/test_%.o
