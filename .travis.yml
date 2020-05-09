@@ -31,10 +31,12 @@ script:
     --with-optional-modules=test
     --with-addons=GM2Calc
     --with-loop-libraries=collier
+    --with-install-dir=install
     --disable-meta
   - make showbuild
   - make -j2
   - make -j2 -k all-test
+  - make install-src
 before_cache:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew cleanup ; fi
 cache:
