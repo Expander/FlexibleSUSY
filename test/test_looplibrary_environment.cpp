@@ -16,6 +16,7 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#define BOOST_TEST_DYN_LINK
 #define BOOST_TEST_MODULE "Set looplibrary via environment"
 
 #include <boost/test/unit_test.hpp>
