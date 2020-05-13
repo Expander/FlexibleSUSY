@@ -605,20 +605,64 @@ the options ``--with-shared-ldflags=`` and ``--with-shared-ldlibs=`` must
 be used to set ``LDFLAGS`` and ``LDLIBS``.
 
 
+Support for alternative loop libraries
+--------------------------------------
+
+FlexibleSUSY ships with its own implementation of the
+Passarino-Veltman 1-loop functions, which have been translated from
+SOFTSUSY_.  However, alternative implementations of the 1-loop
+functions can be used:
+
+* LoopTools_
+* COLLIER_
+* FFlite (a thread-safe variant of LoopTools_, shipped with FlexibleSUSY)
+
+The loop function libraries can be enabled by passing
+``--with-loop-libraries=`` to the ``configure`` script::
+
+    ./configure --with-loop-libraries=collier,looptools,fflite
+
+When the SLHA input the loop library to use can be selected by setting
+the entry of ``FlexibleSUSY[31]`` appropriately::
+
+    Block FlexibleSUSY
+       31   0    # loop library (0 = SOFTSUSY, 1 = COLLIER, 2 = LoopTools, 3 = FFlite)
+
+If the entry ``FlexibleSUSY[31]`` is absent, the loop functions from
+SOFTSUSY_ are used.  If the entry ``FlexibleSUSY[31]`` is set to
+``-1``, FlexibleSUSY uses the value from the environment variable
+``FLEXIBLESUSY_LOOP_LIBRARY``.
+
+When the Mathematica interface is used, the loop library to use can be
+selected by setting the value of ``loopLibrary`` appropriately::
+
+    FS@ModelName@OpenHandle[
+        fsSettings -> {
+            loopLibrary -> 0   (* 0 = SOFTSUSY, 1 = COLLIER, 2 = LoopTools, 3 = FFlite *)
+        }
+    ]
+
+In the following it is described in more detail how to enable these
+alternative loop function libraries in FlexibleSUSY.
+
 LoopTools support
------------------
+`````````````````
 
 It is possible to use LoopTools_ for calculating the loop functions,
-instead of using SOFTSUSY's loop functions.  To enable LoopTools
+instead of using SOFTSUSY's loop functions.  To enable LoopTools,
 configure FlexibleSUSY via ::
 
     ./configure --enable-looptools
 
-One can use an optional call ``--with-loop-libraries=looptools`` instead of
-``--enable-looptools`` during configuration.
+or::
+
+    ./configure --with-loop-libraries=looptools
+
+If LoopTools has been installed via Conan_, the configure will
+automatically find the paths to the LoopTools library.
 
 To use the LoopTools library and header files from a specific
-directory configure via
+directory, run ``configure`` via
 ::
 
     LOOPTOOL_DIR=/path/to/looptools/build
@@ -635,7 +679,7 @@ This is achieved by setting the ``FFLAGS`` variable during LoopTools configurati
     FFLAGS=-fPIC ./configure
 
 COLLIER support
----------------
+```````````````
 
 It is possible to use COLLIER_ for calculating the loop functions,
 instead of using SOFTSUSY's loop functions.  To enable COLLIER
@@ -657,12 +701,12 @@ Also, COLLIER static library should be configured with
 ``-Dstatic=ON -DCMAKE_POSITION_INDEPENDENT_CODE=ON`` flags.
 
 TSIL support
-------------
+````````````
 
-Some models of FlexibleSUSY require TSIL_, for example HSSUSY.  When
+Some models of FlexibleSUSY require TSIL_, for example `HSSUSY`_.  When
 such models are activated (via ``./configure --with-models=<model>``),
 FlexibleSUSY requires TSIL to be available.  If TSIL is installed in a
-system directory or installed via Conan, FlexibleSUSY will find the
+system directory or installed via Conan_, FlexibleSUSY will find the
 TSIL automatically.  To use TSIL from a a non-standard directory,
 configure FlexibleSUSY like this::
 
