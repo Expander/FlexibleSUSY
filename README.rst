@@ -96,12 +96,13 @@ Optional:
 * Himalaya_
 * TSIL_
 
-Installation of required libraries
-----------------------------------
+Installation of required/optional libraries
+-------------------------------------------
 
-The required libraries Boost_, `Eigen 3`_, LoopTools_, Himalaya_ and
-TSIL_ can be installed using the Conan_ package manager.  If not
-already installed, Conan can be installed with pip::
+The required and optional libraries Boost_, COLLIER_, `Eigen 3`_,
+LoopTools_, Himalaya_ and TSIL_ can be installed using the Conan_
+package manager.  If not already installed, Conan can be installed
+with pip::
 
     pip install conan
 
@@ -110,7 +111,7 @@ repositories::
 
     conan remote add conan-hep https://api.bintray.com/conan/expander/conan-hep
 
-To install the libraries required by FlexibleSUSY run::
+To install the libraries required by FlexibleSUSY, run::
 
     conan install . --build=missing
 
