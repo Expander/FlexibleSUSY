@@ -620,18 +620,24 @@ functions can be used:
 The loop function libraries can be enabled by passing
 ``--with-loop-libraries=`` to the ``configure`` script::
 
-    ./configure --with-loop-libraries=collier,looptools,fflite
+    ./configure --with-loop-libraries=<libraries>
 
-When the SLHA input the loop library to use can be selected by setting
-the entry of ``FlexibleSUSY[31]`` appropriately::
+where ``<libraries>`` can be any (or a compbination) of ``collier``,
+``looptools`` or ``fflite``.
+
+Example::
+
+    ./configure --with-loop-libraries=collier,looptools
+
+When the SLHA input is used, the loop library to use can be selected
+by setting the entry of ``FlexibleSUSY[31]`` to ``0`` (= SOFTSUSY),
+``1`` ( = COLLIER), ``2`` (= LoopTools) or ``3`` (= FFlite).  See
+`SLHA input parameters`_ for details.
+
+Example::
 
     Block FlexibleSUSY
        31   0    # loop library (0 = SOFTSUSY, 1 = COLLIER, 2 = LoopTools, 3 = FFlite)
-
-If the entry ``FlexibleSUSY[31]`` is absent, the loop functions from
-SOFTSUSY_ are used.  If the entry ``FlexibleSUSY[31]`` is set to
-``-1``, FlexibleSUSY uses the value from the environment variable
-``FLEXIBLESUSY_LOOP_LIBRARY``.
 
 When the Mathematica interface is used, the loop library to use can be
 selected by setting the value of ``loopLibrary`` appropriately::
