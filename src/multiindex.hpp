@@ -16,8 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef H_FS_MULTIINDEX
-#define H_FS_MULTIINDEX
+#ifndef FS_MULTIINDEX_H
+#define FS_MULTIINDEX_H
 
 #include "find_if.hpp"
 
