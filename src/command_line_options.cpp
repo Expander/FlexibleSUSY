@@ -17,6 +17,7 @@
 // ====================================================================
 
 #include "command_line_options.hpp"
+#include "array_view.hpp"
 #include "build_info.hpp"
 #include "logger.hpp"
 

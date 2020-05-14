@@ -26,6 +26,7 @@
 #include "@ModelName@_spectrum_generator.hpp"
 
 @solverIncludes@
+#include "array_view.hpp"
 #include "command_line_options.hpp"
 #include "lowe.h"
 #include "logger.hpp"

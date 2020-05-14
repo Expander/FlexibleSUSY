@@ -26,6 +26,7 @@
 
 @solverIncludes@
 #include "command_line_options.hpp"
+#include "array_view.hpp"
 #include "scan.hpp"
 #include "lowe.h"
 #include "logger.hpp"
