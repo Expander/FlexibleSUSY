@@ -157,13 +157,6 @@ private:
    static std::string block_head(const std::string& name, double scale);
    static bool read_scale(const SLHAea::Line& line, double& scale);
 
-   static void process_sminputs_tuple(softsusy::QedQcd&, int, double);
-   static void process_modsel_tuple(Modsel&, int, double);
-   static void process_vckmin_tuple(CKM_wolfenstein&, int, double);
-   static void process_upmnsin_tuple(PMNS_parameters&, int, double);
-   static void process_flexiblesusy_tuple(Spectrum_generator_settings&, int, double);
-   static void process_flexiblesusyinput_tuple(Physical_input&, int, double);
-
    void read_modsel();
    template <class Derived>
    double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
