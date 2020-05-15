@@ -23,24 +23,24 @@
 
 namespace flexiblesusy {
 
-namespace {
-   /// SLHA line formatter for the MASS block entries
-   const char * const mass_formatter = " %9d   %16.8E   # %s\n";
-   /// SLHA line formatter for the mixing matrix entries  = NMIX, UMIX, VMIX, ...
-   const char * const mixing_matrix_formatter = " %2d %2d   %16.8E   # %s\n";
-   /// SLHA line formatter for vector entries
-   const char * const vector_formatter = " %5d   %16.8E   # %s\n";
-   /// SLHA number formatter
-   const char * const number_formatter = "         %16.8E   # %s\n";
-   /// SLHA line formatter for entries with three indices
-   const char * const tensor_formatter = " %8d %8d %8d   %16.8E   # %s\n";
-   /// SLHA scale formatter
-   const char * const scale_formatter = "%9.8E";
-   /// SLHA line formatter for the one-element entries  = HMIX, GAUGE, MSOFT, ...
-   const char * const single_element_formatter = " %5d   %16.8E   # %s\n";
-   /// SLHA line formatter for the SPINFO block entries
-   const char * const spinfo_formatter = " %5d   %s\n";
+/// SLHA line formatter for the MASS block entries
+extern const char * const mass_formatter;
+/// SLHA line formatter for the mixing matrix entries ;
+extern const char * const mixing_matrix_formatter;
+/// SLHA line formatter for vector entries
+extern const char * const vector_formatter;
+/// SLHA number formatter
+extern const char * const number_formatter;
+/// SLHA line formatter for entries with three indices
+extern const char * const tensor_formatter;
+/// SLHA scale formatter
+extern const char * const scale_formatter;
+/// SLHA line formatter for the one-element entries ;
+extern const char * const single_element_formatter;
+/// SLHA line formatter for the SPINFO block entries
+extern const char * const spinfo_formatter;
 
+namespace {
    /// maximum line length in SLHA output
    constexpr unsigned SLHA_MAX_LINE_LENGTH = 200;
 } // namespace

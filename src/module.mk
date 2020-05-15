@@ -30,6 +30,7 @@ LIBFLEXI_SRC := \
 		$(DIR)/problems.cpp \
 		$(DIR)/rkf_integrator.cpp \
 		$(DIR)/scan.cpp \
+		$(DIR)/slha_format.cpp \
 		$(DIR)/slha_io.cpp \
 		$(DIR)/spectrum_generator_problems.cpp \
 		$(DIR)/spectrum_generator_settings.cpp \
