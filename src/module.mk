@@ -99,6 +99,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/sfermions.hpp \
 		$(DIR)/single_scale_constraint.hpp \
 		$(DIR)/single_scale_matching.hpp \
+		$(DIR)/slha_format.hpp \
 		$(DIR)/slha_io.hpp \
 		$(DIR)/spectrum_generator_problems.hpp \
 		$(DIR)/spectrum_generator_settings.hpp \

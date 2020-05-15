@@ -21,6 +21,7 @@
 
 #include "error.hpp"
 #include "numerics2.hpp"
+#include "slha_format.hpp"
 #include "slhaea.h"
 #include "string_utils.hpp"
 
@@ -31,7 +32,6 @@
 #include <vector>
 
 #include <Eigen/Core>
-#include <boost/format.hpp>
 #include <boost/function.hpp>
 
 namespace softsusy {
@@ -43,42 +43,6 @@ namespace flexiblesusy {
    class Spectrum_generator_settings;
    class Physical_input;
    struct PMNS_parameters;
-
-   namespace {
-      /// SLHA line formatter for the MASS block entries
-      const boost::format mass_formatter(" %9d   %16.8E   # %s\n");
-      /// SLHA line formatter for the mixing matrix entries (NMIX, UMIX, VMIX, ...)
-      const boost::format mixing_matrix_formatter(" %2d %2d   %16.8E   # %s\n");
-      /// SLHA line formatter for vector entries
-      const boost::format vector_formatter(" %5d   %16.8E   # %s\n");
-      /// SLHA number formatter
-      const boost::format number_formatter("         %16.8E   # %s\n");
-      /// SLHA line formatter for entries with three indices
-      const boost::format tensor_formatter(" %8d %8d %8d   %16.8E   # %s\n");
-      /// SLHA scale formatter
-      const boost::format scale_formatter("%9.8E");
-      /// SLHA line formatter for the one-element entries (HMIX, GAUGE, MSOFT, ...)
-      const boost::format single_element_formatter(" %5d   %16.8E   # %s\n");
-      /// SLHA line formatter for the SPINFO block entries
-      const boost::format spinfo_formatter(" %5d   %s\n");
-   } // namespace
-
-#define FORMAT_MASS(pdg,mass,name)                                      \
-   boost::format(mass_formatter) % (pdg) % (mass) % (name)
-#define FORMAT_MIXING_MATRIX(i,k,entry,name)                            \
-   boost::format(mixing_matrix_formatter) % (i) % (k) % (entry) % (name)
-#define FORMAT_VECTOR(i,entry,name)                                     \
-   boost::format(vector_formatter) % (i) % (entry) % (name)
-#define FORMAT_ELEMENT(pdg,value,name)                                  \
-   boost::format(single_element_formatter) % (pdg) % (value) % (name)
-#define FORMAT_SCALE(n)                                                 \
-   boost::format(scale_formatter) % (n)
-#define FORMAT_NUMBER(n,str)                                            \
-   boost::format(number_formatter) % (n) % (str)
-#define FORMAT_SPINFO(n,str)                                            \
-   boost::format(spinfo_formatter) % (n) % (str)
-#define FORMAT_RANK_THREE_TENSOR(i,j,k,entry,name)                      \
-   boost::format(tensor_formatter) % (i) % (j) % (k) % (entry) % (name)
 
 /**
  * @class SLHA_io

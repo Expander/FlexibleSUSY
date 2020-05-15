@@ -55,7 +55,7 @@ std::string SLHA_io::block_head(const std::string& name, double scale)
    std::string result("Block " + name);
 
    if (!is_zero(scale, eps)) {
-      result += " Q= " + (FORMAT_SCALE(scale)).str();
+      result += " Q= " + FORMAT_SCALE(scale);
    }
 
    result += '\n';
