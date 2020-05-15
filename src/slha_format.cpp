@@ -16,6 +16,8 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
+#include "slha_format.hpp"
+
 namespace flexiblesusy {
 
 /// SLHA line formatter for the MASS block entries
