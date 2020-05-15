@@ -353,7 +353,7 @@ void SLHA_io::set_block(const std::string& name, double value,
 {
    std::ostringstream ss;
    ss << block_head(name, scale);
-   ss << boost::format(mixing_matrix_formatter) % 1 % 1 % value % symbol;
+   ss << FORMAT_MIXING_MATRIX(1, 1, value, symbol);
 
    set_block(ss);
 }

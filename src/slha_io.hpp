@@ -67,6 +67,8 @@ namespace flexiblesusy {
    boost::format(mass_formatter) % (pdg) % (mass) % (name)
 #define FORMAT_MIXING_MATRIX(i,k,entry,name)                            \
    boost::format(mixing_matrix_formatter) % (i) % (k) % (entry) % (name)
+#define FORMAT_VECTOR(i,entry,name)                                     \
+   boost::format(vector_formatter) % (i) % (entry) % (name)
 #define FORMAT_ELEMENT(pdg,value,name)                                  \
    boost::format(single_element_formatter) % (pdg) % (value) % (name)
 #define FORMAT_SCALE(n)                                                 \
@@ -323,8 +325,8 @@ void SLHA_io::set_block(const std::string& name,
    ss << block_head(name, scale);
 
    for (int i = 1; i <= NRows; ++i) {
-      ss << boost::format(vector_formatter) % i % std::real(matrix(i-1,0))
-         % ("Re(" + symbol + "(" + flexiblesusy::to_string(i) + "))");
+      ss << FORMAT_VECTOR(i, std::real(matrix(i-1,0)),
+         ("Re(" + symbol + "(" + flexiblesusy::to_string(i) + "))"));
    }
 
    set_block(ss);
@@ -340,10 +342,9 @@ void SLHA_io::set_block(const std::string& name,
 
    for (int i = 1; i <= NRows; ++i) {
       for (int k = 1; k <= NCols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k
-            % std::real(matrix(i-1,k-1))
-            % ("Re(" + symbol + "(" + flexiblesusy::to_string(i) + ","
-               + flexiblesusy::to_string(k) + "))");
+         ss << FORMAT_MIXING_MATRIX(i, k, std::real(matrix(i-1,k-1)),
+            ("Re(" + symbol + "(" + flexiblesusy::to_string(i) + ","
+             + flexiblesusy::to_string(k) + "))"));
       }
    }
 
@@ -359,8 +360,8 @@ void SLHA_io::set_block_imag(const std::string& name,
    ss << block_head(name, scale);
 
    for (int i = 1; i <= NRows; ++i) {
-      ss << boost::format(vector_formatter) % i % std::imag(matrix(i-1,0))
-         % ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + "))");
+      ss << FORMAT_VECTOR(i, std::imag(matrix(i-1,0)),
+         ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + "))"));
    }
 
    set_block(ss);
@@ -376,10 +377,9 @@ void SLHA_io::set_block_imag(const std::string& name,
 
    for (int i = 1; i <= NRows; ++i) {
       for (int k = 1; k <= NCols; ++k) {
-         ss << boost::format(mixing_matrix_formatter) % i % k
-            % std::imag(matrix(i-1,k-1))
-            % ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + ","
-               + flexiblesusy::to_string(k) + "))");
+         ss << FORMAT_MIXING_MATRIX(i, k, std::imag(matrix(i-1,k-1)),
+            ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + ","
+             + flexiblesusy::to_string(k) + "))"));
       }
    }
 
@@ -398,12 +398,11 @@ void SLHA_io::set_block(const std::string& name,
    const int cols = matrix.cols();
    for (int i = 1; i <= rows; ++i) {
       if (cols == 1) {
-         ss << boost::format(vector_formatter) % i % matrix(i-1,0)
-            % (symbol + "(" + flexiblesusy::to_string(i) + ")");
+         ss << FORMAT_VECTOR(i, matrix(i-1,0), (symbol + "(" + flexiblesusy::to_string(i) + ")"));
       } else {
          for (int k = 1; k <= cols; ++k) {
-            ss << boost::format(mixing_matrix_formatter) % i % k % matrix(i-1,k-1)
-               % (symbol + "(" + flexiblesusy::to_string(i) + "," + flexiblesusy::to_string(k) + ")");
+            ss << FORMAT_MIXING_MATRIX(i, k, matrix(i-1,k-1),
+               (symbol + "(" + flexiblesusy::to_string(i) + "," + flexiblesusy::to_string(k) + ")"));
          }
       }
    }
@@ -423,12 +422,11 @@ void SLHA_io::set_block_imag(const std::string& name,
    const int cols = matrix.cols();
    for (int i = 1; i <= rows; ++i) {
       if (cols == 1) {
-         ss << boost::format(vector_formatter) % i % std::imag(matrix(i-1,0))
-            % ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + "))");
+         ss << FORMAT_VECTOR(i, std::imag(matrix(i-1,0)), ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + "))"));
       } else {
          for (int k = 1; k <= cols; ++k) {
-            ss << boost::format(mixing_matrix_formatter) % i % k % std::imag(matrix(i-1,k-1))
-               % ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + "," + flexiblesusy::to_string(k) + "))");
+            ss << FORMAT_MIXING_MATRIX(i, k, std::imag(matrix(i-1,k-1)),
+               ("Im(" + symbol + "(" + flexiblesusy::to_string(i) + "," + flexiblesusy::to_string(k) + "))"));
          }
       }
    }
