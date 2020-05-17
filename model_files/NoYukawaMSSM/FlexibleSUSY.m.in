@@ -1,5 +1,6 @@
 
 FSModelName = "@CLASSNAME@";
+FSDefaultSARAHModel = NoYukawaMSSM;
 
 (* CMSSM input parameters *)
 

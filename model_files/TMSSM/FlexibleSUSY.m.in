@@ -1,6 +1,7 @@
 
 FSModelName = "@CLASSNAME@";
 FSEigenstates = SARAH`EWSB;
+FSDefaultSARAHModel = TMSSM;
 
 (* CMSSM input parameters *)
 
