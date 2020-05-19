@@ -19,7 +19,6 @@
 #ifndef SLHA_IO_H
 #define SLHA_IO_H
 
-#include "error.hpp"
 #include "slha_format.hpp"
 #include "slhaea.h"
 #include "string_format.hpp"
@@ -174,10 +173,6 @@ private:
 template <class Derived>
 double SLHA_io::read_matrix(const std::string& block_name, Eigen::PlainObjectBase<Derived>& matrix) const
 {
-   if (matrix.cols() <= 1) {
-      throw SetupError("Matrix has less than 2 columns");
-   }
-
    auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
 
    const int cols = matrix.cols(), rows = matrix.rows();
@@ -214,10 +209,6 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::PlainObjectBas
 template <class Derived>
 double SLHA_io::read_vector(const std::string& block_name, Eigen::PlainObjectBase<Derived>& vector) const
 {
-   if (vector.cols() != 1) {
-      throw SetupError("Vector has more than 1 column");
-   }
-
    auto block = SLHAea::Coll::find(data.cbegin(), data.cend(), block_name);
 
    const int rows = vector.rows();
