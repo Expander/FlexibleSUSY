@@ -16,28 +16,27 @@
 // <http://www.gnu.org/licenses/>.
 // ====================================================================
 
-#ifndef STRING_UTILS_H
-#define STRING_UTILS_H
+#ifndef STRING_FORMAT_H
+#define STRING_FORMAT_H
 
+#include <complex>
 #include <string>
-#include <vector>
 
 namespace flexiblesusy {
 
-/// concatenate strings
-std::string concat(const std::vector<std::string>&);
-
-/// concatenate strings with separator
-template <typename T>
-std::string concat(const std::vector<std::string>& strings, const T& separator)
-{
-   std::string result;
-
-   for (const auto& s: strings)
-      result += s + separator;
-
-   return result;
-}
+std::string to_string(char);
+std::string to_string(unsigned char);
+std::string to_string(unsigned short);
+std::string to_string(unsigned int);
+std::string to_string(unsigned long);
+std::string to_string(unsigned long long);
+std::string to_string(signed char);
+std::string to_string(signed short);
+std::string to_string(signed int);
+std::string to_string(signed long);
+std::string to_string(signed long long);
+std::string to_string(double);
+std::string to_string(const std::complex<double>&);
 
 } // namespace flexiblesusy
 

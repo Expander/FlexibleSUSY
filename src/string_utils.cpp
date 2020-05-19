@@ -17,7 +17,6 @@
 // ====================================================================
 
 #include "string_utils.hpp"
-#include <boost/lexical_cast.hpp>
 
 namespace flexiblesusy {
 
@@ -29,31 +28,6 @@ std::string concat(const std::vector<std::string>& strings)
       result += s;
 
    return result;
-}
-
-#define DEFINE_TO_STRING(type)                     \
-   std::string to_string(type a)                   \
-   {                                               \
-      return boost::lexical_cast<std::string>(a);  \
-   }
-
-DEFINE_TO_STRING(char              );
-DEFINE_TO_STRING(unsigned char     );
-DEFINE_TO_STRING(unsigned short    );
-DEFINE_TO_STRING(unsigned int      );
-DEFINE_TO_STRING(unsigned long     );
-DEFINE_TO_STRING(unsigned long long);
-DEFINE_TO_STRING(signed char       );
-DEFINE_TO_STRING(signed short      );
-DEFINE_TO_STRING(signed int        );
-DEFINE_TO_STRING(signed long       );
-DEFINE_TO_STRING(signed long long  );
-DEFINE_TO_STRING(double            );
-
-std::string to_string(const std::complex<double>& a)
-{
-   return "(" + boost::lexical_cast<std::string>(std::real(a)) + "," +
-          boost::lexical_cast<std::string>(std::real(a)) + ")";
 }
 
 } // namespace flexiblesusy

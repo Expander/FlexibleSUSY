@@ -19,6 +19,7 @@
 #include "problems.hpp"
 #include "logger.hpp"
 #include "names.hpp"
+#include "string_format.hpp"
 #include "string_utils.hpp"
 #include "config.h"
 
