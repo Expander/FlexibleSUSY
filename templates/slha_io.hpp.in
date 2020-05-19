@@ -109,8 +109,8 @@ public:
    static void fill_imminpar_tuple(@ModelName@_input_parameters&, int, double);
    static void fill_imextpar_tuple(@ModelName@_input_parameters&, int, double);
 
-   template <class Model>
-   void fill(const @ModelName@_slha<Model>&, const softsusy::QedQcd&, const @ModelName@_scales&, const @ModelName@_observables&);
+   template <class... Ts>
+   void fill(const std::tuple<Ts...>&, const softsusy::QedQcd&, const @ModelName@_scales&, const @ModelName@_observables&);
 
 private:
    SLHA_io slha_io; ///< SLHA io class
@@ -147,20 +147,21 @@ void @ModelName@_slha_io::fill(@ModelName@_slha<Model>& model) const
 /**
  * Convenience wrapper function to fill all information at once
  */
-template <class Model>
+template <class... Ts>
 void @ModelName@_slha_io::fill(
-   const @ModelName@_slha<Model>& model,
+   const std::tuple<Ts...>& models,
    const softsusy::QedQcd& qedqcd,
    const @ModelName@_scales& scales,
    const @ModelName@_observables& observables)
 {
+   const auto& model = std::get<0>(models);
    const auto& problems = model.get_problems();
 
    set_spinfo(problems);
    set_sminputs(qedqcd);
    set_input(model.get_input());
    if (!problems.have_problem()) {
-      set_spectrum(model);
+      set_spectrum(models);
       set_extra(model, scales, observables);
    }
 }
