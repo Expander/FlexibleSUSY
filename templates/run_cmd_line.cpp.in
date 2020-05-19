@@ -103,10 +103,9 @@ int run_solver(int loop_library, const @ModelName@_input_parameters& input)
       model, qedqcd, physical_input, scales.pole_mass_scale);
 
    // SLHA output
-   SLHAea::Coll slhaea(@ModelName@_slha_io::fill_slhaea(
-                          model, qedqcd, scales, observables));
-
-   std::cout << slhaea;
+   @ModelName@_slha_io slha_io;
+   slha_io.fill(model, qedqcd, scales, observables);
+   slha_io.write_to_stream(std::cout);
 
    return spectrum_generator.get_exit_code();
 }
