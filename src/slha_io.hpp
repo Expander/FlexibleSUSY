@@ -20,7 +20,6 @@
 #define SLHA_IO_H
 
 #include "error.hpp"
-#include "numerics2.hpp"
 #include "slha_format.hpp"
 #include "slhaea.h"
 #include "string_format.hpp"
