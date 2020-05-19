@@ -117,7 +117,7 @@ public:
    void read_from_stream(std::istream&);
    double read_block(const std::string&, const Tuple_processor&) const;
    template <class Derived>
-   double read_block(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   double read_block(const std::string&, Eigen::PlainObjectBase<Derived>&) const;
    double read_block(const std::string&, double&) const;
    double read_entry(const std::string&, int) const;
    double read_scale(const std::string&) const;
@@ -158,9 +158,9 @@ private:
 
    void read_modsel();
    template <class Derived>
-   double read_matrix(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   double read_matrix(const std::string&, Eigen::PlainObjectBase<Derived>&) const;
    template <class Derived>
-   double read_vector(const std::string&, Eigen::MatrixBase<Derived>&) const;
+   double read_vector(const std::string&, Eigen::PlainObjectBase<Derived>&) const;
 };
 
 /**
@@ -172,7 +172,7 @@ private:
  * @return scale (or 0 if no scale is defined)
  */
 template <class Derived>
-double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Derived>& matrix) const
+double SLHA_io::read_matrix(const std::string& block_name, Eigen::PlainObjectBase<Derived>& matrix) const
 {
    if (matrix.cols() <= 1) {
       throw SetupError("Matrix has less than 2 columns");
@@ -212,7 +212,7 @@ double SLHA_io::read_matrix(const std::string& block_name, Eigen::MatrixBase<Der
  * @return scale (or 0 if no scale is defined)
  */
 template <class Derived>
-double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Derived>& vector) const
+double SLHA_io::read_vector(const std::string& block_name, Eigen::PlainObjectBase<Derived>& vector) const
 {
    if (vector.cols() != 1) {
       throw SetupError("Vector has more than 1 column");
@@ -251,7 +251,7 @@ double SLHA_io::read_vector(const std::string& block_name, Eigen::MatrixBase<Der
  * @return scale (or 0 if no scale is defined)
  */
 template <class Derived>
-double SLHA_io::read_block(const std::string& block_name, Eigen::MatrixBase<Derived>& dense) const
+double SLHA_io::read_block(const std::string& block_name, Eigen::PlainObjectBase<Derived>& dense) const
 {
    return dense.cols() == 1
       ? read_vector(block_name, dense)
