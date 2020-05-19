@@ -19,9 +19,9 @@
 #ifndef STRING_UTILS_H
 #define STRING_UTILS_H
 
+#include <complex>
 #include <string>
 #include <vector>
-#include <boost/lexical_cast.hpp>
 
 namespace flexiblesusy {
 
@@ -40,11 +40,19 @@ std::string concat(const std::vector<std::string>& strings, const T& separator)
    return result;
 }
 
-template <typename T>
-std::string to_string(T a)
-{
-   return boost::lexical_cast<std::string>(a);
-}
+std::string to_string(char);
+std::string to_string(unsigned char);
+std::string to_string(unsigned short);
+std::string to_string(unsigned int);
+std::string to_string(unsigned long);
+std::string to_string(unsigned long long);
+std::string to_string(signed char);
+std::string to_string(signed short);
+std::string to_string(signed int);
+std::string to_string(signed long);
+std::string to_string(signed long long);
+std::string to_string(double);
+std::string to_string(const std::complex<double>&);
 
 } // namespace flexiblesusy
 
