@@ -31,6 +31,7 @@
 #include "slha_io.hpp"
 #include "ckm.hpp"
 #include "ew_input.hpp"
+#include "for_each.hpp"
 #include "lowe.h"
 #include "wrappers.hpp"
 
@@ -38,9 +39,6 @@
 #include <string>
 #include <tuple>
 #include <utility>
-
-#include <boost/fusion/include/for_each.hpp>
-#include <boost/fusion/adapted/std_tuple.hpp>
 
 #define Pole(p) physical.p
 #define PHYSICAL(p) model.get_physical().p
@@ -205,8 +203,8 @@ void @ModelName@_slha_io::set_extra(
 template <class... Ts>
 void @ModelName@_slha_io::set_spectrum(const std::tuple<Ts...>& models)
 {
-   boost::fusion::for_each(models,
-                           [this](auto model) { this->set_spectrum(model); });
+   for_each_in_tuple(models,
+                     [this](const auto& model) { this->set_spectrum(model); });
 }
 
 /**
