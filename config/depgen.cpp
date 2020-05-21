@@ -119,22 +119,6 @@ bool starts_with(const std::string& str, const std::string& prefix)
    return str.compare(0, prefix.size(), prefix) == 0;
 }
 
-/// removes whitespace from left side of string
-void trim_left(std::string& str)
-{
-   str.erase(str.begin(),
-             std::find_if(str.begin(), str.end(),
-                          [] (std::string::value_type c) { return std::isspace(c) == 0; }));
-}
-
-/// returns copy of s with whitespace removed from left side of string
-std::string trim_left_copy(const std::string& s)
-{
-   std::string str(s);
-   trim_left(str);
-   return str;
-}
-
 /// print usage message
 void print_usage(const std::string& program_name)
 {
