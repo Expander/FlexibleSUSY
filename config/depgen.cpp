@@ -163,7 +163,7 @@ void print_empty_phony_targets(std::ostream& ostr, const std::vector<std::string
       ostr << '\n' << d << ":\n";
 }
 
-/// returns file name from include "..." statement
+/// extracts file name from include "..." statement
 template <class OutputIterator>
 void get_filename_from_include(const char* s, OutputIterator it)
 {
