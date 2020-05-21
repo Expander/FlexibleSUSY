@@ -18,6 +18,7 @@
 
 #include "string_conversion.hpp"
 #include "error.hpp"
+#include <cerrno>
 #include <climits>
 #include <cstdlib>
 
