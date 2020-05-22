@@ -71,7 +71,7 @@ class Coupling_monitor {
 public:
    using TTouple = std::pair<double, Eigen::ArrayXd>;///< touple of scale and couplings
 
-   Coupling_monitor(const Model&, const DataGetter&);
+   Coupling_monitor(const Model&);
 
    /// get couplings at all scales
    void run(double, double, int number_of_steps = 20, bool include_endpoint = false);
@@ -92,7 +92,6 @@ private:
 
    TData couplings{};      ///< all couplings at all scales
    Model model;            ///< the model
-   DataGetter data_getter; ///< hepler class which extracts the model parameters
    int width{16};          ///< width of columns in output table
 
    /// write line with parameter names
@@ -102,9 +101,8 @@ private:
 };
 
 template <class Model, class DataGetter>
-Coupling_monitor<Model,DataGetter>::Coupling_monitor(const Model& model_, const DataGetter& data_getter_)
+Coupling_monitor<Model,DataGetter>::Coupling_monitor(const Model& model_)
    : model(model_)
-   , data_getter(data_getter_)
 {
 }
 
@@ -149,7 +147,7 @@ void Coupling_monitor<Model,DataGetter>::write_parameter_names_line(std::ostream
    if (!fout.good() || couplings.empty())
       return;
 
-   const auto parameter_names(data_getter.get_parameter_names());
+   const auto parameter_names(DataGetter::get_parameter_names());
 
    fout << std::left << std::setw(width) << "scale";
 
@@ -170,7 +168,7 @@ void Coupling_monitor<Model,DataGetter>::write_comment_line(std::ostream& fout) 
    if (!fout.good() || couplings.empty())
       return;
 
-   const auto parameter_names(data_getter.get_parameter_names());
+   const auto parameter_names(DataGetter::get_parameter_names());
 
    fout << std::left << std::setw(width) << "# [1] scale";
 
@@ -267,7 +265,7 @@ void Coupling_monitor<Model,DataGetter>::run(double q1, double q2,
                << scale << " failed");
          break;
       }
-      couplings.emplace_back(scale, data_getter.get_parameters(model));
+      couplings.emplace_back(scale, DataGetter::get_parameters(model));
    }
 
    std::sort(couplings.begin(), couplings.end(), TScaleComp());

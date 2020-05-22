@@ -148,9 +148,8 @@ void @ModelName@_spectrum_generator_interface<T>::write_running_couplings(
       return;
    }
 
-   @ModelName@_parameter_getter parameter_getter;
    Coupling_monitor<@ModelName@_mass_eigenstates, @ModelName@_parameter_getter>
-      coupling_monitor(tmp_model, parameter_getter);
+      coupling_monitor(tmp_model);
 
    coupling_monitor.run(start, stop, 100, true);
    coupling_monitor.write_to_file(filename);
