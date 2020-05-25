@@ -303,8 +303,8 @@ Do1DimVector[particleName_String, massName_String, massMatrixName_String,
     "const double p = " <> momentum <> ";\n" <>
     "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
     "const double mass_sqr = " <> massMatrixName <> " - self_energy;\n\n" <>
-    "if (mass_sqr < 0.)\n" <>
-    IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n" <>
+    "if (mass_sqr < 0.) {\n" <>
+    IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n}\n\n" <>
     "PHYSICAL(" <> massName <> ") = AbsSqrt(mass_sqr);\n";
 
 
@@ -947,8 +947,8 @@ Create1DimPoleMassFunction[particle_Symbol] :=
                body = body <>
                       "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
                       "const double mass_sqr = " <> mTree <> " - self_energy;\n\n" <>
-                      "if (mass_sqr < 0.)\n" <>
-                      IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n" <>
+                      "if (mass_sqr < 0.) {\n" <>
+                      IndentText[TreeMasses`FlagPoleTachyon[particleName]] <> "\n}\n\n" <>
                       "return AbsSqrt(mass_sqr);\n";
               ,
               body = "return 0.;\n";

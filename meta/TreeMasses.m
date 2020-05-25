@@ -1457,10 +1457,7 @@ ReorderGoldstoneBosons[macro_String] :=
     ReorderGoldstoneBosons[GetParticles[], macro];
 
 CheckPoleMassesForTachyons[particles_List, macro_String] :=
-    Module[{result = ""},
-           (result = result <> CheckPoleMassesForTachyons[#,macro])& /@ particles;
-           Return[result];
-          ];
+    StringJoinWithSeparator[CheckPoleMassesForTachyons[#, macro]& /@ particles, "\n"];
 
 CheckPoleMassesForTachyons[particle_, macro_String] :=
     Module[{dimStart, dimEnd, particleName},
@@ -1475,8 +1472,7 @@ CheckPoleMassesForTachyons[particle_, macro_String] :=
            "if (" <>
            WrapMacro[CConversion`ToValidCSymbolString[FlexibleSUSY`M[particle]],macro] <>
            If[dimEnd > 1, ".tail<" <> ToString[dimEnd - dimStart + 1] <> ">().minCoeff()", ""]<>
-           " < 0.) " <>
-           FlagPoleTachyon[particleName]
+           " < 0.) { " <> FlagPoleTachyon[particleName] <> " }"
           ];
 
 CheckPoleMassesForTachyons[macro_String] :=
@@ -1562,7 +1558,7 @@ CreateHiggsMassGetters[particle_, macro_String] :=
 FlagPoleTachyon[particle_String, problems_String:"problems."] :=
     problems <> "flag_pole_tachyon(" <>
     FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-    ");\n";
+    ");";
 
 FlagRunningTachyon[particle_String, problems_String:"problems."] :=
     problems <> "flag_running_tachyon(" <>
