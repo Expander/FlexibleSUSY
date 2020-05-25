@@ -88,7 +88,7 @@ is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
        std::abs(b) < std::numeric_limits<T>::epsilon())
       return false;
 
-   return std::abs((a - b)/a) < prec;
+   return std::abs(a - b) < std::abs(a)*prec;
 }
 
 template <typename T>

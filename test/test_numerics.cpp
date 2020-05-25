@@ -10,7 +10,7 @@
 
 using namespace flexiblesusy;
 
-BOOST_AUTO_TEST_CASE(test_is_equal)
+BOOST_AUTO_TEST_CASE(test_is_equal_zero)
 {
    short s = (short)0;
    int i = 0;
