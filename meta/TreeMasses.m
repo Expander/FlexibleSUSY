@@ -2021,7 +2021,6 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`TopSquark] :=
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: stop tachyon\");
-      " <> FlagRunningTachyon[SARAH`TopSquark] <> "
    }
 
    msf1 = AbsSqrt(msf1);
@@ -2052,7 +2051,6 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`BottomSquark]
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: sbottom tachyon\");
-      " <> FlagRunningTachyon[SARAH`BottomSquark] <> "
    }
 
    msf1 = AbsSqrt(msf1);
@@ -2083,7 +2081,6 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`Selectron] :=
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: selecton tachyon\");
-      " <> FlagRunningTachyon[SARAH`Selectron] <> "
    }
 
    msf1 = AbsSqrt(msf1);
@@ -2114,7 +2111,6 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`Sneutrino] :=
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: sneutrino tachyon\");
-      " <> FlagRunningTachyon[SARAH`Sneutrino] <> "
    }
 
    msf1 = AbsSqrt(msf1);
