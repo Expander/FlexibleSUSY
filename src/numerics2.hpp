@@ -125,7 +125,10 @@ bool is_finite(const std::array<T, N>& v) noexcept
 template <class T>
 std::complex<T> fast_log(const std::complex<T>& z) noexcept
 {
-   return std::complex<T>(std::log(std::abs(z)), std::arg(z));
+   const T rz = std::real(z);
+   const T iz = std::imag(z);
+
+   return std::complex<T>(0.5*std::log(rz*rz + iz*iz), std::atan2(iz, rz));
 }
 
 } // namespace flexiblesusy
