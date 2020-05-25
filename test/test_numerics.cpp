@@ -122,6 +122,70 @@ BOOST_AUTO_TEST_CASE(test_is_zero)
    }
 }
 
+
+BOOST_AUTO_TEST_CASE(test_is_equal_rel)
+{
+   double x = 1.0, eps = 0.5;
+   BOOST_CHECK(is_equal_rel(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_rel(x, x - eps, 1.1*eps));
+
+   x = 1.0, eps = 1e-10;
+   BOOST_CHECK(is_equal_rel(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_rel(x, x - eps, 1.1*eps));
+
+   x = 1.0, eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_rel(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_rel(x, x - eps, 1.1*eps));
+
+   x = 0.0, eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_rel(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_rel(x, x - eps, 1.1*eps));
+
+   eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_rel(eps, eps, 1.1*eps));
+
+   // specific cases where numbers with small differences are treated as equal
+   x = eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_rel(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_rel(x, x - eps, 1.1*eps));
+
+   eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_rel(eps, 0.1*eps, 0.01*eps));
+   BOOST_CHECK(is_equal_rel(1e-18, 1e-19, 1e-20));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_is_equal_fraction)
+{
+   double x = 1.0, eps = 0.5;
+   BOOST_CHECK(is_equal_fraction(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_fraction(x, x - eps, 1.1*eps));
+
+   x = 1.0, eps = 1e-10;
+   BOOST_CHECK(is_equal_fraction(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_fraction(x, x - eps, 1.1*eps));
+
+   x = 1.0, eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_fraction(x, x + eps, 1.1*eps));
+   BOOST_CHECK(is_equal_fraction(x, x - eps, 1.1*eps));
+
+   x = 0.0, eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(!is_equal_fraction(x, x + eps, 1.1*eps));
+   BOOST_CHECK(!is_equal_fraction(x, x - eps, 1.1*eps));
+
+   eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(is_equal_fraction(eps, eps, 1.1*eps));
+
+   x = eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(!is_equal_fraction(x, x + eps, 1.1*eps));
+   BOOST_CHECK(!is_equal_fraction(x, x - eps, 1.1*eps));
+
+   eps = std::numeric_limits<double>::epsilon();
+   BOOST_CHECK(!is_equal_fraction(eps, 0.1*eps, 0.01*eps));
+   BOOST_CHECK(!is_equal_fraction(1e-18, 1e-19, 1e-20));
+}
+
+
 template <long N>
 std::array<std::complex<double>, N> make_logs()
 {
