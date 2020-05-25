@@ -51,6 +51,45 @@ BOOST_AUTO_TEST_CASE(test_is_equal)
    BOOST_CHECK(is_equal_rel(ull, 0ULL));
 }
 
+
+BOOST_AUTO_TEST_CASE(test_is_finite)
+{
+   const std::array<double, 4> sa = { 1.0, 2.0, 3.0, 4.0 };
+   const double ca[4] = { 1.0, 2.0, 3.0, 4.0 };
+   const double* pa = &ca[0];
+
+   BOOST_CHECK(is_finite(sa));
+   BOOST_CHECK(is_finite(ca));
+   BOOST_CHECK(is_finite(pa, 4));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_is_finite_inf)
+{
+   const double inf = std::numeric_limits<double>::infinity();
+   const std::array<double, 4> sa = { 1.0, 2.0, 3.0, inf };
+   const double ca[4] = { 1.0, 2.0, 3.0, inf };
+   const double* pa = &ca[0];
+
+   BOOST_CHECK(!is_finite(sa));
+   BOOST_CHECK(!is_finite(ca));
+   BOOST_CHECK(!is_finite(pa, 4));
+}
+
+
+BOOST_AUTO_TEST_CASE(test_is_finite_nan)
+{
+   const double nan = std::numeric_limits<double>::quiet_NaN();
+   const std::array<double, 4> sa = { 1.0, 2.0, 3.0, nan };
+   const double ca[4] = { 1.0, 2.0, 3.0, nan };
+   const double* pa = &ca[0];
+
+   BOOST_CHECK(!is_finite(sa));
+   BOOST_CHECK(!is_finite(ca));
+   BOOST_CHECK(!is_finite(pa, 4));
+}
+
+
 template <long N>
 std::array<std::complex<double>, N> make_logs()
 {

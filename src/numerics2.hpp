@@ -103,25 +103,28 @@ is_equal_rel(T a, T b, T prec = std::numeric_limits<T>::epsilon()) noexcept
    return is_equal_rel(sa, sb, sprec);
 }
 
-bool is_finite(const double*, long length);
 
-template <std::size_t N>
-bool is_finite(const double v[N]) noexcept
+/// returns true if all array elements are finite
+bool is_finite(const double*, long) noexcept;
+
+
+/// returns true if all array elements are finite
+template <typename T, std::size_t N>
+bool is_finite(const T (&v)[N]) noexcept
 {
-   bool is_finite = true;
-
-   for (std::size_t i = 0; i < N; i++)
-      is_finite = is_finite && std::isfinite(v[i]);
-
-   return is_finite;
+   return is_finite(&v[0], N);
 }
 
+
+/// returns true if all array elements are finite
 template <typename T, std::size_t N>
 bool is_finite(const std::array<T, N>& v) noexcept
 {
-   return is_finite<N>(&v[0]);
+   return is_finite(&v[0], N);
 }
 
+
+/// fast implementation of complex logarithm
 template <class T>
 std::complex<T> fast_log(const std::complex<T>& z) noexcept
 {
