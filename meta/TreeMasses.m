@@ -1567,10 +1567,10 @@ FlagPoleTachyon[particle_String, problems_String:"problems."] :=
 FlagRunningTachyon[particle_String, problems_String:"problems."] :=
     problems <> "flag_running_tachyon(" <>
     FlexibleSUSY`FSModelName <> "_info::" <> particle <>
-    ");\n";
+    ");";
 
 FlagRunningTachyon[particles_List] :=
-    StringJoin[FlagRunningTachyon /@ particles];
+    StringJoinWithSeparator[FlagRunningTachyon /@ particles, "\n"];
 
 FlagRunningTachyon[particle_] :=
     FlagRunningTachyon[CConversion`ToValidCSymbolString[CConversion`GetHead[particle]]];
@@ -1578,7 +1578,7 @@ FlagRunningTachyon[particle_] :=
 CheckRunningTachyon[particle_, eigenvector_String] :=
     "if (" <> eigenvector <> If[GetDimension[particle] > 1, ".minCoeff()", ""] <> " < 0.) {\n" <>
     IndentText[FlagRunningTachyon[particle]] <>
-    "}\n";
+    "\n}\n";
 
 FlagBadMass[particle_String, eigenvalue_String] :=
     "problems.flag_bad_mass(" <> FlexibleSUSY`FSModelName <> "_info::" <> particle <>
@@ -2025,6 +2025,7 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`TopSquark] :=
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: stop tachyon\");
+      " <> FlagRunningTachyon[SARAH`TopSquark] <> "
    }
 
    msf1 = AbsSqrt(msf1);
@@ -2055,6 +2056,7 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`BottomSquark]
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: sbottom tachyon\");
+      " <> FlagRunningTachyon[SARAH`BottomSquark] <> "
    }
 
    msf1 = AbsSqrt(msf1);
@@ -2085,6 +2087,7 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`Selectron] :=
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: selecton tachyon\");
+      " <> FlagRunningTachyon[SARAH`Selectron] <> "
    }
 
    msf1 = AbsSqrt(msf1);
@@ -2115,6 +2118,7 @@ CreateGenerationHelperFunction[gen_, fermion_ /; fermion === SARAH`Sneutrino] :=
 
    if (msf1 < 0 || msf2 < 0) {
       VERBOSE_MSG(\"diagonalize_sfermions_2x2: sneutrino tachyon\");
+      " <> FlagRunningTachyon[SARAH`Sneutrino] <> "
    }
 
    msf1 = AbsSqrt(msf1);

@@ -1076,7 +1076,7 @@ CreateRunningDRbarMassPrototype[particle_ /; IsFermion[particle]] :=
 
 CreateRunningDRbarMassPrototype[particle_] :=
     "double calculate_" <> ToValidCSymbolString[FlexibleSUSY`M[particle]] <>
-    "_DRbar(double);\n";
+    "_DRbar(double) const;\n";
 
 CreateRunningDRbarMassPrototypes[] :=
     Module[{result = "", particles},
@@ -1352,10 +1352,10 @@ CreateRunningDRbarMassFunction[particle_, _] :=
            particleName = ToValidCSymbolString[particle];
            name = ToValidCSymbolString[FlexibleSUSY`M[particle]];
            If[IsMassless[particle],
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double)\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double) const\n{\n";
               body = "return 0.0;\n";
               ,
-              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole)\n{\n";
+              result = "double CLASSNAME::calculate_" <> name <> "_DRbar(double m_pole) const\n{\n";
               body = "const double p = m_pole;\n" <>
               "const double self_energy = Re(" <> selfEnergyFunction <> "(p));\n" <>
               "const double mass_sqr = Sqr(m_pole) + self_energy;\n\n" <>
