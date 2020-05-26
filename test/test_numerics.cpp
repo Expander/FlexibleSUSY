@@ -40,6 +40,7 @@ BOOST_AUTO_TEST_CASE(test_is_equal_zero)
    BOOST_CHECK(is_equal(ui, 0U));
    BOOST_CHECK(is_equal(ul, 0UL));
    BOOST_CHECK(is_equal(ull, 0ULL));
+   BOOST_CHECK(is_equal(c, std::complex<double>(0.0, 0.0)));
 
    // BOOST_CHECK(is_equal_rel(s, (short)0));
    BOOST_CHECK(is_equal_rel(i, 0));
