@@ -24,6 +24,12 @@
 
 namespace flexiblesusy {
 
+/**
+ * @brief Class representing complex a number
+ *
+ * Using complex numeric operations based on this class leads to
+ * higher performance.
+ */
 template <typename T>
 struct Complex {
    constexpr Complex(T re_ = T{}, T im_ = T{}) : re(re_), im(im_) {}
