@@ -174,11 +174,15 @@ constexpr T Cube(T a) noexcept
    return a * a * a;
 }
 
+// Exp /////////////////////////////////////////////////////////////////
+
 template <typename T>
 T Exp(T z) noexcept
 {
    return std::exp(z);
 }
+
+// Trigonometric function //////////////////////////////////////////////
 
 double Tan(double a) noexcept;
 double Cot(double a) noexcept;
@@ -186,13 +190,29 @@ double Cos(double x) noexcept;
 double Sin(double x) noexcept;
 double Sec(double x) noexcept;
 double Csc(double x) noexcept;
+
+// Delta ///////////////////////////////////////////////////////////////
+
 int Delta(int i, int j) noexcept;
 
+// Flag a pre-defined problem //////////////////////////////////////////
+
 #define FSFlagProblem(p) [&](){ (p); return 0.; }()
+
+// Flag a pre-defined warning //////////////////////////////////////////
+
 #define FSFlagWarning(p) [&](){ (p); return 0.; }()
 
+// IsClose /////////////////////////////////////////////////////////////
+
 bool IsClose(double, double, double eps = std::numeric_limits<double>::epsilon()) noexcept;
+
+// IsCloseRel //////////////////////////////////////////////////////////
+
 bool IsCloseRel(double, double, double eps = std::numeric_limits<double>::epsilon()) noexcept;
+
+// IsFinite ////////////////////////////////////////////////////////////
+
 bool IsFinite(double) noexcept;
 bool IsFinite(const std::complex<double>&) noexcept;
 
@@ -206,32 +226,41 @@ bool IsFinite(const Eigen::DenseBase<Derived>& m)
 
    for (int r = 0; r < nr; r++) {
       for (int c = 0; c < nc; c++) {
-         if (!std::isfinite(m(r,c)))
+         if (!std::isfinite(m(r,c))) {
             return false;
+         }
       }
    }
 
    return true;
 }
 
+// KroneckerDelta //////////////////////////////////////////////////////
+
 int KroneckerDelta(int, int) noexcept;
 
+// Diag ////////////////////////////////////////////////////////////////
+
 template <class Derived>
-typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<Derived>& m) noexcept
+typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<Derived>& m)
 {
-   static_assert(Eigen::MatrixBase<Derived>::RowsAtCompileTime ==
-                 Eigen::MatrixBase<Derived>::ColsAtCompileTime,
-                 "Diag is only defined for squared matrices");
+   if (m.rows() != m.cols()) {
+      throw SetupError("Diag is only defined for squared matrices");
+   }
 
    typename Eigen::MatrixBase<Derived>::PlainObject diag(m);
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; ++i)
-      for (int k = i + 1; k < Eigen::MatrixBase<Derived>::ColsAtCompileTime; ++k)
+   for (Eigen::Index i = 0; i < m.rows(); ++i) {
+      for (Eigen::Index k = i + 1; k < m.cols(); ++k) {
          diag(i,k) = 0.0;
+      }
+   }
 
-   for (int i = 0; i < Eigen::MatrixBase<Derived>::RowsAtCompileTime; ++i)
-      for (int k = 0; k < i; ++k)
+   for (Eigen::Index i = 0; i < m.rows(); ++i) {
+      for (Eigen::Index k = 0; k < i; ++k) {
          diag(i,k) = 0.0;
+      }
+   }
 
    return diag;
 }

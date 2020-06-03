@@ -313,20 +313,39 @@ BOOST_AUTO_TEST_CASE( test_UnitStep )
 
 BOOST_AUTO_TEST_CASE(test_Diag)
 {
-   Eigen::Matrix<double,3,3> m;
-   for (int i = 0; i < 3; i++)
-      for (int k = 0; k < 3; k++)
-         m(i,k) = (i+1) * (k+1);
+   {
+      Eigen::MatrixXd m(2,2);
+      m << 1, 2, 3, 4;
+      const auto d = Diag(m);
 
-   Eigen::Matrix<double,3,3> diag(Diag(m));
+      BOOST_CHECK_EQUAL(d(0,0), 1.0);
+      BOOST_CHECK_EQUAL(d(0,1), 0.0);
+      BOOST_CHECK_EQUAL(d(1,0), 0.0);
+      BOOST_CHECK_EQUAL(d(1,1), 4.0);
+   }
+   {
+      Eigen::Matrix<double, 2, 2> m;
+      m << 1, 2, 3, 4;
+      const Eigen::Matrix<double, 2, 2> d = Diag(m);
 
-   for (int i = 0; i < 3; i++)
-      for (int k = 0; k < 3; k++) {
-         if (i == k)
-            BOOST_CHECK_PREDICATE(std::not_equal_to<double>(), (diag(i,k))(0.));
-         else
-            BOOST_CHECK_EQUAL(diag(i,k), 0.);
-      }
+      BOOST_CHECK_EQUAL(d(0,0), 1.0);
+      BOOST_CHECK_EQUAL(d(0,1), 0.0);
+      BOOST_CHECK_EQUAL(d(1,0), 0.0);
+      BOOST_CHECK_EQUAL(d(1,1), 4.0);
+   }
+   {
+      Eigen::Matrix<double, 2, 2> m;
+      m << 1, 2, 3, 4;
+      const Eigen::Matrix<double, 2, 2> d = Diag(m + m);
+
+      BOOST_CHECK_EQUAL(d(0,0), 2.0);
+      BOOST_CHECK_EQUAL(d(0,1), 0.0);
+      BOOST_CHECK_EQUAL(d(1,0), 0.0);
+      BOOST_CHECK_EQUAL(d(1,1), 8.0);
+   }
+   {
+      BOOST_CHECK_THROW(Diag(Eigen::MatrixXd(1,2)), flexiblesusy::SetupError);
+   }
 }
 
 template <typename T>
