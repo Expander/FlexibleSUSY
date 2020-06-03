@@ -662,12 +662,12 @@ DEFINE_COMMUTATIVE_OPERATOR_COMPLEX_INT(-)
 template <typename Derived>
 void Symmetrize(Eigen::PlainObjectBase<Derived>& m)
 {
-   static_assert(Eigen::PlainObjectBase<Derived>::RowsAtCompileTime ==
-                 Eigen::PlainObjectBase<Derived>::ColsAtCompileTime,
-                 "Symmetrize is only defined for squared matrices");
+   if (m.rows() != m.cols()) {
+      throw SetupError("Symmetrize is only defined for squared matrices");
+   }
 
-   for (int i = 0; i < Eigen::PlainObjectBase<Derived>::RowsAtCompileTime; i++) {
-      for (int k = 0; k < i; k++) {
+   for (Eigen::Index i = 0; i < m.rows(); ++i) {
+      for (Eigen::Index k = 0; k < i; ++k) {
          m(i,k) = m(k,i);
       }
    }
