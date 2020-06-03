@@ -265,9 +265,16 @@ typename Eigen::MatrixBase<Derived>::PlainObject Diag(const Eigen::MatrixBase<De
    return diag;
 }
 
+// ComplexLog //////////////////////////////////////////////////////////
+
 std::complex<double> ComplexLog(double a) noexcept;
 std::complex<double> ComplexLog(const std::complex<double>& z) noexcept;
+
+// FiniteLog ///////////////////////////////////////////////////////////
+
 double FiniteLog(double a) noexcept;
+
+// Hermitianize ////////////////////////////////////////////////////////
 
 /**
  * Fills lower triangle of hermitian matrix from values
@@ -276,14 +283,14 @@ double FiniteLog(double a) noexcept;
  * @param m matrix
  */
 template <typename Derived>
-void Hermitianize(Eigen::PlainObjectBase<Derived>& m) noexcept
+void Hermitianize(Eigen::PlainObjectBase<Derived>& m)
 {
-   static_assert(Eigen::PlainObjectBase<Derived>::RowsAtCompileTime ==
-                 Eigen::PlainObjectBase<Derived>::ColsAtCompileTime,
-                 "Hermitianize is only defined for squared matrices");
+   if (m.rows() != m.cols()) {
+      throw SetupError("Hermitianize is only defined for squared matrices");
+   }
 
-   for (int i = 0; i < Eigen::PlainObjectBase<Derived>::RowsAtCompileTime; i++) {
-      for (int k = 0; k < i; k++) {
+   for (Eigen::Index i = 0; i < m.rows(); ++i) {
+      for (Eigen::Index k = 0; k < i; ++k) {
          m(i,k) = Conj(m(k,i));
       }
    }

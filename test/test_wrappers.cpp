@@ -348,6 +348,26 @@ BOOST_AUTO_TEST_CASE(test_Diag)
    }
 }
 
+BOOST_AUTO_TEST_CASE(test_Hermitianize)
+{
+   {
+      Eigen::MatrixXd m(2,2);
+      m << 1, 2, 3, 4;
+      Hermitianize(m);
+
+      BOOST_CHECK_EQUAL(m(0,0), 1.0);
+      BOOST_CHECK_EQUAL(m(0,1), 2.0);
+      BOOST_CHECK_EQUAL(m(1,0), 2.0);
+      BOOST_CHECK_EQUAL(m(1,1), 4.0);
+   }
+   {
+      Eigen::MatrixXd m(1,2);
+      m << 1, 2;
+      BOOST_CHECK_THROW(Hermitianize(m), flexiblesusy::SetupError);
+   }
+}
+
+
 template <typename T>
 std::string ToString_sstream(T a)
 {
