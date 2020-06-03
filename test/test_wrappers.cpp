@@ -394,6 +394,12 @@ std::string ToString_sprintf(T a)
 }
 
 template <typename T>
+std::string ToString_ToString(T a)
+{
+   return ToString(a);
+}
+
+template <typename T>
 std::string ToString_lexical_cast(T a)
 {
    return boost::lexical_cast<std::string>(a);
@@ -422,6 +428,7 @@ BOOST_AUTO_TEST_CASE(test_ToString)
    MEASURE(to_string   , number, number_of_iterations);
 #endif
    MEASURE(sprintf     , number, number_of_iterations);
+   MEASURE(ToString    , number, number_of_iterations);
    MEASURE(lexical_cast, number, number_of_iterations);
 }
 
