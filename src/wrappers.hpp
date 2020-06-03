@@ -449,20 +449,18 @@ typename std::common_type<T0, T1, Ts...>::type Min(T0&& val1, T1&& val2, Ts&&...
       return Min(val1, std::forward<Ts>(vs)...);
 }
 
+// Sign /////////////////////////////////////////////////////////////////
+
 int Sign(double x) noexcept;
 int Sign(int x) noexcept;
-
-template <typename T>
-constexpr T Quad(T a) noexcept
-{
-   return a * a * a * a;
-}
 
 /// real polylogarithm
 double PolyLog(int, double);
 
 /// complex polylogarithm
 std::complex<double> PolyLog(int, const std::complex<double>&);
+
+// Power functions /////////////////////////////////////////////////////
 
 template <typename Base, typename Exponent>
 Base Power(Base base, Exponent exp) noexcept
@@ -536,6 +534,14 @@ constexpr Base Power12(Base b) noexcept
    return Power2(Power6(b));
 }
 
+template <typename T>
+constexpr T Quad(T a) noexcept
+{
+   return Power2(Power2(a));
+}
+
+// Re //////////////////////////////////////////////////////////////////
+
 double Re(double) noexcept;
 double Re(const std::complex<double>&) noexcept;
 
@@ -555,6 +561,8 @@ Re(const Eigen::MatrixBase<Derived>& x)
    return x.real();
 }
 
+// Im //////////////////////////////////////////////////////////////////
+
 double Im(double) noexcept;
 double Im(const std::complex<double>&) noexcept;
 
@@ -573,6 +581,8 @@ Im(const Eigen::MatrixBase<Derived>& x)
 {
    return x.imag();
 }
+
+// RelDiff /////////////////////////////////////////////////////////////
 
 template <typename T>
 T RelDiff(T a, T b, T eps = std::numeric_limits<T>::epsilon()) noexcept
