@@ -1083,8 +1083,25 @@ CreateVertices::errMaximumVerticesLimit =
 CreateVertices[
    vertices:{{__}...},
    OptionsPattern[{MaximumVerticesLimit -> 500}]] :=
-Module[{cxxVertices, vertexPartition},
-   cxxVertices = CreateVertex /@ DeleteDuplicates[vertices];
+Module[{cxxVertices, vertexPartition,
+        contextsToDistribute = {"SARAH`", "Susyno`LieGroups`", "FlexibleSUSY`", "CConversion`", "Himalaya`"}},
+
+   ParallelEvaluate[(BeginPackage[#];EndPackage[];)& /@ contextsToDistribute, DistributedContexts->All];
+   ParallelEvaluate[
+      Unprotect[Complex];
+      Format[Complex[r_,i_],CForm] :=
+      Format[CreateCType[CConversion`ScalarType[complexScalarCType]] <>
+             "(" <> ToString[CForm[r]] <> "," <> ToString[CForm[i]] <> ")",
+             OutputForm];
+      Protect[Complex];
+      ,  DistributedContexts->All
+   ];
+   cxxVertices =
+      ParallelMap[
+         CreateVertex,
+         DeleteDuplicates[vertices], DistributedContexts->All
+      ];
+   CloseKernels[];
 
    (* Mathematica 7 does not support the `UpTo[n]` notation *)
    vertexPartition = Partition[cxxVertices, OptionValue[MaximumVerticesLimit]];
