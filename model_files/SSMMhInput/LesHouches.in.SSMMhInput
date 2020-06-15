@@ -53,7 +53,7 @@ Block SMINPUTS               # Standard Model inputs
 Block EXTPAR                 # Input parameters
     0   1000                 # input scale Qin
     1   173.34               # EWSB scale QEWSB
-    2   125                  # Lambda(Qin)
+    2   125                  # MhInput (pole mass)
     3   0.1                  # LambdaS(Qin)
     4   100                  # Kappa(Qin)
     5  -100                  # K1(Qin)
