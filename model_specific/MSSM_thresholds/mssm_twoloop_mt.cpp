@@ -77,15 +77,17 @@ namespace {
     */
    double fin(double mm1, double mm2, double mmu)
    {
-      using std::log;
       const double PI = 3.14159265358979323846264338327950288;
+      const double log1u = std::log(mm1/mmu);
+      const double log2u = std::log(mm2/mmu);
+      const double log12 = std::log(mm1/mm2);
 
-      return (6*(mm1*log(mm1/mmu) + mm2*log(mm2/mmu)) +
+      return (6*(mm1*log1u + mm2*log2u) +
          (-mm1 - mm2)*(7 + pow2(PI)/6.) +
          (mm1 - mm2)*(2*dilog(1 - mm1/mm2) +
-            pow2(log(mm1/mm2))/2.) +
-         ((mm1 + mm2)*pow2(log(mm1/mm2)))/2. -
-         2*(mm1*pow2(log(mm1/mmu)) + mm2*pow2(log(mm2/mmu))))/2.;
+            pow2(log12)/2.) +
+         ((mm1 + mm2)*pow2(log12))/2. -
+         2*(mm1*pow2(log1u) + mm2*pow2(log2u)))/2.;
    }
 
    /// shift gluino mass away from mst1 and mst2 if too close
