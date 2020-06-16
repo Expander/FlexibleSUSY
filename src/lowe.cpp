@@ -42,9 +42,8 @@ constexpr double sqr(double a) noexcept { return a*a; }
 // Given a value of mt, and alphas(MZ), find alphas(mt) to 1 loops in qcd:
 // it's a very good approximation at these scales, better than 10^-3 accuracy
 double getAsmt(double mtop, double alphasMz, double mz) {
-  using std::log;
   return alphasMz /
-      (1.0 - 23.0 * alphasMz / (6.0 * M_PI) * log(mz / mtop));
+      (1.0 - 23.0 * alphasMz / (6.0 * M_PI) * std::log(mz / mtop));
 }
 
 // Input pole mass of top and alphaS(mt), outputs running mass mt(mt)
