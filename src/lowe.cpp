@@ -24,10 +24,10 @@
 */
 
 #include "lowe.h"
+#include "eigen_utils.hpp"
 #include "error.hpp"
 #include "ew_input.hpp"
 #include "string_format.hpp"
-#include "eigen_utils.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -251,11 +251,10 @@ double QedQcd::qedBeta() const {
 double QedQcd::qcdBeta() const {
   static const double INVPI = 1.0 / M_PI;
   const int quarkFlavours = flavours(get_scale());
-  double qb0, qb1, qb2;
-  qb0 = (11.0e0 - (2.0e0 / 3.0e0 * quarkFlavours)) / 4.0;
-  qb1 = (102.0e0 - (38.0e0 * quarkFlavours) / 3.0e0) / 16.0;
-  qb2 = (2.857e3 * 0.5 - (5.033e3 * quarkFlavours) / 18.0  +
-         (3.25e2 * sqr(quarkFlavours) ) / 5.4e1) / 64;
+  const double qb0 = (11.0e0 - (2.0e0 / 3.0e0 * quarkFlavours)) / 4.0;
+  const double qb1 = (102.0e0 - (38.0e0 * quarkFlavours) / 3.0e0) / 16.0;
+  const double qb2 = (2.857e3 * 0.5 - (5.033e3 * quarkFlavours) / 18.0  +
+                      (3.25e2 * sqr(quarkFlavours) ) / 5.4e1) / 64;
 
   double qa0 = 0., qa1 = 0., qa2 = 0.;
 
