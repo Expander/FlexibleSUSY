@@ -2,6 +2,7 @@
 #define BOOST_TEST_MODULE test_mssm_twoloop_mt
 
 #include <boost/test/unit_test.hpp>
+#include "benchmark.hpp"
 #include "mssm_twoloop_mt.hpp"
 #include "wrappers.hpp"
 #include <cmath>
@@ -111,4 +112,26 @@ BOOST_AUTO_TEST_CASE(test_points)
       BOOST_CHECK_CLOSE_FRACTION(qcd_2l , r.qcd_2l , 1.0e-10);
       BOOST_CHECK_CLOSE_FRACTION(sqcd_2l, r.sqcd_2l, 1.0e-10);
    }
+}
+
+BOOST_AUTO_TEST_CASE(test_bench)
+{
+   const int N = 100'000;
+   const Parameters point = make_point();
+
+   Stopwatch sw;
+   sw.start();
+
+   for (int i = 0; i < N; ++i) {
+      do_not_optimize(dMt_over_mt_1loop_qcd(point));
+      do_not_optimize(dMt_over_mt_1loop_susy(point));
+      do_not_optimize(dMt_over_mt_2loop_qcd(point));
+      do_not_optimize(dMt_over_mt_2loop_susy(point));
+   }
+
+   sw.stop();
+
+   const double t = sw.get_time_in_seconds();
+
+   BOOST_TEST_MESSAGE("Evaluation of loop corrections " << N << " times took " << t << " s");
 }
