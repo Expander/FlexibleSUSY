@@ -27,8 +27,9 @@ t1lqcd = Get[FileNameJoin[{"meta", "MSSM", "tquark_1loop_qcd.m"}]] /. GSY -> GS;
 t2l    = Get[FileNameJoin[{"meta", "MSSM", "tquark_2loop_strong.m"}]];
 t2lqcd = Get[FileNameJoin[{"meta", "MSSM", "tquark_2loop_qcd.m"}]] /. GSY -> GS;
 
-colorCA = 3; colorCF = 4/3; Tf = 1/2; GS = g3;
-MGl = mgl; MT = mt; SX = 2 mt Xt; s2t = SX / (mmst1 - mmst2);
+colorCA = 3; colorCF = 4/3; Tf = 1/2; GS = g3; g3 = 1;
+MGl = mgl; MT = mt;
+(* SX = 2 mt Xt; s2t = SX / (mmst1 - mmst2); *)
 fin[0, args__] := fin[args, mmu];
 
 Simp[expr_] := Collect[expr, { g3 }] //.
@@ -39,8 +40,7 @@ Simp[expr_] := Collect[expr, { g3 }] //.
         Power[x_,-4]          :> 1/Symbol["pow" <> ToString[4]][x],
         Power[x_,-5]          :> 1/Symbol["pow" <> ToString[5]][x],
         Power[x_,-6]          :> 1/Symbol["pow" <> ToString[6]][x],
-        Log[x_]               :> log[x],
-        PolyLog[2,x_]         :> dilog[x]
+        Log[x_]               :> log[x]
     };
 
 ToCPP[expr_] := ToString[Simp[expr], CForm];
@@ -208,8 +208,8 @@ namespace {
 
    template <typename T> T pow2(T x)  { return x*x; }
    template <typename T> T pow3(T x)  { return x*x*x; }
-   template <typename T> T pow4(T x)  { return x*x*x*x; }
-   template <typename T> T pow5(T x)  { return x*x*x*x*x; }
+   template <typename T> T pow4(T x)  { return pow2(pow2(x)); }
+   template <typename T> T pow5(T x)  { return x*pow4(x); }
 
    const double oneLoop = 1./pow2(4*Pi);
    const double twoLoop = pow2(oneLoop);
@@ -281,58 +281,59 @@ namespace {
 double dMt_over_mt_1loop_qcd(const Parameters& pars)
 {
    using std::log;
-   const double g3  = pars.g3;
+   const double g32 = pow2(pars.g3);
    const double mmt = pow2(pars.mt);
    const double mmu = pow2(pars.Q);
 
    const double result = " <> ToCPP[t1lqcd] <> ";
 
-   return result * oneLoop;
+   return result * g32 * oneLoop;
 }
 
 /// 1-loop SUSY contributions to Delta Mt over mt [hep-ph/0210258]
 double dMt_over_mt_1loop_susy(const Parameters& pars)
 {
    using std::log;
-   const double g3     = pars.g3;
-   const double Xt     = pars.xt;
+   const double g32    = pow2(pars.g3);
    const double mt     = pars.mt;
    const double mgl    = pars.mg;
    const double mmu    = pow2(pars.Q);
    const double mmgl   = pow2(pars.mg);
    const double mmst1  = pow2(pars.mst1);
    const double mmst2  = pow2(pars.mst2);
+   const double SX     = 2*mt*pars.xt;
+   const double s2t    = SX / (mmst1 - mmst2);
 
    if (is_equal(mmst1, mmst2, 1e-6) && is_equal(mmst1, mmgl, 1e-6)) {
       const double result = " <> ToCPP[t1lLimitS1S2MG] <> ";
-      return result * oneLoop;
+      return result * g32 * oneLoop;
    }
 
    if (is_equal(mmst1, mmst2, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS1S2] <> ";"] <> "
 
-      return result * oneLoop;
+      return result * g32 * oneLoop;
    }
 
    if (is_equal(mmgl, mmst1, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS1MG] <> ";"] <> "
 
-      return result * oneLoop;
+      return result * g32 * oneLoop;
    }
 
    if (is_equal(mmgl, mmst2, 1e-6)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t1lLimitS2MG] <> ";"] <> "
-      return result * oneLoop;
+      return result * g32 * oneLoop;
 
    }
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t1l - t1lqcd] <> ";"] <> "
 
-   return result * oneLoop;
+   return result * g32 * oneLoop;
 }
 
 /// 1-loop full SQCD contributions to Delta Mt over mt [hep-ph/0210258]
@@ -345,21 +346,21 @@ double dMt_over_mt_1loop(const Parameters& pars)
 double dMt_over_mt_2loop_qcd(const Parameters& pars)
 {
    using std::log;
-   const double g3  = pars.g3;
+   const double g34 = pow4(pars.g3);
    const double mmt = pow2(pars.mt);
    const double mmu = pow2(pars.Q);
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t2lqcd] <> ";"] <> "
 
-   return result * twoLoop;
+   return result * g34 * twoLoop;
 }
 
 /// 2-loop SUSY contributions to Delta Mt over mt [hep-ph/0507139]
 double dMt_over_mt_2loop_susy(const Parameters& pars)
 {
    using std::log;
-   const double g3     = pars.g3;
+   const double g34    = pow4(pars.g3);
    const double Xt     = pars.xt;
    const double mt     = pars.mt;
    const double mgl    = shift_mg(pars.mg, pars.mst1, pars.mst2);
@@ -369,19 +370,21 @@ double dMt_over_mt_2loop_susy(const Parameters& pars)
    const double mmst1  = pow2(pars.mst1);
    const double mmst2  = pow2(pars.mst2);
    const double mmsusy = pow2(pars.msusy);
+   const double SX     = 2*mt*pars.xt;
+   const double s2t    = SX / (mmst1 - mmst2);
 
    if (is_equal(mmst1, mmst2, mmt) && is_equal(mmst1, mmgl, mmt) &&
        is_equal(mmst1, mmsusy, mmt) && is_equal(std::abs(Xt), 0., 1e-1)) {
       const double result =
 " <> WrapLines @ IndentText @ IndentText[ToCPP[t2lLimitS1S2MSMG] <> ";"] <> "
 
-      return result * twoLoop;
+      return result * g34 * twoLoop;
    }
 
    const double result =
 " <> WrapLines @ IndentText[ToCPP[t2l - t2lqcd] <> ";"] <> "
 
-   return result * twoLoop;
+   return result * g34 * twoLoop;
 }
 
 /// 2-loop full SQCD contributions to Delta Mt over mt [hep-ph/0507139]
