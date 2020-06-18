@@ -25,6 +25,9 @@ New features
 Changes
 -------
 
+* [commit c5b7e4a8b]: Rename FlexibleSUSY symbol Temporary to FSTemporary
+  in order to avoid conflict with the internal mathematica symbol.
+
 * Changed code organization of NPointFunctions module: improved speed of
   ``C++`` calculations, improved maintainability of the metacode.
 
