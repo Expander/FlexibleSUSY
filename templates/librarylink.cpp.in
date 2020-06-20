@@ -28,6 +28,7 @@
 
 @solverIncludes@
 #include "array_view.hpp"
+#include "bvp_solver_problems_format_mathlink.hpp"
 #include "error.hpp"
 #include "observable_problems_format_mathlink.hpp"
 #include "physical_input.hpp"
@@ -202,10 +203,8 @@ public:
 
    void put_problems(MLINK link) const;
    void put_problems(MLINK link, const Problems&) const;
-   void put_problems(MLINK link, const BVP_solver_problems&) const;
    void put_warnings(MLINK link) const;
    void put_warnings(MLINK link, const Problems&) const;
-   void put_warnings(MLINK link, const BVP_solver_problems&) const;
    void put_model_spectra(MLINK link) const;
    void calculate_spectrum();
    void check_spectrum(MLINK link) const;
@@ -510,14 +509,6 @@ void Model_data::put_problems(MLINK link, const Problems& problems) const
 
 /******************************************************************/
 
-void Model_data::put_problems(MLINK link, const BVP_solver_problems& problems) const
-{
-   if (problems.no_convergence())
-      MLPutRuleTo(link, "True", "NoConvergence");
-}
-
-/******************************************************************/
-
 void Model_data::put_problems(MLINK link) const
 {
    check_spectrum_pointer();
@@ -538,8 +529,7 @@ void Model_data::put_problems(MLINK link) const
 
    for (const auto& m: solvers) {
       MLPutRule(link, m.get_solver_name());
-      MLPutFunction(link, "List", m.number_of_problems());
-      put_problems(link, m);
+      mathlink_format_problems(link, m);
    }
 
    MLPutRule(link, "Observables");
@@ -554,13 +544,6 @@ void Model_data::put_warnings(MLINK link, const Problems& problems) const
 {
    if (problems.have_bad_mass())
       put_masses(link, "ImpreciseMasses", problems.get_bad_masses(), {"M"});
-}
-
-/******************************************************************/
-
-void Model_data::put_warnings(MLINK, const BVP_solver_problems&) const
-{
-   // no warnings yet
 }
 
 /******************************************************************/
@@ -584,8 +567,7 @@ void Model_data::put_warnings(MLINK link) const
 
    for (const auto& m: solvers) {
       MLPutRule(link, m.get_solver_name());
-      MLPutFunction(link, "List", m.number_of_warnings());
-      put_warnings(link, m);
+      mathlink_format_problems(link, m);
    }
 
    MLEndPacket(link);

@@ -54,6 +54,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/betafunction.hpp \
 		$(DIR)/build_info.hpp \
 		$(DIR)/bvp_solver_problems.hpp \
+		$(DIR)/bvp_solver_problems_format_mathlink.hpp \
 		$(DIR)/cextensions.hpp \
 		$(DIR)/ckm.hpp \
 		$(DIR)/command_line_options.hpp \
