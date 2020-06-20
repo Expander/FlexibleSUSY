@@ -28,6 +28,9 @@ LIBFLEXI_SRC := \
 		$(DIR)/model.cpp \
 		$(DIR)/numerics.cpp \
 		$(DIR)/numerics2.cpp \
+		$(DIR)/observables.cpp \
+		$(DIR)/observable_problems.cpp \
+		$(DIR)/observable_problems_format.cpp \
 		$(DIR)/physical_input.cpp \
 		$(DIR)/pmns.cpp \
 		$(DIR)/problems.cpp \
@@ -95,6 +98,11 @@ LIBFLEXI_HDR := \
 		$(DIR)/names.hpp \
 		$(DIR)/numerics.h \
 		$(DIR)/numerics2.hpp \
+		$(DIR)/observables.hpp \
+		$(DIR)/observable_problems.hpp \
+		$(DIR)/observable_problems_format.hpp \
+		$(DIR)/observable_problems_format_slha.hpp \
+		$(DIR)/observable_problems_format_mathlink.hpp \
 		$(DIR)/physical_input.hpp \
 		$(DIR)/pmns.hpp \
 		$(DIR)/pp_map.hpp \

@@ -68,6 +68,7 @@ TEST_SRC := \
 		$(DIR)/test_MSSM_2L_limits.cpp \
 		$(DIR)/test_multiindex.cpp \
 		$(DIR)/test_numerics.cpp \
+		$(DIR)/test_observable_problems.cpp \
 		$(DIR)/test_pmns.cpp \
 		$(DIR)/test_problems.cpp \
 		$(DIR)/test_raii.cpp \
@@ -512,11 +513,14 @@ TEST_SRC += \
 		$(DIR)/test_SM_mass_eigenstates_interface.cpp \
 		$(DIR)/test_SM_mass_eigenstates_decoupling_scheme.cpp \
 		$(DIR)/test_SM_one_loop_spectrum.cpp \
+		$(DIR)/test_SM_observable_problems.cpp \
 		$(DIR)/test_SM_higgs_loop_corrections.cpp \
 		$(DIR)/test_SM_tree_level_spectrum.cpp \
 		$(DIR)/test_SM_two_loop_spectrum.cpp \
 		$(DIR)/test_SM_three_loop_spectrum.cpp \
 		$(DIR)/test_SM_mw_calculation.cpp
+TEST_SH += \
+		$(DIR)/test_SM_observable_problems.sh
 endif
 
 ifeq ($(WITH_SM) $(ENABLE_META),yes yes)
@@ -685,6 +689,8 @@ endif
 ifeq ($(WITH_SM) $(ENABLE_LIBRARYLINK),yes yes)
 TEST_SH += \
 		$(DIR)/test_flexiblesusy-config.sh
+TEST_META += \
+		$(DIR)/test_SM_observable_problems.m
 endif
 
 ifeq ($(WITH_THDMIIMSSMBC) $(WITH_THDMIIMSSMBCApprox) $(WITH_HGTHDMIIMSSMBC) $(WITH_HGTHDMIIMSSMBCApprox),yes yes yes yes)
@@ -1133,6 +1139,8 @@ $(DIR)/test_SM_mass_eigenstates_decoupling_scheme.x: $(LIBSM)
 $(DIR)/test_SM_tree_level_spectrum.x: $(LIBSM)
 
 $(DIR)/test_SM_one_loop_spectrum.x: $(LIBSM)
+
+$(DIR)/test_SM_observable_problems.x: $(LIBSM)
 
 $(DIR)/test_SM_three_loop_spectrum.x: $(LIBSM)
 
