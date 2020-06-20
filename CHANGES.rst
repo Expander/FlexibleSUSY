@@ -1,5 +1,5 @@
-FlexibleSUSY 2.5.0 [not released yet]
-=====================================
+FlexibleSUSY 2.5.0 [June, 20 2020]
+==================================
 
 New features
 ------------
