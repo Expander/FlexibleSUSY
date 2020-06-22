@@ -30,6 +30,7 @@
 #include "array_view.hpp"
 #include "bvp_solver_problems_format_mathlink.hpp"
 #include "error.hpp"
+#include "for_each.hpp"
 #include "observable_problems_format_mathlink.hpp"
 #include "physical_input.hpp"
 #include "problems_format_mathlink.hpp"
@@ -51,9 +52,6 @@
 #include <string>
 #include <tuple>
 #include <utility>
-
-#include <boost/fusion/include/for_each.hpp>
-#include <boost/fusion/adapted/std_tuple.hpp>
 
 #define INPUTPARAMETER(p) input.p
 #define MODELPARAMETER(p) model.get_##p()
@@ -606,7 +604,7 @@ void put_spectra(const std::tuple<Ts...>& models, MLINK link)
    MLPutFunction(link, "List", std::tuple_size<std::tuple<Ts...>>::value);
 
    const auto ps = [link] (const auto& model) { put_spectrum(model, link); };
-   boost::fusion::for_each(models, ps);
+   for_each_in_tuple(models, ps);
 
    MLEndPacket(link);
 }
