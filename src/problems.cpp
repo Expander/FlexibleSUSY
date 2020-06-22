@@ -134,6 +134,11 @@ std::string Problems::get_parameter_name(int idx) const
    return parameter_names->get(idx);
 }
 
+std::string Problems::get_particle_name(int idx) const
+{
+   return particle_names->get(idx);
+}
+
 std::vector<std::string> Problems::get_problem_strings() const
 {
    std::vector<std::string> strings;

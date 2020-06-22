@@ -108,6 +108,7 @@ LIBFLEXI_HDR := \
 		$(DIR)/pmns.hpp \
 		$(DIR)/pp_map.hpp \
 		$(DIR)/problems.hpp \
+		$(DIR)/problems_format_mathlink.hpp \
 		$(DIR)/raii.hpp \
 		$(DIR)/rg_flow.hpp \
 		$(DIR)/rk.hpp \
