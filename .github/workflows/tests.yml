@@ -138,7 +138,7 @@ jobs:
                ./configure \
                   --with-cxx=$CXXCOMPILER \
                   --with-math-cmd=/usr/local/Wolfram/WolframEngine/12.1/Executables/math \
-                  --with-models=$(echo $MODELS| tr ' ' ',') \
+                  --with-models=SM \
                   --with-loop-libraries=collier,looptools \
                   --with-looptools-incdir=/LoopTools-$CXXCOMPILER/include \
                   --with-looptools-libdir=/LoopTools-$CXXCOMPILER/lib64 \
@@ -147,8 +147,13 @@ jobs:
                   --disable-meta \
                   --with-optional-modules=test
                "
-          docker exec builder bash -c 'cd FlexibleSUSY && VERBOSE=1 make -j2'
-          docker exec builder bash -c 'cd FlexibleSUSY && VERBOSE=1 make -j2 all-test'
+          docker exec -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2'
+          docker exec -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2 execute-meta-tests'
+          docker exec -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2 alltest'
+          docker exec -e FLEXIBLESUSY_LOOP_LIBRARY=0 -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2 execute-compiled-tests execute-shell-tests && make clean-test-log'
+          docker exec -e FLEXIBLESUSY_LOOP_LIBRARY=1 -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2 execute-compiled-tests execute-shell-tests && make clean-test-log'
+          docker exec -e FLEXIBLESUSY_LOOP_LIBRARY=2 -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2 execute-compiled-tests execute-shell-tests && make clean-test-log'
+          docker exec -e FLEXIBLESUSY_LOOP_LIBRARY=3 -e VERBOSE=1 builder bash -c 'cd FlexibleSUSY && make -j2 execute-compiled-tests execute-shell-tests && make clean-test-log'
         env:
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
 
