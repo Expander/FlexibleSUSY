@@ -24,6 +24,9 @@
 
 namespace flexiblesusy {
 
+/**
+ * RAII wrapper for gsl_multiroot_fsolver
+ */
 class GSL_multiroot_fsolver
 {
 public:
