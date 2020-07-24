@@ -447,7 +447,7 @@ TEST_SRC += \
 endif
 
 ifeq ($(WITH_CMSSM) $(WITH_cCMSSM),yes yes)
-TEST_SRC += \
+TEST_SH += \
 		$(DIR)/test_cCMSSM.sh
 endif
 
