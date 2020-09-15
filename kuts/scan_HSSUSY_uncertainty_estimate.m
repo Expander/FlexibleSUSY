@@ -3,21 +3,22 @@ Get["kuts/HSSUSY_uncertainty_estimate.m"];
 
 settings = {
     precisionGoal -> 1.*^-5,
+    maxIterations -> 100,
     poleMassLoopOrder -> 4,
     ewsbLoopOrder -> 4,
     betaFunctionLoopOrder -> 5,
-    thresholdCorrectionsLoopOrder -> 3,
+    thresholdCorrectionsLoopOrder -> 4,
     thresholdCorrections -> 124111421
 };
 
 smpars = {
-    alphaEmMZ -> 1/127.916, (* SMINPUTS[1] *)
-    GF -> 1.166378700*^-5,  (* SMINPUTS[2] *)
-    alphaSMZ -> 0.1184,     (* SMINPUTS[3] *)
+    alphaEmMZ -> 0.00775526,(* SMINPUTS[1] *)
+    GF -> 1.16639*^-5,      (* SMINPUTS[2] *)
+    alphaSMZ -> 0.118,      (* SMINPUTS[3] *)
     MZ -> 91.1876,          (* SMINPUTS[4] *)
-    mbmb -> 4.18,           (* SMINPUTS[5] *)
+    mbmb -> 4.2,            (* SMINPUTS[5] *)
     Mt -> 173.34,           (* SMINPUTS[6] *)
-    Mtau -> 1.77699,        (* SMINPUTS[7] *)
+    Mtau -> 1.77703,        (* SMINPUTS[7] *)
     Mv3 -> 0,               (* SMINPUTS[8] *)
     MW -> 80.385,           (* SMINPUTS[9] *)
     Me -> 0.000510998902,   (* SMINPUTS[11] *)
@@ -76,12 +77,12 @@ HSSUSYCalcMh[MS_, TB_, Xtt_] :=
 LinearRange[start_, stop_, steps_] :=
     Range[start, stop, (stop - start)/steps];
 
-Xtt = Sqrt[6];
+Xtt = -Sqrt[6];
 TB  = 20;
 
 data = ParallelMap[
     { N[#], Sequence @@ HSSUSYCalcMh[#, TB, Xtt] }&,
-    LogRange[1000, 10^4, 2]
+    LogRange[300, 10^5, 4]
 ];
 
 Export["HSSUSY_uncertainty.dat", data];
