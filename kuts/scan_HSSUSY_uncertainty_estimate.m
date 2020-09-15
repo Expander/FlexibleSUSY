@@ -64,7 +64,7 @@ HSSUSYCalcMh[MS_, TB_, Xtt_] :=
             msd2 -> MS^2 IdentityMatrix[3],
             msl2 -> MS^2 IdentityMatrix[3],
             mse2 -> MS^2 IdentityMatrix[3],
-            LambdaLoopOrder -> 3,
+            LambdaLoopOrder -> 2, (* may use 3 here *)
             TwoLoopAtAs -> 1,
             TwoLoopAbAs -> 1,
             TwoLoopAtAb -> 1,
