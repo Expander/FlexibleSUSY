@@ -86,4 +86,3 @@ data = ParallelMap[
 ];
 
 Export["HSSUSY_uncertainty.dat", data];
-Quit[];
