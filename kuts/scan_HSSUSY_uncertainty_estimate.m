@@ -82,7 +82,7 @@ TB  = 20;
 
 data = ParallelMap[
     { N[#], Sequence @@ HSSUSYCalcMh[#, TB, Xtt] }&,
-    LogRange[300, 10^5, 4]
+    LogRange[200, 10^5, 100]
 ];
 
 Export["HSSUSY_uncertainty.dat", data];
