@@ -1,104 +1,3 @@
-(* :Copyright:
-
-   ====================================================================
-   This file is part of FlexibleSUSY.
-
-   FlexibleSUSY is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published
-   by the Free Software Foundation, either version 3 of the License,
-   or (at your option) any later version.
-
-   FlexibleSUSY is distributed in the hope that it will be useful, but
-   WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with FlexibleSUSY.  If not, see
-   <http://www.gnu.org/licenses/>.
-   ====================================================================
-
-*)
-
-(**
-  Functions to perform an uncertainty estimate of HSSUSY.
- *)
-
-CalcHSSUSYDMh::usage="\
-The function takes the parameter point as input (same syntax as
-FSHSSUSYOpenHandle[]) and returns the 2-component list { Mh, DMh }
-where Mh is the Higgs mass and DMh is an uncertainty estimate of
-missing higher-order corrections.
-
-The uncertainty estimate takes three sources into account:
-
- * SM uncertainty: Missing higher order corrections from the
-   extraction of the running SM parameters and to the calculation of
-   the Higgs pole mass.
-
- * EFT uncertainty: Missing terms of the order O(v^2/MSUSY^2).
-
- * SUSY uncertainty: Missing 3-loop contributions to the quartic Higgs
-   coupling \[Lambda] from SUSY particles.
-
-Important note: The uncertainty estimate assumes that all 2-loop
-threshold corrections at the SUSY scale are enabled:
-
-  fsModelParameters -> {
-      LambdaLoopOrder -> 2,
-      TwoLoopAtAs -> 1,
-      TwoLoopAbAs -> 1,
-      TwoLoopAtAb -> 1,
-      TwoLoopAtauAtau -> 1,
-      TwoLoopAtAt -> 1
-  }
-
-Example: Peform a parameter scan over the SUSY scale in the interval
-[1000, 10^10] GeV for tan(beta) = 20 and Xt/MS = Sqrt[6].
-
-Get[\"models/HSSUSY/HSSUSY_librarylink.m\"];
-Get[\"model_files/HSSUSY/HSSUSY_uncertainty_estimate.m\"];
-
-CalcMh[MS_, TB_, Xtt_] :=
-    CalcHSSUSYDMh[
-        fsSettings -> {
-            precisionGoal -> 1.*^-5,
-            thresholdCorrectionsLoopOrder -> 4,
-            thresholdCorrections -> 124111421
-        },
-        fsModelParameters -> {
-            TanBeta -> TB,
-            MEWSB -> 173.34,
-            MSUSY -> MS,
-            M1Input -> MS,
-            M2Input -> MS,
-            M3Input -> MS,
-            MuInput -> MS,
-            mAInput -> MS,
-            AtInput -> (Xtt + 1/TB) MS,
-            msq2 -> MS^2 IdentityMatrix[3],
-            msu2 -> MS^2 IdentityMatrix[3],
-            msd2 -> MS^2 IdentityMatrix[3],
-            msl2 -> MS^2 IdentityMatrix[3],
-            mse2 -> MS^2 IdentityMatrix[3],
-            LambdaLoopOrder -> 2,
-            TwoLoopAtAs -> 1,
-            TwoLoopAbAs -> 1,
-            TwoLoopAtAb -> 1,
-            TwoLoopAtauAtau -> 1,
-            TwoLoopAtAt -> 1
-        }
-   ];
-
-LaunchKernels[];
-DistributeDefinitions[CalcMh];
-
-data = ParallelMap[
-    { N[#], CalcMh[#, 20, Sqrt[6]] }&,
-    LogRange[10^3, 10^10, 50]
-];
-";
-
 (* get digit of [num] at position [pos] *)
 GetDigit[num_, pos_, base_:10] :=
     IntegerPart[Mod[num / base^pos, base]];
@@ -178,7 +77,7 @@ CalcHSSUSYDMh[args__] :=
            {
                (* 1 Mh   *) Mh0,
                (* 2 SM   *) Max[Abs[Max[varyQpole] - Mh], Abs[Min[varyQpole] - Mh]],
-               (* 3 SM   *) Abs[Mh - MhYtMSSM],
+               (* 3 SM   *) Abs[Mh - MhYt3L],
                (* 4 SUSY *) Max[Abs[Max[varyQmatch] - Mh], Abs[Min[varyQmatch] - Mh]],
                (* 5 SUSY *) Abs[Mh - MhYtMSSM],
                (* 6 EFT  *) DMhEFT
