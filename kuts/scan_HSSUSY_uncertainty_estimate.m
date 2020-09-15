@@ -74,9 +74,6 @@ HSSUSYCalcMh[MS_, TB_, Xtt_] :=
         }
    ];
 
-LinearRange[start_, stop_, steps_] :=
-    Range[start, stop, (stop - start)/steps];
-
 Xtt = -Sqrt[6];
 TB  = 20;
 
