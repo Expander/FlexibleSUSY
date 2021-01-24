@@ -99,6 +99,29 @@ double fB(const std::complex<double>& x) noexcept
    return std::real(-1.0 + fast_log(1.0 - x) - x*fast_log(1.0 - 1.0/x));
 }
 
+/// fB(xp) + fB(xm)
+double fB(const std::complex<double>& xp, const std::complex<double>& xm) noexcept
+{
+   using flexiblesusy::fast_log;
+
+   const double rep = std::real(xp);
+   const double imp = std::imag(xp);
+
+   if ((std::abs(rep) == 0.0 || std::abs(rep) == 1.0) && imp == 0.0) {
+      return -1.0 + fB(xm);
+   }
+
+   const double rem = std::real(xm);
+   const double imm = std::imag(xm);
+
+   if ((std::abs(rem) == 0.0 || std::abs(rem) == 1.0) && imm == 0.0) {
+      return -1.0 + fB(xp);
+   }
+
+   return std::real(-2.0 + fast_log((1.0 - xp)*(1.0 - xm))
+      - xp*fast_log(1.0 - 1.0/xp) - xm*fast_log(1.0 - 1.0/xm));
+}
+
 } // anonymous namespace
 
 double a0(double m, double q) noexcept
@@ -165,7 +188,7 @@ double b0(double p, double m1, double m2, double q) noexcept
       const std::complex<double> xp  = (s + sign(s)*x) / (2*p2);
       const std::complex<double> xm = imin / (xp*p2);
 
-      return -2.0*std::log(p/q) - fB(xp) - fB(xm);
+      return -2.0*std::log(p/q) - fB(xp, xm);
    }
 
    if (is_close(m1, m2, EPSTOL)) {
