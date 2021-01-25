@@ -70,15 +70,6 @@ constexpr bool is_close(double m1, double m2, double tol) noexcept
    return mmax - mmin <= max_tol;
 }
 
-/// returns a/b if a/b is finite, otherwise returns numeric_limits::max()
-template <typename T>
-constexpr T divide_finite(T a, T b) noexcept {
-   T result = a / b;
-   if (!std::isfinite(result))
-      result = std::numeric_limits<T>::max();
-   return result;
-}
-
 double sign(double x) noexcept
 {
    return x >= 0.0 ? 1.0 : -1.0;
@@ -219,12 +210,11 @@ double b1(double p, double m1, double m2, double q) noexcept
       return 0.0;
 
    const double p2 = sqr(p), m12 = sqr(m1), m22 = sqr(m2), q2 = sqr(q);
-   const double pTest = divide_finite(p2, std::max(m12, m22));
 
    /// Decides level at which one switches to p=0 limit of calculations
    const double pTolerance = 1.0e-4;
 
-   if (pTest > pTolerance) {
+   if (p2 > pTolerance * std::max(m12, m22)) {
       return (a0(m2, q) - a0(m1, q) + (p2 + m12 - m22)
               * b0(p, m1, m2, q)) / (2.0 * p2);
    }
