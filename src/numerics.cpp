@@ -417,19 +417,19 @@ double c0(double m1, double m2, double m3) noexcept
  */
 double d1_b0(double /* p2 */, double m2a, double m2b) noexcept
 {
-   const double m4a = m2a * m2a;
-   const double m4b = m2b * m2b;
+   m2a = std::abs(m2a);
+   m2b = std::abs(m2b);
 
-   if ((std::abs(m2a) < 0.0001) != (std::abs(m2b) < 0.0001)) {
-      return (m4a - m4b) / (2. * pow3(m2a - m2b));
-   } else if (std::abs(m2a) < 0.0001 && std::abs(m2b) < 0.0001) {
+   if ((m2a < 0.0001) != (m2b < 0.0001)) {
+      return (m2a - m2b) * (m2a + m2b) / (2 * pow3(m2a - m2b));
+   } else if (m2a < 0.0001 && m2b < 0.0001) {
       return 0.;
    } else if (std::abs(m2b - m2a) < 0.001) {
-      return 1./(6. * m2a) + (m2a - m2b)/(12.* m4a);
+      return 1. / (6 * m2a) + (m2a - m2b) / (12 * sqr(m2a));
    }
 
-   return (m4a - m4b + 2. * m2a * m2b * std::log(m2b/m2a))
-      /(2. * pow3(m2a - m2b));
+   return ((m2a - m2b) * (m2a + m2b) + 2 * m2a * m2b * std::log(m2b / m2a)) /
+          (2 * pow3(m2a - m2b));
 }
 
 double c00(double m1, double m2, double m3, double q) noexcept
