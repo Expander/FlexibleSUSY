@@ -29,11 +29,12 @@ jobs:
     runs-on: ${{ matrix.OS }}
 
     steps:
-      - name: Homebrew 
+      - name: Homebrew
         if: runner.os == 'macOS'
         run: |
            brew update
            brew upgrade
+           brew reinstall gcc
            brew install gsl
 
       - name: Checkout
