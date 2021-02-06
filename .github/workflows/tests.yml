@@ -44,6 +44,7 @@ jobs:
         run: |
           pip3 install --user conan
           export PATH=$(python3 -c 'import site; print(site.USER_BASE + "/bin")'):$PATH
+          conan profile update settings.compiler.libcxx=libstdc++11 default
           conan remote add conan-hep https://api.bintray.com/conan/expander/conan-hep --force
           conan install . --build=missing
         env:
