@@ -54,7 +54,7 @@ jobs:
           conan profile update settings.compiler.libcxx=libstdc++11 default
         env:
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
-        if: matrix.CXXCOMPILER == 'g++' && matrix.OS == 'ubuntu-latest'
+        if: ${{ matrix.CXXCOMPILER == 'g++' && matrix.OS == 'ubuntu-latest' }}
 
       - name: Install dependencies
         run: |
