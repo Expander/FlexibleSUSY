@@ -43,12 +43,14 @@ jobs:
       - name: Install conan
         run: |
           pip3 install --user conan
+          export PATH=$(python3 -c 'import site; print(site.USER_BASE + "/bin")'):$PATH
           conan profile new default --detect
         env:
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
 
       - name: Setup conan
         run: |
+          export PATH=$(python3 -c 'import site; print(site.USER_BASE + "/bin")'):$PATH
           conan profile update settings.compiler.libcxx=libstdc++11 default
         env:
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
