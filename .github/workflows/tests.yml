@@ -46,14 +46,14 @@ jobs:
           export PATH=$(python3 -c 'import site; print(site.USER_BASE + "/bin")'):$PATH
           conan profile new default --detect
         env:
-          CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
+          CXX: ${{ matrix.CXXCOMPILER }}
 
       - name: Setup conan
         run: |
           export PATH=$(python3 -c 'import site; print(site.USER_BASE + "/bin")'):$PATH
           conan profile update settings.compiler.libcxx=libstdc++11 default
         env:
-          CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
+          CXX: ${{ matrix.CXXCOMPILER }}
         if: ${{ matrix.CXXCOMPILER == 'g++' && matrix.OS == 'ubuntu-latest' }}
 
       - name: Install dependencies
