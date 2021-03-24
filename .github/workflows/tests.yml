@@ -163,7 +163,8 @@ jobs:
         run: docker exec builder bash -c "cd FlexibleSUSY && for m in $MODELS; do ./createmodel --name=\$m; done"
 
       - name: Configure
-        run: docker exec builder bash -c "
+        run: |
+           docker exec builder bash -c "
                cd /FlexibleSUSY &&
                ./configure
                   --with-cxx=$CXXCOMPILER
@@ -183,6 +184,7 @@ jobs:
                   --enable-librarylink
                   --with-cxxflags=\"-std=c++14 -O2 -fPIC -Wall -Wpedantic -Wfloat-equal -pipe\"
                "
+            docker exec builder bash -c "make showbuild"
         env:
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
 
@@ -248,5 +250,7 @@ jobs:
         if: failure()
         with:
           name: ${{matrix.CXXCOMPILER}}-${{matrix.LOOPLIBRARY}}_test-logs
-          path: test/test_*.log
+          path: |
+            config.*
+            test/test_*.log
 
