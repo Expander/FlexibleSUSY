@@ -184,7 +184,7 @@ jobs:
                   --enable-librarylink \
                   --with-cxxflags=\"-std=c++14 -O2 -fPIC -Wall -Wpedantic -Wfloat-equal -pipe\"
            "
-           docker exec builder bash -c "make showbuild"
+           docker exec builder bash -c "cd /FlexibleSUSY && make showbuild"
         env:
           CXXCOMPILER: ${{ matrix.CXXCOMPILER }}
 
