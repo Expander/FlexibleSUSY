@@ -59,7 +59,7 @@ models/lowNMSSMTanBetaAtMZ/LesHouches.in.lowNMSSMTanBetaAtMZ \
 models/SMSSM/LesHouches.in.SMSSM \
 models/UMSSM/LesHouches.in.UMSSM \
 models/E6SSM/LesHouches.in.E6SSM \
-models/MRSSM/LesHouches.in.MRSSM \
+models/MRSSM2/LesHouches.in.MRSSM2 \
 models/TMSSM/LesHouches.in.TMSSM \
 models/SM/LesHouches.in.SM \
 models/HSSUSY/LesHouches.in.HSSUSY \
