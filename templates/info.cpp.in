@@ -66,8 +66,7 @@ int get_pdg_code_for_particle(Particles p, int index)
    default: throw OutOfBoundsError("invalid particle " + std::to_string(p));
    }
 
-   const int n_pdgs = pdg_codes.size();
-   if (index < 0 || index >= n_pdgs) {
+   if (index < 0 || index >= pdg_codes.size()) {
       throw OutOfBoundsError("index " + std::to_string(index) + " out of bounds");
    }
 
