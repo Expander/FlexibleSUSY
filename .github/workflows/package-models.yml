@@ -84,12 +84,12 @@ jobs:
            repository:  FlexibleSUSY/FlexibleSUSY-generated
            token: ${{ secrets.PAT }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
            name: models-artifacts_1
            path: /tmp/models-artifacts
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
            name: models-artifacts_2
            path: /tmp/models-artifacts
@@ -118,12 +118,12 @@ jobs:
            repository:  FlexibleSUSY/FlexibleSUSY-slha
            token: ${{ secrets.PAT }}
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
            name: slha-output-artifacts_1
            path: /tmp/slha-output-artifacts
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
            name: slha-output-artifacts_2
            path: /tmp/slha-output-artifacts
@@ -149,12 +149,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
            name: models-artifacts_1
            path: /tmp/models-artifacts
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
            name: models-artifacts_2
            path: /tmp/models-artifacts
